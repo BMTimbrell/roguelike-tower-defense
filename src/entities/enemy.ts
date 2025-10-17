@@ -16,7 +16,7 @@ export default function makeEnemy(k: KAPLAYCtx, waypoints: Vec2[]): GameObj {
         const dir = enemy.waypoints[1].sub(enemy.pos).unit();
         enemy.move(dir.scale(enemy.speed));
 
-        if (enemy.pos.dist(enemy.waypoints[1]) <= 2) {
+        if (enemy.pos.dist(enemy.waypoints[1]) <= enemy.speed / 50) {
             if (enemy.waypoints.length <= 2) k.destroy(enemy);
             enemy.waypoints.shift();
         }

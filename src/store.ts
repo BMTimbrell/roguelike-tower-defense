@@ -6,8 +6,11 @@ export const towerMenuAtom = atom({
 });
 
 export const mapAtom = atom({
-    xPos: 0,
-    width: 0
+    x: 0,
+    y: 0,
+    height: 0,
+    width: 0,
+    scale: 1
 });
 
 export const store = createStore();

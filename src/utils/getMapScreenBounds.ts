@@ -11,11 +11,21 @@ export default function getMapScreenBounds(k: KAPLAYCtx, mapData: mapData) {
 
     // Center offset caused by letterboxing
     const offsetX = (canvasWidth - VIRTUAL_WIDTH * scale) / 2;
+    const offsetY = (canvasHeight - VIRTUAL_HEIGHT * scale) / 2;
 
-    const mapWorldX = (VIRTUAL_WIDTH - mapData.width * mapData.tilewidth) / 2
+    const mapWorldX = (VIRTUAL_WIDTH - mapData.width * mapData.tilewidth) / 2;
+    const mapWorldY = 0;
 
     const screenX = offsetX + mapWorldX * scale;
+    const screenY = offsetY + mapWorldY * scale;
     const mapScreenWidth = mapData.width * mapData.tilewidth * scale;
+    const mapScreenHeight = mapData.height * mapData.tileheight * scale;
 
-    return { x: screenX, width: mapScreenWidth };
+    return { 
+        x: screenX,
+        y: screenY,
+        width: mapScreenWidth,
+        height: mapScreenHeight,
+        scale
+    };
 }
