@@ -14,7 +14,7 @@ export default function getMapScreenBounds(k: KAPLAYCtx, mapData: mapData) {
     const offsetY = (canvasHeight - VIRTUAL_HEIGHT * scale) / 2;
 
     const mapWorldX = (VIRTUAL_WIDTH - mapData.width * mapData.tilewidth) / 2;
-    const mapWorldY = 0;
+    const mapWorldY = (VIRTUAL_HEIGHT - mapData.height * mapData.tileheight) / 2
 
     const screenX = offsetX + mapWorldX * scale;
     const screenY = offsetY + mapWorldY * scale;

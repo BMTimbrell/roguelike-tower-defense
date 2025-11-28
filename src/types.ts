@@ -1,3 +1,5 @@
+import { type MouseEventHandler } from "react";
+
 type layerObj = {
     x: number;
     y: number;
@@ -17,4 +19,14 @@ export type mapData = {
     width: number;
     height: number;
     layers: layer[];
+};
+
+export type tower = {
+    name: string;
+    onClick: MouseEventHandler<HTMLDivElement>;
+} | null;
+
+export type gameState = {
+    towers: tower[];
+    selectedTower: tower;
 };

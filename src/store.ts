@@ -1,8 +1,9 @@
 import { atom, createStore } from "jotai";
+import type { gameState } from "./types";
 
-export const towerMenuAtom = atom({
-    visible: false,
-    buttons: []
+export const gameStateAtom = atom<gameState>({
+    towers: [],
+    selectedTower: null
 });
 
 export const mapAtom = atom({
