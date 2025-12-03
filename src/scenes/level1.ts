@@ -1,6 +1,6 @@
 import type { KAPLAYCtx } from "kaplay";
 import makeEnemy from "../entities/enemy";
-import makeTower from "../entities/Tower";
+import makeTower, { toggleTowerSelection } from "../entities/Tower";
 import type { mapData } from "../types";
 import { mapAtom, store, gameStateAtom } from "../store";
 import getMapScreenBounds from "../utils/getMapScreenBounds";
@@ -69,6 +69,8 @@ export default function level1(k: KAPLAYCtx) {
                 onClick: () => makeTower(k, k.mousePos())
             }]
         }));
+
+        toggleTowerSelection(k);
 
         const waypoints = mapData.layers.find(
             layer => layer.name === "Waypoints"

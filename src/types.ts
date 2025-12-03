@@ -1,4 +1,5 @@
 import { type MouseEventHandler } from "react";
+import { TILE_SIZE } from "./constants";
 
 type layerObj = {
     x: number;
@@ -14,8 +15,8 @@ type layer = {
 };
 
 export type mapData = {
-    tilewidth: number;
-    tileheight: number;
+    tilewidth: typeof TILE_SIZE;
+    tileheight: typeof TILE_SIZE;
     width: number;
     height: number;
     layers: layer[];

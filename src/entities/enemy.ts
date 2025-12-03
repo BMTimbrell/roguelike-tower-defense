@@ -6,10 +6,14 @@ export default function makeEnemy(k: KAPLAYCtx, waypoints: Vec2[]): GameObj {
         k.pos(waypoints[0]),
         k.rect(16, 16),
         k.anchor("bot"),
+        k.area({
+            shape: new k.Rect(k.vec2(0), 16, 16)
+        }),
         {
             waypoints,
             speed: 150
-        }
+        },
+        "enemy"
     ]);
 
     enemy.onUpdate(() => {
