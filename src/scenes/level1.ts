@@ -66,7 +66,11 @@ export default function level1(k: KAPLAYCtx) {
             ...prev,
             towers: [...prev.towers, {
                 name: "Basic Tower",
-                onClick: () => makeTower(k, k.mousePos())
+                onClick: () => {
+                    const unplacedTower = k.get("tower").find(tower => !tower.placed);
+                    if (unplacedTower) k.destroy(unplacedTower);
+                    else makeTower(k, k.mousePos());
+                }
             }]
         }));
 

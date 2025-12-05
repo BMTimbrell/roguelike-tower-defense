@@ -9,12 +9,17 @@ export default function makeEnemy(k: KAPLAYCtx, waypoints: Vec2[]): GameObj {
         k.area({
             shape: new k.Rect(k.vec2(0), 16, 16)
         }),
+        k.health(3),
         {
             waypoints,
             speed: 150
         },
         "enemy"
     ]);
+
+    enemy.onDeath(() => {
+        k.destroy(enemy);
+    });
 
     enemy.onUpdate(() => {
         const dir = enemy.waypoints[1].sub(enemy.pos).unit();

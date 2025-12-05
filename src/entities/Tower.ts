@@ -1,8 +1,19 @@
 import type { KAPLAYCtx, Vec2, GameObj } from 'kaplay';
 import { TILE_SIZE, TOWER_RANGE_TOLERANCE } from '../constants';
+import makeProjectile from './projectile';
 
 export default function makeTower(k: KAPLAYCtx, pos: Vec2): GameObj {
     k.get("tower").forEach(tower => tower.selected = false);
+    type towerComponent = {
+        placed: boolean;
+        placeable: boolean;
+        range: number;
+        selected: boolean;
+        hovered: boolean;
+        shoot?: (target: GameObj) => void;
+        fireInterval: number;
+        shootTimer: number;
+    };
 
     const tower = k.add([
         k.rect(32, 32),
@@ -17,10 +28,18 @@ export default function makeTower(k: KAPLAYCtx, pos: Vec2): GameObj {
             placeable: false,
             range: 3,
             selected: true,
-            hovered: false
-        },
+            hovered: false,
+            fireInterval: 0.5,
+            shootTimer: 0
+        } as towerComponent,
         "tower"
     ]);
+
+    function shoot(target: GameObj) {
+        makeProjectile(k, tower.pos.add(tower.width / 2, tower.height / 2), target);
+    }
+
+    tower.shoot = shoot;
 
     const rangeCircle = k.add([
         k.pos(tower.pos.add(TILE_SIZE / 2, TILE_SIZE / 2)),
@@ -42,11 +61,11 @@ export default function makeTower(k: KAPLAYCtx, pos: Vec2): GameObj {
     });
 
     tower.onCollide("cursor", () => {
-        tower.hovered = true
+        tower.hovered = true;
     });
 
     tower.onCollideEnd("cursor", () => {
-        tower.hovered = false
+        tower.hovered = false;
     });
 
     tower.onDestroy(() => {
@@ -71,9 +90,13 @@ export default function makeTower(k: KAPLAYCtx, pos: Vec2): GameObj {
 
     tower.onUpdate(() => {
         if (tower.placed) {
+            tower.shootTimer -=k.dt();
             k.get("enemy").forEach(enemy => {
                 if (enemy.pos.sub(0, enemy.height / 2).dist(rangeCircle.pos) <= tower.range * TILE_SIZE + TOWER_RANGE_TOLERANCE) {
-                    k.debug.log("fire");
+                    if (tower.shootTimer <= 0) {
+                        tower.shootTimer = tower.fireInterval;
+                        tower.shoot?.(enemy);
+                    }
                 }
             });
         }
@@ -83,11 +106,11 @@ export default function makeTower(k: KAPLAYCtx, pos: Vec2): GameObj {
 }
 
 export function toggleTowerSelection(k: KAPLAYCtx) {
-    
+
     k.onMousePress("left", () => {
         const hoveredTower = k.get("tower").find(tower => tower.hovered);
-        
-        if (hoveredTower?.selected) {
+
+        if (hoveredTower?.selected && hoveredTower.placed) {
             hoveredTower.selected = false;
         } else {
             k.get("tower").forEach(tower => tower.selected = false);
