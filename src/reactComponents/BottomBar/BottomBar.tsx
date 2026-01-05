@@ -21,9 +21,10 @@ export function BottomBar() {
             {towers.map((tower, index) => (
                 <Tower 
                     key={index} 
-                    name={tower?.name}
+                    name={tower.name}
                     scale={map.scale}
-                    onClick={tower?.onClick}
+                    onClick={tower.onClick}
+                    cost={tower.cost}
                 />
             ))}
         </div>

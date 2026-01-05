@@ -1,8 +1,8 @@
-import type { mapData } from "../types";
+import type { MapData } from "../types";
 import type { KAPLAYCtx } from "kaplay";
 import { VIRTUAL_HEIGHT, VIRTUAL_WIDTH } from "../constants";
 
-export default function getMapScreenBounds(k: KAPLAYCtx, mapData: mapData) {
+export default function getMapScreenBounds(k: KAPLAYCtx, mapData: MapData) {
     const canvas = k.canvas;
     const canvasWidth = canvas.width;
     const canvasHeight = canvas.height;

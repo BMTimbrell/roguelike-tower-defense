@@ -1,19 +1,29 @@
-import type { KAPLAYCtx, Vec2, GameObj } from 'kaplay';
+import type { KAPLAYCtx, GameObj } from 'kaplay';
 import { TILE_SIZE, TOWER_RANGE_TOLERANCE } from '../constants';
 import makeProjectile from './projectile';
+import type { SelectedTower, Tower } from '../types';
+import { store, gameStateAtom } from '../store';
+import { calcUpgradeCost } from '../utils/calcUpgradeCost';
 
-export default function makeTower(k: KAPLAYCtx, pos: Vec2): GameObj {
+export default function makeTower(
+    k: KAPLAYCtx,
+    {
+        pos,
+        name,
+        placed,
+        placeable,
+        range,
+        selected,
+        hovered,
+        fireInterval,
+        shootTimer,
+        cost,
+        unlockedUpgradeSlots = 1,
+        upgrades = [],
+        upgradeCost = calcUpgradeCost(cost, unlockedUpgradeSlots)
+    }: Tower
+): GameObj {
     k.get("tower").forEach(tower => tower.selected = false);
-    type towerComponent = {
-        placed: boolean;
-        placeable: boolean;
-        range: number;
-        selected: boolean;
-        hovered: boolean;
-        shoot?: (target: GameObj) => void;
-        fireInterval: number;
-        shootTimer: number;
-    };
 
     const tower = k.add([
         k.rect(32, 32),
@@ -24,15 +34,21 @@ export default function makeTower(k: KAPLAYCtx, pos: Vec2): GameObj {
         }),
         k.opacity(0.5),
         {
-            placed: false,
-            placeable: false,
-            range: 3,
-            selected: true,
-            hovered: false,
-            fireInterval: 0.5,
-            shootTimer: 0
-        } as towerComponent,
-        "tower"
+            name,
+            placed,
+            placeable,
+            range,
+            selected,
+            hovered,
+            fireInterval,
+            shootTimer,
+            cost,
+            unlockedUpgradeSlots,
+            upgrades,
+            upgradeCost
+        } as Tower,
+        "tower",
+        name
     ]);
 
     function shoot(target: GameObj) {
@@ -84,13 +100,61 @@ export default function makeTower(k: KAPLAYCtx, pos: Vec2): GameObj {
             tower.placed = true;
             tower.selected = false;
             tower.opacity = 1;
+            store.set(gameStateAtom, prev => ({
+                ...prev,
+                gold: prev.gold - tower.cost,
+                selectedTower: null
+            }));
+
+            const tile = k.get("tile").find(tile => tile.pos.eq(tower.pos));
+            if (tile) tile.blocked = true;
+
             snapEvent.cancel();
+        } else if (tower.placed && tower.selected) {
+            store.set(gameStateAtom, prev => ({
+                ...prev,
+                selectedTower: {
+                    pos: tower.screenPos(),
+                    name: tower.name,
+                    range: tower.range,
+                    fireInterval: tower.fireInterval,
+                    cost: tower.cost,
+                    unlockedUpgradeSlots: tower.unlockedUpgradeSlots,
+                    upgrades: tower.upgrades,
+                    upgradeCost: tower.upgradeCost,
+                    addUpgradeSlot: () => {
+                        if (store.get(gameStateAtom).gold >= tower.upgradeCost) {
+                            tower.unlockedUpgradeSlots++;
+
+                            store.set(gameStateAtom, prev => ({
+                                ...prev,
+                                gold: prev.gold - tower.upgradeCost
+                            }));
+
+                            tower.upgradeCost = calcUpgradeCost(tower.cost, tower.unlockedUpgradeSlots);
+                            store.set(gameStateAtom, prev => ({
+                                ...prev,
+                                selectedTower: {
+                                    ...prev.selectedTower,
+                                    unlockedUpgradeSlots: tower.unlockedUpgradeSlots,
+                                    upgradeCost: tower.upgradeCost
+                                } as SelectedTower
+                            }));
+                        }
+                    }
+                } as SelectedTower
+            }));
+        } else if (!k.get("tower").some(t => t.selected && t.placed)) {
+            store.set(gameStateAtom, prev => ({
+                ...prev,
+                selectedTower: null
+            }));
         }
     });
 
     tower.onUpdate(() => {
         if (tower.placed) {
-            tower.shootTimer -=k.dt();
+            tower.shootTimer -= k.dt();
             k.get("enemy").forEach(enemy => {
                 if (enemy.pos.sub(0, enemy.height / 2).dist(rangeCircle.pos) <= tower.range * TILE_SIZE + TOWER_RANGE_TOLERANCE) {
                     if (tower.shootTimer <= 0) {
@@ -105,16 +169,17 @@ export default function makeTower(k: KAPLAYCtx, pos: Vec2): GameObj {
     return tower;
 }
 
-export function toggleTowerSelection(k: KAPLAYCtx) {
+export function addSelectTowerListener(k: KAPLAYCtx) {
 
     k.onMousePress("left", () => {
         const hoveredTower = k.get("tower").find(tower => tower.hovered);
 
-        if (hoveredTower?.selected && hoveredTower.placed) {
-            hoveredTower.selected = false;
-        } else {
-            k.get("tower").forEach(tower => tower.selected = false);
-            if (hoveredTower) hoveredTower.selected = true;
+        if (hoveredTower && !k.get("tower").some(t => t !== hoveredTower && t.pos.eq(hoveredTower.pos)) && hoveredTower.placed) {
+            hoveredTower.selected = !hoveredTower.selected;
         }
+
+        k.get("tower").forEach(tower => {
+            if (tower.selected && tower.placed && tower !== hoveredTower) tower.selected = false;
+        });
     });
 }

@@ -1,0 +1,25 @@
+.slot {
+    background-color: rgb(85, 85, 85);
+    border: 1px solid white;
+    width: 1em;
+    height: 1em;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+}
+
+.locked {
+    background-color: rgb(85, 85, 85, 0.5);
+}
+
+.cost {
+    font-size: 0.5em;
+}
+
+/* .slot:has(+ .slot)::after {
+    content: '-';
+    position: absolute;
+    right: -0.3125em;
+    bottom: 0;
+} */

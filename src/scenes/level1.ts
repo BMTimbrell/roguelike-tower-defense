@@ -1,14 +1,15 @@
 import type { KAPLAYCtx } from "kaplay";
 import makeEnemy from "../entities/enemy";
-import makeTower, { toggleTowerSelection } from "../entities/Tower";
-import type { mapData } from "../types";
+import makeTower, { addSelectTowerListener } from "../entities/tower";
+import type { MapData } from "../types";
 import { mapAtom, store, gameStateAtom } from "../store";
 import getMapScreenBounds from "../utils/getMapScreenBounds";
 import { VIRTUAL_WIDTH, VIRTUAL_HEIGHT } from "../constants";
+import type { Tower } from "../types";
 
 export default function level1(k: KAPLAYCtx) {
     k.scene("level1", async () => {
-        const mapData: mapData = await (await fetch("data/level1.json")).json();
+        const mapData: MapData = await (await fetch("data/level1.json")).json();
 
         const mapPosX = (VIRTUAL_WIDTH - mapData.width * mapData.tilewidth) / 2;
         const mapPosY = (VIRTUAL_HEIGHT - mapData.height * mapData.tileheight) / 2;
@@ -66,15 +67,34 @@ export default function level1(k: KAPLAYCtx) {
             ...prev,
             towers: [...prev.towers, {
                 name: "Basic Tower",
+                cost: 50,
                 onClick: () => {
                     const unplacedTower = k.get("tower").find(tower => !tower.placed);
                     if (unplacedTower) k.destroy(unplacedTower);
-                    else makeTower(k, k.mousePos());
+                    else makeTower(
+                        k,
+                        {
+                            name: "Basic Tower",
+                            pos: k.mousePos(),
+                            placed: false,
+                            placeable: false,
+                            range: 3,
+                            selected: true,
+                            hovered: false,
+                            fireInterval: 0.5,
+                            shootTimer: 0,
+                            cost: 50
+                        } as Tower);
+
+                    store.set(gameStateAtom, prev => ({
+                        ...prev,
+                        selectedTower: null
+                    }));
                 }
             }]
         }));
 
-        toggleTowerSelection(k);
+        addSelectTowerListener(k);
 
         const waypoints = mapData.layers.find(
             layer => layer.name === "Waypoints"

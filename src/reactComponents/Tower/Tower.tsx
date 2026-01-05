@@ -1,26 +1,34 @@
 import styles from './Tower.module.css';
 import { type MouseEventHandler } from 'react';
+import { gameStateAtom } from '../../store';
+import { useAtom } from 'jotai';
 
 export default function Tower(
     {
         name,
         scale,
-        onClick
+        onClick,
+        cost
     }: {
-         name: string | undefined,
+         name: string,
          scale: number,
-         onClick: MouseEventHandler<HTMLDivElement> | undefined
+         onClick: MouseEventHandler<HTMLButtonElement>
+         cost: number
     }
 ) {
+    const [gameState] = useAtom(gameStateAtom);
+    const cantAfford = gameState.gold < cost;
+
     return (
-        <div 
+        <button 
             style={{
                 fontSize: `calc(16px * ${scale})`
             }}
             className={styles.tower}
             onClick={onClick}
+            disabled={cantAfford}
         >
             {name}
-        </div>
+        </button>
     );
 }
