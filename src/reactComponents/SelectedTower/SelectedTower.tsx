@@ -9,18 +9,18 @@ import CostText from "../CostText/CostText";
 
 export default function SelectedTower({ tower }: { tower: SelectedTower }) {
     const {
-        name, 
-        range, 
-        fireInterval, 
-        cost, 
-        pos, 
-        upgrades, 
+        name,
+        range,
+        fireInterval,
+        cost,
+        pos,
+        upgrades,
         unlockedUpgradeSlots,
         upgradeCost,
         addUpgradeSlot
     } = tower;
     const [map] = useAtom(mapAtom);
-    const [gameState] = useAtom(gameStateAtom);
+    const [gameState, setGameState] = useAtom(gameStateAtom);
     const selectedUpgrade = gameState.selectedUpgrade;
     const scale = map.scale;
     const onClick = addUpgradeSlot;
@@ -61,25 +61,38 @@ export default function SelectedTower({ tower }: { tower: SelectedTower }) {
         return [];
     }
 
+    function addUpgrades() {
+        upgradeSlots.forEach(slot => {
+            if (slot.highlighted && selectedUpgrade) {
+                upgrades.push(selectedUpgrade);
+            }
+        });
+
+        setGameState(prev => ({
+            ...prev,
+            selectedUpgrade: null
+        }));
+    }
+
     useEffect(() => {
         setUpgradeSlots(prev => prev.map((slot, index) => ({
             ...slot,
+            upgrade: upgrades[index] || null,
             unlocked: isUnlocked(index),
             purchasable: isPurchasable(index)
         })));
 
         const hSlots = highlightUpgradeSlots();
-        if (hSlots) {
-            setUpgradeSlots(prev => prev.map((slot, index) => ({
-                ...slot,
-                highlighted: hSlots.includes(index)
-            })));
-        }
+        setUpgradeSlots(prev => prev.map((slot, index) => ({
+            ...slot,
+            highlighted: hSlots.includes(index)
+        })));
 
-    }, [unlockedUpgradeSlots, selectedUpgrade, upgradeSlots]);
+
+    }, [unlockedUpgradeSlots, selectedUpgrade, upgradeSlots, upgrades]);
 
     return (
-        <div 
+        <div
             className={styles.container}
             style={{
                 '--x': `calc(${map.x}px + ${pos.x} * ${scale}px)`,
@@ -94,12 +107,12 @@ export default function SelectedTower({ tower }: { tower: SelectedTower }) {
             </div>
             <div className={styles.upgrades}>
                 {upgradeSlots.map((slot, index) => (
-                    <UpgradeSlot 
-                        upgrade={slot.upgrade} 
+                    <UpgradeSlot
+                        upgrade={slot.upgrade}
                         unlocked={slot.unlocked}
-                        {...(slot.purchasable ? { onClick } : {})}
+                        {...(slot.purchasable ? { onClick } : slot.highlighted ? { onClick: addUpgrades } : {})}
                         highlighted={slot.highlighted}
-                        key={index} 
+                        key={index}
                     >
                         {slot.purchasable && <CostText cost={upgradeCost} />}
                     </UpgradeSlot>
