@@ -32,6 +32,14 @@ export type Upgrade = {
     stat: string;
     amount: number;
     cost: number;
+    percentage: boolean;
+};
+
+export type USlot = {
+    unlocked: boolean;
+    upgrade: Upgrade | null;
+    highlighted: boolean;
+    purchasable: boolean;
 };
 
 export type TowerButton = TowerBase & {
@@ -62,4 +70,6 @@ export type GameState = {
     selectedTower: SelectedTower | null;
     gold: number;
     maxTowerUpgrades: number;
+    upgrades: Upgrade[];
+    selectedUpgrade: Upgrade | null;
 };

@@ -6,11 +6,12 @@ type UpgradeSlotProps = {
     unlocked: boolean;
     onClick?: () => void;
     children?: React.ReactNode;
+    highlighted: boolean;
 };
 
-export default function UpgradeSlot({ upgrade, unlocked, onClick, children }: UpgradeSlotProps) {
+export default function UpgradeSlot({ upgrade, unlocked, onClick, children, highlighted }: UpgradeSlotProps) {
     return (
-        <div onClick={onClick} className={`${styles.slot} ${!unlocked && styles.locked}`}>
+        <div onClick={onClick} className={`${styles.slot} ${!unlocked && styles.locked} ${highlighted && styles.highlighted}`}>
             <div className={styles.cost}>
                 {children}
             </div>

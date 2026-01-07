@@ -14,15 +14,7 @@ export default function ReactUI() {
             <BottomBar />
             {selectedTower && 
                 <SelectedTower
-                    name={selectedTower.name}
-                    range={selectedTower.range}
-                    fireInterval={selectedTower.fireInterval}
-                    cost={selectedTower.cost}
-                    pos={selectedTower.pos}
-                    upgrades={selectedTower.upgrades}
-                    unlockedUpgradeSlots={selectedTower.unlockedUpgradeSlots}
-                    addUpgradeSlot={selectedTower.addUpgradeSlot}
-                    upgradeCost={selectedTower.upgradeCost}
+                    tower={selectedTower}
                 />
             }
         </>

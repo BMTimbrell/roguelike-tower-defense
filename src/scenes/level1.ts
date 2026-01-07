@@ -5,7 +5,8 @@ import type { MapData } from "../types";
 import { mapAtom, store, gameStateAtom } from "../store";
 import getMapScreenBounds from "../utils/getMapScreenBounds";
 import { VIRTUAL_WIDTH, VIRTUAL_HEIGHT } from "../constants";
-import type { Tower } from "../types";
+import type { Tower, Upgrade } from "../types";
+import { UPGRADES } from "../constants";
 
 export default function level1(k: KAPLAYCtx) {
     k.scene("level1", async () => {
@@ -63,6 +64,16 @@ export default function level1(k: KAPLAYCtx) {
             cursor.pos = k.mousePos();
         });
 
+        let upgradeIndex = k.randi(0, UPGRADES.length - 1);
+        const upgrades: Upgrade[] = [];
+
+        while (upgrades.length < 3) {
+            upgradeIndex = k.randi(0, UPGRADES.length - 1);
+            if (!upgrades.includes(UPGRADES[upgradeIndex])) {
+                upgrades.push(UPGRADES[upgradeIndex]);
+            }
+        }
+
         store.set(gameStateAtom, prev => ({
             ...prev,
             towers: [...prev.towers, {
@@ -91,7 +102,8 @@ export default function level1(k: KAPLAYCtx) {
                         selectedTower: null
                     }));
                 }
-            }]
+            }],
+            upgrades
         }));
 
         addSelectTowerListener(k);

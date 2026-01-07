@@ -4,8 +4,10 @@ import type { GameState } from "./types";
 export const gameStateAtom = atom<GameState>({
     towers: [],
     selectedTower: null,
-    gold: 100,
-    maxTowerUpgrades: 5
+    gold: 500,
+    maxTowerUpgrades: 5,
+    upgrades: [],
+    selectedUpgrade: null
 });
 
 export const mapAtom = atom({

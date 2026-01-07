@@ -17,6 +17,10 @@
     font-size: 0.5em;
 }
 
+.highlighted {
+    background-color: yellow;
+}
+
 /* .slot:has(+ .slot)::after {
     content: '-';
     position: absolute;

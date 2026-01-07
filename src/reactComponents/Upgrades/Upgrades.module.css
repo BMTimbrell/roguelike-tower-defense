@@ -1,0 +1,19 @@
+.container {
+    display: flex;
+    gap: 0.5em;
+}
+
+.upgrade {
+    display: flex;
+    flex-direction: column;
+    row-gap: 0.25em;
+    border: 1px solid white;
+    padding: 0.5em;
+    color: white;
+    background-color: rgb(85, 85, 85);
+    cursor: pointer;
+}
+
+.selected {
+    border-color: yellow;
+}
