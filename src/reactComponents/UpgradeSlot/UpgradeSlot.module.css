@@ -18,9 +18,26 @@
 }
 
 .highlighted {
+    cursor: pointer;
     background-color: yellow;
 }
 
+.slot:has(.multi-slot2)::after, 
+.slot:has(.multi-slot3)::after,
+.slot:has(.multi-slot3) + .slot::after {
+    content: '-';
+    position: absolute;
+    right: -0.3125em;
+    bottom: 0;
+}
+
+.upgrade {
+
+}
+
+.name {
+    font-size: 0.125em;
+}
 /* .slot:has(+ .slot)::after {
     content: '-';
     position: absolute;

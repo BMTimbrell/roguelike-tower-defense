@@ -17,7 +17,8 @@ export default function SelectedTower({ tower }: { tower: SelectedTower }) {
         upgrades,
         unlockedUpgradeSlots,
         upgradeCost,
-        addUpgradeSlot
+        addUpgradeSlot,
+        setUpgrades
     } = tower;
     const [map] = useAtom(mapAtom);
     const [gameState, setGameState] = useAtom(gameStateAtom);
@@ -34,19 +35,19 @@ export default function SelectedTower({ tower }: { tower: SelectedTower }) {
         purchasable: isPurchasable(index)
     })));
 
-    function highlightUpgradeSlots(): number[] {
+    function highlightUpgradeSlots(slots: USlot[]): number[] {
         if (selectedUpgrade) {
             const upgradeCost = selectedUpgrade.cost;
             const slotAvailable = (s: USlot) => s.unlocked && !s.upgrade;
-            const availableSlots = upgradeSlots.filter(slotAvailable).length;
+            const availableSlots = slots.filter(slotAvailable).length;
             const result: number[] = [];
 
             if (availableSlots < upgradeCost) return [];
 
             let index = 0;
             let upgradeCount = 0;
-            while (index < upgradeSlots.length && upgradeCount < upgradeCost) {
-                const slot = upgradeSlots[index];
+            while (index < slots.length && upgradeCount < upgradeCost) {
+                const slot = slots[index];
                 if (slotAvailable(slot)) {
                     result.push(index);
                     upgradeCount++;
@@ -62,34 +63,55 @@ export default function SelectedTower({ tower }: { tower: SelectedTower }) {
     }
 
     function addUpgrades() {
-        upgradeSlots.forEach(slot => {
-            if (slot.highlighted && selectedUpgrade) {
-                upgrades.push(selectedUpgrade);
-            }
-        });
+        if (!selectedUpgrade) return;
+
+        const highlightedIndexes = upgradeSlots
+            .map((s, i) => (s.highlighted ? i : -1))
+            .filter(i => i !== -1);
+
+        if (highlightedIndexes.length === 0) return;
+
+        const firstIndex = highlightedIndexes[0];
+
+        const newUpgrades = [
+            ...upgrades,
+            ...highlightedIndexes.map((index) => ({
+                ...selectedUpgrade,
+                active: index === firstIndex,
+            })),
+        ];
+
+        // setting upgrades for tower kaplay entity
+        setUpgrades(newUpgrades);
 
         setGameState(prev => ({
             ...prev,
-            selectedUpgrade: null
+            selectedUpgrade: null,
+            selectedTower: {
+                ...tower,
+                upgrades: newUpgrades
+            }
         }));
+
     }
 
     useEffect(() => {
-        setUpgradeSlots(prev => prev.map((slot, index) => ({
-            ...slot,
-            upgrade: upgrades[index] || null,
-            unlocked: isUnlocked(index),
-            purchasable: isPurchasable(index)
-        })));
+        setUpgradeSlots(prev => {
+            const updated = prev.map((slot, index) => ({
+                ...slot,
+                upgrade: upgrades[index] || null,
+                unlocked: isUnlocked(index),
+                purchasable: isPurchasable(index),
+            }));
 
-        const hSlots = highlightUpgradeSlots();
-        setUpgradeSlots(prev => prev.map((slot, index) => ({
-            ...slot,
-            highlighted: hSlots.includes(index)
-        })));
+            const hSlots = highlightUpgradeSlots(updated);
 
-
-    }, [unlockedUpgradeSlots, selectedUpgrade, upgradeSlots, upgrades]);
+            return updated.map((slot, index) => ({
+                ...slot,
+                highlighted: hSlots.includes(index),
+            }));
+        });
+    }, [selectedUpgrade, unlockedUpgradeSlots]);
 
     return (
         <div
@@ -111,6 +133,7 @@ export default function SelectedTower({ tower }: { tower: SelectedTower }) {
                         upgrade={slot.upgrade}
                         unlocked={slot.unlocked}
                         {...(slot.purchasable ? { onClick } : slot.highlighted ? { onClick: addUpgrades } : {})}
+                        active={upgrades[index]?.active || false}
                         highlighted={slot.highlighted}
                         key={index}
                     >

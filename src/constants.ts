@@ -28,6 +28,17 @@ export const UPGRADES = [{
     percentage: false
 },
 {
+    stat: "damage",
+    amount: 80,
+    cost: 3,
+    percentage: true
+},
+{    stat: "damage",
+    amount: 8,
+    cost: 3,
+    percentage: false
+},
+{
     stat: "range",
     amount: 1,
     cost: 1,
@@ -40,6 +51,12 @@ export const UPGRADES = [{
     percentage: false
 }, 
 {
+    stat: "range",
+    amount: 5,
+    cost: 3,
+    percentage: false
+}, 
+{
     stat: "fire rate",
     amount: 20,
     cost: 1,
@@ -52,6 +69,12 @@ export const UPGRADES = [{
     percentage: true
 },
 {
+    stat: "fire rate",
+    amount: 80,
+    cost: 3,
+    percentage: true
+},
+{
     stat: "crit chance",
     amount: 20,
     cost: 1,
@@ -61,6 +84,12 @@ export const UPGRADES = [{
     stat: "crit chance",
     amount: 50,
     cost: 2,
+    percentage: true
+},
+{
+    stat: "crit chance",
+    amount: 80,
+    cost: 3,
     percentage: true
 },
 {
@@ -73,5 +102,11 @@ export const UPGRADES = [{
     stat: "crit damage",
     amount: 120,
     cost: 2,
+    percentage: true
+},
+{
+    stat: "crit damage",
+    amount: 180,
+    cost: 3,
     percentage: true
 }];

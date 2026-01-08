@@ -1,7 +1,7 @@
 import type { KAPLAYCtx, GameObj } from 'kaplay';
 import { TILE_SIZE, TOWER_RANGE_TOLERANCE } from '../constants';
 import makeProjectile from './projectile';
-import type { SelectedTower, Tower } from '../types';
+import type { SelectedTower, Tower, Upgrade } from '../types';
 import { store, gameStateAtom } from '../store';
 import { calcUpgradeCost } from '../utils/calcUpgradeCost';
 
@@ -141,6 +141,9 @@ export default function makeTower(
                                 } as SelectedTower
                             }));
                         }
+                    },
+                    setUpgrades: (upgrades: Upgrade[]) => {
+                        tower.upgrades = upgrades;
                     }
                 } as SelectedTower
             }));

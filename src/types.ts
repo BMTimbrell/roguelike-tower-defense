@@ -33,6 +33,7 @@ export type Upgrade = {
     amount: number;
     cost: number;
     percentage: boolean;
+    active?: boolean;
 };
 
 export type USlot = {
@@ -54,6 +55,7 @@ export type SelectedTower = TowerBase & {
     unlockedUpgradeSlots: number;
     upgradeCost: number;
     addUpgradeSlot: () => void;
+    setUpgrades: (upgrades: Upgrade[]) => void;
 };
 
 export type Tower = TowerBase & SelectedTower & {
