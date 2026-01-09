@@ -12,10 +12,9 @@ export default function makeTower(
         name,
         placed,
         placeable,
-        range,
+        stats,
         selected,
         hovered,
-        fireInterval,
         shootTimer,
         cost,
         unlockedUpgradeSlots = 1,
@@ -34,13 +33,13 @@ export default function makeTower(
         }),
         k.opacity(0.5),
         {
+            towerId: `tower-${store.get(gameStateAtom).nextTowerId}`,
             name,
             placed,
             placeable,
-            range,
             selected,
             hovered,
-            fireInterval,
+            stats,
             shootTimer,
             cost,
             unlockedUpgradeSlots,
@@ -52,20 +51,29 @@ export default function makeTower(
     ]);
 
     function shoot(target: GameObj) {
-        makeProjectile(k, tower.pos.add(tower.width / 2, tower.height / 2), target);
+        const roll = Math.random();
+        const critChance = Math.min(tower.stats.critChance / 100, 1); 
+
+        const willCrit = roll < critChance;
+
+        const damage = willCrit
+            ? tower.stats.damage * tower.stats.critDamage
+            : tower.stats.damage;
+        makeProjectile(k, { pos: tower.pos.add(tower.width / 2, tower.height / 2), target, damage: damage });
     }
 
     tower.shoot = shoot;
 
     const rangeCircle = k.add([
         k.pos(tower.pos.add(TILE_SIZE / 2, TILE_SIZE / 2)),
-        k.circle(tower.range * TILE_SIZE),
+        k.circle(tower.stats.range * TILE_SIZE),
         k.color(255, 255, 255),
         k.opacity(0.2)
     ]);
 
     rangeCircle.onUpdate(() => {
         rangeCircle.hidden = !tower.selected;
+        rangeCircle.use(k.circle(tower.stats.range * TILE_SIZE));
     });
 
     const snapEvent = k.onCollide("tile", "cursor", tile => {
@@ -111,13 +119,14 @@ export default function makeTower(
 
             snapEvent.cancel();
         } else if (tower.placed && tower.selected) {
+            console.log(tower.id);
             store.set(gameStateAtom, prev => ({
                 ...prev,
                 selectedTower: {
+                    towerId: tower.towerId,
                     pos: tower.screenPos(),
                     name: tower.name,
-                    range: tower.range,
-                    fireInterval: tower.fireInterval,
+                    stats: tower.stats,
                     cost: tower.cost,
                     unlockedUpgradeSlots: tower.unlockedUpgradeSlots,
                     upgrades: tower.upgrades,
@@ -144,6 +153,20 @@ export default function makeTower(
                     },
                     setUpgrades: (upgrades: Upgrade[]) => {
                         tower.upgrades = upgrades;
+                        tower.upgrades.forEach(upgrade => {
+                            if (upgrade.active && !upgrade.used) {
+                                if (upgrade.stat === "fireInterval") {
+                                    tower.stats.fireInterval /= 1 + upgrade.amount / 100;
+                                    tower.stats.fireInterval = Math.max(0.05, tower.stats.fireInterval);
+                                } else if (upgrade.stat === "critChance" || !upgrade.percentage) {
+                                    tower.stats[upgrade.stat] += upgrade.amount;
+                                } else {
+                                    tower.stats[upgrade.stat] += tower.stats[upgrade.stat] * (upgrade.amount / 100);
+                                }
+                                upgrade.used = true;
+                            }
+                        });
+                        return tower.stats;
                     }
                 } as SelectedTower
             }));
@@ -159,9 +182,9 @@ export default function makeTower(
         if (tower.placed) {
             tower.shootTimer -= k.dt();
             k.get("enemy").forEach(enemy => {
-                if (enemy.pos.sub(0, enemy.height / 2).dist(rangeCircle.pos) <= tower.range * TILE_SIZE + TOWER_RANGE_TOLERANCE) {
+                if (enemy.pos.sub(0, enemy.height / 2).dist(rangeCircle.pos) <= tower.stats.range * TILE_SIZE + TOWER_RANGE_TOLERANCE) {
                     if (tower.shootTimer <= 0) {
-                        tower.shootTimer = tower.fireInterval;
+                        tower.shootTimer = tower.stats.fireInterval;
                         tower.shoot?.(enemy);
                     }
                 }

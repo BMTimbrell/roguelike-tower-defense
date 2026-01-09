@@ -26,14 +26,23 @@ export type MapData = {
 type TowerBase = {
     name: string;
     cost: number;
+    stats: {
+        damage: number;
+        range: number;
+        fireInterval: number;
+        critChance: number;
+        critDamage: number;
+    }
 };
 
 export type Upgrade = {
-    stat: string;
+    stat: "damage" | "range" | "fireInterval" | "critChance" | "critDamage";
+    name: "Damage" | "Range" | "Fire rate" | "Crit chance" | "Crit damage";
     amount: number;
     cost: number;
     percentage: boolean;
     active?: boolean;
+    used?: boolean;
 };
 
 export type USlot = {
@@ -48,14 +57,19 @@ export type TowerButton = TowerBase & {
 };
 
 export type SelectedTower = TowerBase & {
-    range: number;
-    fireInterval: number;
+    towerId: string;
     pos: Vec2;
     upgrades: Upgrade[];
     unlockedUpgradeSlots: number;
     upgradeCost: number;
     addUpgradeSlot: () => void;
-    setUpgrades: (upgrades: Upgrade[]) => void;
+    setUpgrades: (upgrades: Upgrade[]) => {
+        damage: number;
+        range: number;
+        fireInterval: number;
+        critChance: number;
+        critDamage: number;
+    };
 };
 
 export type Tower = TowerBase & SelectedTower & {
@@ -69,6 +83,7 @@ export type Tower = TowerBase & SelectedTower & {
 
 export type GameState = {
     towers: TowerButton[];
+    nextTowerId: number;
     selectedTower: SelectedTower | null;
     gold: number;
     maxTowerUpgrades: number;

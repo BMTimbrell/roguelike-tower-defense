@@ -14,6 +14,7 @@ export default function ReactUI() {
             <BottomBar />
             {selectedTower && 
                 <SelectedTower
+                    key={selectedTower.towerId}
                     tower={selectedTower}
                 />
             }

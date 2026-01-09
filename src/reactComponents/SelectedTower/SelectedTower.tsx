@@ -1,5 +1,5 @@
 import styles from "./SelectedTower.module.css";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useLayoutEffect, useRef } from "react";
 import { mapAtom, gameStateAtom } from '../../store';
 import { useAtom } from 'jotai';
 import type { SelectedTower, USlot } from '../../types';
@@ -10,8 +10,7 @@ import CostText from "../CostText/CostText";
 export default function SelectedTower({ tower }: { tower: SelectedTower }) {
     const {
         name,
-        range,
-        fireInterval,
+        stats,
         cost,
         pos,
         upgrades,
@@ -27,13 +26,15 @@ export default function SelectedTower({ tower }: { tower: SelectedTower }) {
     const onClick = addUpgradeSlot;
     const isUnlocked = (index: number) => index < unlockedUpgradeSlots;
     const isPurchasable = (index: number) => index === unlockedUpgradeSlots;
-
+    const { damage, range, fireInterval, critChance, critDamage } = stats;
     const [upgradeSlots, setUpgradeSlots] = useState<USlot[]>(Array.from({ length: MAX_TOWER_UPGRADES }).map((_, index) => ({
         unlocked: isUnlocked(index),
         upgrade: upgrades[index] || null,
         highlighted: false,
         purchasable: isPurchasable(index)
     })));
+    const popupRef = useRef<HTMLDivElement | null>(null);
+    const [yOffset, setYOffset] = useState(0);
 
     function highlightUpgradeSlots(slots: USlot[]): number[] {
         if (selectedUpgrade) {
@@ -113,19 +114,40 @@ export default function SelectedTower({ tower }: { tower: SelectedTower }) {
         });
     }, [selectedUpgrade, unlockedUpgradeSlots]);
 
+    useLayoutEffect(() => {
+        const el = popupRef.current;
+        if (!el) return;
+
+        const rect = el.getBoundingClientRect();
+        const padding = 8;
+
+        const overflowBottom = rect.bottom - window.innerHeight + padding;
+
+        if (overflowBottom > 0) {
+            setYOffset(-overflowBottom);
+        } else {
+            setYOffset(0);
+        }
+
+    }, [pos.x, pos.y, scale]);
+
     return (
         <div
+            ref={popupRef}
             className={styles.container}
             style={{
                 '--x': `calc(${map.x}px + ${pos.x} * ${scale}px)`,
-                '--y': `calc(${map.y}px + ${pos.y} * ${scale}px)`,
+                '--y': `calc(${map.y}px + ${pos.y} * ${scale}px + ${yOffset}px)`,
                 fontSize: `calc(16px * ${scale})`
             } as React.CSSProperties}
         >
             <div className={styles.name}>{name}</div>
             <div className={styles.stats}>
-                <div>Fire rate: {fireInterval}</div>
+                <div>Damage: {damage}</div>
+                <div>Fire rate: {(1 / fireInterval).toFixed(1)}/sec</div>
                 <div>Range: {range}</div>
+                <div>Crit chance: {critChance}%</div>
+                <div>Crit damage: {critDamage}x</div>
             </div>
             <div className={styles.upgrades}>
                 {upgradeSlots.map((slot, index) => (

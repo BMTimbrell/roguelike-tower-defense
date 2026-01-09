@@ -79,6 +79,13 @@ export default function level1(k: KAPLAYCtx) {
             towers: [...prev.towers, {
                 name: "Basic Tower",
                 cost: 50,
+                stats: {
+                    damage: 5,
+                    range: 3,
+                    fireInterval: 0.75,
+                    critChance: 0,
+                    critDamage: 0
+                },
                 onClick: () => {
                     const unplacedTower = k.get("tower").find(tower => !tower.placed);
                     if (unplacedTower) k.destroy(unplacedTower);
@@ -89,16 +96,22 @@ export default function level1(k: KAPLAYCtx) {
                             pos: k.mousePos(),
                             placed: false,
                             placeable: false,
-                            range: 3,
+                            stats: {
+                                damage: 5,
+                                range: 3,
+                                fireInterval: 0.75,
+                                critChance: 5,
+                                critDamage: 2
+                            },
                             selected: true,
                             hovered: false,
-                            fireInterval: 0.5,
                             shootTimer: 0,
                             cost: 50
                         } as Tower);
 
                     store.set(gameStateAtom, prev => ({
                         ...prev,
+                        nextTowerId: prev.nextTowerId + 1,
                         selectedTower: null
                     }));
                 }

@@ -23,7 +23,7 @@ export default function Upgrades({ upgrades } : { upgrades: Upgrade[] }) {
                     className={`${styles.upgrade} ${gameState.selectedUpgrade === upgrade ? styles.selected : ''}`}
                     key={index}
                 >
-                    <div>{upgrade.stat.charAt(0).toUpperCase() + upgrade.stat.slice(1)}: +{upgrade.amount}{upgrade.percentage ? '%' : ''}</div>
+                    <div>{upgrade.name}: +{upgrade.amount}{upgrade.percentage ? '%' : ''}{upgrade.stat === "critDamage" ? 'x' : ''}</div>
                     <div>Cost: {upgrade.cost}</div>
                 </div>
             ))}
