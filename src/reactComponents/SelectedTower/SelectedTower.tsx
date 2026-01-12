@@ -147,7 +147,7 @@ export default function SelectedTower({ tower }: { tower: SelectedTower }) {
                 <div>Fire rate: {(1 / fireInterval).toFixed(1)}/sec</div>
                 <div>Range: {range}</div>
                 <div>Crit chance: {critChance}%</div>
-                <div>Crit damage: {critDamage}x</div>
+                <div>Crit damage: {critDamage}%</div>
             </div>
             <div className={styles.upgrades}>
                 {upgradeSlots.map((slot, index) => (

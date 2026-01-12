@@ -83,8 +83,8 @@ export default function level1(k: KAPLAYCtx) {
                     damage: 5,
                     range: 3,
                     fireInterval: 0.75,
-                    critChance: 0,
-                    critDamage: 0
+                    critChance: 5,
+                    critDamage: 2
                 },
                 onClick: () => {
                     const unplacedTower = k.get("tower").find(tower => !tower.placed);
@@ -101,7 +101,7 @@ export default function level1(k: KAPLAYCtx) {
                                 range: 3,
                                 fireInterval: 0.75,
                                 critChance: 5,
-                                critDamage: 2
+                                critDamage: 100
                             },
                             selected: true,
                             hovered: false,

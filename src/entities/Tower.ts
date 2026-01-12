@@ -52,14 +52,14 @@ export default function makeTower(
 
     function shoot(target: GameObj) {
         const roll = Math.random();
-        const critChance = Math.min(tower.stats.critChance / 100, 1); 
+        const critChance = tower.stats.critChance / 100; 
 
         const willCrit = roll < critChance;
 
         const damage = willCrit
-            ? tower.stats.damage * tower.stats.critDamage
+            ? tower.stats.damage * (1 + tower.stats.critDamage / 100)
             : tower.stats.damage;
-        makeProjectile(k, { pos: tower.pos.add(tower.width / 2, tower.height / 2), target, damage: damage });
+        makeProjectile(k, { pos: tower.pos.add(tower.width / 2, tower.height / 2), target, damage: damage, crit: willCrit });
     }
 
     tower.shoot = shoot;
@@ -119,7 +119,6 @@ export default function makeTower(
 
             snapEvent.cancel();
         } else if (tower.placed && tower.selected) {
-            console.log(tower.id);
             store.set(gameStateAtom, prev => ({
                 ...prev,
                 selectedTower: {
@@ -158,10 +157,10 @@ export default function makeTower(
                                 if (upgrade.stat === "fireInterval") {
                                     tower.stats.fireInterval /= 1 + upgrade.amount / 100;
                                     tower.stats.fireInterval = Math.max(0.05, tower.stats.fireInterval);
-                                } else if (upgrade.stat === "critChance" || !upgrade.percentage) {
+                                } else if (upgrade.stat === "critChance" || upgrade.stat === "critDamage" || !upgrade.percentage) {
                                     tower.stats[upgrade.stat] += upgrade.amount;
                                 } else {
-                                    tower.stats[upgrade.stat] += tower.stats[upgrade.stat] * (upgrade.amount / 100);
+                                    tower.stats[upgrade.stat] += Math.max(1, Math.round(tower.stats[upgrade.stat] * (upgrade.amount / 100)));
                                 }
                                 upgrade.used = true;
                             }

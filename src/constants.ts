@@ -113,21 +113,21 @@ export const UPGRADES: Upgrade[] = [{
 {
     stat: "critDamage",
     name: "Crit damage",
-    amount: 0.5,
+    amount: 50,
     cost: 1,
-    percentage: false
+    percentage: true
 },
 {
     stat: "critDamage",
     name: "Crit damage",
-    amount: 1.2,
+    amount: 120,
     cost: 2,
-    percentage: false
+    percentage: true
 },
 {
     stat: "critDamage",
     name: "Crit damage",
-    amount: 1.8,
+    amount: 180,
     cost: 3,
-    percentage: false
+    percentage: true
 }];
