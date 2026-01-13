@@ -35,16 +35,6 @@
     line-height: 1;
 }
 
-.upgrade {
-
-}
-
 .name {
     font-size: 0.125em;
 }
-/* .slot:has(+ .slot)::after {
-    content: '-';
-    position: absolute;
-    right: -0.3125em;
-    bottom: 0;
-} */

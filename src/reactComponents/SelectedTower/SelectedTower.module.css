@@ -8,10 +8,10 @@
     background: gray;
     padding: 0.5em;
     user-select: none;
+    z-index: 5;
 }
 
 .name {
-    font-weight: bold;
     margin-bottom: 0.25em;
 }
 

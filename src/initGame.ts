@@ -12,6 +12,8 @@ export default function initGame() {
 
     loadAssets(k);
 
+    k.loadFont("free pixel", "fonts/FreePixel.ttf");
+
     k.setBackground(k.Color.fromHex("#131313"));
 
     k.go("level1");

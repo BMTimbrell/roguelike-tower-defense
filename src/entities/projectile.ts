@@ -1,14 +1,14 @@
 import type { KAPLAYCtx, Vec2, GameObj } from 'kaplay';
 import makeFloatingText from './floatingText';
 
-type projectileParams = { 
+export default function makeProjectile(k: KAPLAYCtx, opts: { 
     pos: Vec2; 
     target: GameObj;
     damage: number;
     crit?: boolean; 
-};
+}): GameObj {
+    const { pos, target, damage, crit = false } = opts;
 
-export default function makeProjectile(k: KAPLAYCtx, { pos, target, damage, crit = false }: projectileParams): GameObj {
     const projectile = k.add([
         k.rect(8, 8),
         k.pos(pos),
@@ -23,7 +23,12 @@ export default function makeProjectile(k: KAPLAYCtx, { pos, target, damage, crit
         projectile.pos = projectile.pos.add(direction.scale(300 * k.dt()));
         if (projectile.pos.dist(target.pos) < 4) {
             target.hurt(damage);
-            makeFloatingText(k, { pos: projectile.pos, text: '' + damage, size: crit ? 18 : 12 });
+            makeFloatingText(k, { 
+                pos: projectile.pos, 
+                text: '' + damage, 
+                size: crit ? 22 : 14,
+                color: crit ? '#ff0000' : "#fffb00"
+            });
             k.destroy(projectile);
         }
     });

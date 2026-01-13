@@ -130,4 +130,4 @@ export const UPGRADES: Upgrade[] = [{
     amount: 180,
     cost: 3,
     percentage: true
-}];
+}] as const;

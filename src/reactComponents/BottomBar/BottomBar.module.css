@@ -3,5 +3,6 @@
     background: gray;
     user-select: none;
     display: flex;
-    justify-content: space-around;
+    justify-content: space-between;
+    padding: 0.25em 0.5em;
 }

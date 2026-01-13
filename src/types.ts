@@ -81,6 +81,11 @@ export type Tower = TowerBase & SelectedTower & {
     shootTimer: number;
 };
 
+export type Deck = {
+    cards: Upgrade[];
+    drawCard: () => void;
+};
+
 export type GameState = {
     towers: TowerButton[];
     nextTowerId: number;
@@ -88,5 +93,6 @@ export type GameState = {
     gold: number;
     maxTowerUpgrades: number;
     upgrades: Upgrade[];
+    deck: Deck;
     selectedUpgrade: Upgrade | null;
 };

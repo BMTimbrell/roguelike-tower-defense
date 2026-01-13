@@ -1,14 +1,36 @@
 import type { Vec2, KAPLAYCtx } from 'kaplay';
 
-type floatingTextParams = {
-    color?: string; 
-    text: string; 
+export default function makeFloatingText(k: KAPLAYCtx, opts: {
+    color?:
+    string;
+    text: string;
     pos: Vec2;
-    size?: number
-};
-
-export default function makeFloatingText(k: KAPLAYCtx, { text, pos, color = "#FF0000", size }: floatingTextParams) {
+    size?: number;
+}) {
+    const { text, pos, color = "#fffb00", size } = opts;
     const life = 0.5;
+
+    const offsets = [
+        [-1, 0],
+        [1, 0],
+        [0, -1],
+        [0, 1]
+    ];
+
+    const outlines = offsets.map(([x, y]) =>
+        k.add([
+            k.pos(pos.x + x, pos.y + y),
+            k.text(text, {
+                size,
+                font: "free pixel"
+            }),
+            k.color("#000000"),
+            k.opacity(1),
+            k.lifespan(life),
+            k.scale(1),
+            "fTextOutline"
+        ])
+    );
 
     const fText = k.add([
         k.pos(pos),
@@ -16,7 +38,7 @@ export default function makeFloatingText(k: KAPLAYCtx, { text, pos, color = "#FF
         k.lifespan(life),
         k.text(text, {
             size,
-            font: "sans-serif"
+            font: "free pixel"
         }),
         k.opacity(1),
         k.scale(1),
@@ -25,11 +47,11 @@ export default function makeFloatingText(k: KAPLAYCtx, { text, pos, color = "#FF
 
     let time = 0;
 
+    const all = [fText, ...outlines];
+
     fText.onUpdate(() => {
         const dt = k.dt();
         time += dt;
-
-        // fText.opacity -= (dt / life) * 0.8;
 
         const t = Math.min(time / life, 1);
 
@@ -37,12 +59,17 @@ export default function makeFloatingText(k: KAPLAYCtx, { text, pos, color = "#FF
         const pulseScale = k.lerp(1, 1.3, pulse);
         const ease = k.easings.easeInQuad(t);
         const shrinkScale = k.lerp(1.0, 0.5, ease);
+        const opacityScale = k.lerp(1.0, 0.25, ease);
+        const scale = k.vec2(pulseScale * shrinkScale);
 
-        const scale = new k.Vec2(pulseScale * shrinkScale);
-        fText.opacity = k.lerp(1.0, 0.25, ease);
         fText.scale = scale;
+        fText.opacity = opacityScale;
 
-        fText.move(0, -250 * dt);
+        for (const a of all) {
+            a.scale = scale;
+            a.opacity = opacityScale;
+            a.move(0, -250 * dt);
+        }
     });
 
 }

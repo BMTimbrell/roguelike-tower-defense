@@ -1,8 +1,9 @@
 import { mapAtom, gameStateAtom } from '../../store';
 import { useAtom } from 'jotai';
-import Tower from '../Tower/Tower';
+import TowerButton from '../TowerButton/TowerButton';
 import Upgrades from '../Upgrades/Upgrades';
 import styles from './BottomBar.module.css';
+import Deck from '../Deck/Deck';
 
 export function BottomBar() {
     const [map] = useAtom(mapAtom);
@@ -22,7 +23,7 @@ export function BottomBar() {
             className={styles.container}
         >
             {towers.map((tower, index) => (
-                <Tower 
+                <TowerButton 
                     key={index} 
                     name={tower.name}
                     scale={map.scale}
@@ -32,6 +33,7 @@ export function BottomBar() {
             ))}
 
             <Upgrades upgrades={upgrades} />
+            <Deck deck={gameState.deck} />
         </div>
     );
 }

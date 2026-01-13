@@ -87,6 +87,7 @@ export default function SelectedTower({ tower }: { tower: SelectedTower }) {
 
         setGameState(prev => ({
             ...prev,
+            upgrades: prev.upgrades.filter(upgrade => upgrade !== prev.selectedUpgrade),
             selectedUpgrade: null,
             selectedTower: {
                 ...tower,

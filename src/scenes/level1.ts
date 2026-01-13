@@ -5,8 +5,9 @@ import type { MapData } from "../types";
 import { mapAtom, store, gameStateAtom } from "../store";
 import getMapScreenBounds from "../utils/getMapScreenBounds";
 import { VIRTUAL_WIDTH, VIRTUAL_HEIGHT } from "../constants";
-import type { Tower, Upgrade } from "../types";
-import { UPGRADES } from "../constants";
+import type { Tower } from "../types";
+import generateDeck from "../utils/generateDeck";
+import drawCards from "../utils/drawCards";
 
 export default function level1(k: KAPLAYCtx) {
     k.scene("level1", async () => {
@@ -64,15 +65,9 @@ export default function level1(k: KAPLAYCtx) {
             cursor.pos = k.mousePos();
         });
 
-        let upgradeIndex = k.randi(0, UPGRADES.length - 1);
-        const upgrades: Upgrade[] = [];
 
-        while (upgrades.length < 3) {
-            upgradeIndex = k.randi(0, UPGRADES.length - 1);
-            if (!upgrades.includes(UPGRADES[upgradeIndex])) {
-                upgrades.push(UPGRADES[upgradeIndex]);
-            }
-        }
+        const deck = generateDeck(k);
+        const upgrades = drawCards(k, deck, 3);
 
         store.set(gameStateAtom, prev => ({
             ...prev,
@@ -80,11 +75,11 @@ export default function level1(k: KAPLAYCtx) {
                 name: "Basic Tower",
                 cost: 50,
                 stats: {
-                    damage: 5,
+                    damage: 4,
                     range: 3,
                     fireInterval: 0.75,
                     critChance: 5,
-                    critDamage: 2
+                    critDamage: 100
                 },
                 onClick: () => {
                     const unplacedTower = k.get("tower").find(tower => !tower.placed);
@@ -97,7 +92,7 @@ export default function level1(k: KAPLAYCtx) {
                             placed: false,
                             placeable: false,
                             stats: {
-                                damage: 5,
+                                damage: 4,
                                 range: 3,
                                 fireInterval: 0.75,
                                 critChance: 5,
@@ -116,7 +111,17 @@ export default function level1(k: KAPLAYCtx) {
                     }));
                 }
             }],
-            upgrades
+            upgrades,
+            deck: {
+                cards: deck,
+                drawCard: () => { 
+                    const card = drawCards(k, deck, 1)[0];
+                    store.set(gameStateAtom, prev => ({
+                        ...prev,
+                        upgrades: [...prev.upgrades, card]
+                    }))
+                }
+            }
         }));
 
         addSelectTowerListener(k);

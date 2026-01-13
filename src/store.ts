@@ -8,6 +8,10 @@ export const gameStateAtom = atom<GameState>({
     gold: 1000,
     maxTowerUpgrades: 5,
     upgrades: [],
+    deck: {
+        cards: [],
+        drawCard: () => {}
+    },
     selectedUpgrade: null
 });
 

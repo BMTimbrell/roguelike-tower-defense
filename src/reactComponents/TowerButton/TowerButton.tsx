@@ -1,9 +1,9 @@
-import styles from './Tower.module.css';
+import styles from './TowerButton.module.css';
 import { type MouseEventHandler } from 'react';
 import { gameStateAtom } from '../../store';
 import { useAtom } from 'jotai';
 
-export default function Tower(
+export default function TowerButton(
     {
         name,
         scale,
