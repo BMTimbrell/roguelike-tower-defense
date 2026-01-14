@@ -5,14 +5,34 @@ import { BottomBar } from "./reactComponents/BottomBar/BottomBar";
 import SelectedTower from "./reactComponents/SelectedTower/SelectedTower";
 
 export default function ReactUI() {
-    const [gameState] = useAtom(gameStateAtom);
+    const [gameState, setGameState] = useAtom(gameStateAtom);
     const selectedTower = gameState.selectedTower;
+
+    const handleMouseEnter = () => {
+        setGameState(prev => ({
+            ...prev,
+            mouseOverUI: true
+        }));
+    };
+
+    const handleMouseExit = () => {
+        setGameState(prev => ({
+            ...prev,
+            mouseOverUI: false
+        }));
+    };
 
     return (
         <>
-            <Overlay />
-            <BottomBar />
-            {selectedTower && 
+            <Overlay
+                mouseEnter={handleMouseEnter}
+                mouseExit={handleMouseExit}
+            />
+            <BottomBar
+                mouseEnter={handleMouseEnter}
+                mouseExit={handleMouseExit}
+            />
+            {selectedTower &&
                 <SelectedTower
                     key={selectedTower.towerId}
                     tower={selectedTower}

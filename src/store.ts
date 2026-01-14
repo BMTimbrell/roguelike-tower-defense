@@ -5,14 +5,16 @@ export const gameStateAtom = atom<GameState>({
     towers: [],
     selectedTower: null,
     nextTowerId: 0,
-    gold: 1000,
+    gold: 100,
     maxTowerUpgrades: 5,
     upgrades: [],
     deck: {
         cards: [],
-        drawCard: () => {}
+        drawCard: () => {},
+        drawCost: 10
     },
-    selectedUpgrade: null
+    selectedUpgrade: null,
+    mouseOverUI: false
 });
 
 export const mapAtom = atom({

@@ -6,14 +6,25 @@
 .upgrade {
     display: flex;
     flex-direction: column;
+    border-radius: 0.375em;
     row-gap: 0.25em;
-    border: 1px solid white;
+    border: 1px solid rgba(255,255,255,0.6);
     padding: 0.5em;
     color: white;
     background-color: var(--card-color);
     cursor: pointer;
+    box-shadow: 0 0.125em 0.375em rgba(0,0,0,0.4);
+    transition: 
+      box-shadow 0.15s ease,
+      transform 0.15s ease;
+}
+
+.upgrade:hover {
+    transform: translateY(-0.125em);
+    box-shadow: 0 0.375em 0.875em rgba(0,0,0,0.5);
 }
 
 .selected {
-    border-color: yellow;
+    outline: 0.125em solid yellow;
+    outline-offset: 1px;
 }

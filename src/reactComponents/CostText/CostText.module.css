@@ -1,3 +1,7 @@
 .cant-afford {
     color: rgb(255, 136, 115);
 }
+
+*:has(.cant-afford) {
+    cursor: default !important;
+}

@@ -113,14 +113,20 @@ export default function level1(k: KAPLAYCtx) {
             }],
             upgrades,
             deck: {
+                ...prev.deck,
                 cards: deck,
                 drawCard: () => { 
                     const card = drawCards(k, deck, 1)[0];
                     store.set(gameStateAtom, prev => ({
                         ...prev,
-                        upgrades: [...prev.upgrades, card]
-                    }))
-                }
+                        gold: store.get(gameStateAtom).gold - store.get(gameStateAtom).deck.drawCost,
+                        upgrades: [...prev.upgrades, card],
+                        deck: {
+                            ...prev.deck,
+                            drawCost: Math.min(160, prev.deck.drawCost * 2)
+                        }
+                    }));
+                },
             }
         }));
 

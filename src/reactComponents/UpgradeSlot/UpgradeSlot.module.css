@@ -18,8 +18,11 @@
     font-size: 0.5em;
 }
 
-.highlighted {
+.slot:has(span), .highlighted {
     cursor: pointer;
+}
+
+.highlighted {
     background-color: yellow;
 }
 

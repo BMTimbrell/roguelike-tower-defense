@@ -84,6 +84,7 @@ export type Tower = TowerBase & SelectedTower & {
 export type Deck = {
     cards: Upgrade[];
     drawCard: () => void;
+    drawCost: number;
 };
 
 export type GameState = {
@@ -95,4 +96,5 @@ export type GameState = {
     upgrades: Upgrade[];
     deck: Deck;
     selectedUpgrade: Upgrade | null;
+    mouseOverUI: boolean;
 };

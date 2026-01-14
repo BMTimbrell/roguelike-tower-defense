@@ -12,7 +12,7 @@ export default function makeEnemy(k: KAPLAYCtx, waypoints: Vec2[]): GameObj {
         k.health(20),
         {
             waypoints,
-            speed: 150
+            speed: 100
         },
         "enemy"
     ]);
