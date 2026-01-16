@@ -2,6 +2,7 @@ import { type MouseEventHandler } from "react";
 import { TILE_SIZE } from "./constants";
 import type { Vec2, GameObj } from "kaplay";
 
+
 type LayerObj = {
     x: number;
     y: number;
@@ -43,6 +44,7 @@ export type Upgrade = {
     percentage: boolean;
     active?: boolean;
     used?: boolean;
+    icon?: string;
 };
 
 export type USlot = {
@@ -97,4 +99,8 @@ export type GameState = {
     deck: Deck;
     selectedUpgrade: Upgrade | null;
     mouseOverUI: boolean;
+    reroll: {
+        baseCost: number;
+        roll: () => void;
+    }
 };

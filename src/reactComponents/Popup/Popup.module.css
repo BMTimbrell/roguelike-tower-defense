@@ -1,0 +1,14 @@
+.container {
+    position: fixed;
+    --x: 0;
+    --y: 0;
+    top: var(--y);
+    left: var(--x);
+    color: white;
+    background: rgb(3, 3, 3, 0.8);
+    padding: 0.5em;
+    user-select: none;
+    z-index: 5;
+    border-radius: 0.25em;
+    border: 1px solid rgba(255, 255, 255, 0.6);
+}

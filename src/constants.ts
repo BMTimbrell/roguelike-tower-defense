@@ -8,6 +8,7 @@ export const MAX_TOWER_UPGRADES = 5;
 export const UPGRADES: Upgrade[] = [{
     stat: "damage",
     name: "Damage",
+    icon: "sprites/damage-icon.png",
     amount: 20,
     cost: 1,
     percentage: true
@@ -15,6 +16,7 @@ export const UPGRADES: Upgrade[] = [{
 {
     stat: "damage",
     name: "Damage",
+    icon: "sprites/damage-icon.png",
     amount: 2,
     cost: 1,
     percentage: false
@@ -22,6 +24,7 @@ export const UPGRADES: Upgrade[] = [{
 {
     stat: "damage",
     name: "Damage",
+    icon: "sprites/damage-icon.png",
     amount: 50,
     cost: 2,
     percentage: true
@@ -29,6 +32,7 @@ export const UPGRADES: Upgrade[] = [{
 {
     stat: "damage",
     name: "Damage",
+    icon: "sprites/damage-icon.png",
     amount: 5,
     cost: 2,
     percentage: false
@@ -36,6 +40,7 @@ export const UPGRADES: Upgrade[] = [{
 {
     stat: "damage",
     name: "Damage",
+    icon: "sprites/damage-icon.png",
     amount: 80,
     cost: 3,
     percentage: true
@@ -43,6 +48,7 @@ export const UPGRADES: Upgrade[] = [{
 {    
     stat: "damage",
     name: "Damage",
+    icon: "sprites/damage-icon.png",
     amount: 8,
     cost: 3,
     percentage: false
@@ -50,6 +56,7 @@ export const UPGRADES: Upgrade[] = [{
 {
     stat: "range",
     name: "Range",
+    icon: "sprites/range-icon.png",
     amount: 1,
     cost: 1,
     percentage: false
@@ -57,6 +64,7 @@ export const UPGRADES: Upgrade[] = [{
 {
     stat: "range",
     name: "Range",
+    icon: "sprites/range-icon.png",
     amount: 3,
     cost: 2,
     percentage: false
@@ -64,6 +72,7 @@ export const UPGRADES: Upgrade[] = [{
 {
     stat: "range",
     name: "Range",
+    icon: "sprites/range-icon.png",
     amount: 5,
     cost: 3,
     percentage: false
@@ -71,6 +80,7 @@ export const UPGRADES: Upgrade[] = [{
 {
     stat: "fireInterval",
     name: "Fire rate",
+    icon: "sprites/damage-icon.png",
     amount: 20,
     cost: 1,
     percentage: true
@@ -78,6 +88,7 @@ export const UPGRADES: Upgrade[] = [{
 {
     stat: "fireInterval",
     name: "Fire rate",
+    icon: "sprites/damage-icon.png",
     amount: 50,
     cost: 2,
     percentage: true
@@ -85,6 +96,7 @@ export const UPGRADES: Upgrade[] = [{
 {
     stat: "fireInterval",
     name: "Fire rate",
+    icon: "sprites/damage-icon.png",
     amount: 80,
     cost: 3,
     percentage: true
@@ -92,6 +104,7 @@ export const UPGRADES: Upgrade[] = [{
 {
     stat: "critChance",
     name: "Crit chance",
+    icon: "sprites/damage-icon.png",
     amount: 20,
     cost: 1,
     percentage: true
@@ -99,6 +112,7 @@ export const UPGRADES: Upgrade[] = [{
 {
     stat: "critChance",
     name: "Crit chance",
+    icon: "sprites/damage-icon.png",
     amount: 50,
     cost: 2,
     percentage: true
@@ -106,6 +120,7 @@ export const UPGRADES: Upgrade[] = [{
 {
     stat: "critChance",
     name: "Crit chance",
+    icon: "sprites/damage-icon.png",
     amount: 80,
     cost: 3,
     percentage: true
@@ -113,6 +128,7 @@ export const UPGRADES: Upgrade[] = [{
 {
     stat: "critDamage",
     name: "Crit damage",
+    icon: "sprites/damage-icon.png",
     amount: 50,
     cost: 1,
     percentage: true
@@ -120,6 +136,7 @@ export const UPGRADES: Upgrade[] = [{
 {
     stat: "critDamage",
     name: "Crit damage",
+    icon: "sprites/damage-icon.png",
     amount: 120,
     cost: 2,
     percentage: true
@@ -127,6 +144,7 @@ export const UPGRADES: Upgrade[] = [{
 {
     stat: "critDamage",
     name: "Crit damage",
+    icon: "sprites/damage-icon.png",
     amount: 180,
     cost: 3,
     percentage: true

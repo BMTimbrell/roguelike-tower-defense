@@ -7,9 +7,10 @@
     display: flex;
     flex-direction: column;
     border-radius: 0.375em;
-    row-gap: 0.25em;
+    row-gap: 0.125em;
     border: 1px solid rgba(255,255,255,0.6);
-    padding: 0.5em;
+    padding: 0.25em;
+    padding-top: 0.125em;
     color: white;
     background-color: var(--card-color);
     cursor: pointer;
@@ -21,10 +22,15 @@
 
 .upgrade:hover {
     transform: translateY(-0.125em);
-    box-shadow: 0 0.375em 0.875em rgba(0,0,0,0.5);
+    box-shadow: 0 0.375em 0.875em rgba(0,0,0,0.4);
 }
 
 .selected {
     outline: 0.125em solid yellow;
     outline-offset: 1px;
+}
+
+.icon {
+    display: flex;
+    align-items: center;
 }

@@ -1,11 +1,12 @@
 import styles from "./SelectedTower.module.css";
-import { useState, useEffect, useLayoutEffect, useRef } from "react";
-import { mapAtom, gameStateAtom } from '../../store';
+import { useState, useEffect } from "react";
+import { gameStateAtom } from '../../store';
 import { useAtom } from 'jotai';
 import type { SelectedTower, USlot } from '../../types';
 import UpgradeSlot from "../UpgradeSlot/UpgradeSlot";
 import { MAX_TOWER_UPGRADES } from '../../constants';
 import CostText from "../CostText/CostText";
+import Popup from "../Popup/Popup";
 
 export default function SelectedTower({ tower }: { tower: SelectedTower }) {
     const {
@@ -19,10 +20,8 @@ export default function SelectedTower({ tower }: { tower: SelectedTower }) {
         addUpgradeSlot,
         setUpgrades
     } = tower;
-    const [map] = useAtom(mapAtom);
     const [gameState, setGameState] = useAtom(gameStateAtom);
     const selectedUpgrade = gameState.selectedUpgrade;
-    const scale = map.scale;
     const onClick = addUpgradeSlot;
     const isUnlocked = (index: number) => index < unlockedUpgradeSlots;
     const isPurchasable = (index: number) => index === unlockedUpgradeSlots;
@@ -33,8 +32,6 @@ export default function SelectedTower({ tower }: { tower: SelectedTower }) {
         highlighted: false,
         purchasable: isPurchasable(index)
     })));
-    const popupRef = useRef<HTMLDivElement | null>(null);
-    const [yOffset, setYOffset] = useState(0);
 
     function highlightUpgradeSlots(slots: USlot[]): number[] {
         if (selectedUpgrade) {
@@ -115,33 +112,9 @@ export default function SelectedTower({ tower }: { tower: SelectedTower }) {
         });
     }, [selectedUpgrade, unlockedUpgradeSlots]);
 
-    useLayoutEffect(() => {
-        const el = popupRef.current;
-        if (!el) return;
-
-        const rect = el.getBoundingClientRect();
-        const padding = 8;
-
-        const overflowBottom = rect.bottom - window.innerHeight + padding;
-
-        if (overflowBottom > 0) {
-            setYOffset(-overflowBottom);
-        } else {
-            setYOffset(0);
-        }
-
-    }, [pos.x, pos.y, scale]);
 
     return (
-        <div
-            ref={popupRef}
-            className={styles.container}
-            style={{
-                '--x': `calc(${map.x}px + ${pos.x} * ${scale}px)`,
-                '--y': `calc(${map.y}px + ${pos.y} * ${scale}px + ${yOffset}px)`,
-                fontSize: `calc(16px * ${scale})`
-            } as React.CSSProperties}
-        >
+        <Popup mode="world" pos={pos}>
             <div className={styles.name}>{name}</div>
             <div className={styles.stats}>
                 <div>Damage: {damage}</div>
@@ -165,6 +138,6 @@ export default function SelectedTower({ tower }: { tower: SelectedTower }) {
                 ))}
 
             </div>
-        </div>
+        </Popup>
     );
 }

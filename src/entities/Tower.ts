@@ -182,7 +182,7 @@ export default function makeTower(
         if (tower.placed) {
             tower.shootTimer -= k.dt();
             k.get("enemy").forEach(enemy => {
-                if (enemy.pos.sub(0, enemy.height / 2).dist(rangeCircle.pos) <= tower.stats.range * TILE_SIZE + TOWER_RANGE_TOLERANCE) {
+                if (enemy.pos.dist(rangeCircle.pos) <= tower.stats.range * TILE_SIZE + TOWER_RANGE_TOLERANCE) {
                     if (tower.shootTimer <= 0) {
                         tower.shootTimer = tower.stats.fireInterval;
                         tower.shoot?.(enemy);

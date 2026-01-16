@@ -19,7 +19,7 @@ export default function Overlay({ mouseEnter, mouseExit }: props) {
                     position: 'absolute', 
                     width: `${map.x}px`, 
                     height: "100dvh", 
-                    background: "black" 
+                    background: "#333" 
                 }}
             >
             </div>
@@ -33,7 +33,7 @@ export default function Overlay({ mouseEnter, mouseExit }: props) {
                     right: `${map.x}`, 
                     width: `${map.x}px`, 
                     height: "100dvh", 
-                    background: "black" 
+                    background: "#333" 
                 }}
             >
             </div>
@@ -48,7 +48,7 @@ export default function Overlay({ mouseEnter, mouseExit }: props) {
                     top: 0,
                     width: "100%", 
                     height: `${map.y}px`, 
-                    background: "black" 
+                    background: "#333" 
                 }}
             >
             </div>
@@ -61,7 +61,7 @@ export default function Overlay({ mouseEnter, mouseExit }: props) {
                     bottom: 0, 
                     width: "100%", 
                     height: `${map.y}px`, 
-                    background: "black" 
+                    background: "#333" 
                 }}
             >
             </div>

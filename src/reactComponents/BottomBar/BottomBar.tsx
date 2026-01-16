@@ -4,6 +4,7 @@ import TowerButton from '../TowerButton/TowerButton';
 import Upgrades from '../Upgrades/Upgrades';
 import styles from './BottomBar.module.css';
 import Deck from '../Deck/Deck';
+import RerollCardsButton from '../RerollCardsButton/RerollCardsButton';
 
 type props = {
     mouseEnter: () => void;
@@ -33,6 +34,7 @@ export function BottomBar({ mouseEnter, mouseExit }: props) {
                 <TowerButton
                     key={index}
                     name={tower.name}
+                    stats={tower.stats}
                     scale={map.scale}
                     onClick={tower.onClick}
                     cost={tower.cost}
@@ -40,6 +42,7 @@ export function BottomBar({ mouseEnter, mouseExit }: props) {
             ))}
 
             <Upgrades upgrades={upgrades} />
+            <RerollCardsButton  />
             <Deck deck={gameState.deck} gold={gameState.gold} />
         </div>
     );

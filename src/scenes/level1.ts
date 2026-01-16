@@ -8,6 +8,7 @@ import { VIRTUAL_WIDTH, VIRTUAL_HEIGHT } from "../constants";
 import type { Tower } from "../types";
 import generateDeck from "../utils/generateDeck";
 import drawCards from "../utils/drawCards";
+import reroll from "../utils/reroll";
 
 export default function level1(k: KAPLAYCtx) {
     k.scene("level1", async () => {
@@ -126,7 +127,11 @@ export default function level1(k: KAPLAYCtx) {
                             drawCost: Math.min(160, prev.deck.drawCost * 2)
                         }
                     }));
-                },
+                }
+            },
+            reroll: {
+                ...prev.reroll,
+                roll: () => reroll(k)
             }
         }));
 
