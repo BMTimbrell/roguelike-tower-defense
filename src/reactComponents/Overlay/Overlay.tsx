@@ -1,20 +1,13 @@
 import { mapAtom } from '../../store';
 import { useAtom } from 'jotai';
 
-type props = {
-    mouseEnter: () => void;
-    mouseExit: () => void;
-};
-
-export default function Overlay({ mouseEnter, mouseExit }: props) {
+export default function Overlay() {
     const [map] = useAtom(mapAtom);
 
     return (
         <>
             {/* Side overlays */}
             <div 
-                onMouseEnter={mouseEnter}
-                onMouseLeave={mouseExit}
                 style={{ 
                     position: 'absolute', 
                     width: `${map.x}px`, 
@@ -25,8 +18,6 @@ export default function Overlay({ mouseEnter, mouseExit }: props) {
             </div>
 
             <div
-                onMouseEnter={mouseEnter}
-                onMouseLeave={mouseExit}
                 style={{ 
                     position: 'absolute', 
                     top: 0, 
@@ -41,8 +32,6 @@ export default function Overlay({ mouseEnter, mouseExit }: props) {
             {/* Top and bottom overlays */}
 
             <div
-                onMouseEnter={mouseEnter}
-                onMouseLeave={mouseExit}
                 style={{ 
                     position: 'absolute',
                     top: 0,
@@ -54,8 +43,6 @@ export default function Overlay({ mouseEnter, mouseExit }: props) {
             </div>
 
             <div
-                onMouseEnter={mouseEnter}
-                onMouseLeave={mouseExit}
                 style={{ 
                     position: 'absolute', 
                     bottom: 0, 

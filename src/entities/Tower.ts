@@ -104,7 +104,6 @@ export default function makeTower(
     });
 
     tower.onMouseDown("left", () => {
-        if (store.get(gameStateAtom).mouseOverUI) return;
         if (!tower.placed && tower.placeable) {
             tower.placed = true;
             tower.selected = false;

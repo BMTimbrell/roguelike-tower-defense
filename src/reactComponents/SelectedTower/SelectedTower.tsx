@@ -127,6 +127,7 @@ export default function SelectedTower({ tower }: { tower: SelectedTower }) {
                 {upgradeSlots.map((slot, index) => (
                     <UpgradeSlot
                         upgrade={slot.upgrade}
+                        selectedUpgrade={selectedUpgrade}
                         unlocked={slot.unlocked}
                         {...(slot.purchasable ? { onClick } : slot.highlighted ? { onClick: addUpgrades } : {})}
                         active={upgrades[index]?.active || false}

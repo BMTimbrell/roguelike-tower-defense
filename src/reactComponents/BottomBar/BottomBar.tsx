@@ -6,12 +6,7 @@ import styles from './BottomBar.module.css';
 import Deck from '../Deck/Deck';
 import RerollCardsButton from '../RerollCardsButton/RerollCardsButton';
 
-type props = {
-    mouseEnter: () => void;
-    mouseExit: () => void;
-};
-
-export function BottomBar({ mouseEnter, mouseExit }: props) {
+export function BottomBar() {
     const [map] = useAtom(mapAtom);
     const [gameState] = useAtom(gameStateAtom);
     const { towers, upgrades } = gameState;
@@ -19,8 +14,6 @@ export function BottomBar({ mouseEnter, mouseExit }: props) {
 
     return (
         <div
-            onMouseEnter={mouseEnter}
-            onMouseLeave={mouseExit}
             style={{
                 left: `${map.x}px`,
                 bottom: `${map.y}px`,

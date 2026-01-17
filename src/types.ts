@@ -98,7 +98,6 @@ export type GameState = {
     upgrades: Upgrade[];
     deck: Deck;
     selectedUpgrade: Upgrade | null;
-    mouseOverUI: boolean;
     reroll: {
         baseCost: number;
         roll: () => void;

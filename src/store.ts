@@ -14,7 +14,6 @@ export const gameStateAtom = atom<GameState>({
         drawCost: 10
     },
     selectedUpgrade: null,
-    mouseOverUI: false,
     reroll: {
         baseCost: 5,
         roll: () => null

@@ -63,9 +63,18 @@ export default function TowerButton(
                             <div>Damage: {damage}</div>
                         </div>
                         <div>Fire rate: {(1 / fireInterval).toFixed(1)}/sec</div>
-                        <div>Range: {range}</div>
-                        <div>Crit chance: {critChance}%</div>
-                        <div>Crit damage: {critDamage}%</div>
+                        <div>
+                            <img width={`${16 * scale}px`} src="sprites/range-icon.png" />
+                            <div>Range: {range}</div>
+                        </div>
+                        <div>
+                            <img width={`${16 * scale}px`} src="sprites/critchance-icon.png" />
+                            <div>Crit chance: {critChance}%</div>
+                        </div>
+                        <div>
+                            <img width={`${16 * scale}px`} src="sprites/critdamage-icon.png" />
+                            <div>Crit damage: {critDamage}%</div>
+                        </div>
                     </div>
                 </div>
             </Popup>}
