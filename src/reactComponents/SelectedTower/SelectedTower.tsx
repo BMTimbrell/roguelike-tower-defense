@@ -118,10 +118,10 @@ export default function SelectedTower({ tower }: { tower: SelectedTower }) {
             <div className={styles.name}>{name}</div>
             <div className={styles.stats}>
                 <div>Damage: {damage}</div>
-                <div>Fire rate: {(1 / fireInterval).toFixed(1)}/sec</div>
+                <div>Fire Rate: {(1 / fireInterval).toFixed(1)}/sec</div>
                 <div>Range: {range}</div>
-                <div>Crit chance: {critChance}%</div>
-                <div>Crit damage: {critDamage}%</div>
+                <div>Crit Chance: {critChance}%</div>
+                <div>Crit Damage: {critDamage}%</div>
             </div>
             <div className={styles.upgrades}>
                 {upgradeSlots.map((slot, index) => (

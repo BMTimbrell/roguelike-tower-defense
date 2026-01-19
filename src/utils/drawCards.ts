@@ -6,7 +6,10 @@ export default function drawCards(k: KAPLAYCtx, deck: Upgrade[], amount: number)
     let deckIndex = k.randi(0, deck.length);
 
     while (cards.length < amount) {
-        cards.push(deck[deckIndex]);
+        const card = deck[deckIndex];
+        if (!cards.includes(card)) {
+            cards.push(card);
+        }
         deckIndex = k.randi(0, deck.length);
     }
 

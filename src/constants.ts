@@ -79,31 +79,31 @@ export const UPGRADES: Upgrade[] = [{
 }, 
 {
     stat: "fireInterval",
-    name: "Fire rate",
-    icon: "sprites/damage-icon.png",
+    name: "Fire Rate",
+    icon: "sprites/firerate-icon.png",
     amount: 20,
     cost: 1,
     percentage: true
 },
 {
     stat: "fireInterval",
-    name: "Fire rate",
-    icon: "sprites/damage-icon.png",
+    name: "Fire Rate",
+    icon: "sprites/firerate-icon.png",
     amount: 50,
     cost: 2,
     percentage: true
 },
 {
     stat: "fireInterval",
-    name: "Fire rate",
-    icon: "sprites/damage-icon.png",
+    name: "Fire Rate",
+    icon: "sprites/firerate-icon.png",
     amount: 80,
     cost: 3,
     percentage: true
 },
 {
     stat: "critChance",
-    name: "Crit chance",
+    name: "Crit Chance",
     icon: "sprites/critchance-icon.png",
     amount: 20,
     cost: 1,
@@ -111,7 +111,7 @@ export const UPGRADES: Upgrade[] = [{
 },
 {
     stat: "critChance",
-    name: "Crit chance",
+    name: "Crit Chance",
     icon: "sprites/critchance-icon.png",
     amount: 50,
     cost: 2,
@@ -119,7 +119,7 @@ export const UPGRADES: Upgrade[] = [{
 },
 {
     stat: "critChance",
-    name: "Crit chance",
+    name: "Crit Chance",
     icon: "sprites/critchance-icon.png",
     amount: 80,
     cost: 3,
@@ -127,7 +127,7 @@ export const UPGRADES: Upgrade[] = [{
 },
 {
     stat: "critDamage",
-    name: "Crit damage",
+    name: "Crit Damage",
     icon: "sprites/critdamage-icon.png",
     amount: 50,
     cost: 1,
@@ -135,7 +135,7 @@ export const UPGRADES: Upgrade[] = [{
 },
 {
     stat: "critDamage",
-    name: "Crit damage",
+    name: "Crit Damage",
     icon: "sprites/critdamage-icon.png",
     amount: 120,
     cost: 2,
@@ -143,7 +143,7 @@ export const UPGRADES: Upgrade[] = [{
 },
 {
     stat: "critDamage",
-    name: "Crit damage",
+    name: "Crit Damage",
     icon: "sprites/critdamage-icon.png",
     amount: 180,
     cost: 3,

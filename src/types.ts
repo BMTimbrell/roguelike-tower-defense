@@ -38,7 +38,7 @@ type TowerBase = {
 
 export type Upgrade = {
     stat: "damage" | "range" | "fireInterval" | "critChance" | "critDamage";
-    name: "Damage" | "Range" | "Fire rate" | "Crit chance" | "Crit damage";
+    name: "Damage" | "Range" | "Fire Rate" | "Crit Chance" | "Crit Damage";
     amount: number;
     cost: number;
     percentage: boolean;

@@ -20,7 +20,10 @@ export default function makeTower(
         unlockedUpgradeSlots = 1,
         upgrades = [],
         upgradeCost = calcUpgradeCost(cost, unlockedUpgradeSlots)
-    }: Tower
+    }: Tower,
+    tileGrid: boolean[][],
+    mapPosX: number,
+    mapPosY: number
 ): GameObj {
     k.get("tower").forEach(tower => tower.selected = false);
 
@@ -52,7 +55,7 @@ export default function makeTower(
 
     function shoot(target: GameObj) {
         const roll = Math.random();
-        const critChance = tower.stats.critChance / 100; 
+        const critChance = tower.stats.critChance / 100;
 
         const willCrit = roll < critChance;
 
@@ -76,14 +79,6 @@ export default function makeTower(
         rangeCircle.use(k.circle(tower.stats.range * TILE_SIZE));
     });
 
-    const snapEvent = k.onCollide("tile", "cursor", tile => {
-        tower.color = k.Color.fromHex(tile.blocked ? "#FF0000" : "#FFFFFF");
-
-        tower.pos = tile.pos
-        rangeCircle.pos = tower.pos.add(TILE_SIZE / 2, TILE_SIZE / 2);
-        tower.placeable = !tile.blocked;
-    });
-
     tower.onCollide("cursor", () => {
         tower.hovered = true;
     });
@@ -93,7 +88,6 @@ export default function makeTower(
     });
 
     tower.onDestroy(() => {
-        snapEvent.cancel();
         k.destroy(rangeCircle);
     });
 
@@ -114,10 +108,10 @@ export default function makeTower(
                 selectedTower: null
             }));
 
-            const tile = k.get("tile").find(tile => tile.pos.eq(tower.pos));
-            if (tile) tile.blocked = true;
-
-            snapEvent.cancel();
+            // Mark tile as blocked
+            const gridX = Math.floor((tower.pos.x - mapPosX) / TILE_SIZE);
+            const gridY = Math.floor((tower.pos.y - mapPosY) / TILE_SIZE);
+            tileGrid[gridY][gridX] = true;
         } else if (tower.placed && tower.selected) {
             store.set(gameStateAtom, prev => ({
                 ...prev,
@@ -188,6 +182,17 @@ export default function makeTower(
                     }
                 }
             });
+        } else {
+            const mousePos = k.mousePos();
+            const gridX = Math.floor((mousePos.x - mapPosX) / TILE_SIZE);
+            const gridY = Math.floor((mousePos.y - mapPosY) / TILE_SIZE);
+
+            const blocked = tileGrid[gridY]?.[gridX] || false;
+            tower.color = k.Color.fromHex(blocked ? "#FF0000" : "#FFFFFF");
+
+            tower.pos = k.vec2(mapPosX + gridX * TILE_SIZE, mapPosY + gridY * TILE_SIZE);
+            rangeCircle.pos = tower.pos.add(TILE_SIZE / 2, TILE_SIZE / 2);
+            tower.placeable = !blocked;
         }
     });
 

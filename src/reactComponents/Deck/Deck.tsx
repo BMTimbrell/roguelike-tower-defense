@@ -1,8 +1,13 @@
 import type { Deck } from '../../types';
 import styles from './Deck.module.css';
 import CostText from '../CostText/CostText';
+import { mapAtom } from '../../store';
+import { useAtom } from 'jotai';
+
 
 export default function Deck({ deck, gold }: { deck: Deck, gold: number }) {
+    const [map] = useAtom(mapAtom);
+    const scale = map.scale;
     const cantAfford = deck.drawCost > gold;
 
     return (
@@ -13,7 +18,7 @@ export default function Deck({ deck, gold }: { deck: Deck, gold: number }) {
                 <div className={styles.card3}></div>
                 <div className={`${styles["top-card"]} ${cantAfford ? styles['cant-afford'] : ''}`}>
                     <div className={styles.label}>
-                        <img src={'./sprites/coin.png'} />
+                        <img style={{ width: `${16 * scale}px`, height: `${16 * scale}px` }} src={'./sprites/coin.png'} />
                         <div><CostText cost={deck.drawCost} /></div>
                     </div>
                 </div>

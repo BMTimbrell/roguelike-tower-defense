@@ -2,7 +2,7 @@ import type { Upgrade } from "../../types";
 import styles from "./Upgrades.module.css";
 import { gameStateAtom, mapAtom } from '../../store';
 import { useAtom } from 'jotai';
-import React, { useState, useRef } from 'react';
+import { useState } from 'react';
 import UpgradePopup from "../UpgradePopup/UpgradePopup";
 
 export default function Upgrades({ upgrades }: { upgrades: Upgrade[] }) {
@@ -22,8 +22,8 @@ export default function Upgrades({ upgrades }: { upgrades: Upgrade[] }) {
     return (
         <div className={styles.container}>
             {upgrades.map((upgrade, index) => (
+                <div className={styles["card-wrap"]} key={index} > 
                     <div
-                        key={index}
                         onClick={() => handleClick(upgrade)}
                         onMouseEnter={e => {
                             const rect = (e.currentTarget as HTMLDivElement).getBoundingClientRect();
@@ -34,6 +34,7 @@ export default function Upgrades({ upgrades }: { upgrades: Upgrade[] }) {
                             setHoveredUpgrade(upgrade);
                         }}
                         onMouseLeave={() => setHoveredUpgrade(null)}
+                        style={{ animationDelay: index < 3 ? `${index * 80}ms` : '0' }}
                         className={`${styles.upgrade} ${gameState.selectedUpgrade === upgrade ? styles.selected : ''}`}
                     >
                         <div className={styles.icon}>
@@ -42,6 +43,7 @@ export default function Upgrades({ upgrades }: { upgrades: Upgrade[] }) {
                         </div>
                         <div>Cost: {upgrade.cost}</div>
                     </div>
+                </div>
             ))}
 
             {hoveredUpgrade && <UpgradePopup upgrade={hoveredUpgrade} pos={pos} />}
