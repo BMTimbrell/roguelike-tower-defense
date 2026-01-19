@@ -1,6 +1,6 @@
 import styles from "./SelectedTower.module.css";
 import { useState, useEffect } from "react";
-import { gameStateAtom } from '../../store';
+import { gameStateAtom, mapAtom } from '../../store';
 import { useAtom } from 'jotai';
 import type { SelectedTower, USlot } from '../../types';
 import UpgradeSlot from "../UpgradeSlot/UpgradeSlot";
@@ -18,9 +18,12 @@ export default function SelectedTower({ tower }: { tower: SelectedTower }) {
         unlockedUpgradeSlots,
         upgradeCost,
         addUpgradeSlot,
-        setUpgrades
+        setUpgrades,
+        sellTower
     } = tower;
     const [gameState, setGameState] = useAtom(gameStateAtom);
+    const [map] = useAtom(mapAtom);
+    const scale = map.scale;
     const selectedUpgrade = gameState.selectedUpgrade;
     const onClick = addUpgradeSlot;
     const isUnlocked = (index: number) => index < unlockedUpgradeSlots;
@@ -137,8 +140,9 @@ export default function SelectedTower({ tower }: { tower: SelectedTower }) {
                         {slot.purchasable && <CostText cost={upgradeCost} />}
                     </UpgradeSlot>
                 ))}
-
             </div>
+
+            <button onClick={sellTower} className={styles.sell}>Sell <img width={`${8 * scale}px`} src="sprites/coin.png" />{cost / 2}</button>
         </Popup>
     );
 }

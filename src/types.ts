@@ -72,6 +72,7 @@ export type SelectedTower = TowerBase & {
         critChance: number;
         critDamage: number;
     };
+    sellTower: () => void;
 };
 
 export type Tower = TowerBase & SelectedTower & {

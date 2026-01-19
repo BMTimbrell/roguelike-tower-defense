@@ -10,9 +10,27 @@
 }
 
 .upgrades {
-    margin-top: 0.5em;
+    margin-block: 0.5em;
     display: flex;
     flex-direction: row;
     column-gap: 0.25em;
     line-height: 1;
+}
+
+.sell {
+    color: white;
+    background-color: var(--card-color);
+    font-size: 0.75em;
+    border-radius: 0.25em;
+    padding: 0.25em;
+    border: 1px solid rgba(255, 255, 255, 0.4);
+}
+
+.sell > img {
+    margin-right: 0.125em;
+}
+
+.sell:hover {
+    cursor: pointer;
+    background-color: rgb(114, 114, 114)
 }

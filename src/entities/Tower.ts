@@ -75,7 +75,7 @@ export default function makeTower(
     ]);
 
     rangeCircle.onUpdate(() => {
-        rangeCircle.hidden = !tower.selected;
+        rangeCircle.hidden = !tower.selected && !tower.hovered;
         rangeCircle.use(k.circle(tower.stats.range * TILE_SIZE));
     });
 
@@ -89,6 +89,9 @@ export default function makeTower(
 
     tower.onDestroy(() => {
         k.destroy(rangeCircle);
+        const gridX = Math.floor((tower.pos.x - mapPosX) / TILE_SIZE);
+        const gridY = Math.floor((tower.pos.y - mapPosY) / TILE_SIZE);
+        tileGrid[gridY][gridX] = false;
     });
 
     tower.onMouseDown("right", () => {
@@ -160,6 +163,14 @@ export default function makeTower(
                             }
                         });
                         return tower.stats;
+                    },
+                    sellTower: () => {
+                        store.set(gameStateAtom, prev => ({
+                            ...prev,
+                            gold: prev.gold + tower.cost / 2,
+                            selectedTower: null
+                        }));
+                        k.destroy(tower)
                     }
                 } as SelectedTower
             }));

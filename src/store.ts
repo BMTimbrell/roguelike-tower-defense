@@ -5,7 +5,7 @@ export const gameStateAtom = atom<GameState>({
     towers: [],
     selectedTower: null,
     nextTowerId: 0,
-    gold: 100,
+    gold: 75,
     maxTowerUpgrades: 5,
     upgrades: [],
     deck: {

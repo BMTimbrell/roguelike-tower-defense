@@ -27,7 +27,7 @@ export default function TowerButton(
 ) {
     const [gameState] = useAtom(gameStateAtom);
     const [popup, setPopup] = useState(false);
-    const cantAfford = gameState.gold < cost;
+    const disabled = gameState.gold < cost;
     const buttonRef = useRef<HTMLButtonElement | null>(null);
     const [pos, setPos] = useState<{ x: number; y: number; } | null>(null);
     const { damage, range, fireInterval, critChance, critDamage } = stats;
@@ -39,9 +39,8 @@ export default function TowerButton(
                 style={{
                     fontSize: `calc(16px * ${scale})`
                 }}
-                className={styles.button}
-                onClick={onClick}
-                disabled={cantAfford}
+                className={`${styles.button} ${disabled ? styles.disabled : ''}`}
+                onClick={disabled ? () => null : onClick}
                 onMouseEnter={() => {
                     if (buttonRef.current) setPos({
                         x: buttonRef.current.getBoundingClientRect().x,
@@ -56,7 +55,9 @@ export default function TowerButton(
             {popup && <Popup mode="screen" pos={{ x: pos?.x || 0, y: pos?.y || 0 }}>
                 <div className={styles["popup-contents"]}>
                     <div className={styles.name}>{name}</div>
-                    <div className={styles.cost}>Gold Cost: {cost}</div>
+                    <div className={styles.cost}>
+                        Cost: <img style={{ width: `${8 * scale}px`, marginRight: "0.125em" }} src="sprites/coin.png" />{cost}
+                    </div>
                     <div className={styles.stats}>
                         <div>
                             <img width={`${16 * scale}px`} src="sprites/damage-icon.png" />
