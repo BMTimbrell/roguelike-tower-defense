@@ -5,7 +5,7 @@ export const gameStateAtom = atom<GameState>({
     towers: [],
     selectedTower: null,
     nextTowerId: 0,
-    gold: 75,
+    gold: 100,
     maxTowerUpgrades: 5,
     upgrades: [],
     deck: {
@@ -15,6 +15,7 @@ export const gameStateAtom = atom<GameState>({
     },
     selectedUpgrade: null,
     reroll: {
+        cost: 5,
         baseCost: 5,
         roll: () => null
     }

@@ -100,6 +100,7 @@ export type GameState = {
     deck: Deck;
     selectedUpgrade: Upgrade | null;
     reroll: {
+        cost: number;
         baseCost: number;
         roll: () => void;
     }

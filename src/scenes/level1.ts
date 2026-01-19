@@ -22,6 +22,29 @@ export default function level1(k: KAPLAYCtx) {
             "level1",
         ]);
 
+        k.add([
+            k.sprite("gold"),
+            k.scale(2),
+            k.pos(20),
+            "gold"
+        ]);
+
+        const goldText = k.add([
+            k.pos(38, 19),
+            k.color('#FFFFFF'),
+            k.text('' + store.get(gameStateAtom).gold, {
+                size: 20,
+                font: "free pixel"
+            }),
+            k.z(999),
+            "gold value",
+        ]);
+
+        goldText.onUpdate(() => goldText.use(k.text('' + store.get(gameStateAtom).gold, {
+            size: 20,
+            font: "free pixel"
+        })));
+
         // Compute screen bounds and save in store
         let mapBounds = getMapScreenBounds(k, mapData);
         store.set(mapAtom, {
@@ -53,12 +76,12 @@ export default function level1(k: KAPLAYCtx) {
         });
 
         const cursor = k.add([
-            "cursor", 
-            k.pos(k.mousePos()), 
+            "cursor",
+            k.pos(k.mousePos()),
             k.area({
-            shape: new k.Rect(k.vec2(0), 1, 1)
-        })]);
-        
+                shape: new k.Rect(k.vec2(0), 1, 1)
+            })]);
+
         cursor.onUpdate(() => {
             cursor.pos = k.mousePos();
         });

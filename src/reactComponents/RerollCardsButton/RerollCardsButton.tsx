@@ -5,17 +5,26 @@ import styles from './RerollCardsButton.module.css';
 import CostText from '../CostText/CostText';
 
 export default function RerollCardsButton() {
-    const [gameState] = useAtom(gameStateAtom);
+    const [gameState, setGameState] = useAtom(gameStateAtom);
     const [map] = useAtom(mapAtom);
     const scale = map.scale;
-    const { roll, baseCost } = gameState.reroll;
+    const { roll, baseCost, cost } = gameState.reroll;
     const [disabled, setDisabled] = useState(false);
     const cardCount = gameState.upgrades.length;
-    const cost = baseCost * cardCount;
 
     useEffect(() => {
         setDisabled(cost > gameState.gold || !cardCount);
-    }, [gameState.upgrades, gameState.gold]);
+    }, [gameState.upgrades, gameState.gold, cost]);
+
+    useEffect(() => {
+        setGameState(prev => ({
+            ...prev,
+            reroll: {
+                ...prev.reroll,
+                cost: gameState.upgrades.length * baseCost
+            }
+        }));
+    }, [gameState.upgrades.length, baseCost]);
 
     return (
         <div className={styles.container}>
