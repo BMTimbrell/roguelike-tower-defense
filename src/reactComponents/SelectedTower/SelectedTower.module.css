@@ -9,6 +9,12 @@
     font-size: 0.75em;
 }
 
+.stats > * {
+    display: flex;
+    align-items: center;
+    column-gap: 0.25em;
+}
+
 .upgrades {
     margin-block: 0.5em;
     display: flex;
@@ -17,20 +23,13 @@
     line-height: 1;
 }
 
-.sell {
-    color: white;
-    background-color: var(--card-color);
-    font-size: 0.75em;
-    border-radius: 0.25em;
-    padding: 0.25em;
-    border: 1px solid rgba(255, 255, 255, 0.4);
+.progress {
+    display: flex;
+    align-items: center;
+    column-gap: 0.25em;
 }
 
-.sell > img {
-    margin-right: 0.125em;
-}
-
-.sell:hover {
-    cursor: pointer;
-    background-color: rgb(114, 114, 114)
+.progress img {
+    margin-top: -1px;
+    margin-left: -1px;
 }

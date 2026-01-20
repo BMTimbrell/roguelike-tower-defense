@@ -1,7 +1,7 @@
-import type { KAPLAYCtx, GameObj } from 'kaplay';
+import type { KAPLAYCtx, GameObj, Vec2 } from 'kaplay';
 import { TILE_SIZE, TOWER_RANGE_TOLERANCE } from '../constants';
 import makeProjectile from './projectile';
-import type { SelectedTower, Tower, Upgrade } from '../types';
+import type { SelectedTower, targetPriority, Tower, Upgrade } from '../types';
 import { store, gameStateAtom } from '../store';
 import { calcUpgradeCost } from '../utils/calcUpgradeCost';
 
@@ -10,11 +10,7 @@ export default function makeTower(
     {
         pos,
         name,
-        placed,
-        placeable,
         stats,
-        selected,
-        hovered,
         shootTimer,
         cost,
         unlockedUpgradeSlots = 1,
@@ -38,10 +34,11 @@ export default function makeTower(
         {
             towerId: `tower-${store.get(gameStateAtom).nextTowerId}`,
             name,
-            placed,
-            placeable,
-            selected,
-            hovered,
+            priority: "Most Progress",
+            placed: false,
+            placeable: false,
+            selected: true,
+            hovered: true,
             stats,
             shootTimer,
             cost,
@@ -121,6 +118,7 @@ export default function makeTower(
                 selectedTower: {
                     towerId: tower.towerId,
                     pos: tower.screenPos(),
+                    priority: tower.priority,
                     name: tower.name,
                     stats: tower.stats,
                     cost: tower.cost,
@@ -164,6 +162,16 @@ export default function makeTower(
                         });
                         return tower.stats;
                     },
+                    setPriority: (priority: targetPriority) => {
+                        tower.priority = priority;
+                        store.set(gameStateAtom, prev => ({
+                            ...prev,
+                            selectedTower: {
+                                ...prev.selectedTower,
+                                priority: tower.priority
+                            } as SelectedTower
+                        }));
+                    },
                     sellTower: () => {
                         store.set(gameStateAtom, prev => ({
                             ...prev,
@@ -185,14 +193,19 @@ export default function makeTower(
     tower.onUpdate(() => {
         if (tower.placed) {
             tower.shootTimer -= k.dt();
-            k.get("enemy").forEach(enemy => {
-                if (enemy.pos.dist(rangeCircle.pos) <= tower.stats.range * TILE_SIZE + TOWER_RANGE_TOLERANCE) {
-                    if (tower.shootTimer <= 0) {
-                        tower.shootTimer = tower.stats.fireInterval;
-                        tower.shoot?.(enemy);
-                    }
+
+            if (tower.shootTimer <= 0) {
+                const target = selectTarget(
+                    k.get("enemy"),
+                    tower,
+                    rangeCircle.pos,
+                );
+
+                if (target) {
+                    tower.shootTimer = tower.stats.fireInterval;
+                    tower.shoot?.(target);
                 }
-            });
+            }
         } else {
             const mousePos = k.mousePos();
             const gridX = Math.floor((mousePos.x - mapPosX) / TILE_SIZE);
@@ -223,4 +236,44 @@ export function addSelectTowerListener(k: KAPLAYCtx) {
             if (tower.selected && tower.placed && tower !== hoveredTower) tower.selected = false;
         });
     });
+}
+
+function selectTarget(
+    enemies: GameObj[],
+    tower: GameObj,
+    rangePos: Vec2,
+): GameObj | null {
+
+    let best: GameObj | null = null
+
+    for (const e of enemies) {
+        if (e.pos.dist(rangePos) > tower.stats.range * TILE_SIZE + TOWER_RANGE_TOLERANCE) {
+            continue;
+        }
+
+        if (!best) {
+            best = e;
+            continue;
+        }
+
+        switch (tower.priority) {
+            case "Most Progress":
+                if (e.pathIndex > best.pathIndex + e.segmentProgress) best = e;
+                break;
+
+            case "Least Progress":
+                if (e.pathIndex + e.segmentProgress < best.pathIndex) best = e;
+                break;
+
+            case "Highest HP":
+                if (e.hp() > best.hp()) best = e;
+                break;
+
+            case "Lowest HP":
+                if (e.hp() < best.hp()) best = e;
+                break;
+        }
+    }
+
+    return best;
 }

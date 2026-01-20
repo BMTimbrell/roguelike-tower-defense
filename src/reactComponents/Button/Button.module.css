@@ -1,0 +1,13 @@
+.button {
+    color: white;
+    background-color: var(--card-color);
+    font-size: 0.75em;
+    border-radius: 0.25em;
+    padding: 0.25em;
+    border: 1px solid rgba(255, 255, 255, 0.4);
+}
+
+.button:hover {
+    cursor: pointer;
+    background-color: rgb(114, 114, 114)
+}

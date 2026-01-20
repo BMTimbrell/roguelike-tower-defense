@@ -3,4 +3,5 @@ import type { KAPLAYCtx } from "kaplay";
 export default function loadAssets(k: KAPLAYCtx) {
     k.loadSprite("level1", "/sprites/level1.png");
     k.loadSprite("gold", "/sprites/coin.png");
+    k.loadSprite("heart", "/sprites/heart.png");
 }

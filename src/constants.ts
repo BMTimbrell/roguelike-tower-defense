@@ -1,4 +1,4 @@
-import type { Upgrade } from "./types";
+import type { Upgrade, LevelWaves, EnemyConfig } from "./types";
 
 export const VIRTUAL_WIDTH = 800;
 export const VIRTUAL_HEIGHT = 600;
@@ -45,7 +45,7 @@ export const UPGRADES: Upgrade[] = [{
     cost: 3,
     percentage: true
 },
-{    
+{
     stat: "damage",
     name: "Damage",
     icon: "sprites/damage-icon.png",
@@ -60,7 +60,7 @@ export const UPGRADES: Upgrade[] = [{
     amount: 1,
     cost: 1,
     percentage: false
-}, 
+},
 {
     stat: "range",
     name: "Range",
@@ -68,7 +68,7 @@ export const UPGRADES: Upgrade[] = [{
     amount: 3,
     cost: 2,
     percentage: false
-}, 
+},
 {
     stat: "range",
     name: "Range",
@@ -76,7 +76,7 @@ export const UPGRADES: Upgrade[] = [{
     amount: 5,
     cost: 3,
     percentage: false
-}, 
+},
 {
     stat: "fireInterval",
     name: "Fire Rate",
@@ -149,3 +149,49 @@ export const UPGRADES: Upgrade[] = [{
     cost: 3,
     percentage: true
 }] as const;
+
+export const LEVEL_WAVES = {
+    level1: {
+        startDelay: 2,
+        waves: [
+            { spawns: [
+                { id: "grunt", count: 3, interval: 0.6 },
+                { id: "tank", count: 2, interval: 0.4 },
+                { id: "fast", count: 5, interval: 0.4 }
+            ] },
+        ],
+    },
+
+    level2: {
+        waves: [
+            { spawns: [{ id: "fast", count: 5, interval: 0.4 }] },
+        ],
+    },
+} as const satisfies Record<string, LevelWaves>;
+
+export type LevelId = keyof typeof LEVEL_WAVES;
+
+export const ENEMIES = {
+    grunt: {
+        hp: 10,
+        damage: 1,
+        speed: 60,
+        sprite: "grunt",
+    },
+
+    fast: {
+        hp: 6,
+        damage: 1,
+        speed: 120,
+        sprite: "fast",
+    },
+
+    tank: {
+        hp: 50,
+        damage: 1,
+        speed: 30,
+        sprite: "tank",
+    },
+} as const satisfies Record<string, EnemyConfig>;
+
+export type EnemyId = keyof typeof ENEMIES;

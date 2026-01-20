@@ -1,5 +1,5 @@
 import { type MouseEventHandler } from "react";
-import { TILE_SIZE } from "./constants";
+import { TILE_SIZE, type EnemyId } from "./constants";
 import type { Vec2, GameObj } from "kaplay";
 
 
@@ -58,9 +58,12 @@ export type TowerButton = TowerBase & {
     onClick: MouseEventHandler<HTMLButtonElement>;
 };
 
+export type targetPriority = "Most Progress" | "Least Progress" | "Highest HP" | "Lowest HP";
+
 export type SelectedTower = TowerBase & {
     towerId: string;
     pos: Vec2;
+    priority: targetPriority;
     upgrades: Upgrade[];
     unlockedUpgradeSlots: number;
     upgradeCost: number;
@@ -72,6 +75,7 @@ export type SelectedTower = TowerBase & {
         critChance: number;
         critDamage: number;
     };
+    setPriority: (priority: targetPriority) => void;
     sellTower: () => void;
 };
 
@@ -95,6 +99,7 @@ export type GameState = {
     nextTowerId: number;
     selectedTower: SelectedTower | null;
     gold: number;
+    health: number;
     maxTowerUpgrades: number;
     upgrades: Upgrade[];
     deck: Deck;
@@ -103,5 +108,27 @@ export type GameState = {
         cost: number;
         baseCost: number;
         roll: () => void;
-    }
+    };
+};
+
+export type EnemySpawn = {
+    id: EnemyId;
+    count: number;
+    interval: number;
+};
+
+export type Wave = {
+    spawns: EnemySpawn[]
+};
+
+export type LevelWaves = {
+    startDelay?: number;
+    waves: Wave[];
+};
+
+export type EnemyConfig = {
+    hp: number;
+    damage: number;
+    speed: number;
+    sprite: string;
 };

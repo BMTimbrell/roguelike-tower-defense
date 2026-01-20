@@ -4,10 +4,12 @@ import makeTower, { addSelectTowerListener } from "../entities/tower";
 import type { MapData, Tower } from "../types";
 import { mapAtom, store, gameStateAtom } from "../store";
 import getMapScreenBounds from "../utils/getMapScreenBounds";
-import { VIRTUAL_WIDTH, VIRTUAL_HEIGHT, TILE_SIZE } from "../constants";
+import { VIRTUAL_WIDTH, VIRTUAL_HEIGHT, TILE_SIZE, LEVEL_WAVES } from "../constants";
 import generateDeck from "../utils/generateDeck";
 import drawCards from "../utils/drawCards";
 import reroll from "../utils/reroll";
+import showLevelStats from "../utils/showLevelStats";
+import makeWaveSpawner from "../entities/WaveSpawner";
 
 export default function level1(k: KAPLAYCtx) {
     k.scene("level1", async () => {
@@ -22,28 +24,7 @@ export default function level1(k: KAPLAYCtx) {
             "level1",
         ]);
 
-        k.add([
-            k.sprite("gold"),
-            k.scale(2),
-            k.pos(20),
-            "gold"
-        ]);
-
-        const goldText = k.add([
-            k.pos(38, 19),
-            k.color('#FFFFFF'),
-            k.text('' + store.get(gameStateAtom).gold, {
-                size: 20,
-                font: "free pixel"
-            }),
-            k.z(999),
-            "gold value",
-        ]);
-
-        goldText.onUpdate(() => goldText.use(k.text('' + store.get(gameStateAtom).gold, {
-            size: 20,
-            font: "free pixel"
-        })));
+        showLevelStats(k);
 
         // Compute screen bounds and save in store
         let mapBounds = getMapScreenBounds(k, mapData);
@@ -110,9 +91,7 @@ export default function level1(k: KAPLAYCtx) {
                             k,
                             {
                                 name: "Basic Tower",
-                                pos: k.mousePos(),
-                                placed: false,
-                                placeable: false,
+                                pos: k.mousePos().add(k.vec2(TILE_SIZE)),
                                 stats: {
                                     damage: 4,
                                     range: 3,
@@ -120,7 +99,6 @@ export default function level1(k: KAPLAYCtx) {
                                     critChance: 5,
                                     critDamage: 100,
                                 },
-                                selected: true,
                                 shootTimer: 0,
                                 cost: 50,
                             } as Tower,
@@ -168,7 +146,10 @@ export default function level1(k: KAPLAYCtx) {
             ?.objects?.map(obj => k.vec2(mapPosX + obj.x + TILE_SIZE / 2, mapPosY + obj.y + TILE_SIZE / 2));
 
         if (waypoints) {
-            makeEnemy(k, waypoints);
+            const spawner = makeWaveSpawner(k, "level1", waypoints);
+            k.wait(LEVEL_WAVES["level1"].startDelay ?? 0, () => {
+                spawner.startNextWave();
+            });
         } else throw new Error("Waypoints undefined");
     });
 }

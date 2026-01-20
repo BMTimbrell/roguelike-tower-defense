@@ -2,15 +2,17 @@ import styles from "./SelectedTower.module.css";
 import { useState, useEffect } from "react";
 import { gameStateAtom, mapAtom } from '../../store';
 import { useAtom } from 'jotai';
-import type { SelectedTower, USlot } from '../../types';
+import type { SelectedTower, targetPriority, USlot } from '../../types';
 import UpgradeSlot from "../UpgradeSlot/UpgradeSlot";
 import { MAX_TOWER_UPGRADES } from '../../constants';
 import CostText from "../CostText/CostText";
 import Popup from "../Popup/Popup";
+import Button from "../Button/Button";
 
 export default function SelectedTower({ tower }: { tower: SelectedTower }) {
     const {
         name,
+        priority,
         stats,
         cost,
         pos,
@@ -19,6 +21,7 @@ export default function SelectedTower({ tower }: { tower: SelectedTower }) {
         upgradeCost,
         addUpgradeSlot,
         setUpgrades,
+        setPriority,
         sellTower
     } = tower;
     const [gameState, setGameState] = useAtom(gameStateAtom);
@@ -35,6 +38,8 @@ export default function SelectedTower({ tower }: { tower: SelectedTower }) {
         highlighted: false,
         purchasable: isPurchasable(index)
     })));
+    const priorities: targetPriority[] = ["Most Progress", "Least Progress", "Highest HP", "Lowest HP"];
+    let priorityIndex = priorities.findIndex(p => p === priority);
 
     function highlightUpgradeSlots(slots: USlot[]): number[] {
         if (selectedUpgrade) {
@@ -120,11 +125,26 @@ export default function SelectedTower({ tower }: { tower: SelectedTower }) {
         <Popup mode="world" pos={pos}>
             <div className={styles.name}>{name}</div>
             <div className={styles.stats}>
-                <div>Damage: {damage}</div>
-                <div>Fire Rate: {(1 / fireInterval).toFixed(1)}/sec</div>
-                <div>Range: {range}</div>
-                <div>Crit Chance: {critChance}%</div>
-                <div>Crit Damage: {critDamage}%</div>
+                <div>
+                    <img width={`${16 * scale}px`} src="sprites/damage-icon.png" />
+                    Damage: {damage}
+                </div>
+                <div>
+                    <img width={`${16 * scale}px`} src="sprites/firerate-icon.png" />
+                    Fire Rate: {(1 / fireInterval).toFixed(1)}/sec
+                </div>
+                <div>
+                    <img width={`${16 * scale}px`} src="sprites/range-icon.png" />
+                    Range: {range}
+                </div>
+                <div>
+                    <img width={`${16 * scale}px`} src="sprites/critchance-icon.png" />
+                    Crit Chance: {critChance}%
+                </div>
+                <div>
+                    <img width={`${16 * scale}px`} src="sprites/critdamage-icon.png" />
+                    Crit Damage: {critDamage}%
+                </div>
             </div>
             <div className={styles.upgrades}>
                 {upgradeSlots.map((slot, index) => (
@@ -142,7 +162,16 @@ export default function SelectedTower({ tower }: { tower: SelectedTower }) {
                 ))}
             </div>
 
-            <button onClick={sellTower} className={styles.sell}>Sell <img width={`${8 * scale}px`} src="sprites/coin.png" />{cost / 2}</button>
+            <Button style={{ marginBottom: "0.5em" }} onClick={() => setPriority(priorities[priorityIndex < priorities.length - 1 ? priorityIndex + 1: 0])}>
+                <div className={styles.progress}>
+                    <img style={{ width: `${16 * scale}px`, marginRight: '0.125em'}}  src="sprites/target2.png" />
+                    <div>{priority}</div>
+                </div>
+            </Button><br />
+
+            <Button onClick={sellTower}>
+                Sell <img style={{ width: `${8 * scale}px`, marginRight: '0.125em'}}  src="sprites/coin.png" />{cost / 2}
+            </Button>
         </Popup>
     );
 }
