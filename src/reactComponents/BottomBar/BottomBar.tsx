@@ -9,7 +9,7 @@ import RerollCardsButton from '../RerollCardsButton/RerollCardsButton';
 export function BottomBar() {
     const [map] = useAtom(mapAtom);
     const [gameState] = useAtom(gameStateAtom);
-    const { towers, upgrades } = gameState;
+    const { towerButtons, upgrades } = gameState;
     const tileSize = 32;
 
     return (
@@ -23,14 +23,14 @@ export function BottomBar() {
             }}
             className={styles.container}
         >
-            {towers.map((tower, index) => (
+            {towerButtons.map((t, index) => (
                 <TowerButton
                     key={index}
-                    name={tower.name}
-                    stats={tower.stats}
+                    name={t.name}
+                    stats={t.stats}
                     scale={map.scale}
-                    onClick={tower.onClick}
-                    cost={tower.cost}
+                    onClick={t.onClick}
+                    cost={t.cost}
                 />
             ))}
 

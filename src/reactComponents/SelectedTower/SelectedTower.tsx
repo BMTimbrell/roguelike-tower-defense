@@ -2,14 +2,14 @@ import styles from "./SelectedTower.module.css";
 import { useState, useEffect } from "react";
 import { gameStateAtom, mapAtom } from '../../store';
 import { useAtom } from 'jotai';
-import type { SelectedTower, targetPriority, USlot } from '../../types';
+import type { SelectedTowerUI, TargetPriority, USlot } from '../../types';
 import UpgradeSlot from "../UpgradeSlot/UpgradeSlot";
 import { MAX_TOWER_UPGRADES } from '../../constants';
 import CostText from "../CostText/CostText";
 import Popup from "../Popup/Popup";
 import Button from "../Button/Button";
 
-export default function SelectedTower({ tower }: { tower: SelectedTower }) {
+export default function SelectedTower({ tower }: { tower: SelectedTowerUI }) {
     const {
         name,
         priority,
@@ -38,7 +38,7 @@ export default function SelectedTower({ tower }: { tower: SelectedTower }) {
         highlighted: false,
         purchasable: isPurchasable(index)
     })));
-    const priorities: targetPriority[] = ["Most Progress", "Least Progress", "Highest HP", "Lowest HP"];
+    const priorities: TargetPriority[] = ["Most Progress", "Least Progress", "Highest HP", "Lowest HP"];
     let priorityIndex = priorities.findIndex(p => p === priority);
 
     function highlightUpgradeSlots(slots: USlot[]): number[] {

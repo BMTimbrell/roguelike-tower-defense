@@ -1,10 +1,9 @@
 import type { KAPLAYCtx } from "kaplay";
-import makeEnemy from "../entities/enemy";
 import makeTower, { addSelectTowerListener } from "../entities/tower";
-import type { MapData, Tower } from "../types";
+import type { MapData } from "../types";
 import { mapAtom, store, gameStateAtom } from "../store";
 import getMapScreenBounds from "../utils/getMapScreenBounds";
-import { VIRTUAL_WIDTH, VIRTUAL_HEIGHT, TILE_SIZE, LEVEL_WAVES } from "../constants";
+import { VIRTUAL_WIDTH, VIRTUAL_HEIGHT, TILE_SIZE, TOWERS } from "../constants";
 import generateDeck from "../utils/generateDeck";
 import drawCards from "../utils/drawCards";
 import reroll from "../utils/reroll";
@@ -72,39 +71,22 @@ export default function level1(k: KAPLAYCtx) {
         const upgrades = drawCards(k, deck, 3);
         store.set(gameStateAtom, prev => ({
             ...prev,
-            towers: [
-                ...prev.towers,
+            towerButtons: [
+                ...prev.towerButtons,
                 {
-                    name: "Basic Tower",
-                    cost: 50,
-                    stats: {
-                        damage: 4,
-                        range: 3,
-                        fireInterval: 0.75,
-                        critChance: 5,
-                        critDamage: 100,
-                    },
+                    ...TOWERS["basic"],
                     onClick: () => {
                         const unplacedTower = k.get("tower").find(t => !t.placed);
                         if (unplacedTower) k.destroy(unplacedTower);
                         else makeTower(
                             k,
                             {
-                                name: "Basic Tower",
+                                towerId: "basic",
                                 pos: k.mousePos().add(k.vec2(TILE_SIZE)),
-                                stats: {
-                                    damage: 4,
-                                    range: 3,
-                                    fireInterval: 0.75,
-                                    critChance: 5,
-                                    critDamage: 100,
-                                },
-                                shootTimer: 0,
-                                cost: 50,
-                            } as Tower,
-                            tileGrid,
-                            mapPosX,
-                            mapPosY
+                                mapPosX,
+                                mapPosY,
+                                tileGrid
+                            }
                         );
 
                         store.set(gameStateAtom, prev => ({
@@ -146,10 +128,7 @@ export default function level1(k: KAPLAYCtx) {
             ?.objects?.map(obj => k.vec2(mapPosX + obj.x + TILE_SIZE / 2, mapPosY + obj.y + TILE_SIZE / 2));
 
         if (waypoints) {
-            const spawner = makeWaveSpawner(k, "level1", waypoints);
-            k.wait(LEVEL_WAVES["level1"].startDelay ?? 0, () => {
-                spawner.startNextWave();
-            });
+            makeWaveSpawner(k, "level1", waypoints);
         } else throw new Error("Waypoints undefined");
     });
 }

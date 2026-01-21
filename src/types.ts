@@ -1,5 +1,5 @@
 import { type MouseEventHandler } from "react";
-import { TILE_SIZE, type EnemyId } from "./constants";
+import { TILE_SIZE, type EnemyId, type TowerId } from "./constants";
 import type { Vec2, GameObj } from "kaplay";
 
 
@@ -24,17 +24,37 @@ export type MapData = {
     layers: Layer[];
 };
 
-type TowerBase = {
+export type TowerStats = {
+    damage: number;
+    range: number;
+    fireInterval: number;
+    critChance: number;
+    critDamage: number;
+};
+
+export type TowerDef = {
     name: string;
     cost: number;
-    stats: {
-        damage: number;
-        range: number;
-        fireInterval: number;
-        critChance: number;
-        critDamage: number;
-    }
+    stats: TowerStats;
 };
+
+export type TowerInstance = TowerDef & {
+    instanceId: string;
+    towerId: TowerId;
+    pos: Vec2;
+    priority: TargetPriority;
+    upgrades: Upgrade[];
+    unlockedUpgradeSlots: number;
+    upgradeCost: number;
+    selected: boolean;
+    placeable: boolean;
+    placed: boolean;
+    hovered: boolean;
+    shootTimer: number;
+    shoot?: (target: GameObj) => void;
+};
+
+export type TowerGameObj = GameObj & TowerInstance;
 
 export type Upgrade = {
     stat: "damage" | "range" | "fireInterval" | "critChance" | "critDamage";
@@ -54,19 +74,20 @@ export type USlot = {
     purchasable: boolean;
 };
 
-export type TowerButton = TowerBase & {
+export type TowerButton = TowerDef & {
     onClick: MouseEventHandler<HTMLButtonElement>;
 };
 
-export type targetPriority = "Most Progress" | "Least Progress" | "Highest HP" | "Lowest HP";
+export type TargetPriority = "Most Progress" | "Least Progress" | "Highest HP" | "Lowest HP";
 
-export type SelectedTower = TowerBase & {
-    towerId: string;
-    pos: Vec2;
-    priority: targetPriority;
-    upgrades: Upgrade[];
-    unlockedUpgradeSlots: number;
-    upgradeCost: number;
+export type SelectedTowerUI = Omit<TowerInstance, 
+    | "selected"
+    | "placed"
+    | "hovered"
+    | "placeable"
+    | "shootTimer"
+    | "shoot"
+> & {
     addUpgradeSlot: () => void;
     setUpgrades: (upgrades: Upgrade[]) => {
         damage: number;
@@ -75,17 +96,8 @@ export type SelectedTower = TowerBase & {
         critChance: number;
         critDamage: number;
     };
-    setPriority: (priority: targetPriority) => void;
+    setPriority: (priority: TargetPriority) => void;
     sellTower: () => void;
-};
-
-export type Tower = TowerBase & SelectedTower & {
-    placed: boolean;
-    placeable: boolean;
-    selected: boolean;
-    hovered: boolean;
-    shoot?: (target: GameObj) => void;
-    shootTimer: number;
 };
 
 export type Deck = {
@@ -95,9 +107,9 @@ export type Deck = {
 };
 
 export type GameState = {
-    towers: TowerButton[];
+    towerButtons: TowerButton[];
     nextTowerId: number;
-    selectedTower: SelectedTower | null;
+    selectedTower: SelectedTowerUI | null;
     gold: number;
     health: number;
     maxTowerUpgrades: number;
@@ -118,11 +130,12 @@ export type EnemySpawn = {
 };
 
 export type Wave = {
-    spawns: EnemySpawn[]
+    spawns: EnemySpawn[];
+    reward: number;
 };
 
 export type LevelWaves = {
-    startDelay?: number;
+    startDelay: number;
     waves: Wave[];
 };
 

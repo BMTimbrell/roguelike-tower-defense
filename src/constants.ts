@@ -1,4 +1,4 @@
-import type { Upgrade, LevelWaves, EnemyConfig } from "./types";
+import type { Upgrade, LevelWaves, EnemyConfig, TowerDef } from "./types";
 
 export const VIRTUAL_WIDTH = 800;
 export const VIRTUAL_HEIGHT = 600;
@@ -152,19 +152,31 @@ export const UPGRADES: Upgrade[] = [{
 
 export const LEVEL_WAVES = {
     level1: {
-        startDelay: 2,
+        startDelay: 30,
         waves: [
-            { spawns: [
-                { id: "grunt", count: 3, interval: 0.6 },
-                { id: "tank", count: 2, interval: 0.4 },
-                { id: "fast", count: 5, interval: 0.4 }
-            ] },
+            {
+                spawns: [
+                    { id: "grunt", count: 3, interval: 0.6 },
+                    { id: "fast", count: 5, interval: 0.4 }
+                ],
+                reward: 50
+            },
+            {
+                spawns: [
+                    { id: "tank", count: 2, interval: 0.4 }
+                ],
+                reward: 80
+            }
         ],
     },
 
     level2: {
+        startDelay: 30,
         waves: [
-            { spawns: [{ id: "fast", count: 5, interval: 0.4 }] },
+            { 
+                spawns: [{ id: "fast", count: 5, interval: 0.4 }],
+                reward: 50
+            }
         ],
     },
 } as const satisfies Record<string, LevelWaves>;
@@ -195,3 +207,19 @@ export const ENEMIES = {
 } as const satisfies Record<string, EnemyConfig>;
 
 export type EnemyId = keyof typeof ENEMIES;
+
+export const TOWERS = {
+  basic: { 
+    name: "Basic Tower",
+    cost: 50,
+    stats: {
+        damage: 4,
+        range: 3,
+        fireInterval: 0.75,
+        critChance: 5,
+        critDamage: 100
+    }
+   }
+} as const satisfies Record<string, TowerDef>;
+
+export type TowerId = keyof typeof TOWERS;

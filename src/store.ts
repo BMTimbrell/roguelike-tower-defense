@@ -2,7 +2,7 @@ import { atom, createStore } from "jotai";
 import type { GameState } from "./types";
 
 export const gameStateAtom = atom<GameState>({
-    towers: [],
+    towerButtons: [],
     selectedTower: null,
     nextTowerId: 0,
     health: 10,

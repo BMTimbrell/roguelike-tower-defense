@@ -26,6 +26,10 @@ export default function makeEnemy(k: KAPLAYCtx, enemyId: EnemyId, waypoints: Vec
     ]);
 
     enemy.onDeath(() => {
+        store.set(gameStateAtom, prev => ({
+            ...prev,
+            gold: prev.gold + enemy.damage
+        }));
         k.destroy(enemy);
     });
 

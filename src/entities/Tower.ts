@@ -1,27 +1,25 @@
 import type { KAPLAYCtx, GameObj, Vec2 } from 'kaplay';
-import { TILE_SIZE, TOWER_RANGE_TOLERANCE } from '../constants';
+import { TILE_SIZE, TOWER_RANGE_TOLERANCE, type TowerId } from '../constants';
 import makeProjectile from './projectile';
-import type { SelectedTower, targetPriority, Tower, Upgrade } from '../types';
+import type { SelectedTowerUI, Upgrade, TargetPriority, TowerGameObj } from '../types';
 import { store, gameStateAtom } from '../store';
 import { calcUpgradeCost } from '../utils/calcUpgradeCost';
+import { TOWERS } from '../constants';
 
 export default function makeTower(
     k: KAPLAYCtx,
-    {
-        pos,
-        name,
-        stats,
-        shootTimer,
-        cost,
-        unlockedUpgradeSlots = 1,
-        upgrades = [],
-        upgradeCost = calcUpgradeCost(cost, unlockedUpgradeSlots)
-    }: Tower,
-    tileGrid: boolean[][],
-    mapPosX: number,
-    mapPosY: number
+    opts: {
+        towerId: TowerId
+        pos: Vec2,
+        tileGrid: boolean[][],
+        mapPosX: number,
+        mapPosY: number
+    }
 ): GameObj {
     k.get("tower").forEach(tower => tower.selected = false);
+
+    const { towerId, pos, tileGrid, mapPosX, mapPosY } = opts;
+    const { name, cost, stats } = TOWERS[towerId];
 
     const tower = k.add([
         k.rect(32, 32),
@@ -32,23 +30,24 @@ export default function makeTower(
         }),
         k.opacity(0.5),
         {
-            towerId: `tower-${store.get(gameStateAtom).nextTowerId}`,
+            instanceId: `tower-${store.get(gameStateAtom).nextTowerId}`,
+            towerId,
             name,
+            cost,
             priority: "Most Progress",
             placed: false,
             placeable: false,
             selected: true,
             hovered: true,
-            stats,
-            shootTimer,
-            cost,
-            unlockedUpgradeSlots,
-            upgrades,
-            upgradeCost
-        } as Tower,
+            stats: { ...stats },
+            shootTimer: 0,
+            unlockedUpgradeSlots: 1,
+            upgrades: [],
+            upgradeCost: calcUpgradeCost(cost, 1)
+        },
         "tower",
-        name
-    ]);
+        towerId
+    ]) as TowerGameObj;
 
     function shoot(target: GameObj) {
         const roll = Math.random();
@@ -116,7 +115,7 @@ export default function makeTower(
             store.set(gameStateAtom, prev => ({
                 ...prev,
                 selectedTower: {
-                    towerId: tower.towerId,
+                    towerId: tower.instanceId,
                     pos: tower.screenPos(),
                     priority: tower.priority,
                     name: tower.name,
@@ -141,7 +140,7 @@ export default function makeTower(
                                     ...prev.selectedTower,
                                     unlockedUpgradeSlots: tower.unlockedUpgradeSlots,
                                     upgradeCost: tower.upgradeCost
-                                } as SelectedTower
+                                } as SelectedTowerUI
                             }));
                         }
                     },
@@ -162,14 +161,14 @@ export default function makeTower(
                         });
                         return tower.stats;
                     },
-                    setPriority: (priority: targetPriority) => {
+                    setPriority: (priority: TargetPriority) => {
                         tower.priority = priority;
                         store.set(gameStateAtom, prev => ({
                             ...prev,
                             selectedTower: {
                                 ...prev.selectedTower,
                                 priority: tower.priority
-                            } as SelectedTower
+                            } as SelectedTowerUI
                         }));
                     },
                     sellTower: () => {
@@ -180,7 +179,7 @@ export default function makeTower(
                         }));
                         k.destroy(tower)
                     }
-                } as SelectedTower
+                } as SelectedTowerUI
             }));
         } else if (!k.get("tower").some(t => t.selected && t.placed)) {
             store.set(gameStateAtom, prev => ({
@@ -258,11 +257,11 @@ function selectTarget(
 
         switch (tower.priority) {
             case "Most Progress":
-                if (e.pathIndex > best.pathIndex + e.segmentProgress) best = e;
+                if (e.pathIndex + e.segmentProgress > best.pathIndex + best.segmentProgress) best = e;
                 break;
 
             case "Least Progress":
-                if (e.pathIndex + e.segmentProgress < best.pathIndex) best = e;
+                if (e.pathIndex + e.segmentProgress < best.pathIndex + best.segmentProgress) best = e;
                 break;
 
             case "Highest HP":
