@@ -3,10 +3,11 @@ import styles from './Popup.module.css';
 import { mapAtom } from '../../store';
 import { useAtom } from 'jotai';
 
-export default function Popup({ mode, pos, children }: { mode: "world" | "screen" ; pos: { x: number; y: number; }, children: React.ReactNode }) {
+export default function Popup({ mode, pos, children }: { mode: "world" | "screen"; pos: { x: number; y: number; }, children: React.ReactNode }) {
     const popupRef = useRef<HTMLDivElement | null>(null);
     const [map] = useAtom(mapAtom);
-    const [yOffset, setYOffset] = useState(0);
+    const [y, setY] = useState(0);
+    const [x, setX] = useState(0);
     const scale = map.scale;
 
     useLayoutEffect(() => {
@@ -16,12 +17,21 @@ export default function Popup({ mode, pos, children }: { mode: "world" | "screen
         const rect = el.getBoundingClientRect();
         const padding = 8;
 
-        const overflowBottom = rect.bottom - window.innerHeight + padding;
+        if (pos.y * scale + rect.height > window.innerHeight - padding) {
+            setY(window.innerHeight - rect.height - padding);
 
-        if (overflowBottom > 0) {
-            setYOffset(-overflowBottom);
+        } else if (pos.y < 0) {
+            setY(0);
         } else {
-            setYOffset(0);
+            setY(pos.y * scale);
+        }
+
+        if (pos.x * scale + rect.width > window.innerWidth - padding) {
+            setX(window.innerWidth - rect.width - padding);
+        } else if (pos.x < 0) {
+            setX(0);
+        } else {
+            setX(pos.x * scale);
         }
 
     }, [pos.x, pos.y, scale]);
@@ -31,8 +41,10 @@ export default function Popup({ mode, pos, children }: { mode: "world" | "screen
             ref={popupRef}
             className={styles.container}
             style={{
-                '--x': mode === "world" ? `calc(${map.x}px + ${pos.x} * ${scale}px)` : `${pos.x}px`,
-                '--y': mode === "world" ? `calc(${map.y}px + ${pos.y} * ${scale}px + ${yOffset}px)` : `${pos.y}px`,
+                '--x': mode === "world" ? `${x}px` : `${pos.x}px`,
+                '--y': mode === "world"
+                    ? `${y}px`
+                    : `${pos.y}px`,
                 fontSize: `calc(16px * ${scale})`
             } as React.CSSProperties}
         >

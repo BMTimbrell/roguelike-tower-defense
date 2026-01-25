@@ -1,11 +1,9 @@
 .container {
     position: fixed;
-    --x: 0;
-    --y: 0;
-    top: var(--y);
-    left: var(--x);
+    top: var(--y, 0);
+    left: var(--x, 0);
     color: white;
-    background: rgb(3, 3, 3, 0.8);
+    background: rgb(3 3 3 / 0.8);
     padding: 0.5em;
     user-select: none;
     z-index: 5;

@@ -1,6 +1,6 @@
 .container {
     position: absolute;
-    background: gray;
+    background: transparent;
     user-select: none;
     display: flex;
     justify-content: space-between;

@@ -5,6 +5,7 @@ export const VIRTUAL_HEIGHT = 600;
 export const TILE_SIZE = 32;
 export const TOWER_RANGE_TOLERANCE = 5;
 export const MAX_TOWER_UPGRADES = 5;
+export const FOG_Z = 900;
 export const UPGRADES: Upgrade[] = [{
     stat: "damage",
     name: "Damage",

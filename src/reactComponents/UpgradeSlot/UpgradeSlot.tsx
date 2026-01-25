@@ -21,6 +21,7 @@ export default function UpgradeSlot({ upgrade, selectedUpgrade, unlocked, onClic
     const [pos, setPos] = useState<{ x: number; y: number; } | null>(null);
     const [map] = useAtom(mapAtom);
     const scale = map.scale;
+    const iconSize = `${16 * scale}px`;
 
     return (
         <>
@@ -40,10 +41,10 @@ export default function UpgradeSlot({ upgrade, selectedUpgrade, unlocked, onClic
                 {!unlocked && <div className={styles.cost}>
                     {children}
                 </div>}
-                {selectedUpgrade && highlighted && <img src={selectedUpgrade.icon} />}
+                {selectedUpgrade && highlighted && <img width={iconSize} src={selectedUpgrade.icon} />}
                 {upgrade && (
                     <div className={`${styles.upgrade} ${active && upgrade.cost > 1 ? styles[`multi-slot${upgrade.cost}`] : ''}`}>
-                        <img src={upgrade.icon} />
+                        <img width={iconSize} src={upgrade.icon} />
                     </div>
                 )}
             </div>

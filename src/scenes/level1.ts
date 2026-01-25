@@ -1,9 +1,8 @@
 import type { KAPLAYCtx } from "kaplay";
-import makeTower, { addSelectTowerListener } from "../entities/tower";
+import makeTower, { addSelectTowerListener } from "../entities/Tower";
 import type { MapData } from "../types";
 import { mapAtom, store, gameStateAtom } from "../store";
-import getMapScreenBounds from "../utils/getMapScreenBounds";
-import { VIRTUAL_WIDTH, VIRTUAL_HEIGHT, TILE_SIZE, TOWERS } from "../constants";
+import { TILE_SIZE, TOWERS, FOG_Z } from "../constants";
 import generateDeck from "../utils/generateDeck";
 import drawCards from "../utils/drawCards";
 import reroll from "../utils/reroll";
@@ -14,35 +13,93 @@ export default function level1(k: KAPLAYCtx) {
     k.scene("level1", async () => {
         const mapData: MapData = await (await fetch("data/level1.json")).json();
 
-        const mapPosX = (VIRTUAL_WIDTH - mapData.width * mapData.tilewidth) / 2;
-        const mapPosY = (VIRTUAL_HEIGHT - mapData.height * mapData.tileheight) / 2;
-
         k.add([
             k.sprite("level1"),
-            k.pos(k.vec2(mapPosX, mapPosY)),
+            k.pos(k.vec2(0)),
             "level1",
         ]);
 
         showLevelStats(k);
 
         // Compute screen bounds and save in store
-        let mapBounds = getMapScreenBounds(k, mapData);
+        const mapPosX = 0;
+        const mapPosY = 0;
+        const mapWorldWidth = mapData.width * mapData.tilewidth;
+        const mapWorldHeight = mapData.height * mapData.tileheight;
+        const zoom = k.width() < 800 ? 1 : 2;
+        k.setCamScale(zoom);
+
+        k.onUpdate(() => {
+            const speed = 400 * k.dt();
+
+            if (k.isKeyDown("a")) k.setCamPos(k.getCamPos().add(-speed, 0));
+            if (k.isKeyDown("d")) k.setCamPos(k.getCamPos().add(speed, 0));
+            if (k.isKeyDown("w")) k.setCamPos(k.getCamPos().add(0, -speed));
+            if (k.isKeyDown("s")) k.setCamPos(k.getCamPos().add(0, speed));
+        });
+
+        const viewW = k.width() / zoom;
+        const viewH = k.height() / zoom;
+        const minX = viewW / 2;
+        const minY = viewH / 2;
+        const maxX = mapWorldWidth - viewW / 2;
+        const maxY = mapWorldHeight - viewH / 2;
+
+        k.add([
+            k.sprite("fog", { width: 512, height: mapWorldHeight }),
+            k.pos(-512, 0),
+            k.opacity(0.85),
+            k.z(FOG_Z)
+        ]);
+
+        k.add([
+            k.sprite("fog", { width: 512, height: mapWorldHeight }),
+            k.pos(mapWorldWidth, 0),
+            k.opacity(0.85),
+            k.z(FOG_Z)
+        ]);
+
+        k.add([
+            k.sprite("fog", { width: mapWorldWidth, height: 512 }),
+            k.pos(0, -512),
+            k.opacity(0.85),
+            k.z(FOG_Z)
+        ]);
+
+        k.add([
+            k.sprite("fog", { width: mapWorldWidth, height: 512 }),
+            k.pos(0, mapWorldHeight),
+            k.opacity(0.85),
+            k.z(FOG_Z)
+        ]);
+
+        k.onUpdate(() => {
+            const p = k.getCamPos();
+
+            k.setCamPos(
+                k.vec2(
+                    k.clamp(p.x, minX, maxX),
+                    k.clamp(p.y, minY, maxY),
+                )
+            );
+        });
+        
         store.set(mapAtom, {
-            x: mapBounds.x,
-            y: mapBounds.y,
-            width: mapBounds.width,
-            height: mapBounds.height,
-            scale: mapBounds.scale,
+            x: 0,
+            y: 0,
+            width: 0,
+            height: 0,
+            scale: k.getCamScale().x,
         });
 
         k.onResize(() => {
-            mapBounds = getMapScreenBounds(k, mapData);
+            k.setCamScale(k.width() < 800 ? 1 : 2);
             store.set(mapAtom, {
-                x: mapBounds.x,
-                y: mapBounds.y,
-                width: mapBounds.width,
-                height: mapBounds.height,
-                scale: mapBounds.scale,
+                x: 0,
+                y: 0,
+                width: 0,
+                height: 0,
+                scale: k.getCamScale().x,
             });
         });
 
@@ -57,13 +114,14 @@ export default function level1(k: KAPLAYCtx) {
 
         const cursor = k.add([
             "cursor",
-            k.pos(k.mousePos()),
+            k.pos(k.toWorld(k.mousePos())),
             k.area({
                 shape: new k.Rect(k.vec2(0), 1, 1)
-            })]);
+            })
+        ]);
 
         cursor.onUpdate(() => {
-            cursor.pos = k.mousePos();
+            cursor.pos = k.toWorld(k.mousePos());
         });
 
         // Deck and upgrades setup
@@ -82,7 +140,7 @@ export default function level1(k: KAPLAYCtx) {
                             k,
                             {
                                 towerId: "basic",
-                                pos: k.mousePos().add(k.vec2(TILE_SIZE)),
+                                pos: k.toWorld(k.mousePos()),
                                 mapPosX,
                                 mapPosY,
                                 tileGrid
@@ -125,7 +183,7 @@ export default function level1(k: KAPLAYCtx) {
         // Waypoints for enemies
         const waypoints = mapData.layers
             .find(layer => layer.name === "Waypoints")
-            ?.objects?.map(obj => k.vec2(mapPosX + obj.x + TILE_SIZE / 2, mapPosY + obj.y + TILE_SIZE / 2));
+            ?.objects?.map(obj => k.vec2(obj.x + TILE_SIZE / 2, obj.y + TILE_SIZE / 2));
 
         if (waypoints) {
             makeWaveSpawner(k, "level1", waypoints);

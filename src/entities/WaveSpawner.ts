@@ -4,6 +4,7 @@ import type { Wave } from "../types";
 import { LEVEL_WAVES } from "../constants";
 import makeEnemy from "./enemy";
 import { store, gameStateAtom } from "../store";
+import screenPos from "../utils/screenPos";
 
 export default function makeWaveSpawner(k: KAPLAYCtx, levelId: LevelId, waypoints: Vec2[]): GameObj {
     const level = LEVEL_WAVES[levelId];
@@ -91,8 +92,9 @@ export default function makeWaveSpawner(k: KAPLAYCtx, levelId: LevelId, waypoint
 
     });
 
+    const waveTextPos = k.vec2(20, 15);
     const waveText = k.add([
-        k.pos(20, 15),
+        k.pos(waveTextPos),
         k.color('#FFFFFF'),
         k.text("", {
             size: 20,
@@ -112,6 +114,8 @@ export default function makeWaveSpawner(k: KAPLAYCtx, levelId: LevelId, waypoint
                         { size: 20, font: "free pixel" }
                     ));
                 }
+
+                waveText.pos = screenPos(k, waveTextPos);
             }
         }
     ]);

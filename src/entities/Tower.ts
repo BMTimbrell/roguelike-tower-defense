@@ -24,7 +24,7 @@ export default function makeTower(
     const tower = k.add([
         k.rect(32, 32),
         k.pos(pos),
-        k.color(255, 255, 255),
+        k.color("#FFFFFF"),
         k.area({
             shape: new k.Rect(k.vec2(0), 32, 32)
         }),
@@ -48,6 +48,22 @@ export default function makeTower(
         "tower",
         towerId
     ]) as TowerGameObj;
+
+    const gun = k.add([
+        k.sprite("basic tower"),
+        k.pos(tower.pos.add(16, 16)),
+        k.anchor("center"),
+        k.rotate(),
+        k.opacity(0.5),
+        k.scale(1),
+        {
+            rot: 0,
+            update() {
+                gun.pos = tower.pos.add(k.vec2(tower.width / 2, tower.height / 2));
+                gun.opacity = tower.opacity;
+            }
+        },
+    ]);
 
     function shoot(target: GameObj) {
         const roll = Math.random();
@@ -85,6 +101,7 @@ export default function makeTower(
 
     tower.onDestroy(() => {
         k.destroy(rangeCircle);
+        k.destroy(gun);
         const gridX = Math.floor((tower.pos.x - mapPosX) / TILE_SIZE);
         const gridY = Math.floor((tower.pos.y - mapPosY) / TILE_SIZE);
         tileGrid[gridY][gridX] = false;
@@ -98,6 +115,7 @@ export default function makeTower(
 
     tower.onMouseDown("left", () => {
         if (!tower.placed && tower.placeable) {
+            tower.use(k.color("#858585"));
             tower.placed = true;
             tower.selected = false;
             tower.opacity = 1;
@@ -116,7 +134,7 @@ export default function makeTower(
                 ...prev,
                 selectedTower: {
                     towerId: tower.instanceId,
-                    pos: tower.screenPos(),
+                    pos: tower.screenPos().scale(1 / k.getCamScale().x, 1 / k.getCamScale().y),
                     priority: tower.priority,
                     name: tower.name,
                     stats: tower.stats,
@@ -177,7 +195,7 @@ export default function makeTower(
                             gold: prev.gold + tower.cost / 2,
                             selectedTower: null
                         }));
-                        k.destroy(tower)
+                        k.destroy(tower);
                     }
                 } as SelectedTowerUI
             }));
@@ -193,25 +211,35 @@ export default function makeTower(
         if (tower.placed) {
             tower.shootTimer -= k.dt();
 
-            if (tower.shootTimer <= 0) {
-                const target = selectTarget(
-                    k.get("enemy"),
-                    tower,
-                    rangeCircle.pos,
-                );
+            const target = selectTarget(
+                k.get("enemy"),
+                tower,
+                rangeCircle.pos,
+            );
 
-                if (target) {
-                    tower.shootTimer = tower.stats.fireInterval;
-                    tower.shoot?.(target);
-                }
+            if (target) {
+                const desired = gun.pos.angle(target.pos);
+                const turnSpeed = 12; // radians per second
+
+                const diff = shortestAngleDiff(gun.angle, desired);
+                gun.angle += diff * Math.min(1, turnSpeed * k.dt());
+            }
+
+            if (tower.shootTimer <= 0 && target) {
+                tower.shootTimer = tower.stats.fireInterval;
+
+                gun.angle = gun.pos.angle(target.pos);
+
+                tower.shoot?.(target);
+                // optional: gun.play("shoot")
             }
         } else {
-            const mousePos = k.mousePos();
+            const mousePos = k.toWorld(k.mousePos());
             const gridX = Math.floor((mousePos.x - mapPosX) / TILE_SIZE);
             const gridY = Math.floor((mousePos.y - mapPosY) / TILE_SIZE);
 
-            const blocked = tileGrid[gridY]?.[gridX] || false;
-            tower.color = k.Color.fromHex(blocked ? "#FF0000" : "#FFFFFF");
+            const blocked = tileGrid[gridY]?.[gridX] === true || tileGrid[gridY]?.[gridX] === undefined || false;
+            tower.color = k.Color.fromHex(blocked ? "#FF0000" : "#008deb");
 
             tower.pos = k.vec2(mapPosX + gridX * TILE_SIZE, mapPosY + gridY * TILE_SIZE);
             rangeCircle.pos = tower.pos.add(TILE_SIZE / 2, TILE_SIZE / 2);
@@ -275,4 +303,11 @@ function selectTarget(
     }
 
     return best;
+}
+
+function shortestAngleDiff(a: number, b: number) {
+    let diff = b - a;
+    while (diff > Math.PI) diff -= Math.PI * 2;
+    while (diff < -Math.PI) diff += Math.PI * 2;
+    return diff;
 }

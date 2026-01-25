@@ -4,7 +4,7 @@ import loadAssets from './loadAssets';
 
 export default function initGame() {
     // focus back on canvas when clicking on html elements
-    window.addEventListener("click", () => document.querySelector<HTMLCanvasElement>('game')?.focus());
+    window.addEventListener("click", () => document.querySelector<HTMLCanvasElement>('#game')?.focus());
 
     const k = makeKaplayCtx();
 
