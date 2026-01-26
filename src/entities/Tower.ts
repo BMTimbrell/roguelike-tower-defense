@@ -223,7 +223,7 @@ export default function makeTower(
 
                 const diff = shortestAngleDiff(gun.angle, desired);
                 gun.angle += diff * Math.min(1, turnSpeed * k.dt());
-            }
+            } else gun.angle = 0;
 
             if (tower.shootTimer <= 0 && target) {
                 tower.shootTimer = tower.stats.fireInterval;

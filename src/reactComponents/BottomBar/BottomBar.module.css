@@ -5,4 +5,9 @@
     display: flex;
     justify-content: space-between;
     padding: 0.25em 0.5em;
+    pointer-events: none;
+}
+
+.container * {
+    pointer-events: auto;
 }

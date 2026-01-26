@@ -29,21 +29,54 @@ export default function level1(k: KAPLAYCtx) {
         const zoom = k.width() < 800 ? 1 : 2;
         k.setCamScale(zoom);
 
+        let dragging = false;
+        let lastMouse = k.vec2(0, 0);
+
+        k.onMousePress("right", () => {
+            dragging = true;
+            lastMouse = k.mousePos();
+        });
+
+        k.onMouseRelease("right", () => {
+            dragging = false;
+        });
+
+
         k.onUpdate(() => {
             const speed = 400 * k.dt();
+            const EDGE = 20;
 
             if (k.isKeyDown("a")) k.setCamPos(k.getCamPos().add(-speed, 0));
             if (k.isKeyDown("d")) k.setCamPos(k.getCamPos().add(speed, 0));
             if (k.isKeyDown("w")) k.setCamPos(k.getCamPos().add(0, -speed));
             if (k.isKeyDown("s")) k.setCamPos(k.getCamPos().add(0, speed));
+
+            // --- Mouse Edge ---
+            if (!dragging) {
+                const m = k.mousePos();
+                const w = k.width();
+                const h = k.height();
+
+                if (m.x < EDGE) k.setCamPos(k.getCamPos().add(-speed, 0));
+                if (m.x > w - EDGE) k.setCamPos(k.getCamPos().add(speed, 0));
+                if (m.y < EDGE) k.setCamPos(k.getCamPos().add(0, -speed));
+                if (m.y > h - EDGE) k.setCamPos(k.getCamPos().add(0, speed));
+            }
+
+            if (dragging) {
+                const m = k.mousePos();
+                const delta = m.sub(lastMouse);
+                k.setCamPos(k.getCamPos().sub(delta));
+                lastMouse = m;
+            }
         });
 
-        const viewW = k.width() / zoom;
-        const viewH = k.height() / zoom;
-        const minX = viewW / 2;
-        const minY = viewH / 2;
-        const maxX = mapWorldWidth - viewW / 2;
-        const maxY = mapWorldHeight - viewH / 2;
+        let viewW = k.width() / zoom;
+        let viewH = k.height() / zoom;
+        let minX = viewW / 2;
+        let minY = viewH / 2;
+        let maxX = mapWorldWidth - viewW / 2;
+        let maxY = mapWorldHeight - viewH / 2;
 
         k.add([
             k.sprite("fog", { width: 512, height: mapWorldHeight }),
@@ -75,6 +108,12 @@ export default function level1(k: KAPLAYCtx) {
 
         k.onUpdate(() => {
             const p = k.getCamPos();
+            viewW = k.width() / zoom;
+            viewH = k.height() / zoom;
+            minX = viewW / 2;
+            minY = viewH / 2;
+            maxX = mapWorldWidth - viewW / 2;
+            maxY = mapWorldHeight - viewH / 2;
 
             k.setCamPos(
                 k.vec2(
@@ -83,7 +122,7 @@ export default function level1(k: KAPLAYCtx) {
                 )
             );
         });
-        
+
         store.set(mapAtom, {
             x: 0,
             y: 0,
