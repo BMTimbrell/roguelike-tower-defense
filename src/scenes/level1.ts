@@ -1,4 +1,4 @@
-import type { KAPLAYCtx } from "kaplay";
+import type { KAPLAYCtx, Vec2 } from "kaplay";
 import makeTower, { addSelectTowerListener } from "../entities/Tower";
 import type { MapData } from "../types";
 import { mapAtom, store, gameStateAtom } from "../store";
@@ -29,30 +29,44 @@ export default function level1(k: KAPLAYCtx) {
         let zoom = k.width() < 800 ? 1 : 2;
         k.setCamScale(zoom);
 
-        let dragging = false;
-        let lastMouse = k.vec2(0, 0);
+        let dragActive = false;
+        let lastTouchPos: Vec2 | null = null;
 
-        k.onMousePress("right", () => {
-            dragging = true;
-            lastMouse = k.mousePos();
-        });
+        // ---- Mouse ----
+        k.onMousePress("middle", () => dragActive = true);
+        k.onMouseRelease("middle", () => dragActive = false);
 
-        k.onMouseRelease("right", () => {
-            dragging = false;
-        });
+        // ---- Touch ----
+        k.onTouchStart(pos => {
+            dragActive = true;
+            lastTouchPos = pos;
+        })
+
+        k.onTouchEnd(() => {
+            dragActive = false;
+            lastTouchPos = null;
+        })
+
+        k.onTouchMove(pos => {
+            if (!dragActive || !lastTouchPos) return;
+            const d = pos.sub(lastTouchPos);
+            k.setCamPos(k.getCamPos().sub(d));
+            lastTouchPos = pos;
+        })
 
 
         k.onUpdate(() => {
             const speed = 400 * k.dt();
             const EDGE = 20;
 
-            if (k.isKeyDown("a")) k.setCamPos(k.getCamPos().add(-speed, 0));
-            if (k.isKeyDown("d")) k.setCamPos(k.getCamPos().add(speed, 0));
-            if (k.isKeyDown("w")) k.setCamPos(k.getCamPos().add(0, -speed));
-            if (k.isKeyDown("s")) k.setCamPos(k.getCamPos().add(0, speed));
+            if (!dragActive) {
+                // wasd
+                if (k.isKeyDown("a")) k.setCamPos(k.getCamPos().add(-speed, 0));
+                if (k.isKeyDown("d")) k.setCamPos(k.getCamPos().add(speed, 0));
+                if (k.isKeyDown("w")) k.setCamPos(k.getCamPos().add(0, -speed));
+                if (k.isKeyDown("s")) k.setCamPos(k.getCamPos().add(0, speed));
 
-            // --- Mouse Edge ---
-            if (!dragging) {
+                // --- Mouse Edge ---
                 const m = k.mousePos();
                 const w = k.width();
                 const h = k.height();
@@ -63,11 +77,9 @@ export default function level1(k: KAPLAYCtx) {
                 if (m.y > h - EDGE) k.setCamPos(k.getCamPos().add(0, speed));
             }
 
-            if (dragging) {
-                const m = k.mousePos();
-                const delta = m.sub(lastMouse);
-                k.setCamPos(k.getCamPos().sub(delta));
-                lastMouse = m;
+            if (dragActive && k.isMouseDown("middle")) {
+                const d = k.mouseDeltaPos();
+                k.setCamPos(k.getCamPos().sub(d));
             }
         });
 
