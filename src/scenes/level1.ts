@@ -26,7 +26,7 @@ export default function level1(k: KAPLAYCtx) {
         const mapPosY = 0;
         const mapWorldWidth = mapData.width * mapData.tilewidth;
         const mapWorldHeight = mapData.height * mapData.tileheight;
-        const zoom = k.width() < 800 ? 1 : 2;
+        let zoom = k.width() < 800 ? 1 : 2;
         k.setCamScale(zoom);
 
         let dragging = false;
@@ -108,13 +108,6 @@ export default function level1(k: KAPLAYCtx) {
 
         k.onUpdate(() => {
             const p = k.getCamPos();
-            viewW = k.width() / zoom;
-            viewH = k.height() / zoom;
-            minX = viewW / 2;
-            minY = viewH / 2;
-            maxX = mapWorldWidth - viewW / 2;
-            maxY = mapWorldHeight - viewH / 2;
-
             k.setCamPos(
                 k.vec2(
                     k.clamp(p.x, minX, maxX),
@@ -132,6 +125,13 @@ export default function level1(k: KAPLAYCtx) {
         });
 
         k.onResize(() => {
+            zoom = k.width() < 800 ? 1 : 2;
+            viewW = k.width() / zoom;
+            viewH = k.height() / zoom;
+            minX = viewW / 2;
+            minY = viewH / 2;
+            maxX = mapWorldWidth - viewW / 2;
+            maxY = mapWorldHeight - viewH / 2;
             k.setCamScale(k.width() < 800 ? 1 : 2);
             store.set(mapAtom, {
                 x: 0,
