@@ -2,13 +2,15 @@ import type { KAPLAYCtx, Vec2 } from "kaplay";
 import makeTower, { addSelectTowerListener } from "../entities/Tower";
 import type { MapData } from "../types";
 import { mapAtom, store, gameStateAtom } from "../store";
-import { TILE_SIZE, TOWERS, FOG_Z } from "../constants";
+import { TILE_SIZE, TOWERS, MAX_HAND_SIZE } from "../constants";
 import generateDeck from "../utils/generateDeck";
 import drawCards from "../utils/drawCards";
 import reroll from "../utils/reroll";
 import showLevelStats from "../utils/showLevelStats";
 import makeWaveSpawner from "../entities/WaveSpawner";
 import generateFog from "../utils/generateFog";
+import makeFloatingText from "../entities/floatingText";
+import getCamViewRect from "../utils/getCamViewRect";
 
 export default function level1(k: KAPLAYCtx) {
     k.scene("level1", async () => {
@@ -183,6 +185,15 @@ export default function level1(k: KAPLAYCtx) {
                 ...prev.deck,
                 cards: deck,
                 drawCard: () => {
+                    if (store.get(gameStateAtom).upgrades.length >= MAX_HAND_SIZE) {
+                        makeFloatingText(k, {
+                            text: "Hand is full",
+                            color: '#FF0000',
+                            pos: k.vec2(getCamViewRect(k).right - TILE_SIZE * 4, getCamViewRect(k).bottom - TILE_SIZE * 3.5),
+                            size: 16
+                        });
+                        return;
+                    }
                     const card = drawCards(k, deck, 1)[0];
                     store.set(gameStateAtom, prev => ({
                         ...prev,

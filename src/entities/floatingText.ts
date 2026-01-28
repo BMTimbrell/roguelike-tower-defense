@@ -27,7 +27,8 @@ export default function makeFloatingText(k: KAPLAYCtx, opts: {
             k.opacity(1),
             k.lifespan(life),
             k.scale(1),
-            "fTextOutline"
+            "fTextOutline",
+            k.z(999999)
         ])
     );
 
@@ -41,7 +42,7 @@ export default function makeFloatingText(k: KAPLAYCtx, opts: {
         }),
         k.opacity(1),
         k.scale(1),
-        "fText"
+        k.z(999999)
     ]);
 
     let time = 0;

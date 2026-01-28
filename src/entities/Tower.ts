@@ -120,7 +120,7 @@ export default function makeTower(
                 makeFloatingText(k, { 
                     text: "Not enough gold", 
                     color: '#FF0000', 
-                    pos: k.vec2(tower.pos), 
+                    pos: tower.pos, 
                     size: 16 
                 });
                 return;
