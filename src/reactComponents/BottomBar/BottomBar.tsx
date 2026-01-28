@@ -31,6 +31,7 @@ export function BottomBar() {
                         scale={map.scale}
                         onClick={t.onClick}
                         cost={t.cost}
+                        sprite={t.sprite}
                     />
                 ))}
             </div>

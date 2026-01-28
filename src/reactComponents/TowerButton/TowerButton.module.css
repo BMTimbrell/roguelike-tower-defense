@@ -2,14 +2,28 @@
     padding: 0.25em;
     cursor: pointer;
     pointer-events: auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    color: white;
+    border-radius: 0.25em;
+    background-color: var(--card-color);
+    border: 1px solid rgba(255, 255, 255, 0.4);
 }
 
 .button:not(.disabled):hover {
-    background-color: rgba(255, 255, 255, 0.1);
+    background-color: rgb(114, 114, 114);
 }
 
 .button.disabled {
+    background-color: var(--card-color);
     cursor: default;
+}
+
+.button-cost {
+    display: flex;
+    align-items: center;
 }
 
 .popup-contents {

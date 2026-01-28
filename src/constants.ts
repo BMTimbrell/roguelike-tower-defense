@@ -213,6 +213,7 @@ export type EnemyId = keyof typeof ENEMIES;
 export const TOWERS = {
   basic: { 
     name: "Basic Tower",
+    sprite: "basic-tower-sprite.png",
     cost: 50,
     stats: {
         damage: 4,

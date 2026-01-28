@@ -3,6 +3,8 @@ import { type MouseEventHandler, useState, useRef } from 'react';
 import { gameStateAtom } from '../../store';
 import { useAtom } from 'jotai';
 import Popup from '../Popup/Popup';
+import Button from '../Button/Button';
+import CostText from '../CostText/CostText';
 
 export default function TowerButton(
     {
@@ -10,7 +12,8 @@ export default function TowerButton(
         scale,
         stats,
         onClick,
-        cost
+        cost,
+        sprite
     }: {
         name: string,
         scale: number,
@@ -22,7 +25,8 @@ export default function TowerButton(
             fireInterval: number;
             critChance: number;
             critDamage: number;
-        }
+        },
+        sprite: string
     }
 ) {
     const [gameState] = useAtom(gameStateAtom);
@@ -50,7 +54,8 @@ export default function TowerButton(
                 }}
                 onMouseLeave={() => setPopup(false)}
             >
-                {name}
+                <img width={`${32 * scale}`} src={`/sprites/${sprite}`} />
+                <CostText cost={cost} />
             </button>
             {popup && <Popup mode="screen" pos={{ x: pos?.x || 0, y: pos?.y || 0 }}>
                 <div className={styles["popup-contents"]}>

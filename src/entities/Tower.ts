@@ -23,7 +23,7 @@ export default function makeTower(
     const { name, cost, stats } = TOWERS[towerId];
 
     const tower = k.add([
-        k.rect(32, 32),
+        k.sprite("basic tower base"),
         k.pos(pos),
         k.color("#FFFFFF"),
         k.area({
@@ -52,16 +52,18 @@ export default function makeTower(
 
     const gun = k.add([
         k.sprite("basic tower"),
-        k.pos(tower.pos.add(16, 16)),
-        k.anchor("center"),
+        k.pos(tower.pos.add(tower.width / 2 + 2, tower. height / 2)),
+        k.color("#FFFFFF"),
+        k.anchor(k.vec2(2 / 32, 0)),
         k.rotate(),
         k.opacity(0.5),
         k.scale(1),
         {
             rot: 0,
             update() {
-                gun.pos = tower.pos.add(k.vec2(tower.width / 2, tower.height / 2));
+                gun.pos = tower.pos.add(tower.width / 2 + 2, tower. height / 2);
                 gun.opacity = tower.opacity;
+                console.log(gun.width)
             }
         },
     ]);
@@ -125,7 +127,8 @@ export default function makeTower(
                 });
                 return;
             }
-            tower.use(k.color("#858585"));
+            tower.use(k.color("#ffffff"));
+            gun.use(k.color("#ffffff"));
             tower.placed = true;
             tower.selected = false;
             tower.opacity = 1;
@@ -249,7 +252,8 @@ export default function makeTower(
             const gridY = Math.floor((mousePos.y - mapPosY) / TILE_SIZE);
 
             const blocked = tileGrid[gridY]?.[gridX] === true || tileGrid[gridY]?.[gridX] === undefined || false;
-            tower.color = k.Color.fromHex(blocked ? "#FF0000" : "#008deb");
+            tower.color = k.Color.fromHex(blocked ? "#FF0000" : "#FFFFFF");
+            gun.color = k.Color.fromHex(blocked ? "#FF0000" : "#FFFFFF");
 
             tower.pos = k.vec2(mapPosX + gridX * TILE_SIZE, mapPosY + gridY * TILE_SIZE);
             rangeCircle.pos = tower.pos.add(TILE_SIZE / 2, TILE_SIZE / 2);

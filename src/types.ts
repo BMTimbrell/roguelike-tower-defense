@@ -2,7 +2,6 @@ import { type MouseEventHandler } from "react";
 import { TILE_SIZE, type EnemyId, type TowerId } from "./constants";
 import type { Vec2, GameObj } from "kaplay";
 
-
 type LayerObj = {
     x: number;
     y: number;
@@ -36,6 +35,7 @@ export type TowerDef = {
     name: string;
     cost: number;
     stats: TowerStats;
+    sprite: string;
 };
 
 export type TowerInstance = TowerDef & {
