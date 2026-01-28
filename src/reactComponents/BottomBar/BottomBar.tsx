@@ -17,26 +17,29 @@ export function BottomBar() {
             style={{
                 left: `${map.x}px`,
                 bottom: `${map.y}px`,
-                width: `calc(100% - ${map.x}px * 2)`,
-                height: `calc(2 * ${tileSize} * ${map.scale}px)`,
                 fontSize: `calc(16px * ${map.scale})`
             }}
             className={styles.container}
         >
-            {towerButtons.map((t, index) => (
-                <TowerButton
-                    key={index}
-                    name={t.name}
-                    stats={t.stats}
-                    scale={map.scale}
-                    onClick={t.onClick}
-                    cost={t.cost}
-                />
-            ))}
+
+            <div className={styles["tower-container"]}>
+                {towerButtons.map((t, index) => (
+                    <TowerButton
+                        key={index}
+                        name={t.name}
+                        stats={t.stats}
+                        scale={map.scale}
+                        onClick={t.onClick}
+                        cost={t.cost}
+                    />
+                ))}
+            </div>
 
             <Upgrades upgrades={upgrades} />
-            <RerollCardsButton  />
-            <Deck deck={gameState.deck} gold={gameState.gold} />
+            <div className={styles["right-container"]}>
+                <RerollCardsButton  />
+                <Deck deck={gameState.deck} gold={gameState.gold} />
+            </div>
         </div>
     );
 }

@@ -1,8 +1,7 @@
 import type { Vec2, KAPLAYCtx } from 'kaplay';
 
 export default function makeFloatingText(k: KAPLAYCtx, opts: {
-    color?:
-    string;
+    color?: string;
     text: string;
     pos: Vec2;
     size?: number;

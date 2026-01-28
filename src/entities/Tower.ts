@@ -5,6 +5,7 @@ import type { SelectedTowerUI, Upgrade, TargetPriority, TowerGameObj } from '../
 import { store, gameStateAtom } from '../store';
 import { calcUpgradeCost } from '../utils/calcUpgradeCost';
 import { TOWERS } from '../constants';
+import makeFloatingText from './floatingText';
 
 export default function makeTower(
     k: KAPLAYCtx,
@@ -113,8 +114,17 @@ export default function makeTower(
         }
     });
 
-    tower.onMouseDown("left", () => {
+    tower.onMousePress("left", () => {
         if (!tower.placed && tower.placeable) {
+            if (store.get(gameStateAtom).gold < tower.cost) {
+                makeFloatingText(k, { 
+                    text: "Not enough gold", 
+                    color: '#FF0000', 
+                    pos: k.vec2(tower.pos), 
+                    size: 16 
+                });
+                return;
+            }
             tower.use(k.color("#858585"));
             tower.placed = true;
             tower.selected = false;

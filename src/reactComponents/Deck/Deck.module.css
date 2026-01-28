@@ -2,6 +2,7 @@
     cursor: pointer;
     position: relative;
     width: 3em;
+    pointer-events: auto;
 }
 
 .card1,
@@ -15,6 +16,7 @@
     background-color: var(--card-color);
     border: 1px solid rgba(255,255,255,0.6);
     color: white;
+    padding-block: 1.75em;
 }
 
 .card1 {
@@ -41,10 +43,6 @@
 
 .top-card:not(.cant-afford):hover {
     transform: translate(-0.5em, -0.875em) rotate(-5deg);
-}
-
-.top-card img {
-    width: 0.6875em;
 }
 
 .label {

@@ -8,6 +8,7 @@ import drawCards from "../utils/drawCards";
 import reroll from "../utils/reroll";
 import showLevelStats from "../utils/showLevelStats";
 import makeWaveSpawner from "../entities/WaveSpawner";
+import generateFog from "../utils/generateFog";
 
 export default function level1(k: KAPLAYCtx) {
     k.scene("level1", async () => {
@@ -26,7 +27,7 @@ export default function level1(k: KAPLAYCtx) {
         const mapPosY = 0;
         const mapWorldWidth = mapData.width * mapData.tilewidth;
         const mapWorldHeight = mapData.height * mapData.tileheight;
-        let zoom = k.width() < 800 ? 1 : 2;
+        let zoom = k.width() < 1400 ? 1 : 2;
         k.setCamScale(zoom);
 
         let dragActive = false;
@@ -45,14 +46,14 @@ export default function level1(k: KAPLAYCtx) {
         k.onTouchEnd(() => {
             dragActive = false;
             lastTouchPos = null;
-        })
+        });
 
         k.onTouchMove(pos => {
             if (!dragActive || !lastTouchPos) return;
             const d = pos.sub(lastTouchPos);
             k.setCamPos(k.getCamPos().sub(d));
             lastTouchPos = pos;
-        })
+        });
 
 
         k.onUpdate(() => {
@@ -90,42 +91,13 @@ export default function level1(k: KAPLAYCtx) {
         let maxX = mapWorldWidth - viewW / 2;
         let maxY = mapWorldHeight - viewH / 2;
 
-        k.add([
-            k.sprite("fog", { width: 512, height: mapWorldHeight }),
-            k.pos(-512, 0),
-            k.opacity(0.85),
-            k.z(FOG_Z)
-        ]);
-
-        k.add([
-            k.sprite("fog", { width: 512, height: mapWorldHeight }),
-            k.pos(mapWorldWidth, 0),
-            k.opacity(0.85),
-            k.z(FOG_Z)
-        ]);
-
-        k.add([
-            k.sprite("fog", { width: mapWorldWidth, height: 512 }),
-            k.pos(0, -512),
-            k.opacity(0.85),
-            k.z(FOG_Z)
-        ]);
-
-        k.add([
-            k.sprite("fog", { width: mapWorldWidth, height: 512 }),
-            k.pos(0, mapWorldHeight),
-            k.opacity(0.85),
-            k.z(FOG_Z)
-        ]);
+        generateFog(k, mapWorldWidth, mapWorldHeight);
 
         k.onUpdate(() => {
             const p = k.getCamPos();
-            k.setCamPos(
-                k.vec2(
-                    k.clamp(p.x, minX, maxX),
-                    k.clamp(p.y, minY, maxY),
-                )
-            );
+            const camX = viewW < mapWorldWidth ? k.clamp(p.x, minX, maxX) : mapWorldWidth / 2;
+            const camY = viewH < mapWorldHeight ? k.clamp(p.y, minY, maxY) : mapWorldHeight / 2;
+            k.setCamPos(k.vec2(camX, camY));
         });
 
         store.set(mapAtom, {
@@ -137,14 +109,14 @@ export default function level1(k: KAPLAYCtx) {
         });
 
         k.onResize(() => {
-            zoom = k.width() < 800 ? 1 : 2;
+            zoom = k.width() < 1400 ? 1 : 2;
             viewW = k.width() / zoom;
             viewH = k.height() / zoom;
             minX = viewW / 2;
             minY = viewH / 2;
             maxX = mapWorldWidth - viewW / 2;
             maxY = mapWorldHeight - viewH / 2;
-            k.setCamScale(k.width() < 800 ? 1 : 2);
+            k.setCamScale(zoom);
             store.set(mapAtom, {
                 x: 0,
                 y: 0,

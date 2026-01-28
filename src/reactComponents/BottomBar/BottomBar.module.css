@@ -4,10 +4,27 @@
     user-select: none;
     display: flex;
     justify-content: space-between;
-    padding: 0.25em 0.5em;
+    padding: 0.5em;
+    padding-right: 1em;
     pointer-events: none;
+    column-gap: 1em;
+    width: 100%;
 }
 
-.container * {
-    pointer-events: auto;
+.tower-container {
+    width: 100%;
+    flex: 1 1 0;
+    align-self: flex-end;
+}
+
+.right-container {
+    flex: 1 1 0;
+    align-self: flex-end;
+    display: flex;
+    column-gap: 1em;
+    justify-content: flex-end;
+}
+
+.right-container * {
+    flex-shrink: 0;
 }

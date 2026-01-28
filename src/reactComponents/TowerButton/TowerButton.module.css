@@ -1,6 +1,7 @@
 .button {
     padding: 0.25em;
     cursor: pointer;
+    pointer-events: auto;
 }
 
 .button:not(.disabled):hover {

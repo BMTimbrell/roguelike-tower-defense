@@ -3,6 +3,7 @@
     align-self: center;
     background: none;
     border: none;
+    pointer-events: auto;
 }
 
 .button:not(.cant-afford):hover {
@@ -14,6 +15,7 @@
 }
 
 .container {
+    align-self: center;
     color: white;
 }
 
@@ -22,10 +24,6 @@
     align-items: center;
     column-gap: 0.125em;
 }
-
-/* .container div > img {
-    width: 0.6875em;
-} */
 
 @keyframes wiggle {
   0% { transform: rotate(0deg); }
