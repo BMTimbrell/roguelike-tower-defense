@@ -8,6 +8,7 @@ import { MAX_TOWER_UPGRADES } from '../../constants';
 import CostText from "../CostText/CostText";
 import Popup from "../Popup/Popup";
 import Button from "../Button/Button";
+import { ELEMENTS } from '../../constants';
 
 export default function SelectedTower({ tower }: { tower: SelectedTowerUI }) {
     const {
@@ -16,6 +17,7 @@ export default function SelectedTower({ tower }: { tower: SelectedTowerUI }) {
         stats,
         cost,
         pos,
+        element,
         upgrades,
         unlockedUpgradeSlots,
         upgradeCost,
@@ -125,6 +127,9 @@ export default function SelectedTower({ tower }: { tower: SelectedTowerUI }) {
         <Popup mode="world" pos={pos}>
             <div className={styles.name}>{name}</div>
             <div className={styles.stats}>
+                <div>
+                    Element: <span style={{ color: ELEMENTS[element].color }}>{element}</span>
+                </div>
                 <div>
                     <img width={`${16 * scale}px`} src="sprites/damage-icon.png" />
                     Damage: {damage}

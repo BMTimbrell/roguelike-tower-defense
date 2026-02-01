@@ -44,6 +44,15 @@
     column-gap: 0.25em;
 }
 
-.stats, .cost {
+.stats, .cost, .description, .element {
     font-size: 0.75em;
+}
+
+.description {
+    width: 23ch;
+}
+
+.element-description {
+    font-size: 0.75em;
+    width: 20ch;
 }

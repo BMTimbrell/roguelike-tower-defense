@@ -25,8 +25,6 @@ export default function level1(k: KAPLAYCtx) {
         showLevelStats(k);
 
         // Compute screen bounds and save in store
-        const mapPosX = 0;
-        const mapPosY = 0;
         const mapWorldWidth = mapData.width * mapData.tilewidth;
         const mapWorldHeight = mapData.height * mapData.tileheight;
         let zoom = k.width() < 1400 ? 1 : 2;
@@ -166,8 +164,6 @@ export default function level1(k: KAPLAYCtx) {
                             {
                                 towerId: "basic",
                                 pos: k.toWorld(k.mousePos()),
-                                mapPosX,
-                                mapPosY,
                                 tileGrid
                             }
                         );
@@ -179,6 +175,27 @@ export default function level1(k: KAPLAYCtx) {
                         }));
                     },
                 },
+                {
+                    ...TOWERS["fire"],
+                    onClick: () => {
+                        const unplacedTower = k.get("tower").find(t => !t.placed);
+                        if (unplacedTower) k.destroy(unplacedTower);
+                        else makeTower(
+                            k,
+                            {
+                                towerId: "fire",
+                                pos: k.toWorld(k.mousePos()),
+                                tileGrid
+                            }
+                        );
+
+                        store.set(gameStateAtom, prev => ({
+                            ...prev,
+                            nextTowerId: prev.nextTowerId + 1,
+                            selectedTower: null,
+                        }));
+                    },
+                }
             ],
             upgrades,
             deck: {

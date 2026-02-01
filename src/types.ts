@@ -31,14 +31,32 @@ export type TowerStats = {
     critDamage: number;
 };
 
+export type ElementName = "Normal" | "Fire" | "Ice" | "Electric" | "Light" | "Dark";
+export type ElementDef = {
+    description: string | null;
+    applyEffect: (target: GameObj) => void | null;
+    color: string;
+};
+
 export type TowerDef = {
     name: string;
     cost: number;
     stats: TowerStats;
+    element: ElementName;
+    description: string;
     sprite: string;
+    gunSprite: string;
+    baseSprite: string;
+    gunOffset: { x: number; y: number };
+    anchorOffset: { x: number; y: number };
 };
 
-export type TowerInstance = TowerDef & {
+export type TowerInstance = Omit<TowerDef, 
+'gunSprite' | 
+'baseSprite' | 
+'description' | 
+'gunOffset' | 
+'anchorOffset'> & {
     instanceId: string;
     towerId: TowerId;
     pos: Vec2;
@@ -74,7 +92,7 @@ export type USlot = {
     purchasable: boolean;
 };
 
-export type TowerButton = TowerDef & {
+export type TowerButton = Omit<TowerDef, | 'gunSprite' | 'baseSprite' | 'gunOffset' | 'anchorOffset'> & {
     onClick: MouseEventHandler<HTMLButtonElement>;
 };
 

@@ -2,7 +2,7 @@ import type { GameObj, KAPLAYCtx, Vec2 } from "kaplay";
 import type { EnemyId, LevelId } from "../constants";
 import type { Wave } from "../types";
 import { LEVEL_WAVES } from "../constants";
-import makeEnemy from "./enemy";
+import makeEnemy from "./Enemy";
 import { store, gameStateAtom } from "../store";
 import screenPos from "../utils/screenPos";
 

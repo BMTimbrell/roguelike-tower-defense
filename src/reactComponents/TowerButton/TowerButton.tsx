@@ -1,10 +1,11 @@
 import styles from './TowerButton.module.css';
-import { type MouseEventHandler, useState, useRef } from 'react';
+import { type MouseEventHandler, useState, useRef, useLayoutEffect } from 'react';
 import { gameStateAtom } from '../../store';
 import { useAtom } from 'jotai';
 import Popup from '../Popup/Popup';
-import Button from '../Button/Button';
+import type { TowerStats, ElementName } from '../../types';
 import CostText from '../CostText/CostText';
+import { ELEMENTS } from '../../constants';
 
 export default function TowerButton(
     {
@@ -13,28 +14,47 @@ export default function TowerButton(
         stats,
         onClick,
         cost,
-        sprite
+        description,
+        sprite,
+        element
     }: {
         name: string,
         scale: number,
         onClick: MouseEventHandler<HTMLButtonElement>
         cost: number,
-        stats: {
-            damage: number;
-            range: number;
-            fireInterval: number;
-            critChance: number;
-            critDamage: number;
-        },
-        sprite: string
+        stats: TowerStats,
+        element: ElementName;
+        sprite: string;
+        description: string;
     }
 ) {
     const [gameState] = useAtom(gameStateAtom);
-    const [popup, setPopup] = useState(false);
+    const [bPopup, setBPopup] = useState(false);
+    const [ePopup, setEPopup] = useState(false);
     const disabled = gameState.gold < cost;
     const buttonRef = useRef<HTMLButtonElement | null>(null);
-    const [pos, setPos] = useState<{ x: number; y: number; } | null>(null);
+    const buttonPopupRef = useRef<HTMLDivElement | null>(null);
+    const [bPopupPos, setBPopupPos] = useState<{ x: number; y: number; } | null>(null);
+    const [ePopupPos, setEPopupPos] = useState<{ x: number; y: number; } | null>(null);
     const { damage, range, fireInterval, critChance, critDamage } = stats;
+
+    useLayoutEffect(() => {
+        if (!bPopup || !buttonPopupRef.current || !buttonRef.current) return;
+
+        const popupRect = buttonPopupRef.current.getBoundingClientRect();
+        const buttonRect = buttonRef.current.getBoundingClientRect();
+        const padding = 20 * scale;
+
+        setBPopupPos({
+            x: buttonRect.x,
+            y: buttonRect.y - (popupRect.height + padding),
+        });
+
+        setEPopupPos({
+            x: buttonRect.x + popupRect.width + padding,
+            y: buttonRect.y - (popupRect.height + padding),
+        });
+    }, [bPopup, scale]);
 
     return (
         <>
@@ -46,23 +66,38 @@ export default function TowerButton(
                 className={`${styles.button} ${disabled ? styles.disabled : ''}`}
                 onClick={disabled ? () => null : onClick}
                 onMouseEnter={() => {
-                    if (buttonRef.current) setPos({
-                        x: buttonRef.current.getBoundingClientRect().x,
-                        y: buttonRef.current.getBoundingClientRect().y - 150 * scale
+                    if (!buttonRef.current) return;
+
+                    const rect = buttonRef.current.getBoundingClientRect();
+
+                    setBPopupPos({
+                        x: rect.x,
+                        y: rect.y, // corrected after popup renders
                     });
-                    setPopup(true);
+
+                    setBPopup(true);
+                    if (ELEMENTS[element].description) setEPopup(true);
+                    
                 }}
-                onMouseLeave={() => setPopup(false)}
+                onMouseLeave={() => {
+                    setBPopup(false);
+                    setEPopup(false);
+                }}
             >
                 <img width={`${32 * scale}`} src={`/sprites/${sprite}`} />
                 <CostText cost={cost} />
             </button>
-            {popup && <Popup mode="screen" pos={{ x: pos?.x || 0, y: pos?.y || 0 }}>
-                <div className={styles["popup-contents"]}>
+
+            {bPopup && <Popup mode="screen" pos={{ x: bPopupPos?.x || 0, y: bPopupPos?.y || 0 }}>
+                <div className={styles["popup-contents"]} ref={buttonPopupRef}>
                     <div className={styles.name}>{name}</div>
-                    <div className={styles.cost}>
-                        Cost: <img style={{ width: `${8 * scale}px`, marginRight: "0.125em" }} src="sprites/coin.png" />{cost}
+
+                    <div className={styles.description}>{description}</div>
+
+                    <div className={styles.element}>
+                        Element: <span style={{ color: ELEMENTS[element].color }}>{element}</span>
                     </div>
+
                     <div className={styles.stats}>
                         <div>
                             <img width={`${16 * scale}px`} src="sprites/damage-icon.png" />
@@ -85,6 +120,16 @@ export default function TowerButton(
                             <div>Crit Damage: {critDamage}%</div>
                         </div>
                     </div>
+                    <div className={styles.cost}>
+                        Cost: <img style={{ width: `${8 * scale}px`, marginRight: "0.125em" }} src="sprites/coin.png" />{cost}
+                    </div>
+
+                </div>
+            </Popup>}
+
+            {ePopup && <Popup mode="screen" pos={{ x: ePopupPos?.x || 0, y: ePopupPos?.y || 0 }}>
+                <div className={styles["element-description"]}>
+                    {ELEMENTS[element].description}
                 </div>
             </Popup>}
         </>

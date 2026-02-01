@@ -1,6 +1,6 @@
 import type { KAPLAYCtx, GameObj, Vec2 } from 'kaplay';
 import { TILE_SIZE, TOWER_RANGE_TOLERANCE, type TowerId } from '../constants';
-import makeProjectile from './projectile';
+import makeProjectile from './Projectile';
 import type { SelectedTowerUI, Upgrade, TargetPriority, TowerGameObj } from '../types';
 import { store, gameStateAtom } from '../store';
 import { calcUpgradeCost } from '../utils/calcUpgradeCost';
@@ -12,18 +12,16 @@ export default function makeTower(
     opts: {
         towerId: TowerId
         pos: Vec2,
-        tileGrid: boolean[][],
-        mapPosX: number,
-        mapPosY: number
+        tileGrid: boolean[][]
     }
 ): GameObj {
     k.get("tower").forEach(tower => tower.selected = false);
 
-    const { towerId, pos, tileGrid, mapPosX, mapPosY } = opts;
-    const { name, cost, stats } = TOWERS[towerId];
+    const { towerId, pos, tileGrid } = opts;
+    const { name, cost, stats, baseSprite, gunSprite, element, gunOffset, anchorOffset } = TOWERS[towerId];
 
     const tower = k.add([
-        k.sprite("basic tower base"),
+        k.sprite(baseSprite),
         k.pos(pos),
         k.color("#FFFFFF"),
         k.area({
@@ -44,28 +42,28 @@ export default function makeTower(
             shootTimer: 0,
             unlockedUpgradeSlots: 1,
             upgrades: [],
-            upgradeCost: calcUpgradeCost(cost, 1)
+            upgradeCost: calcUpgradeCost(cost, 1),
+            element
         },
         "tower",
         towerId
     ]) as TowerGameObj;
 
     const gun = k.add([
-        k.sprite("basic tower"),
-        k.pos(tower.pos.add(tower.width / 2 + 2, tower. height / 2)),
+        k.sprite(gunSprite),
+        k.pos(tower.pos.add(tower.width / 2 + gunOffset.x, tower.height / 2 + gunOffset.y)),
         k.color("#FFFFFF"),
-        k.anchor(k.vec2(2 / 32, 0)),
+        k.anchor(k.vec2(anchorOffset.x, anchorOffset.y)),
         k.rotate(),
         k.opacity(0.5),
         k.scale(1),
         {
             rot: 0,
             update() {
-                gun.pos = tower.pos.add(tower.width / 2 + 2, tower. height / 2);
+                gun.pos = tower.pos.add(tower.width / 2 + gunOffset.x, tower.height / 2 + gunOffset.y);
                 gun.opacity = tower.opacity;
-                console.log(gun.width)
             }
-        },
+        }
     ]);
 
     function shoot(target: GameObj) {
@@ -105,8 +103,8 @@ export default function makeTower(
     tower.onDestroy(() => {
         k.destroy(rangeCircle);
         k.destroy(gun);
-        const gridX = Math.floor((tower.pos.x - mapPosX) / TILE_SIZE);
-        const gridY = Math.floor((tower.pos.y - mapPosY) / TILE_SIZE);
+        const gridX = Math.floor(tower.pos.x / TILE_SIZE);
+        const gridY = Math.floor(tower.pos.y / TILE_SIZE);
         tileGrid[gridY][gridX] = false;
     });
 
@@ -139,8 +137,8 @@ export default function makeTower(
             }));
 
             // Mark tile as blocked
-            const gridX = Math.floor((tower.pos.x - mapPosX) / TILE_SIZE);
-            const gridY = Math.floor((tower.pos.y - mapPosY) / TILE_SIZE);
+            const gridX = Math.floor(tower.pos.x / TILE_SIZE);
+            const gridY = Math.floor(tower.pos.y / TILE_SIZE);
             tileGrid[gridY][gridX] = true;
         } else if (tower.placed && tower.selected) {
             store.set(gameStateAtom, prev => ({
@@ -155,6 +153,7 @@ export default function makeTower(
                     unlockedUpgradeSlots: tower.unlockedUpgradeSlots,
                     upgrades: tower.upgrades,
                     upgradeCost: tower.upgradeCost,
+                    element: tower.element,
                     addUpgradeSlot: () => {
                         if (store.get(gameStateAtom).gold >= tower.upgradeCost) {
                             tower.unlockedUpgradeSlots++;
@@ -248,14 +247,14 @@ export default function makeTower(
             }
         } else {
             const mousePos = k.toWorld(k.mousePos());
-            const gridX = Math.floor((mousePos.x - mapPosX) / TILE_SIZE);
-            const gridY = Math.floor((mousePos.y - mapPosY) / TILE_SIZE);
+            const gridX = Math.floor(mousePos.x / TILE_SIZE);
+            const gridY = Math.floor(mousePos.y / TILE_SIZE);
 
             const blocked = tileGrid[gridY]?.[gridX] === true || tileGrid[gridY]?.[gridX] === undefined || false;
             tower.color = k.Color.fromHex(blocked ? "#FF0000" : "#FFFFFF");
             gun.color = k.Color.fromHex(blocked ? "#FF0000" : "#FFFFFF");
 
-            tower.pos = k.vec2(mapPosX + gridX * TILE_SIZE, mapPosY + gridY * TILE_SIZE);
+            tower.pos = k.vec2(gridX * TILE_SIZE, gridY * TILE_SIZE);
             rangeCircle.pos = tower.pos.add(TILE_SIZE / 2, TILE_SIZE / 2);
             tower.placeable = !blocked;
         }

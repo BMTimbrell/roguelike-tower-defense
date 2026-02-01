@@ -8,6 +8,7 @@ export default function generateFog(k: KAPLAYCtx, mapWorldWidth: number, mapWorl
         k.z(FOG_Z),
         k.mask("subtract")
     ]);
+    
     const fogOverlay = mapMask.add([
         k.sprite("fog", { width: k.width(), height: k.height() }),
         k.opacity(0.85),

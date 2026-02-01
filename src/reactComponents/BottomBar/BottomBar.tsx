@@ -10,7 +10,6 @@ export function BottomBar() {
     const [map] = useAtom(mapAtom);
     const [gameState] = useAtom(gameStateAtom);
     const { towerButtons, upgrades } = gameState;
-    const tileSize = 32;
 
     return (
         <div
@@ -28,15 +27,18 @@ export function BottomBar() {
                         key={index}
                         name={t.name}
                         stats={t.stats}
+                        description={t.description}
                         scale={map.scale}
                         onClick={t.onClick}
                         cost={t.cost}
                         sprite={t.sprite}
+                        element={t.element}
                     />
                 ))}
             </div>
 
             <Upgrades upgrades={upgrades} />
+            
             <div className={styles["right-container"]}>
                 <RerollCardsButton  />
                 <Deck deck={gameState.deck} gold={gameState.gold} />
