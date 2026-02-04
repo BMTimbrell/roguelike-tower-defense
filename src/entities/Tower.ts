@@ -1,11 +1,11 @@
 import type { KAPLAYCtx, GameObj, Vec2 } from 'kaplay';
-import { TILE_SIZE, TOWER_RANGE_TOLERANCE, type TowerId } from '../constants';
-import makeProjectile from './Projectile';
+import { TILE_SIZE, type TowerId } from '../constants';
 import type { SelectedTowerUI, Upgrade, TargetPriority, TowerGameObj } from '../types';
 import { store, gameStateAtom } from '../store';
 import { calcUpgradeCost } from '../utils/calcUpgradeCost';
 import { TOWERS } from '../constants';
-import makeFloatingText from './floatingText';
+import makePlaceableOnGrid from '../utils/makePlacementOnGrid';
+import { makeRangedUnitCombat } from '../utils/makeRangedUnitCombat';
 
 export default function makeTower(
     k: KAPLAYCtx,
@@ -18,7 +18,18 @@ export default function makeTower(
     k.get("tower").forEach(tower => tower.selected = false);
 
     const { towerId, pos, tileGrid } = opts;
-    const { name, cost, stats, baseSprite, gunSprite, element, gunOffset, anchorOffset } = TOWERS[towerId];
+    const {
+        name,
+        cost,
+        stats,
+        baseSprite,
+        gunSprite,
+        element,
+        gunOffset,
+        anchorOffset,
+        shootOffset,
+        projectile
+    } = TOWERS[towerId];
 
     const tower = k.add([
         k.sprite(baseSprite),
@@ -39,7 +50,6 @@ export default function makeTower(
             selected: true,
             hovered: true,
             stats: { ...stats },
-            shootTimer: 0,
             unlockedUpgradeSlots: 1,
             upgrades: [],
             upgradeCost: calcUpgradeCost(cost, 1),
@@ -49,47 +59,15 @@ export default function makeTower(
         towerId
     ]) as TowerGameObj;
 
-    const gun = k.add([
-        k.sprite(gunSprite),
-        k.pos(tower.pos.add(tower.width / 2 + gunOffset.x, tower.height / 2 + gunOffset.y)),
-        k.color("#FFFFFF"),
-        k.anchor(k.vec2(anchorOffset.x, anchorOffset.y)),
-        k.rotate(),
-        k.opacity(0.5),
-        k.scale(1),
-        {
-            rot: 0,
-            update() {
-                gun.pos = tower.pos.add(tower.width / 2 + gunOffset.x, tower.height / 2 + gunOffset.y);
-                gun.opacity = tower.opacity;
-            }
-        }
-    ]);
-
-    function shoot(target: GameObj) {
-        const roll = Math.random();
-        const critChance = tower.stats.critChance / 100;
-
-        const willCrit = roll < critChance;
-
-        const damage = willCrit
-            ? tower.stats.damage * (1 + tower.stats.critDamage / 100)
-            : tower.stats.damage;
-        makeProjectile(k, { pos: tower.pos.add(tower.width / 2, tower.height / 2), target, damage: damage, crit: willCrit });
-    }
-
-    tower.shoot = shoot;
-
-    const rangeCircle = k.add([
-        k.pos(tower.pos.add(TILE_SIZE / 2, TILE_SIZE / 2)),
-        k.circle(tower.stats.range * TILE_SIZE),
-        k.color(255, 255, 255),
-        k.opacity(0.2)
-    ]);
-
-    rangeCircle.onUpdate(() => {
-        rangeCircle.hidden = !tower.selected && !tower.hovered;
-        rangeCircle.use(k.circle(tower.stats.range * TILE_SIZE));
+    const combat = makeRangedUnitCombat(k, {
+        owner: tower,
+        stats: tower.stats,
+        projectile,
+        element,
+        gunSprite,
+        gunOffset: k.vec2(gunOffset.x, gunOffset.y),
+        shootOffset: k.vec2(shootOffset.x, shootOffset.y),
+        anchorOffset: k.vec2(anchorOffset.x, anchorOffset.y)
     });
 
     tower.onCollide("cursor", () => {
@@ -101,46 +79,30 @@ export default function makeTower(
     });
 
     tower.onDestroy(() => {
-        k.destroy(rangeCircle);
-        k.destroy(gun);
         const gridX = Math.floor(tower.pos.x / TILE_SIZE);
         const gridY = Math.floor(tower.pos.y / TILE_SIZE);
         tileGrid[gridY][gridX] = false;
+        combat.destroy();
     });
 
-    tower.onMouseDown("right", () => {
-        if (!tower.placed) {
-            k.destroy(tower);
-        }
-    });
-
-    tower.onMousePress("left", () => {
-        if (!tower.placed && tower.placeable) {
-            if (store.get(gameStateAtom).gold < tower.cost) {
-                makeFloatingText(k, { 
-                    text: "Not enough gold", 
-                    color: '#FF0000', 
-                    pos: tower.pos, 
-                    size: 16 
-                });
-                return;
-            }
-            tower.use(k.color("#ffffff"));
-            gun.use(k.color("#ffffff"));
-            tower.placed = true;
-            tower.selected = false;
-            tower.opacity = 1;
+    makePlaceableOnGrid(k, {
+        obj: tower,
+        tileGrid,
+        tileSize: TILE_SIZE,
+        canConfirm: () => store.get(gameStateAtom).gold >= tower.cost,
+        canCancel: () => true,
+        onConfirm: () => {
             store.set(gameStateAtom, prev => ({
                 ...prev,
                 gold: prev.gold - tower.cost,
                 selectedTower: null
             }));
+        },
+    });
 
-            // Mark tile as blocked
-            const gridX = Math.floor(tower.pos.x / TILE_SIZE);
-            const gridY = Math.floor(tower.pos.y / TILE_SIZE);
-            tileGrid[gridY][gridX] = true;
-        } else if (tower.placed && tower.selected) {
+    tower.onMousePress("left", () => {
+
+        if (tower.placed && tower.selected) {
             store.set(gameStateAtom, prev => ({
                 ...prev,
                 selectedTower: {
@@ -221,43 +183,9 @@ export default function makeTower(
 
     tower.onUpdate(() => {
         if (tower.placed) {
-            tower.shootTimer -= k.dt();
-
-            const target = selectTarget(
-                k.get("enemy"),
-                tower,
-                rangeCircle.pos,
-            );
-
-            if (target) {
-                const desired = gun.pos.angle(target.pos);
-                const turnSpeed = 12; // radians per second
-
-                const diff = shortestAngleDiff(gun.angle, desired);
-                gun.angle += diff * Math.min(1, turnSpeed * k.dt());
-            } else gun.angle = 0;
-
-            if (tower.shootTimer <= 0 && target) {
-                tower.shootTimer = tower.stats.fireInterval;
-
-                gun.angle = gun.pos.angle(target.pos);
-
-                tower.shoot?.(target);
-                // optional: gun.play("shoot")
-            }
-        } else {
-            const mousePos = k.toWorld(k.mousePos());
-            const gridX = Math.floor(mousePos.x / TILE_SIZE);
-            const gridY = Math.floor(mousePos.y / TILE_SIZE);
-
-            const blocked = tileGrid[gridY]?.[gridX] === true || tileGrid[gridY]?.[gridX] === undefined || false;
-            tower.color = k.Color.fromHex(blocked ? "#FF0000" : "#FFFFFF");
-            gun.color = k.Color.fromHex(blocked ? "#FF0000" : "#FFFFFF");
-
-            tower.pos = k.vec2(gridX * TILE_SIZE, gridY * TILE_SIZE);
-            rangeCircle.pos = tower.pos.add(TILE_SIZE / 2, TILE_SIZE / 2);
-            tower.placeable = !blocked;
+            combat.update();
         }
+        
     });
 
     return tower;
@@ -278,49 +206,3 @@ export function addSelectTowerListener(k: KAPLAYCtx) {
     });
 }
 
-function selectTarget(
-    enemies: GameObj[],
-    tower: GameObj,
-    rangePos: Vec2,
-): GameObj | null {
-
-    let best: GameObj | null = null
-
-    for (const e of enemies) {
-        if (e.pos.dist(rangePos) > tower.stats.range * TILE_SIZE + TOWER_RANGE_TOLERANCE) {
-            continue;
-        }
-
-        if (!best) {
-            best = e;
-            continue;
-        }
-
-        switch (tower.priority) {
-            case "Most Progress":
-                if (e.pathIndex + e.segmentProgress > best.pathIndex + best.segmentProgress) best = e;
-                break;
-
-            case "Least Progress":
-                if (e.pathIndex + e.segmentProgress < best.pathIndex + best.segmentProgress) best = e;
-                break;
-
-            case "Highest HP":
-                if (e.hp() > best.hp()) best = e;
-                break;
-
-            case "Lowest HP":
-                if (e.hp() < best.hp()) best = e;
-                break;
-        }
-    }
-
-    return best;
-}
-
-function shortestAngleDiff(a: number, b: number) {
-    let diff = b - a;
-    while (diff > Math.PI) diff -= Math.PI * 2;
-    while (diff < -Math.PI) diff += Math.PI * 2;
-    return diff;
-}
