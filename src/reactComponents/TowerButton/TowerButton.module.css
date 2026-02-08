@@ -32,19 +32,7 @@
     row-gap: 0.5em;
 }
 
-.stats {
-    display: flex;
-    flex-direction: column;
-    row-gap: 0.125em;
-}
-
-.stats > * {
-    display: flex;
-    align-items: center;
-    column-gap: 0.25em;
-}
-
-.stats, .cost, .description, .element {
+.cost, .description {
     font-size: 0.75em;
 }
 

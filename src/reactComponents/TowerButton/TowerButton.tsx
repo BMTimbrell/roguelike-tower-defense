@@ -6,6 +6,7 @@ import Popup from '../Popup/Popup';
 import type { TowerStats, ElementName } from '../../types';
 import CostText from '../CostText/CostText';
 import { ELEMENTS } from '../../constants';
+import Stats from '../Stats/Stats';
 
 export default function TowerButton(
     {
@@ -36,7 +37,6 @@ export default function TowerButton(
     const buttonPopupRef = useRef<HTMLDivElement | null>(null);
     const [bPopupPos, setBPopupPos] = useState<{ x: number; y: number; } | null>(null);
     const [ePopupPos, setEPopupPos] = useState<{ x: number; y: number; } | null>(null);
-    const { damage, range, fireInterval, critChance, critDamage } = stats;
 
     useLayoutEffect(() => {
         if (!bPopup || !buttonPopupRef.current || !buttonRef.current) return;
@@ -94,32 +94,8 @@ export default function TowerButton(
 
                     <div className={styles.description}>{description}</div>
 
-                    <div className={styles.element}>
-                        Element: <span style={{ color: ELEMENTS[element].color }}>{element}</span>
-                    </div>
+                    <Stats stats={stats} element={element} scale={scale} />
 
-                    <div className={styles.stats}>
-                        <div>
-                            <img width={`${16 * scale}px`} src="sprites/damage-icon.png" />
-                            <div>Damage: {damage}</div>
-                        </div>
-                        <div>
-                            <img width={`${16 * scale}px`} src="sprites/firerate-icon.png" />
-                            <div>Fire Rate: {(1 / fireInterval).toFixed(1)}/sec</div>
-                        </div>
-                        <div>
-                            <img width={`${16 * scale}px`} src="sprites/range-icon.png" />
-                            <div>Range: {range}</div>
-                        </div>
-                        <div>
-                            <img width={`${16 * scale}px`} src="sprites/critchance-icon.png" />
-                            <div>Crit Chance: {critChance}%</div>
-                        </div>
-                        <div>
-                            <img width={`${16 * scale}px`} src="sprites/critdamage-icon.png" />
-                            <div>Crit Damage: {critDamage}%</div>
-                        </div>
-                    </div>
                     <div className={styles.cost}>
                         Cost: <img style={{ width: `${8 * scale}px`, marginRight: "0.125em" }} src="sprites/coin.png" />{cost}
                     </div>

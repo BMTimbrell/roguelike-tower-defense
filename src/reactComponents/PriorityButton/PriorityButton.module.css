@@ -1,0 +1,10 @@
+.progress {
+    display: flex;
+    align-items: center;
+    column-gap: 0.25em;
+}
+
+.progress img {
+    margin-top: -1px;
+    margin-left: -1px;
+}

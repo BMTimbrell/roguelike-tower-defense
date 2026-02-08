@@ -36,6 +36,10 @@ export default function makeWaveSpawner(k: KAPLAYCtx, levelId: LevelId, waypoint
         "waveSpawner",
         {
             startNextWave() {
+                if (waveIndex < 0) {
+                    store.set(gameStateAtom, prev => ({ ...prev, heroCanReposition: false }));
+                }
+
                 waveIndex++;
                 const wave = level.waves[waveIndex];
                 spawnQueue = buildQueue(wave);

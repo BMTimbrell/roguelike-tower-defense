@@ -14,7 +14,7 @@ export default function makeTower(
         pos: Vec2,
         tileGrid: boolean[][]
     }
-): GameObj {
+): TowerGameObj {
     k.get("tower").forEach(tower => tower.selected = false);
 
     const { towerId, pos, tileGrid } = opts;
@@ -95,7 +95,7 @@ export default function makeTower(
             store.set(gameStateAtom, prev => ({
                 ...prev,
                 gold: prev.gold - tower.cost,
-                selectedTower: null
+                selectedUI: null
             }));
         },
     });
@@ -105,7 +105,7 @@ export default function makeTower(
         if (tower.placed && tower.selected) {
             store.set(gameStateAtom, prev => ({
                 ...prev,
-                selectedTower: {
+                selectedUI: {
                     towerId: tower.instanceId,
                     pos: tower.screenPos().scale(1 / k.getCamScale().x, 1 / k.getCamScale().y),
                     priority: tower.priority,
@@ -128,8 +128,8 @@ export default function makeTower(
                             tower.upgradeCost = calcUpgradeCost(tower.cost, tower.unlockedUpgradeSlots);
                             store.set(gameStateAtom, prev => ({
                                 ...prev,
-                                selectedTower: {
-                                    ...prev.selectedTower,
+                                selectedUI: {
+                                    ...prev.selectedUI,
                                     unlockedUpgradeSlots: tower.unlockedUpgradeSlots,
                                     upgradeCost: tower.upgradeCost
                                 } as SelectedTowerUI
@@ -157,8 +157,8 @@ export default function makeTower(
                         tower.priority = priority;
                         store.set(gameStateAtom, prev => ({
                             ...prev,
-                            selectedTower: {
-                                ...prev.selectedTower,
+                            selectedUI: {
+                                ...prev.selectedUI,
                                 priority: tower.priority
                             } as SelectedTowerUI
                         }));
@@ -167,7 +167,7 @@ export default function makeTower(
                         store.set(gameStateAtom, prev => ({
                             ...prev,
                             gold: prev.gold + tower.cost / 2,
-                            selectedTower: null
+                            selectedUI: null
                         }));
                         k.destroy(tower);
                     }
@@ -176,7 +176,7 @@ export default function makeTower(
         } else if (!k.get("tower").some(t => t.selected && t.placed)) {
             store.set(gameStateAtom, prev => ({
                 ...prev,
-                selectedTower: null
+                selectedUI: null
             }));
         }
     });
@@ -185,7 +185,6 @@ export default function makeTower(
         if (tower.placed) {
             combat.update();
         }
-        
     });
 
     return tower;

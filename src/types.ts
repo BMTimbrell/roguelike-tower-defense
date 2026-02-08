@@ -1,5 +1,5 @@
 import { type MouseEventHandler } from "react";
-import { TILE_SIZE, type EnemyId, type ProjectileId, type TowerId } from "./constants";
+import { TILE_SIZE, type EnemyId, type HeroId, type ProjectileId, type TowerId } from "./constants";
 import type { Vec2, GameObj, KAPLAYCtx } from "kaplay";
 
 type LayerObj = {
@@ -61,7 +61,6 @@ export type TowerDef = {
 };
 
 export type UnitInstance = {
-    instanceId: string;
     name: string;
     stats: TowerStats;
     element: ElementName;
@@ -74,6 +73,7 @@ export type UnitInstance = {
 };
 
 export type TowerInstance = UnitInstance & {
+    instanceId: string;
     towerId: TowerId;
     cost: number;
     upgrades: Upgrade[];
@@ -91,13 +91,9 @@ export type HeroSkillDef = {
     icon?: string;
 };
 
-export type HeroDef = Omit<TowerDef, | 'cost' | 'description'> & {
-    description?: string;
-    skills: HeroSkillDef[];
-};
-
+export type HeroDef = Omit<TowerDef, | 'cost'>;
 export type HeroInstance = UnitInstance & {
-    heroId: string;
+    heroId: HeroId;
     skills: HeroSkillDef[];
     level: number;
     canReposition: boolean;
@@ -130,7 +126,6 @@ export type TowerButton = Pick<TowerDef, 'name' | 'cost' | 'stats' | 'element' |
 export type TargetPriority = "Most Progress" | "Least Progress" | "Highest HP" | "Lowest HP";
 
 export type SelectedUnitUI = {
-    towerId: string;
     name: string;
     pos: Vec2;
     stats: TowerStats;
@@ -140,6 +135,7 @@ export type SelectedUnitUI = {
 };
 
 export type SelectedTowerUI = SelectedUnitUI & {
+    towerId: string;
     cost: number;
     upgrades: Upgrade[];
     unlockedUpgradeSlots: number;
@@ -156,6 +152,7 @@ export type SelectedTowerUI = SelectedUnitUI & {
 };
 
 export type SelectedHeroUI = SelectedUnitUI & {
+    heroId: string;
     level: number;
     skills: HeroSkillDef[];
     canReposition: boolean;
@@ -171,7 +168,7 @@ export type Deck = {
 export type GameState = {
     towerButtons: TowerButton[];
     nextTowerId: number;
-    selectedTower: SelectedTowerUI | SelectedHeroUI | null;
+    selectedUI: SelectedTowerUI | SelectedHeroUI | null;
     gold: number;
     health: number;
     maxTowerUpgrades: number;
@@ -183,6 +180,7 @@ export type GameState = {
         baseCost: number;
         roll: () => void;
     };
+    heroCanReposition: boolean;
 };
 
 export type EnemySpawn = {

@@ -1,0 +1,9 @@
+.name {
+    display: flex;
+    column-gap: 0.5em;
+    align-items: center;
+}
+
+.level {
+    font-size: 0.75em;
+}

@@ -276,13 +276,14 @@ export const HEROES = {
             critDamage: 100
         },
         element: "Normal",
-        gunOffset: { x: 3, y: 0 },
-        anchorOffset: { x: 6 / 32, y: 0 },
-        shootOffset: { x: -25, y: 0 },
-        projectile: "basic",
-        skills: []
+        gunOffset: { x: 0, y: 0 },
+        anchorOffset: { x: 0, y: 0 },
+        shootOffset: { x: 0, y: 0 },
+        projectile: "arrow"
     }
 } as const satisfies Record<string, HeroDef>;
+
+export type HeroId = keyof typeof HEROES;
 
 export const ELEMENTS: Record<ElementName, ElementDef> = {
     Normal: {
@@ -358,6 +359,12 @@ export const PROJECTILES = {
     },
     fireball: {
         sprite: "fireball",
+        hitbox: { width: 9, height: 8 },
+        speed: 300,
+        splashRadius: 0
+    },
+    arrow: {
+        sprite: "arrow",
         hitbox: { width: 9, height: 8 },
         speed: 300,
         splashRadius: 0

@@ -1,0 +1,16 @@
+.stats {
+    display: flex;
+    flex-direction: column;
+    row-gap: 0.125em;
+}
+
+.stats > * {
+    display: flex;
+    align-items: center;
+    column-gap: 0.25em;
+    font-size: 0.75em;
+}
+
+.element {
+    margin-bottom: 0.5em;
+}

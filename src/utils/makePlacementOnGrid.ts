@@ -10,7 +10,6 @@ export default function makePlaceableOnGrid(
         canConfirm: () => boolean
         onConfirm: () => void
         onCancel?: () => void
-        onMoveWhilePlaced?: () => boolean
     }
 ) {
     function updatePreview() {
@@ -29,7 +28,7 @@ export default function makePlaceableOnGrid(
 
     opts.obj.onUpdate(() => {
         if (!opts.obj.placed) updatePreview();
-    })
+    });
 
     opts.obj.onMousePress("left", () => {
         if (!opts.obj.placed && updatePreview() && opts.canConfirm()) {
@@ -41,23 +40,23 @@ export default function makePlaceableOnGrid(
 
             opts.obj.use(k.color("#ffffff"));
             opts.obj.selected = false;
+            console.log(opts.obj.selected)
             opts.obj.opacity = 1;
 
             opts.onConfirm();
         }
-    })
+    });
 
     opts.obj.onMouseDown("right", () => {
         if (!opts.obj.placed && opts.canCancel()) {
             opts.onCancel?.();
             k.destroy(opts.obj);
         }
-    })
+    });
 
     return {
         tryReposition() {
             if (!opts.obj.placed) return false;
-            if (!opts.onMoveWhilePlaced?.()) return false;
 
             const gridX = Math.floor(opts.obj.pos.x / opts.tileSize);
             const gridY = Math.floor(opts.obj.pos.y / opts.tileSize);

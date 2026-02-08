@@ -1,6 +1,6 @@
 import type { KAPLAYCtx, Vec2 } from "kaplay";
 import makeTower, { addSelectTowerListener } from "../entities/Tower";
-import type { MapData } from "../types";
+import type { MapData, SelectedHeroUI, TargetPriority } from "../types";
 import { mapAtom, store, gameStateAtom } from "../store";
 import { TILE_SIZE, TOWERS, MAX_HAND_SIZE } from "../constants";
 import generateDeck from "../utils/generateDeck";
@@ -9,8 +9,9 @@ import reroll from "../utils/reroll";
 import showLevelStats from "../utils/showLevelStats";
 import makeWaveSpawner from "../entities/WaveSpawner";
 import generateFog from "../utils/generateFog";
-import makeFloatingText from "../entities/floatingText";
+import makeFloatingText from "../entities/FloatingText";
 import getCamViewRect from "../utils/getCamViewRect";
+import makeHero from "../entities/Hero";
 
 export default function level1(k: KAPLAYCtx) {
     k.scene("level1", async () => {
@@ -147,6 +148,15 @@ export default function level1(k: KAPLAYCtx) {
             cursor.pos = k.toWorld(k.mousePos());
         });
 
+        const hero = makeHero(
+            k,
+            {
+                heroId: "archer",
+                pos: k.vec2(64, 64),
+                tileGrid
+            }
+        );
+
         // Deck and upgrades setup
         const deck = generateDeck(k);
         const upgrades = drawCards(k, deck, 3);
@@ -157,6 +167,7 @@ export default function level1(k: KAPLAYCtx) {
                 {
                     ...TOWERS["basic"],
                     onClick: () => {
+                        if (!k.get("hero")[0].placed) return;
                         const unplacedTower = k.get("tower").find(t => !t.placed);
                         if (unplacedTower) k.destroy(unplacedTower);
                         else makeTower(
@@ -178,6 +189,7 @@ export default function level1(k: KAPLAYCtx) {
                 {
                     ...TOWERS["fire"],
                     onClick: () => {
+                        if (!k.get("hero")[0].placed) return;
                         const unplacedTower = k.get("tower").find(t => !t.placed);
                         if (unplacedTower) k.destroy(unplacedTower);
                         else makeTower(
@@ -227,6 +239,7 @@ export default function level1(k: KAPLAYCtx) {
                 ...prev.reroll,
                 roll: () => reroll(k),
             },
+            heroCanReposition: true
         }));
 
         addSelectTowerListener(k);
@@ -239,5 +252,6 @@ export default function level1(k: KAPLAYCtx) {
         if (waypoints) {
             makeWaveSpawner(k, "level1", waypoints);
         } else throw new Error("Waypoints undefined");
+
     });
 }

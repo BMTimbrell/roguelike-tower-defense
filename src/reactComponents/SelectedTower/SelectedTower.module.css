@@ -1,18 +1,5 @@
 .name {
-    margin-bottom: 0.25em;
-}
-
-.stats {
-    display: flex;
-    flex-direction: column;
-    row-gap: 0.125em;
-    font-size: 0.75em;
-}
-
-.stats > * {
-    display: flex;
-    align-items: center;
-    column-gap: 0.25em;
+    margin-bottom: 0.5em;
 }
 
 .upgrades {
@@ -21,15 +8,4 @@
     flex-direction: row;
     column-gap: 0.25em;
     line-height: 1;
-}
-
-.progress {
-    display: flex;
-    align-items: center;
-    column-gap: 0.25em;
-}
-
-.progress img {
-    margin-top: -1px;
-    margin-left: -1px;
 }

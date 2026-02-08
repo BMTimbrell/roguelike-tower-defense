@@ -3,7 +3,7 @@ import type { GameState } from "./types";
 
 export const gameStateAtom = atom<GameState>({
     towerButtons: [],
-    selectedTower: null,
+    selectedUI: null,
     nextTowerId: 0,
     health: 10,
     gold: 200,
@@ -19,7 +19,8 @@ export const gameStateAtom = atom<GameState>({
         cost: 5,
         baseCost: 5,
         roll: () => null
-    }
+    },
+    heroCanReposition: true
 });
 
 export const mapAtom = atom({
