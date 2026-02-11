@@ -5,7 +5,7 @@ import { store, gameStateAtom } from '../store';
 import { calcUpgradeCost } from '../utils/calcUpgradeCost';
 import { TOWERS } from '../constants';
 import makePlaceableOnGrid from '../utils/makePlacementOnGrid';
-import { makeRangedUnitCombat } from '../utils/makeRangedUnitCombat';
+import makeUnitCombat from '../utils/makeUnitCombat';
 
 export default function makeTower(
     k: KAPLAYCtx,
@@ -59,7 +59,7 @@ export default function makeTower(
         towerId
     ]) as TowerGameObj;
 
-    const combat = makeRangedUnitCombat(k, {
+    const combat = makeUnitCombat(k, {
         owner: tower,
         stats: tower.stats,
         projectile,

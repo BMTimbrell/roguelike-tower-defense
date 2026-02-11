@@ -1,9 +1,10 @@
 import type { KAPLAYCtx, Vec2 } from "kaplay";
 import { HEROES, TILE_SIZE, type HeroId } from "../constants";
 import { gameStateAtom, store } from "../store";
-import type { HeroGameObj, SelectedHeroUI, SelectedTowerUI, TargetPriority } from "../types";
-import { makeRangedUnitCombat } from "../utils/makeRangedUnitCombat";
+import type { HeroGameObj, SelectedHeroUI, TargetPriority } from "../types";
+import makeUnitCombat from "../utils/makeUnitCombat";
 import makePlaceableOnGrid from "../utils/makePlacementOnGrid";
+import { SKILLS } from "../constants";
 
 export default function makeHero(k: KAPLAYCtx,
     opts: {
@@ -46,16 +47,19 @@ export default function makeHero(k: KAPLAYCtx,
             hovered: true,
             stats: { ...stats },
             canReposition: true,
-            skills: [],
+            skills: [SKILLS[0], SKILLS[1], SKILLS[2]],
             level: 1,
-            element
+            element,
+            effects: []
         },
         "tower",
         "hero",
         heroId
     ]) as HeroGameObj;
 
-    const combat = makeRangedUnitCombat(k, {
+    hero.skills.forEach(s => s.apply(hero));
+
+    const combat = makeUnitCombat(k, {
         owner: hero,
         stats: hero.stats,
         projectile,

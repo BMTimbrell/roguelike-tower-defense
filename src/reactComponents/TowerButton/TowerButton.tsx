@@ -7,6 +7,7 @@ import type { TowerStats, ElementName } from '../../types';
 import CostText from '../CostText/CostText';
 import { ELEMENTS } from '../../constants';
 import Stats from '../Stats/Stats';
+import DescriptionPopup from '../DescriptionPopup/DescriptionPopup';
 
 export default function TowerButton(
     {
@@ -103,11 +104,9 @@ export default function TowerButton(
                 </div>
             </Popup>}
 
-            {ePopup && <Popup mode="screen" pos={{ x: ePopupPos?.x || 0, y: ePopupPos?.y || 0 }}>
-                <div className={styles["element-description"]}>
-                    {ELEMENTS[element].description}
-                </div>
-            </Popup>}
+            {ePopup && <DescriptionPopup pos={{ x: ePopupPos?.x || 0, y: ePopupPos?.y || 0 }}>
+                {ELEMENTS[element].description}
+            </DescriptionPopup>}
         </>
     );
 }

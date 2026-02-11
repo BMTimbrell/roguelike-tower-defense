@@ -43,8 +43,8 @@ export function selectTarget(
 
 export function shortestAngleDiff(a: number, b: number) {
     let diff = b - a;
-    while (diff > Math.PI) diff -= Math.PI * 2;
-    while (diff < -Math.PI) diff += Math.PI * 2;
+    while (diff > 180) diff -= 360;
+    while (diff < -180) diff += 360;
     return diff;
 }
 

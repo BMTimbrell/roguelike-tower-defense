@@ -1,13 +1,13 @@
 import type { GameObj, KAPLAYCtx, Vec2 } from "kaplay";
-import type { ElementName } from "../types";
+import type { AttackContext, ElementName, HeroGameObj, TowerGameObj } from "../types";
 import { TILE_SIZE, type ProjectileId } from "../constants";
 import makeProjectile from "../entities/Projectile";
-import { rotateVector, selectTarget, shortestAngleDiff } from "../entities/targetingHelpers";
+import { rotateVector, selectTarget, shortestAngleDiff } from "./targetingHelpers";
 
-export function makeRangedUnitCombat(
+export default function makeUnitCombat(
     k: KAPLAYCtx,
     opts: {
-        owner: GameObj
+        owner: TowerGameObj | HeroGameObj
         stats: {
             damage: number
             range: number
@@ -58,12 +58,23 @@ export function makeRangedUnitCombat(
     });
 
     function shoot(target: GameObj) {
-        const roll = Math.random()
-        const willCrit = roll < opts.stats.critChance / 100
+        const damage = opts.stats.damage;
 
-        const damage = willCrit
-            ? opts.stats.damage * (1 + opts.stats.critDamage / 100)
-            : opts.stats.damage
+        const ctx: AttackContext = {
+            attacker: opts.owner,
+            target,
+            origin: gun.pos,
+            damage,
+            element: opts.element,
+            projectiles: [{
+                id: opts.projectile,
+                angle: gun.angle,
+                target,
+                homing: true
+            }]
+        };
+
+        opts.owner.effects?.forEach(e => e.onAttack(ctx));
 
         const rotatedOffset = rotateVector(
             k,
@@ -71,15 +82,25 @@ export function makeRangedUnitCombat(
             gun.angle * Math.PI / 180
         );
 
-        makeProjectile(k, {
-            id: opts.projectile,
-            pos: gun.pos.add(rotatedOffset),
-            target,
-            damage,
-            crit: willCrit,
-            angle: gun.angle,
-            element: opts.element,
-        });
+        for (const p of ctx.projectiles) {
+            const roll = Math.random();
+            const willCrit = roll < opts.stats.critChance / 100;
+
+            makeProjectile(k, {
+                id: p.id,
+                pos: ctx.origin.add(rotatedOffset),
+                target,
+                damage: ctx.damage * (1 + (willCrit ? opts.stats.critDamage / 100 : 0)),
+                crit: willCrit,
+                angle: p.angle,
+                element: ctx.element,
+                homing: p.homing,
+                homingDelay: p.homingDelay,
+                turnSpeed: p.turnSpeed,
+                behaviors: p?.behaviors
+            });
+        }
+
     }
 
     function update() {
@@ -91,22 +112,22 @@ export function makeRangedUnitCombat(
             rangeCircle.pos
         );
 
-            if (target) {
-                const desired = gun.pos.angle(target.pos);
-                const turnSpeed = 12; // radians per second
+        if (target) {
+            const desired = gun.pos.angle(target.pos);
+            const turnSpeed = 12;
 
-                const diff = shortestAngleDiff(gun.angle, desired);
-                gun.angle += diff * Math.min(1, turnSpeed * k.dt());
-            } else gun.angle = 0;
+            const diff = shortestAngleDiff(gun.angle, desired);
+            gun.angle += diff * Math.min(1, turnSpeed * k.dt());
+        } else gun.angle = 0;
 
-            if (shootTimer <= 0 && target) {
-                shootTimer = opts.stats.fireInterval;
+        if (shootTimer <= 0 && target) {
+            shootTimer = opts.stats.fireInterval;
 
-                gun.angle = gun.pos.angle(target.pos);
+            gun.angle = gun.pos.angle(target.pos);
 
-                shoot(target);
-                gun.play("shoot");
-            }
+            shoot(target);
+            gun.play("shoot");
+        }
     }
 
     return {

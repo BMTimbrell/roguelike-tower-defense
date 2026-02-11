@@ -94,7 +94,7 @@ export default function SelectedTower({ tower }: { tower: SelectedTowerUI }) {
             ...prev,
             upgrades: prev.upgrades.filter(upgrade => upgrade !== prev.selectedUpgrade),
             selectedUpgrade: null,
-            selectedTower: {
+            selectedUI: {
                 ...tower,
                 upgrades: newUpgrades
             }

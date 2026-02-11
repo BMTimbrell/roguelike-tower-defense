@@ -40,7 +40,7 @@ export type ElementDef = {
 
 export type ProjectileDef = {
     sprite: string;
-    hitbox: { width: number; height: number };
+    homing: boolean;
     speed: number;
     splashRadius: number;
 };
@@ -58,6 +58,9 @@ export type TowerDef = {
     anchorOffset: { x: number; y: number };
     shootOffset: { x: number; y: number };
     projectile: ProjectileId;
+    effects?: {
+        onAttack: (ctx: AttackContext) => void
+    }[];
 };
 
 export type UnitInstance = {
@@ -79,16 +82,20 @@ export type TowerInstance = UnitInstance & {
     upgrades: Upgrade[];
     unlockedUpgradeSlots: number;
     upgradeCost: number;
+    effects?: {
+        onAttack: (ctx: AttackContext) => void
+    }[];
 };
 
 export type TowerGameObj = GameObj & TowerInstance;
 
 export type HeroSkillDef = {
     id: string;
+    heroId: HeroId;
     name: string;
     description: string;
     apply: (hero: HeroGameObj) => void;
-    icon?: string;
+    icon: string;
 };
 
 export type HeroDef = Omit<TowerDef, | 'cost'>;
@@ -97,6 +104,9 @@ export type HeroInstance = UnitInstance & {
     skills: HeroSkillDef[];
     level: number;
     canReposition: boolean;
+    effects: {
+        onAttack: (ctx: AttackContext) => void
+    }[];
 };
 
 export type HeroGameObj = GameObj & HeroInstance;
@@ -204,4 +214,30 @@ export type EnemyConfig = {
     damage: number;
     speed: number;
     sprite: string;
+};
+
+export type AttackContext = {
+    attacker: GameObj;
+    target?: GameObj;
+    origin: Vec2;
+
+    damage: number;
+    element: ElementName;
+
+    projectiles: {
+        id: ProjectileId;
+        angle: number;
+        target?: GameObj;
+        homing: boolean;
+        angleOffset?: number;
+        homingDelay?: number;
+        turnSpeed?: number;
+        behaviors?: ProjectileBehavior;
+    }[];
+};
+
+export type ProjectileBehavior = {
+    bounces?: number;
+    bounceRange?: number;
+    bounceDamageMultiplier?: number;
 };

@@ -1,4 +1,4 @@
-import type { Upgrade, LevelWaves, EnemyConfig, TowerDef, ElementDef, ElementName, ProjectileDef, HeroDef } from "./types";
+import type { Upgrade, LevelWaves, EnemyConfig, TowerDef, ElementDef, ElementName, ProjectileDef, HeroDef, HeroSkillDef } from "./types";
 import { burnEffect } from "./entities/Enemy";
 
 export const VIRTUAL_WIDTH = 800;
@@ -181,7 +181,7 @@ export const LEVEL_WAVES = {
     level2: {
         startDelay: 30,
         waves: [
-            { 
+            {
                 spawns: [{ id: "fast", count: 5, interval: 0.4 }],
                 reward: 50
             }
@@ -217,7 +217,7 @@ export const ENEMIES = {
 export type EnemyId = keyof typeof ENEMIES;
 
 export const TOWERS = {
-    basic: { 
+    basic: {
         name: "Basic Tower",
         gunSprite: "basic tower",
         baseSprite: "basic tower base",
@@ -233,11 +233,11 @@ export const TOWERS = {
         },
         element: "Normal",
         gunOffset: { x: 2, y: 0 },
-        anchorOffset: { x:  4 / 32, y: 0 },
+        anchorOffset: { x: 4 / 32, y: 0 },
         shootOffset: { x: -20, y: 0 },
         projectile: "basic"
     },
-    fire: { 
+    fire: {
         name: "Fire Tower",
         gunSprite: "fire tower",
         baseSprite: "fire tower base",
@@ -353,22 +353,77 @@ export const ELEMENTS: Record<ElementName, ElementDef> = {
 export const PROJECTILES = {
     basic: {
         sprite: "basic projectile",
-        hitbox: { width: 8, height: 8 },
+        homing: true,
         speed: 300,
         splashRadius: 0
     },
     fireball: {
         sprite: "fireball",
-        hitbox: { width: 9, height: 8 },
+        homing: true,
         speed: 300,
         splashRadius: 0
     },
     arrow: {
         sprite: "arrow",
-        hitbox: { width: 9, height: 8 },
+        homing: true,
         speed: 300,
         splashRadius: 0
     }
 } as const satisfies Record<string, ProjectileDef>;
 
 export type ProjectileId = keyof typeof PROJECTILES;
+
+export const SKILLS: HeroSkillDef[] = [
+    {
+        id: "archer-volley",
+        heroId: "archer",
+        name: "Volley",
+        description: "50% chance to shoot 3 arrows at once",
+        apply: hero => {
+            hero.effects?.push({
+                onAttack(ctx) {
+                    if (ctx.projectiles.length === 0) return;
+                    if (Math.random() > 0.5) return;
+
+                    const base = ctx.projectiles[0];
+
+                    ctx.projectiles = [
+                        { ...base, angle: base.angle - 45, homingDelay: 0.2, turnSpeed: 12 },
+                        { ...base, angle: base.angle, homingDelay: 0.1, turnSpeed: 12 },
+                        { ...base, angle: base.angle + 45, homingDelay: 0.2, turnSpeed: 12 },
+                    ];
+                }
+            });
+        },
+        icon: "sprites/volley-skill-icon.png"
+    },
+    {
+        id: "range+2",
+        heroId: "archer",
+        name: "Range +2",
+        description: "Increase range by 2 tiles",
+        apply: hero => {
+            hero.stats.range += 2;
+        },
+        icon: "sprites/range-icon.png"
+    },
+    {
+        id: "archer-bounce",
+        heroId: "archer",
+        name: "Trick Shot",
+        description: "Arrows bounce to nearby enemies dealing half the damage per bounce",
+        apply(hero) {
+            hero.effects.push({
+                onAttack(ctx) {
+                    ctx.projectiles.forEach(projectile => {
+                        projectile.behaviors ??= {};
+                        projectile.behaviors.bounces ??= 1;
+                        projectile.behaviors.bounceRange ??= 3 * TILE_SIZE;
+                        projectile.behaviors.bounceDamageMultiplier ??= 0.5;
+                    });
+                }
+            });
+        },
+        icon: "sprites/bounce-skill-icon.png"
+    },
+] as const;

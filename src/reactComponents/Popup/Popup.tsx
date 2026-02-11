@@ -3,7 +3,12 @@ import styles from './Popup.module.css';
 import { mapAtom } from '../../store';
 import { useAtom } from 'jotai';
 
-export default function Popup({ mode, pos, children }: { mode: "world" | "screen"; pos: { x: number; y: number; }, children: React.ReactNode }) {
+export default function Popup({ mode, pos, children, pStyle }: { 
+    mode: "world" | "screen"; 
+    pos: { x: number; y: number; };
+    children: React.ReactNode; 
+    pStyle?: React.CSSProperties 
+}) {
     const popupRef = useRef<HTMLDivElement | null>(null);
     const [map] = useAtom(mapAtom);
     const [y, setY] = useState(0);
@@ -45,7 +50,8 @@ export default function Popup({ mode, pos, children }: { mode: "world" | "screen
                 '--y': mode === "world"
                     ? `${y}px`
                     : `${pos.y}px`,
-                fontSize: `calc(16px * ${scale})`
+                fontSize: `calc(16px * ${scale})`,
+                ...pStyle
             } as React.CSSProperties}
         >
             {children}
