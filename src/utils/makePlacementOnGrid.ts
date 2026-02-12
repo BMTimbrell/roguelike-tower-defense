@@ -40,7 +40,6 @@ export default function makePlaceableOnGrid(
 
             opts.obj.use(k.color("#ffffff"));
             opts.obj.selected = false;
-            console.log(opts.obj.selected)
             opts.obj.opacity = 1;
 
             opts.onConfirm();

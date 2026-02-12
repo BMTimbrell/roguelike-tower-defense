@@ -1,54 +1,8 @@
 import type { KAPLAYCtx, Vec2, GameObj } from 'kaplay';
 import { store, gameStateAtom } from '../store';
 import type { EnemyId } from '../constants';
-import { ELEMENTS, ENEMIES, SMALL_DAMAGE_NUMBER_SIZE } from '../constants';
-import makeFloatingText from './FloatingText';
-
-type BurnThis = {
-    hurt: (amount: number) => void
-    unuse: (id: string) => void,
-    maxHP: () => number,
-    pos: Vec2
-}
-
-export function burnEffect(k: KAPLAYCtx, duration: number) {
-    let timer = duration;
-    const tickRate = 1;
-    let tickTimer = tickRate;
-
-    return {
-        id: "burn",
-
-        require: ["health", "pos"],
-
-        refresh(newDuration: number) {
-            timer = newDuration;
-        },
-
-        update() {
-            tickTimer += k.dt();
-            timer -= k.dt();
-
-            if (tickTimer >= tickRate) {
-                tickTimer = 0;
-
-                const damage = Math.max(1, Math.round(this.maxHP() * 0.01));
-                this.hurt(damage);
-
-                makeFloatingText(k, {
-                    pos: this.pos,
-                    text: '' + damage,
-                    size: SMALL_DAMAGE_NUMBER_SIZE,
-                    color: ELEMENTS["Fire"].color
-                });
-            }
-
-            if (timer <= 0) {
-                this.unuse("burn");
-            }
-        },
-    } satisfies ThisType<BurnThis>
-}
+import { ENEMIES } from '../constants';
+import healthBar from '../kaplayComponents/healthBar';
 
 export default function makeEnemy(k: KAPLAYCtx, enemyId: EnemyId, waypoints: Vec2[]): GameObj {
 
@@ -71,6 +25,14 @@ export default function makeEnemy(k: KAPLAYCtx, enemyId: EnemyId, waypoints: Vec
         "enemy",
         enemyId
     ]);
+
+    enemy.onHurt(() => {
+        if (enemy.has("healthBar")) {
+            return;
+        }
+
+        enemy.use(healthBar(k, 2));
+    });
 
     enemy.onDeath(() => {
         store.set(gameStateAtom, prev => ({

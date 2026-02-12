@@ -11,8 +11,8 @@ export default function Popup({ mode, pos, children, pStyle }: {
 }) {
     const popupRef = useRef<HTMLDivElement | null>(null);
     const [map] = useAtom(mapAtom);
-    const [y, setY] = useState(0);
-    const [x, setX] = useState(0);
+    const [y, setY] = useState(pos.y);
+    const [x, setX] = useState(pos.x);
     const scale = map.scale;
 
     useLayoutEffect(() => {
@@ -38,7 +38,6 @@ export default function Popup({ mode, pos, children, pStyle }: {
         } else {
             setX(pos.x * scale);
         }
-
     }, [pos.x, pos.y, scale]);
 
     return (

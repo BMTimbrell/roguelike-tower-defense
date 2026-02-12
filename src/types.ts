@@ -1,5 +1,5 @@
 import { type MouseEventHandler } from "react";
-import { TILE_SIZE, type EnemyId, type HeroId, type ProjectileId, type TowerId } from "./constants";
+import { TILE_SIZE, type EnemyId, type HeroId, type ProjectileId, type SkillId, type TowerId } from "./constants";
 import type { Vec2, GameObj, KAPLAYCtx } from "kaplay";
 
 type LayerObj = {
@@ -45,6 +45,11 @@ export type ProjectileDef = {
     splashRadius: number;
 };
 
+export type UnitEffects = {
+    onAttack?: (ctx: AttackContext) => void;
+    onHit?: (ctx: AttackContext) => void;
+}[];
+
 export type TowerDef = {
     name: string;
     cost: number;
@@ -58,9 +63,7 @@ export type TowerDef = {
     anchorOffset: { x: number; y: number };
     shootOffset: { x: number; y: number };
     projectile: ProjectileId;
-    effects?: {
-        onAttack: (ctx: AttackContext) => void
-    }[];
+    effects?: UnitEffects;
 };
 
 export type UnitInstance = {
@@ -73,6 +76,7 @@ export type UnitInstance = {
     hovered: boolean;
     placeable: boolean;
     placed: boolean;
+    effects?: UnitEffects;
 };
 
 export type TowerInstance = UnitInstance & {
@@ -82,9 +86,6 @@ export type TowerInstance = UnitInstance & {
     upgrades: Upgrade[];
     unlockedUpgradeSlots: number;
     upgradeCost: number;
-    effects?: {
-        onAttack: (ctx: AttackContext) => void
-    }[];
 };
 
 export type TowerGameObj = GameObj & TowerInstance;
@@ -101,12 +102,9 @@ export type HeroSkillDef = {
 export type HeroDef = Omit<TowerDef, | 'cost'>;
 export type HeroInstance = UnitInstance & {
     heroId: HeroId;
-    skills: HeroSkillDef[];
+    skills: SkillId[];
     level: number;
     canReposition: boolean;
-    effects: {
-        onAttack: (ctx: AttackContext) => void
-    }[];
 };
 
 export type HeroGameObj = GameObj & HeroInstance;
@@ -164,7 +162,7 @@ export type SelectedTowerUI = SelectedUnitUI & {
 export type SelectedHeroUI = SelectedUnitUI & {
     heroId: string;
     level: number;
-    skills: HeroSkillDef[];
+    skills: SkillId[];
     canReposition: boolean;
     reposition: () => void;
 }
@@ -233,7 +231,13 @@ export type AttackContext = {
         homingDelay?: number;
         turnSpeed?: number;
         behaviors?: ProjectileBehavior;
+        bonusDamage?: number;
+        element?: ElementName;
     }[];
+
+    archer?: {
+        volleyChance?: number;
+    };
 };
 
 export type ProjectileBehavior = {

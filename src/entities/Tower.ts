@@ -1,4 +1,4 @@
-import type { KAPLAYCtx, GameObj, Vec2 } from 'kaplay';
+import type { KAPLAYCtx, Vec2 } from 'kaplay';
 import { TILE_SIZE, type TowerId } from '../constants';
 import type { SelectedTowerUI, Upgrade, TargetPriority, TowerGameObj } from '../types';
 import { store, gameStateAtom } from '../store';
@@ -100,8 +100,7 @@ export default function makeTower(
         },
     });
 
-    tower.onMousePress("left", () => {
-
+    tower.onMouseDown("left", () => {
         if (tower.placed && tower.selected) {
             store.set(gameStateAtom, prev => ({
                 ...prev,

@@ -1,5 +1,5 @@
 import type { Upgrade, LevelWaves, EnemyConfig, TowerDef, ElementDef, ElementName, ProjectileDef, HeroDef, HeroSkillDef } from "./types";
-import { burnEffect } from "./entities/Enemy";
+import burnEffect from "./kaplayComponents/burnEffect";
 
 export const VIRTUAL_WIDTH = 800;
 export const VIRTUAL_HEIGHT = 600;
@@ -297,9 +297,9 @@ export const ELEMENTS: Record<ElementName, ElementDef> = {
         applyEffect: (k, target) => {
             const duration = 5;
             if (k.randi(100) < 15) {
-                const burn = target.get("burn");
-                if (burn && typeof (burn as any).refresh === "function") {
-                    (burn as unknown as { refresh: (duration: number) => void }).refresh(duration);
+                const burn = target.has("burn");
+                if (burn) {
+                    target.refreshBurn(duration);
                     return;
                 }
                 target.use(burnEffect(k, duration));
@@ -368,6 +368,12 @@ export const PROJECTILES = {
         homing: true,
         speed: 300,
         splashRadius: 0
+    },
+    flamingArrow: {
+        sprite: "flaming arrow",
+        homing: true,
+        speed: 300,
+        splashRadius: 0
     }
 } as const satisfies Record<string, ProjectileDef>;
 
@@ -378,24 +384,19 @@ export const SKILLS: HeroSkillDef[] = [
         id: "archer-volley",
         heroId: "archer",
         name: "Volley",
-        description: "50% chance to shoot 3 arrows at once",
+        description: "25% chance to shoot a volley of 3 arrows",
         apply: hero => {
             hero.effects?.push({
                 onAttack(ctx) {
                     if (ctx.projectiles.length === 0) return;
-                    if (Math.random() > 0.5) return;
 
-                    const base = ctx.projectiles[0];
-
-                    ctx.projectiles = [
-                        { ...base, angle: base.angle - 45, homingDelay: 0.2, turnSpeed: 12 },
-                        { ...base, angle: base.angle, homingDelay: 0.1, turnSpeed: 12 },
-                        { ...base, angle: base.angle + 45, homingDelay: 0.2, turnSpeed: 12 },
-                    ];
+                    ctx.archer ??= {};
+                    ctx.archer.volleyChance ??= 0;
+                    ctx.archer.volleyChance += 0.25;
                 }
             });
         },
-        icon: "sprites/volley-skill-icon.png"
+        icon: "sprites/volley-skill-icon3.png"
     },
     {
         id: "range+2",
@@ -410,10 +411,10 @@ export const SKILLS: HeroSkillDef[] = [
     {
         id: "archer-bounce",
         heroId: "archer",
-        name: "Trick Shot",
-        description: "Arrows bounce to nearby enemies dealing half the damage per bounce",
+        name: "Bouncing Shot",
+        description: "Arrows bounce to nearby enemies dealing 50% damage on bounce",
         apply(hero) {
-            hero.effects.push({
+            hero.effects?.push({
                 onAttack(ctx) {
                     ctx.projectiles.forEach(projectile => {
                         projectile.behaviors ??= {};
@@ -424,6 +425,62 @@ export const SKILLS: HeroSkillDef[] = [
                 }
             });
         },
-        icon: "sprites/bounce-skill-icon.png"
+        icon: "sprites/bounce-skill-icon2.png"
     },
-] as const;
+    {
+        id: "archer-flaming-shot",
+        heroId: "archer",
+        name: "Flaming Shot",
+        description: "50% chance to fire a flaming arrow that deals 50% bonus damage",
+        apply(hero) {
+            hero.effects?.push({
+                onHit(ctx) {
+                    ctx.projectiles.forEach(projectile => {
+                        if (Math.random() < 0.5) return;
+
+                        projectile.bonusDamage = ctx.damage * 0.5;
+                        projectile.element = "Fire";
+                        projectile.id = "flamingArrow";
+                    });
+                }
+            });
+        },
+        icon: "sprites/flaming-arrow-icon2.png"
+    },
+    {
+        id: "archer-bounce-plus",
+        heroId: "archer",
+        name: "Bounce +1",
+        description: "Increase arrow bounce by 1",
+        apply(hero) {
+            hero.effects?.push({
+                onHit(ctx) {
+                    ctx.projectiles.forEach(projectile => {
+                        if (projectile.behaviors?.bounces) projectile.behaviors.bounces += 1;
+                    });
+                }
+            });
+        },
+        icon: "sprites/bounce-skill-icon2.png"
+    },
+    {
+        id: "archer-volley-plus",
+        heroId: "archer",
+        name: "Volley +25%",
+        description: "Increase chance of volley by 25%",
+        apply: hero => {
+            hero.effects?.push({
+                onAttack(ctx) {
+                    if (ctx.projectiles.length === 0) return;
+
+                    ctx.archer ??= {};
+                    ctx.archer.volleyChance ??= 0;
+                    ctx.archer.volleyChance += 0.25;
+                }
+            });
+        },
+        icon: "sprites/volley-skill-icon3.png"
+    },
+] as const satisfies HeroSkillDef[];
+
+export type SkillId = typeof SKILLS[number]["id"];

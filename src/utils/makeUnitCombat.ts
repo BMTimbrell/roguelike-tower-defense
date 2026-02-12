@@ -74,7 +74,18 @@ export default function makeUnitCombat(
             }]
         };
 
-        opts.owner.effects?.forEach(e => e.onAttack(ctx));
+        opts.owner.effects?.forEach(e => e.onAttack?.(ctx));
+        if (ctx.archer?.volleyChance && Math.random() < ctx.archer.volleyChance) {
+            const base = ctx.projectiles[0];
+
+            ctx.projectiles = [
+                { ...base, angle: base.angle - 45, homingDelay: 0.2, turnSpeed: 12 },
+                { ...base, angle: base.angle, homingDelay: 0.1, turnSpeed: 12 },
+                { ...base, angle: base.angle + 45, homingDelay: 0.2, turnSpeed: 12 },
+            ];
+        }
+
+        opts.owner.effects?.forEach(e => e.onHit?.(ctx));
 
         const rotatedOffset = rotateVector(
             k,
@@ -85,15 +96,17 @@ export default function makeUnitCombat(
         for (const p of ctx.projectiles) {
             const roll = Math.random();
             const willCrit = roll < opts.stats.critChance / 100;
+            const bonusDamage = p?.bonusDamage ?? 0;
+            const critDamage = 1 + (willCrit ? opts.stats.critDamage / 100 : 0);
 
             makeProjectile(k, {
                 id: p.id,
                 pos: ctx.origin.add(rotatedOffset),
                 target,
-                damage: ctx.damage * (1 + (willCrit ? opts.stats.critDamage / 100 : 0)),
+                damage: (ctx.damage + bonusDamage) * critDamage,
                 crit: willCrit,
                 angle: p.angle,
-                element: ctx.element,
+                element: p?.element ?? ctx.element,
                 homing: p.homing,
                 homingDelay: p.homingDelay,
                 turnSpeed: p.turnSpeed,

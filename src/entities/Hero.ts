@@ -47,7 +47,7 @@ export default function makeHero(k: KAPLAYCtx,
             hovered: true,
             stats: { ...stats },
             canReposition: true,
-            skills: [SKILLS[0], SKILLS[1], SKILLS[2]],
+            skillIds: [SKILLS[0].id, SKILLS[3].id, SKILLS[1].id, SKILLS[2].id],
             level: 1,
             element,
             effects: []
@@ -57,7 +57,7 @@ export default function makeHero(k: KAPLAYCtx,
         heroId
     ]) as HeroGameObj;
 
-    hero.skills.forEach(s => s.apply(hero));
+    hero.skillIds.forEach(sId => SKILLS.find(s => s.id === sId)?.apply(hero));
 
     const combat = makeUnitCombat(k, {
         owner: hero,
@@ -126,7 +126,7 @@ export default function makeHero(k: KAPLAYCtx,
                             placement.tryReposition();
                         }
                     },
-                    skills: hero.skills,
+                    skillIds: hero.skillIds,
                     level: hero.level
                 } as SelectedHeroUI
             }));

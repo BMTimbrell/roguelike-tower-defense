@@ -26,6 +26,7 @@ export default function loadAssets(k: KAPLAYCtx) {
     k.loadSprite("basic projectile", "/sprites/basic-projectile.png");
     k.loadSprite("fireball", "/sprites/fireball.png");
     k.loadSprite("arrow", "/sprites/arrow.png");
+    k.loadSprite("flaming arrow", "/sprites/flaming-arrow.png");
     k.loadSprite("archer base", "/sprites/archer-base.png");
     k.loadSprite("archer", "/sprites/archer.png", {
         sliceX: 5,

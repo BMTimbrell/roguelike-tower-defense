@@ -73,8 +73,12 @@ export default function makeProjectile(k: KAPLAYCtx, opts: {
                 if (nextTarget) {
                     target = nextTarget;
                     projectile.angle = projectile.pos.angle(target.pos);
-                    damage *= behaviors?.bounceDamageMultiplier ?? 1;
-                    damage = Math.round(damage);
+
+                    // only change damage for first bounce
+                    if (remainingBounces === (behaviors?.bounces ?? 0) - 1) {
+                        damage *= behaviors?.bounceDamageMultiplier ?? 1;
+                        damage = Math.round(damage);
+                    }
 
                     // Reset homing
                     timeAlive = 0;
