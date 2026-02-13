@@ -92,7 +92,7 @@ export type TowerGameObj = GameObj & TowerInstance;
 
 export type HeroSkillDef = {
     id: string;
-    heroId: HeroId;
+    heroId: HeroId | "any";
     name: string;
     description: string;
     apply: (hero: HeroGameObj) => void;
@@ -102,7 +102,7 @@ export type HeroSkillDef = {
 export type HeroDef = Omit<TowerDef, | 'cost'>;
 export type HeroInstance = UnitInstance & {
     heroId: HeroId;
-    skills: SkillId[];
+    skillIds: SkillId[];
     level: number;
     canReposition: boolean;
 };
@@ -162,7 +162,7 @@ export type SelectedTowerUI = SelectedUnitUI & {
 export type SelectedHeroUI = SelectedUnitUI & {
     heroId: string;
     level: number;
-    skills: SkillId[];
+    skillIds: SkillId[];
     canReposition: boolean;
     reposition: () => void;
 }
@@ -189,6 +189,8 @@ export type GameState = {
         roll: () => void;
     };
     heroCanReposition: boolean;
+    bottomBarVisible: boolean;
+    hero: HeroGameObj | null;
 };
 
 export type EnemySpawn = {
@@ -244,4 +246,6 @@ export type ProjectileBehavior = {
     bounces?: number;
     bounceRange?: number;
     bounceDamageMultiplier?: number;
+    distanceDamageMultiplier?: number;
+    distanceDamageCap?: number;
 };

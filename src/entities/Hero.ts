@@ -47,7 +47,7 @@ export default function makeHero(k: KAPLAYCtx,
             hovered: true,
             stats: { ...stats },
             canReposition: true,
-            skillIds: [SKILLS[0].id, SKILLS[3].id, SKILLS[1].id, SKILLS[2].id],
+            skillIds: [],
             level: 1,
             element,
             effects: []

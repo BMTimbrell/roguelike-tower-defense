@@ -1,10 +1,11 @@
 import type { GameObj, KAPLAYCtx, Vec2 } from "kaplay";
 import type { EnemyId, LevelId } from "../constants";
 import type { Wave } from "../types";
-import { LEVEL_WAVES } from "../constants";
+import { LEVEL_WAVES, MAX_HAND_SIZE, ROUND_DRAW_NUM } from "../constants";
 import makeEnemy from "./Enemy";
 import { store, gameStateAtom } from "../store";
 import screenPos from "../utils/screenPos";
+import drawCards from "../utils/drawCards";
 
 export default function makeWaveSpawner(k: KAPLAYCtx, levelId: LevelId, waypoints: Vec2[]): GameObj {
     const level = LEVEL_WAVES[levelId];
@@ -34,6 +35,7 @@ export default function makeWaveSpawner(k: KAPLAYCtx, levelId: LevelId, waypoint
 
     const spawner = k.add([
         "waveSpawner",
+        k.timer(),
         {
             startNextWave() {
                 if (waveIndex < 0) {
@@ -57,14 +59,53 @@ export default function makeWaveSpawner(k: KAPLAYCtx, levelId: LevelId, waypoint
 
                 if (waveIndex === level.waves.length - 1) {
                     levelComplete = true;
+                    const complete = k.add([
+                        k.pos(k.getCamPos()),
+                        k.text("Level Complete!", {
+                            size: 16,
+                            font: "free pixel"
+                        }),
+                        k.stay(),
+                        {
+                            update() {
+                                complete.timer -= k.dt();
+                                if (complete.timer <= 1)  {
+                                    k.go("levelTransition", store.get(gameStateAtom).hero);
+                                    complete.pos = k.getCamPos();
+                                }
+                                if (complete.timer >= 0) complete.scale = complete.scale.add(k.vec2(k.dt() * 5));
+                                else k.destroy(complete);
+                            },
+                            timer: 1.5
+                        },
+                        k.anchor("center"),
+                        k.scale(1),
+                        k.color("#FFFFFF"),
+                        k.z(999999),
+                    ]);
                     return;
                 }
 
                 enemyDeadCheck = false;
-                if (waveIndex >= 0) store.set(gameStateAtom, prev => ({
-                    ...prev,
-                    gold: prev.gold + level.waves[waveIndex].reward
-                }));
+                if (waveIndex >= 0) {
+                    store.set(gameStateAtom, prev => ({
+                        ...prev,
+                        gold: prev.gold + level.waves[waveIndex].reward
+                    }));
+                    const deck = store.get(gameStateAtom).deck.cards;
+                    const cardsInHand = store.get(gameStateAtom).upgrades.length;
+                    const cardsToDraw = Math.min(ROUND_DRAW_NUM, MAX_HAND_SIZE - cardsInHand);
+                    if (cardsToDraw > 0) {
+                        const cards = drawCards(k, deck, cardsToDraw);
+                        store.set(gameStateAtom, prev => ({
+                            ...prev,
+                            upgrades: [
+                                ...prev.upgrades,
+                                ...cards
+                            ]
+                        }));
+                    }
+                }
 
                 nextWaveTimer = level.startDelay;
                 waitingForNextWave = true;

@@ -36,4 +36,11 @@ export default function loadAssets(k: KAPLAYCtx) {
             shoot: { from: 1, to: 4, loop: false, speed: 20 }
         }
     });
+    k.loadSprite("archer celebrating", "/sprites/archer-celebrating.png", {
+        sliceX: 30,
+        sliceY: 1,
+        anims: {
+            celebrate: { from: 0, to: 29, loop: false }
+        }
+    });
 }

@@ -19,7 +19,7 @@ export default function ReactUI() {
         <>
             {/* <Overlay/> */}
 
-            <BottomBar />
+            {gameState.bottomBarVisible && <BottomBar />}
 
             {selectedTower &&
                 <SelectedTower

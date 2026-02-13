@@ -1,6 +1,6 @@
 import type { KAPLAYCtx, Vec2, GameObj } from 'kaplay';
 import makeFloatingText from './FloatingText';
-import { CRIT_DAMAGE_NUMBER_COLOR, CRIT_DAMAGE_NUMBER_SIZE, DAMAGE_NUMBER_COLOR, DAMAGE_NUMBER_SIZE, ELEMENTS, PROJECTILES, type ProjectileId } from '../constants';
+import { CRIT_DAMAGE_NUMBER_COLOR, CRIT_DAMAGE_NUMBER_SIZE, DAMAGE_NUMBER_COLOR, DAMAGE_NUMBER_SIZE, ELEMENTS, PROJECTILES, TILE_SIZE, type ProjectileId } from '../constants';
 import type { ElementName, ProjectileBehavior } from '../types';
 import { shortestAngleDiff } from '../utils/targetingHelpers';
 
@@ -37,12 +37,22 @@ export default function makeProjectile(k: KAPLAYCtx, opts: {
     ]);
 
     let timeAlive = 0;
+    let distance = 0;
     let direction = k.Vec2.fromAngle(projectile.angle + 180);
     let remainingBounces = behaviors?.bounces ?? 0;
+    let distanceDamageMultiplier = behaviors?.distanceDamageMultiplier ?? 0;
+    let baseDamage = damage;
 
     projectile.onUpdate(() => {
         projectile.pos = projectile.pos.add(direction.scale(projectile.speed * k.dt()));
         timeAlive += k.dt();
+
+        if (behaviors?.distanceDamageCap && behaviors.distanceDamageCap > distanceDamageMultiplier) {
+            distance += k.dt() * speed;
+            const distanceTiles = distance / TILE_SIZE;
+            distanceDamageMultiplier = Math.min(distanceTiles * 0.05, behaviors.distanceDamageCap);
+            damage = Math.round(baseDamage + baseDamage * distanceDamageMultiplier);
+        }
 
         if (homing && target && timeAlive >= projectile.homingDelay) {
             const desired = projectile.pos.angle(target.pos);
@@ -77,11 +87,11 @@ export default function makeProjectile(k: KAPLAYCtx, opts: {
                     // only change damage for first bounce
                     if (remainingBounces === (behaviors?.bounces ?? 0) - 1) {
                         damage *= behaviors?.bounceDamageMultiplier ?? 1;
+                        baseDamage *= behaviors?.bounceDamageMultiplier ?? 1;
+                        baseDamage = Math.round(baseDamage);
                         damage = Math.round(damage);
                     }
 
-                    // Reset homing
-                    timeAlive = 0;
                     return;
                 }
             }

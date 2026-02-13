@@ -1,5 +1,6 @@
 import type { Upgrade, LevelWaves, EnemyConfig, TowerDef, ElementDef, ElementName, ProjectileDef, HeroDef, HeroSkillDef } from "./types";
 import burnEffect from "./kaplayComponents/burnEffect";
+import calcFireInterval from "./utils/calcFireInterval";
 
 export const VIRTUAL_WIDTH = 800;
 export const VIRTUAL_HEIGHT = 600;
@@ -8,6 +9,7 @@ export const TOWER_RANGE_TOLERANCE = 5;
 export const MAX_TOWER_UPGRADES = 5;
 export const FOG_Z = 900;
 export const MAX_HAND_SIZE = 6;
+export const ROUND_DRAW_NUM = 3;
 export const DAMAGE_NUMBER_SIZE = 14;
 export const SMALL_DAMAGE_NUMBER_SIZE = 11;
 export const CRIT_DAMAGE_NUMBER_SIZE = 22;
@@ -193,7 +195,7 @@ export type LevelId = keyof typeof LEVEL_WAVES;
 
 export const ENEMIES = {
     grunt: {
-        hp: 100,
+        hp: 10,
         damage: 1,
         speed: 60,
         sprite: "grunt",
@@ -381,6 +383,58 @@ export type ProjectileId = keyof typeof PROJECTILES;
 
 export const SKILLS: HeroSkillDef[] = [
     {
+        id: "range+1",
+        heroId: "any",
+        name: "Range +1",
+        description: "Increase range by 1 tile",
+        apply: hero => {
+            hero.stats.range += 1;
+        },
+        icon: "sprites/range-icon.png"
+    },
+    {
+        id: "damage+20%",
+        heroId: "any",
+        name: "Damage +20%",
+        description: "Increase damage by 20%",
+        apply: hero => {
+            hero.stats.damage += Math.round(hero.stats.damage * 0.2);
+        },
+        icon: "sprites/damage-icon.png"
+    },
+    {
+        id: "crit-chance+20%",
+        heroId: "any",
+        name: "Crit Chance +20%",
+        description: "Increase crit chance by 20%",
+        apply: hero => {
+            hero.stats.critChance += 20;
+        },
+        icon: "sprites/critchance-icon.png"
+    },
+    {
+        id: "crit-damage+20%",
+        heroId: "any",
+        name: "Crit Damage +50%",
+        description: "Increase crit damage by 50%",
+        apply: hero => {
+            hero.stats.critDamage += 50;
+        },
+        icon: "sprites/critdamage-icon.png"
+    },
+    {
+        id: "fire-rate+20%",
+        heroId: "any",
+        name: "Fire Rate +20%",
+        description: "Increase fire rate by 20%",
+        apply: hero => {
+            const fireInterval = hero.stats.fireInterval;
+            const newFireInterval = calcFireInterval(fireInterval, 20);
+            hero.stats.fireInterval = newFireInterval;
+        },
+        icon: "sprites/firerate-icon.png"
+    },
+    {
         id: "archer-volley",
         heroId: "archer",
         name: "Volley",
@@ -415,7 +469,7 @@ export const SKILLS: HeroSkillDef[] = [
         description: "Arrows bounce to nearby enemies dealing 50% damage on bounce",
         apply(hero) {
             hero.effects?.push({
-                onAttack(ctx) {
+                onHit(ctx) {
                     ctx.projectiles.forEach(projectile => {
                         projectile.behaviors ??= {};
                         projectile.behaviors.bounces ??= 1;
@@ -481,6 +535,24 @@ export const SKILLS: HeroSkillDef[] = [
         },
         icon: "sprites/volley-skill-icon3.png"
     },
+    {
+        id: "archer-range-damage",
+        heroId: "archer",
+        name: "Range Damage",
+        description: "Arrows do increased damage based on distance travelled (capping at +50%)",
+        apply: hero => {
+            hero.effects?.push({
+                onHit(ctx) {
+                    ctx.projectiles.forEach(projectile => {
+                        projectile.behaviors ??= {};
+                        projectile.behaviors.distanceDamageMultiplier ??= 0;
+                        projectile.behaviors.distanceDamageCap = 0.5;
+                    });
+                }
+            });
+        },
+        icon: "sprites/range-damage-skill-icon.png"
+    }
 ] as const satisfies HeroSkillDef[];
 
 export type SkillId = typeof SKILLS[number]["id"];

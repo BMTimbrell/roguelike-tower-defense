@@ -20,7 +20,9 @@ export const gameStateAtom = atom<GameState>({
         baseCost: 5,
         roll: () => null
     },
-    heroCanReposition: true
+    heroCanReposition: true,
+    bottomBarVisible: true,
+    hero: null
 });
 
 export const mapAtom = atom({

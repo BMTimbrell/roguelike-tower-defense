@@ -103,7 +103,7 @@ export default function makeUnitCombat(
                 id: p.id,
                 pos: ctx.origin.add(rotatedOffset),
                 target,
-                damage: (ctx.damage + bonusDamage) * critDamage,
+                damage: Math.round((ctx.damage + bonusDamage) * critDamage),
                 crit: willCrit,
                 angle: p.angle,
                 element: p?.element ?? ctx.element,
@@ -117,7 +117,9 @@ export default function makeUnitCombat(
     }
 
     function update() {
-        shootTimer -= k.dt();
+        if (shootTimer > 0) {
+            shootTimer -= k.dt();
+        }
 
         const target = selectTarget(
             k.get("enemy"),
@@ -133,8 +135,8 @@ export default function makeUnitCombat(
             gun.angle += diff * Math.min(1, turnSpeed * k.dt());
         } else gun.angle = 0;
 
-        if (shootTimer <= 0 && target) {
-            shootTimer = opts.stats.fireInterval;
+        while (shootTimer <= 0 && target) {
+            shootTimer += opts.stats.fireInterval;
 
             gun.angle = gun.pos.angle(target.pos);
 

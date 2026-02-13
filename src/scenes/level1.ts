@@ -2,7 +2,7 @@ import type { KAPLAYCtx, Vec2 } from "kaplay";
 import makeTower, { addSelectTowerListener } from "../entities/Tower";
 import type { MapData, SelectedHeroUI, TargetPriority } from "../types";
 import { mapAtom, store, gameStateAtom } from "../store";
-import { TILE_SIZE, TOWERS, MAX_HAND_SIZE } from "../constants";
+import { TILE_SIZE, TOWERS, MAX_HAND_SIZE, ROUND_DRAW_NUM } from "../constants";
 import generateDeck from "../utils/generateDeck";
 import drawCards from "../utils/drawCards";
 import reroll from "../utils/reroll";
@@ -12,6 +12,7 @@ import generateFog from "../utils/generateFog";
 import makeFloatingText from "../entities/FloatingText";
 import getCamViewRect from "../utils/getCamViewRect";
 import makeHero from "../entities/Hero";
+import initCam from "../utils/initCam";
 
 export default function level1(k: KAPLAYCtx) {
     k.scene("level1", async () => {
@@ -28,8 +29,7 @@ export default function level1(k: KAPLAYCtx) {
         // Compute screen bounds and save in store
         const mapWorldWidth = mapData.width * mapData.tilewidth;
         const mapWorldHeight = mapData.height * mapData.tileheight;
-        let zoom = k.width() < 1400 ? 1 : 2;
-        k.setCamScale(zoom);
+        let zoom = initCam(k);
 
         let dragActive = false;
         let lastTouchPos: Vec2 | null = null;
@@ -110,14 +110,13 @@ export default function level1(k: KAPLAYCtx) {
         });
 
         k.onResize(() => {
-            zoom = k.width() < 1400 ? 1 : 2;
+            initCam(k);
             viewW = k.width() / zoom;
             viewH = k.height() / zoom;
             minX = viewW / 2;
             minY = viewH / 2;
             maxX = mapWorldWidth - viewW / 2;
             maxY = mapWorldHeight - viewH / 2;
-            k.setCamScale(zoom);
             store.set(mapAtom, {
                 x: 0,
                 y: 0,
@@ -159,7 +158,7 @@ export default function level1(k: KAPLAYCtx) {
 
         // Deck and upgrades setup
         const deck = generateDeck(k);
-        const upgrades = drawCards(k, deck, 3);
+        const upgrades = drawCards(k, deck, ROUND_DRAW_NUM);
         store.set(gameStateAtom, prev => ({
             ...prev,
             towerButtons: [
@@ -239,7 +238,8 @@ export default function level1(k: KAPLAYCtx) {
                 ...prev.reroll,
                 roll: () => reroll(k),
             },
-            heroCanReposition: true
+            heroCanReposition: true,
+            hero
         }));
 
         addSelectTowerListener(k);

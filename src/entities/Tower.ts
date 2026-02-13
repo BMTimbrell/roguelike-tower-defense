@@ -6,6 +6,7 @@ import { calcUpgradeCost } from '../utils/calcUpgradeCost';
 import { TOWERS } from '../constants';
 import makePlaceableOnGrid from '../utils/makePlacementOnGrid';
 import makeUnitCombat from '../utils/makeUnitCombat';
+import calcFireInterval from '../utils/calcFireInterval';
 
 export default function makeTower(
     k: KAPLAYCtx,
@@ -140,8 +141,9 @@ export default function makeTower(
                         tower.upgrades.forEach(upgrade => {
                             if (upgrade.active && !upgrade.used) {
                                 if (upgrade.stat === "fireInterval") {
-                                    tower.stats.fireInterval /= 1 + upgrade.amount / 100;
-                                    tower.stats.fireInterval = Math.max(0.05, tower.stats.fireInterval);
+                                    const fireInterval = tower.stats.fireInterval;
+                                    const newInterval = calcFireInterval(fireInterval, upgrade.amount);
+                                    tower.stats.fireInterval = newInterval;
                                 } else if (upgrade.stat === "critChance" || upgrade.stat === "critDamage" || !upgrade.percentage) {
                                     tower.stats[upgrade.stat] += upgrade.amount;
                                 } else {
