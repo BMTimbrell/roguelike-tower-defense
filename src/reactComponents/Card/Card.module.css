@@ -13,10 +13,7 @@
 
 .card {
     pointer-events: auto;
-    display: flex;
-    flex-direction: column;
     border-radius: 0.375em;
-    row-gap: 0.125em;
     border: 1px solid rgba(255, 255, 255, 0.6);
     padding: 0.25em;
     padding-top: 0.125em;

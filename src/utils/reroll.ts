@@ -11,7 +11,8 @@ export default function reroll(k: KAPLAYCtx) {
         gold: prev.gold - prev.reroll.cost,
         reroll: {
             ...prev.reroll,
-            baseCost: Math.min(40, prev.reroll.baseCost * 2)
+            baseCost: Math.min(40, prev.reroll.baseCost * 2),
+            rerollCount: prev.reroll.rerollCount + 1
         }
     }));
 

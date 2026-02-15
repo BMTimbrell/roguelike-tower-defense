@@ -193,6 +193,7 @@ export type GameState = {
         cost: number;
         baseCost: number;
         roll: () => void;
+        rerollCount: number;
     };
     heroCanReposition: boolean;
     bottomBarVisible: boolean;

@@ -23,7 +23,7 @@ export default function Upgrades({ upgrades }: { upgrades: Upgrade[] }) {
         <div className={styles.container}>
             {upgrades.map((upgrade, index) => (
                 <Card 
-                    key={index}
+                    key={`${index}${gameState.reroll.rerollCount}`}
                     popup={<UpgradePopup upgrade={upgrade} pos={popupPos} />} 
                     setPopupPos={setPopupPos} 
                     scale={scale} 

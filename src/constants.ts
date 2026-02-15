@@ -278,7 +278,7 @@ export const HEROES = {
         },
         element: "Normal",
         gunOffset: { x: 0, y: 0 },
-        anchorOffset: { x: 0, y: 0 },
+        anchorOffset: { x: 9 / 32, y: 9 / 32 },
         shootOffset: { x: 0, y: 0 },
         projectile: "arrow"
     },
@@ -484,7 +484,7 @@ export const SKILLS = [
         id: "archer-bounce",
         heroIds: ["archer"],
         name: "Bouncing Shot",
-        description: "Arrows bounce to nearby enemies dealing 50% damage on bounce",
+        description: "Arrows bounce to nearby enemies, dealing 50% damage on bounce",
         apply(hero) {
             hero.effects?.push({
                 onHit(ctx) {

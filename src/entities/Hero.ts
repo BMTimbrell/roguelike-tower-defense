@@ -30,7 +30,6 @@ export default function makeHero(k: KAPLAYCtx,
     } = HEROES[heroId];
 
     const hero = k.add([
-        k.sprite(baseSprite),
         k.pos(pos),
         k.color("#FFFFFF"),
         k.area({
@@ -56,6 +55,18 @@ export default function makeHero(k: KAPLAYCtx,
         "hero",
         heroId
     ]) as HeroGameObj;
+
+    const sprite = hero.add([
+        k.sprite(baseSprite),
+        k.color("#FFFFFF"),
+        k.anchor("center"),
+        k.rotate(90),
+        k.opacity(0.5),
+        k.pos(TILE_SIZE / 2, TILE_SIZE / 2)
+    ]);
+
+    hero.width = sprite.width;
+    hero.height = sprite.height;
 
     hero.skillIds.forEach(sId => SKILLS.find(s => s.id === sId)?.apply(hero));
 
@@ -87,6 +98,7 @@ export default function makeHero(k: KAPLAYCtx,
 
     const placement = makePlaceableOnGrid(k, {
         obj: hero,
+        heroSprite: sprite,
         tileGrid,
         tileSize: TILE_SIZE,
         canConfirm: () => true,
@@ -97,7 +109,7 @@ export default function makeHero(k: KAPLAYCtx,
                 ...prev,
                 selectedUI: null
             }));
-         },
+        },
     });
 
     hero.onMouseDown("left", () => {
@@ -141,9 +153,10 @@ export default function makeHero(k: KAPLAYCtx,
     hero.onUpdate(() => {
         if (hero.placed) {
             combat.update();
-            if (combat.gun.angle > 90 || combat.gun.angle < -90) {
-                hero.flipX = true;
-            } else hero.flipX = false;
+            // if (combat.gun.angle > 90 || combat.gun.angle < -90) {
+            //     hero.flipX = true;
+            // } else hero.flipX = false;
+            sprite.angle = combat.gun.angle + 90;
         }
     });
 

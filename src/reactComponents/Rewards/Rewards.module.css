@@ -2,7 +2,37 @@
     user-select: none;
     position: absolute;
     top: 20dvh;
-    left: 50%;
-    transform: translate(-50%, 0);
+    width: 100%;
     color: white;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    row-gap: 1em;
+}
+
+.heading {
+    font-size: 1.25em;
+}
+
+.card-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25em;
+    justify-content: center;
+}
+
+.card-contents {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex: 1 1 10em;
+    max-width: 12em;
+    row-gap: 0.25em;
+    text-align: center;
+}
+
+.name {
+    display: flex;
+    column-gap: 0.25em;
+    align-items: center;
 }

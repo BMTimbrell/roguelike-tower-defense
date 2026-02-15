@@ -3,13 +3,14 @@ import type { GameObj, KAPLAYCtx } from "kaplay"
 export default function makePlaceableOnGrid(
     k: KAPLAYCtx,
     opts: {
-        obj: GameObj
-        tileGrid: boolean[][]
-        tileSize: number
-        canCancel: () => boolean
-        canConfirm: () => boolean
-        onConfirm: () => void
-        onCancel?: () => void
+        obj: GameObj;
+        heroSprite?: GameObj;
+        tileGrid: boolean[][];
+        tileSize: number;
+        canCancel: () => boolean;
+        canConfirm: () => boolean;
+        onConfirm: () => void;
+        onCancel?: () => void;
     }
 ) {
     function updatePreview() {
@@ -22,6 +23,7 @@ export default function makePlaceableOnGrid(
 
         opts.obj.pos = k.vec2(gridX * opts.tileSize, gridY * opts.tileSize);
         opts.obj.color = k.Color.fromHex(blocked || !opts.canConfirm() ? "#FF0000" : "#FFFFFF");
+        if (opts.heroSprite) opts.heroSprite.color = opts.obj.color;
 
         return !blocked;
     }
@@ -41,6 +43,7 @@ export default function makePlaceableOnGrid(
             opts.obj.use(k.color("#ffffff"));
             opts.obj.selected = false;
             opts.obj.opacity = 1;
+            if (opts.heroSprite) opts.heroSprite.opacity = 1;
 
             opts.onConfirm();
         }

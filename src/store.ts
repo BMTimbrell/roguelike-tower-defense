@@ -18,7 +18,8 @@ export const gameStateAtom = atom<GameState>({
     reroll: {
         cost: 5,
         baseCost: 5,
-        roll: () => null
+        roll: () => null,
+        rerollCount: 0
     },
     heroCanReposition: true,
     bottomBarVisible: true,
