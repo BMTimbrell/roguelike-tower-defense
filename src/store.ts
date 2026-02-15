@@ -1,5 +1,5 @@
 import { atom, createStore } from "jotai";
-import type { GameState } from "./types";
+import type { GameState, Rewards } from "./types";
 
 export const gameStateAtom = atom<GameState>({
     towerButtons: [],
@@ -31,6 +31,11 @@ export const mapAtom = atom({
     height: 0,
     width: 0,
     scale: 1
+});
+
+export const rewardsAtom = atom<Rewards>({
+    skills: [],
+    visible: false
 });
 
 export const store = createStore();

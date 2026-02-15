@@ -1,6 +1,6 @@
 import type { KAPLAYCtx, Vec2 } from "kaplay";
 import makeTower, { addSelectTowerListener } from "../entities/Tower";
-import type { MapData, SelectedHeroUI, TargetPriority } from "../types";
+import type { MapData } from "../types";
 import { mapAtom, store, gameStateAtom } from "../store";
 import { TILE_SIZE, TOWERS, MAX_HAND_SIZE, ROUND_DRAW_NUM } from "../constants";
 import generateDeck from "../utils/generateDeck";
@@ -13,6 +13,7 @@ import makeFloatingText from "../entities/FloatingText";
 import getCamViewRect from "../utils/getCamViewRect";
 import makeHero from "../entities/Hero";
 import initCam from "../utils/initCam";
+import updateSkills from "../utils/updateSkills";
 
 export default function level1(k: KAPLAYCtx) {
     k.scene("level1", async () => {
@@ -155,6 +156,8 @@ export default function level1(k: KAPLAYCtx) {
                 tileGrid
             }
         );
+
+        updateSkills(hero);
 
         // Deck and upgrades setup
         const deck = generateDeck(k);

@@ -68,7 +68,7 @@ export default function makeProjectile(k: KAPLAYCtx, opts: {
                 pos: projectile.pos,
                 text: '' + damage,
                 size: crit ? CRIT_DAMAGE_NUMBER_SIZE : DAMAGE_NUMBER_SIZE,
-                color: crit ? CRIT_DAMAGE_NUMBER_COLOR : DAMAGE_NUMBER_COLOR
+                color: ELEMENTS[element].color
             });
 
             if (ELEMENTS[element].applyEffect) {

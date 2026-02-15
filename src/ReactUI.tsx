@@ -1,11 +1,13 @@
 import { useAtom } from 'jotai';
-import { gameStateAtom } from './store';
+import { gameStateAtom, rewardsAtom } from './store';
 import { BottomBar } from "./reactComponents/BottomBar/BottomBar";
 import SelectedTower from "./reactComponents/SelectedTower/SelectedTower";
 import SelectedHero from './reactComponents/SelectedHero/SelectedHero';
+import Rewards from './reactComponents/Rewards/Rewards';
 
 export default function ReactUI() {
     const [gameState] = useAtom(gameStateAtom);
+    const [rewards] = useAtom(rewardsAtom);
     const selectedUI = gameState.selectedUI;
     const selectedTower =
         selectedUI && "towerId" in selectedUI
@@ -34,6 +36,8 @@ export default function ReactUI() {
                     hero={selectedHeroUI}
                 />
             }
+
+            {rewards.visible && <Rewards />}
         </>
     );
 }

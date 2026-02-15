@@ -1,5 +1,5 @@
 import type { KAPLAYCtx, Vec2 } from "kaplay";
-import { HEROES, TILE_SIZE, type HeroId } from "../constants";
+import { HEROES, TILE_SIZE, type HeroId, type SkillId } from "../constants";
 import { gameStateAtom, store } from "../store";
 import type { HeroGameObj, SelectedHeroUI, TargetPriority } from "../types";
 import makeUnitCombat from "../utils/makeUnitCombat";
@@ -47,7 +47,7 @@ export default function makeHero(k: KAPLAYCtx,
             hovered: true,
             stats: { ...stats },
             canReposition: true,
-            skillIds: [],
+            skillIds: [] satisfies SkillId[],
             level: 1,
             element,
             effects: []

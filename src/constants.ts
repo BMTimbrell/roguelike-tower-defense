@@ -1,4 +1,4 @@
-import type { Upgrade, LevelWaves, EnemyConfig, TowerDef, ElementDef, ElementName, ProjectileDef, HeroDef, HeroSkillDef } from "./types";
+import type { Upgrade, LevelWaves, EnemyConfig, TowerDef, ElementDef, ElementName, ProjectileDef, HeroDef, HeroSkillDef, HeroSkillDefBase } from "./types";
 import burnEffect from "./kaplayComponents/burnEffect";
 import calcFireInterval from "./utils/calcFireInterval";
 
@@ -166,8 +166,7 @@ export const LEVEL_WAVES = {
         waves: [
             {
                 spawns: [
-                    { id: "grunt", count: 3, interval: 0.6 },
-                    { id: "fast", count: 5, interval: 0.4 }
+                    { id: "grunt", count: 5, interval: 0.6 },
                 ],
                 reward: 50
             },
@@ -195,7 +194,7 @@ export type LevelId = keyof typeof LEVEL_WAVES;
 
 export const ENEMIES = {
     grunt: {
-        hp: 10,
+        hp: 15,
         damage: 1,
         speed: 60,
         sprite: "grunt",
@@ -266,6 +265,25 @@ export type TowerId = keyof typeof TOWERS;
 export const HEROES = {
     archer: {
         name: "Archer",
+        sprite: "archer-hero-sprite.png",
+        description: "A ranged hero that excels at taking down enemies from afar.",
+        gunSprite: "archer",
+        baseSprite: "archer base",
+        stats: {
+            damage: 8,
+            range: 5,
+            fireInterval: 1,
+            critChance: 10,
+            critDamage: 100
+        },
+        element: "Normal",
+        gunOffset: { x: 0, y: 0 },
+        anchorOffset: { x: 0, y: 0 },
+        shootOffset: { x: 0, y: 0 },
+        projectile: "arrow"
+    },
+    wizard: {
+        name: "Wizard",
         sprite: "archer-hero-sprite.png",
         description: "A ranged hero that excels at taking down enemies from afar.",
         gunSprite: "archer",
@@ -381,10 +399,10 @@ export const PROJECTILES = {
 
 export type ProjectileId = keyof typeof PROJECTILES;
 
-export const SKILLS: HeroSkillDef[] = [
+export const SKILLS = [
     {
         id: "range+1",
-        heroId: "any",
+        heroIds: ["wizard"],
         name: "Range +1",
         description: "Increase range by 1 tile",
         apply: hero => {
@@ -394,7 +412,7 @@ export const SKILLS: HeroSkillDef[] = [
     },
     {
         id: "damage+20%",
-        heroId: "any",
+        heroIds: ["archer", "wizard"],
         name: "Damage +20%",
         description: "Increase damage by 20%",
         apply: hero => {
@@ -404,7 +422,7 @@ export const SKILLS: HeroSkillDef[] = [
     },
     {
         id: "crit-chance+20%",
-        heroId: "any",
+        heroIds: ["archer", "wizard"],
         name: "Crit Chance +20%",
         description: "Increase crit chance by 20%",
         apply: hero => {
@@ -414,7 +432,7 @@ export const SKILLS: HeroSkillDef[] = [
     },
     {
         id: "crit-damage+20%",
-        heroId: "any",
+        heroIds: ["archer", "wizard"],
         name: "Crit Damage +50%",
         description: "Increase crit damage by 50%",
         apply: hero => {
@@ -424,7 +442,7 @@ export const SKILLS: HeroSkillDef[] = [
     },
     {
         id: "fire-rate+20%",
-        heroId: "any",
+        heroIds: ["archer", "wizard"],
         name: "Fire Rate +20%",
         description: "Increase fire rate by 20%",
         apply: hero => {
@@ -436,7 +454,7 @@ export const SKILLS: HeroSkillDef[] = [
     },
     {
         id: "archer-volley",
-        heroId: "archer",
+        heroIds: ["archer"],
         name: "Volley",
         description: "25% chance to shoot a volley of 3 arrows",
         apply: hero => {
@@ -454,7 +472,7 @@ export const SKILLS: HeroSkillDef[] = [
     },
     {
         id: "range+2",
-        heroId: "archer",
+        heroIds: ["archer"],
         name: "Range +2",
         description: "Increase range by 2 tiles",
         apply: hero => {
@@ -464,7 +482,7 @@ export const SKILLS: HeroSkillDef[] = [
     },
     {
         id: "archer-bounce",
-        heroId: "archer",
+        heroIds: ["archer"],
         name: "Bouncing Shot",
         description: "Arrows bounce to nearby enemies dealing 50% damage on bounce",
         apply(hero) {
@@ -483,7 +501,7 @@ export const SKILLS: HeroSkillDef[] = [
     },
     {
         id: "archer-flaming-shot",
-        heroId: "archer",
+        heroIds: ["archer"],
         name: "Flaming Shot",
         description: "50% chance to fire a flaming arrow that deals 50% bonus damage",
         apply(hero) {
@@ -503,7 +521,8 @@ export const SKILLS: HeroSkillDef[] = [
     },
     {
         id: "archer-bounce-plus",
-        heroId: "archer",
+        heroIds: ["archer"],
+        requires: ["archer-bounce"],
         name: "Bounce +1",
         description: "Increase arrow bounce by 1",
         apply(hero) {
@@ -519,7 +538,8 @@ export const SKILLS: HeroSkillDef[] = [
     },
     {
         id: "archer-volley-plus",
-        heroId: "archer",
+        heroIds: ["archer"],
+        requires: ["archer-volley"],
         name: "Volley +25%",
         description: "Increase chance of volley by 25%",
         apply: hero => {
@@ -537,7 +557,7 @@ export const SKILLS: HeroSkillDef[] = [
     },
     {
         id: "archer-range-damage",
-        heroId: "archer",
+        heroIds: ["archer"],
         name: "Range Damage",
         description: "Arrows do increased damage based on distance travelled (capping at +50%)",
         apply: hero => {
@@ -553,6 +573,6 @@ export const SKILLS: HeroSkillDef[] = [
         },
         icon: "sprites/range-damage-skill-icon.png"
     }
-] as const satisfies HeroSkillDef[];
+] as const satisfies HeroSkillDefBase[];
 
 export type SkillId = typeof SKILLS[number]["id"];

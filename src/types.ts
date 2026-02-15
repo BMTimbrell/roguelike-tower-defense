@@ -90,13 +90,18 @@ export type TowerInstance = UnitInstance & {
 
 export type TowerGameObj = GameObj & TowerInstance;
 
-export type HeroSkillDef = {
+export type HeroSkillDefBase = {
     id: string;
-    heroId: HeroId | "any";
+    heroIds: HeroId[];
+    requires?: string[];
     name: string;
     description: string;
     apply: (hero: HeroGameObj) => void;
     icon: string;
+};
+
+export type HeroSkillDef = Omit<HeroSkillDefBase, "requires"> & {
+    requires?: SkillId[];
 };
 
 export type HeroDef = Omit<TowerDef, | 'cost'>;
@@ -118,6 +123,7 @@ export type Upgrade = {
     active?: boolean;
     used?: boolean;
     icon?: string;
+    animationDelay?: number;
 };
 
 export type USlot = {
@@ -249,3 +255,8 @@ export type ProjectileBehavior = {
     distanceDamageMultiplier?: number;
     distanceDamageCap?: number;
 };
+
+export type Rewards = {
+    skills: SkillId[];
+    visible: boolean;
+}

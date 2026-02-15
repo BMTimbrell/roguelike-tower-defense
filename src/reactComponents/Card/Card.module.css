@@ -1,0 +1,48 @@
+.card-wrap {
+    display: flex;
+    transition: transform 0.15s ease;
+}
+
+.card-wrap:hover {
+    transform: translateY(-0.125em);
+}
+
+.card-wrap:hover .card {
+    box-shadow: 0 0.375em 0.875em rgba(0,0,0,0.4);
+}
+
+.card {
+    pointer-events: auto;
+    display: flex;
+    flex-direction: column;
+    border-radius: 0.375em;
+    row-gap: 0.125em;
+    border: 1px solid rgba(255, 255, 255, 0.6);
+    padding: 0.25em;
+    padding-top: 0.125em;
+    color: white;
+    background-color: var(--card-color);
+    cursor: pointer;
+    box-shadow: 0 0.125em 0.375em rgba(0, 0, 0, 0.4);
+    transition: box-shadow 0.15s ease;
+    animation: flipIn 0.5s ease-in-out;
+    transform-style: preserve-3d;
+    perspective: 800px;
+    animation-fill-mode: both;
+}
+
+@keyframes flipIn {
+    0% {
+        transform: rotateY(90deg) scale(0.95);
+        opacity: 0;
+    }
+
+    80% {
+        transform: rotateY(-10deg) scale(1.05);
+        opacity: 1;
+    }
+
+    100% {
+        transform: rotateY(0deg) scale(1);
+    }
+}
