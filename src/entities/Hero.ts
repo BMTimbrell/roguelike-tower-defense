@@ -29,7 +29,7 @@ export default function makeHero(k: KAPLAYCtx,
         projectile
     } = HEROES[heroId];
 
-    const hero = k.add([
+    const hero = k.make([
         k.pos(pos),
         k.color("#FFFFFF"),
         k.area({
@@ -56,108 +56,110 @@ export default function makeHero(k: KAPLAYCtx,
         heroId
     ]) as HeroGameObj;
 
-    const sprite = hero.add([
-        k.sprite(baseSprite),
-        k.color("#FFFFFF"),
-        k.anchor("center"),
-        k.rotate(90),
-        k.opacity(0.5),
-        k.pos(TILE_SIZE / 2, TILE_SIZE / 2)
-    ]);
+    hero.onAdd(() => {
+        const sprite = hero.add([
+            k.sprite(baseSprite),
+            k.color("#FFFFFF"),
+            k.anchor("center"),
+            k.rotate(90),
+            k.opacity(0.5),
+            k.pos(TILE_SIZE / 2, TILE_SIZE / 2)
+        ]);
 
-    hero.width = sprite.width;
-    hero.height = sprite.height;
+        hero.width = sprite.width;
+        hero.height = sprite.height;
 
-    hero.skillIds.forEach(sId => SKILLS.find(s => s.id === sId)?.apply(hero));
+        hero.skillIds.forEach(sId => SKILLS.find(s => s.id === sId)?.apply(hero));
 
-    const combat = makeUnitCombat(k, {
-        owner: hero,
-        stats: hero.stats,
-        projectile,
-        element,
-        gunSprite,
-        gunOffset: k.vec2(gunOffset.x, gunOffset.y),
-        shootOffset: k.vec2(shootOffset.x, shootOffset.y),
-        anchorOffset: k.vec2(anchorOffset.x, anchorOffset.y)
-    });
+        const combat = makeUnitCombat(k, {
+            owner: hero,
+            stats: hero.stats,
+            projectile,
+            element,
+            gunSprite,
+            gunOffset: k.vec2(gunOffset.x, gunOffset.y),
+            shootOffset: k.vec2(shootOffset.x, shootOffset.y),
+            anchorOffset: k.vec2(anchorOffset.x, anchorOffset.y)
+        });
 
-    hero.onCollide("cursor", () => {
-        hero.hovered = true;
-    });
+        hero.onCollide("cursor", () => {
+            hero.hovered = true;
+        });
 
-    hero.onCollideEnd("cursor", () => {
-        hero.hovered = false;
-    });
+        hero.onCollideEnd("cursor", () => {
+            hero.hovered = false;
+        });
 
-    hero.onDestroy(() => {
-        const gridX = Math.floor(hero.pos.x / TILE_SIZE);
-        const gridY = Math.floor(hero.pos.y / TILE_SIZE);
-        tileGrid[gridY][gridX] = false;
-        combat.destroy();
-    });
+        hero.onDestroy(() => {
+            const gridX = Math.floor(hero.pos.x / TILE_SIZE);
+            const gridY = Math.floor(hero.pos.y / TILE_SIZE);
+            tileGrid[gridY][gridX] = false;
+            combat.destroy();
+        });
 
-    const placement = makePlaceableOnGrid(k, {
-        obj: hero,
-        heroSprite: sprite,
-        tileGrid,
-        tileSize: TILE_SIZE,
-        canConfirm: () => true,
-        canCancel: () => false,
-        onConfirm: () => {
-            hero.selected = false;
-            store.set(gameStateAtom, prev => ({
-                ...prev,
-                selectedUI: null
-            }));
-        },
-    });
+        const placement = makePlaceableOnGrid(k, {
+            obj: hero,
+            heroSprite: sprite,
+            tileGrid,
+            tileSize: TILE_SIZE,
+            canConfirm: () => true,
+            canCancel: () => false,
+            onConfirm: () => {
+                hero.selected = false;
+                store.set(gameStateAtom, prev => ({
+                    ...prev,
+                    selectedUI: null
+                }));
+            },
+        });
 
-    hero.onMouseDown("left", () => {
-        if (hero.placed && hero.selected) {
-            store.set(gameStateAtom, prev => ({
-                ...prev,
-                selectedUI: {
-                    heroId: hero.heroId,
-                    pos: hero.screenPos().scale(1 / k.getCamScale().x, 1 / k.getCamScale().y),
-                    priority: hero.priority,
-                    name: hero.name,
-                    stats: hero.stats,
-                    element: hero.element,
-                    setPriority: (priority: TargetPriority) => {
-                        hero.priority = priority;
-                        store.set(gameStateAtom, prev => ({
-                            ...prev,
-                            selectedUI: {
-                                ...prev.selectedUI,
-                                priority: hero.priority
-                            } as SelectedHeroUI
-                        }));
-                    },
-                    reposition: () => {
-                        if (store.get(gameStateAtom).heroCanReposition) {
-                            placement.tryReposition();
-                        }
-                    },
-                    skillIds: hero.skillIds,
-                    level: hero.level
-                } as SelectedHeroUI
-            }));
-        } else if (!k.get("tower").some(t => t.selected && t.placed)) {
-            store.set(gameStateAtom, prev => ({
-                ...prev,
-                selectedUI: null
-            }));
-        }
-    });
+        hero.onMouseDown("left", () => {
+            if (hero.placed && hero.selected) {
+                store.set(gameStateAtom, prev => ({
+                    ...prev,
+                    selectedUI: {
+                        heroId: hero.heroId,
+                        pos: hero.screenPos().scale(1 / k.getCamScale().x, 1 / k.getCamScale().y),
+                        priority: hero.priority,
+                        name: hero.name,
+                        stats: hero.stats,
+                        element: hero.element,
+                        setPriority: (priority: TargetPriority) => {
+                            hero.priority = priority;
+                            store.set(gameStateAtom, prev => ({
+                                ...prev,
+                                selectedUI: {
+                                    ...prev.selectedUI,
+                                    priority: hero.priority
+                                } as SelectedHeroUI
+                            }));
+                        },
+                        reposition: () => {
+                            if (store.get(gameStateAtom).heroCanReposition) {
+                                placement.tryReposition();
+                            }
+                        },
+                        skillIds: hero.skillIds,
+                        level: hero.level
+                    } as SelectedHeroUI
+                }));
+            } else if (!k.get("tower").some(t => t.selected && t.placed)) {
+                store.set(gameStateAtom, prev => ({
+                    ...prev,
+                    selectedUI: null
+                }));
+            }
+        });
 
-    hero.onUpdate(() => {
-        if (hero.placed) {
-            combat.update();
-            // if (combat.gun.angle > 90 || combat.gun.angle < -90) {
-            //     hero.flipX = true;
-            // } else hero.flipX = false;
-            sprite.angle = combat.gun.angle + 90;
-        }
+        hero.onUpdate(() => {
+            if (hero.placed) {
+                combat.update();
+                // if (combat.gun.angle > 90 || combat.gun.angle < -90) {
+                //     hero.flipX = true;
+                // } else hero.flipX = false;
+                sprite.angle = combat.gun.angle + 90;
+            }
+        });
     });
 
     return hero;

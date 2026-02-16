@@ -1,0 +1,12 @@
+.button {
+    background: linear-gradient(to top, var(--card-color) var(--charge-percent), var(--btn-hover-color) var(--charge-percent));
+    pointer-events: auto;
+}
+
+.button:not(.button:disabled):hover {
+  background: linear-gradient(
+    to top,
+    var(--btn-hover-color) 100%,
+    var(--btn-hover-color) 100%
+  );
+}

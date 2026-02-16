@@ -1,6 +1,6 @@
 import type { KAPLAYCtx, Vec2, GameObj } from 'kaplay';
 import makeFloatingText from './FloatingText';
-import { CRIT_DAMAGE_NUMBER_COLOR, CRIT_DAMAGE_NUMBER_SIZE, DAMAGE_NUMBER_COLOR, DAMAGE_NUMBER_SIZE, ELEMENTS, PROJECTILES, TILE_SIZE, type ProjectileId } from '../constants';
+import {CRIT_DAMAGE_NUMBER_SIZE, DAMAGE_NUMBER_SIZE, ELEMENTS, PROJECTILES, TILE_SIZE, type ProjectileId } from '../constants';
 import type { ElementName, ProjectileBehavior } from '../types';
 import { shortestAngleDiff } from '../utils/targetingHelpers';
 

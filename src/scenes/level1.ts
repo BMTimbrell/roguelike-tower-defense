@@ -164,50 +164,70 @@ export default function level1(k: KAPLAYCtx) {
         const upgrades = drawCards(k, deck, ROUND_DRAW_NUM);
         store.set(gameStateAtom, prev => ({
             ...prev,
+            heroButton: {
+                ...prev.heroButton,
+                onClick: () => {
+                    k.add(hero);
+                    store.set(gameStateAtom, prev => ({
+                        ...prev,
+                        heroButton: {
+                            ...prev.heroButton,
+                            visible: false
+                        }
+                    }))
+                }
+            },
             towerButtons: [
                 ...prev.towerButtons,
                 {
                     ...TOWERS["basic"],
                     onClick: () => {
-                        if (!k.get("hero")[0].placed) return;
+                        if (k.get("hero")[0] && !k.get("hero")[0].placed) return;
                         const unplacedTower = k.get("tower").find(t => !t.placed);
-                        if (unplacedTower) k.destroy(unplacedTower);
-                        else makeTower(
-                            k,
-                            {
-                                towerId: "basic",
-                                pos: k.toWorld(k.mousePos()),
-                                tileGrid
-                            }
-                        );
+                        if (!unplacedTower || unplacedTower.towerId !== "basic") {
+                            makeTower(
+                                k,
+                                {
+                                    towerId: "basic",
+                                    pos: k.toWorld(k.mousePos()),
+                                    tileGrid
+                                }
+                            );
+                            store.set(gameStateAtom, prev => ({
+                                ...prev,
+                                nextTowerId: prev.nextTowerId + 1,
+                                selectedTower: null,
+                            }));
+                        }
+                        if (unplacedTower) {
+                            k.destroy(unplacedTower);
+                        }
 
-                        store.set(gameStateAtom, prev => ({
-                            ...prev,
-                            nextTowerId: prev.nextTowerId + 1,
-                            selectedTower: null,
-                        }));
                     },
                 },
                 {
                     ...TOWERS["fire"],
                     onClick: () => {
-                        if (!k.get("hero")[0].placed) return;
+                        if (k.get("hero")[0] && !k.get("hero")[0].placed) return;
                         const unplacedTower = k.get("tower").find(t => !t.placed);
-                        if (unplacedTower) k.destroy(unplacedTower);
-                        else makeTower(
-                            k,
-                            {
-                                towerId: "fire",
-                                pos: k.toWorld(k.mousePos()),
-                                tileGrid
-                            }
-                        );
-
-                        store.set(gameStateAtom, prev => ({
-                            ...prev,
-                            nextTowerId: prev.nextTowerId + 1,
-                            selectedTower: null,
-                        }));
+                        if (!unplacedTower || unplacedTower.towerId !== "fire") {
+                            makeTower(
+                                k,
+                                {
+                                    towerId: "fire",
+                                    pos: k.toWorld(k.mousePos()),
+                                    tileGrid
+                                }
+                            );
+                            store.set(gameStateAtom, prev => ({
+                                ...prev,
+                                nextTowerId: prev.nextTowerId + 1,
+                                selectedTower: null,
+                            }));
+                        }
+                        if (unplacedTower) {
+                            k.destroy(unplacedTower);
+                        }
                     },
                 }
             ],

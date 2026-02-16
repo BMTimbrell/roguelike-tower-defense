@@ -1,5 +1,6 @@
 import { atom, createStore } from "jotai";
 import type { GameState, Rewards } from "./types";
+import { CHARGE_DAMAGE_REQUIRED } from "./constants";
 
 export const gameStateAtom = atom<GameState>({
     towerButtons: [],
@@ -23,7 +24,16 @@ export const gameStateAtom = atom<GameState>({
     },
     heroCanReposition: true,
     bottomBarVisible: true,
-    hero: null
+    hero: null,
+    heroButton: {
+        visible: true,
+        onClick: () => null
+    },
+    heroCharge: {
+        charge: 0,
+        damageDealt: 0,
+        damageRequired: CHARGE_DAMAGE_REQUIRED
+    }
 });
 
 export const mapAtom = atom({

@@ -1,4 +1,5 @@
 .button {
+    --btn-hover-color: rgb(114, 114, 114);
     color: white;
     background-color: var(--card-color);
     font-size: 0.75em;
@@ -9,5 +10,10 @@
 
 .button:hover {
     cursor: pointer;
-    background-color: rgb(114, 114, 114);
+    background-color: var(--btn-hover-color);
+}
+
+.button:disabled {
+    cursor: default;
+    background-color: var(--btn-hover-color);
 }

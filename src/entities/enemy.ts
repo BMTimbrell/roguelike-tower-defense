@@ -26,12 +26,24 @@ export default function makeEnemy(k: KAPLAYCtx, enemyId: EnemyId, waypoints: Vec
         enemyId
     ]);
 
-    enemy.onHurt(() => {
+    enemy.onHurt(amount => {
         if (enemy.has("healthBar")) {
             return;
         }
 
         enemy.use(healthBar(k, 2));
+
+        if (amount) {
+            const damageDealt = store.get(gameStateAtom).heroCharge.damageDealt;
+            store.set(gameStateAtom, prev => ({
+                ...prev,
+                heroCharge: {
+                    ...prev.heroCharge,
+                    damageDealt: damageDealt + amount,
+                    charge: Math.min((damageDealt + amount) / prev.heroCharge.damageRequired, 1)
+                }
+            }));
+        }
     });
 
     enemy.onDeath(() => {

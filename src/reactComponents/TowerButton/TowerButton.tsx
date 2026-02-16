@@ -20,11 +20,11 @@ export default function TowerButton(
         sprite,
         element
     }: {
-        name: string,
-        scale: number,
-        onClick: MouseEventHandler<HTMLButtonElement>
-        cost: number,
-        stats: TowerStats,
+        name: string;
+        scale: number;
+        onClick: MouseEventHandler<HTMLButtonElement>;
+        cost: number;
+        stats: TowerStats;
         element: ElementName;
         sprite: string;
         description: string;

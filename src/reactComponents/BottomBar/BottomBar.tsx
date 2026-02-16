@@ -5,6 +5,7 @@ import Upgrades from '../Upgrades/Upgrades';
 import styles from './BottomBar.module.css';
 import Deck from '../Deck/Deck';
 import RerollCardsButton from '../RerollCardsButton/RerollCardsButton';
+import HeroButton from '../HeroButton/HeroButton';
 
 export function BottomBar() {
     const [map] = useAtom(mapAtom);
@@ -20,8 +21,12 @@ export function BottomBar() {
             }}
             className={styles.container}
         >
-
             <div className={styles["tower-container"]}>
+                {gameState.heroButton.visible && <HeroButton
+                    onClick={() => { gameState.heroButton.onClick() }}
+                    sprite={`/sprites/${gameState?.hero?.heroId}-protrait.png`}
+                    charge={gameState.heroCharge.charge}
+                />}
                 {towerButtons.map((t, index) => (
                     <TowerButton
                         key={index}
@@ -38,9 +43,9 @@ export function BottomBar() {
             </div>
 
             <Upgrades upgrades={upgrades} />
-            
+
             <div className={styles["right-container"]}>
-                <RerollCardsButton  />
+                <RerollCardsButton />
                 <Deck deck={gameState.deck} gold={gameState.gold} />
             </div>
         </div>

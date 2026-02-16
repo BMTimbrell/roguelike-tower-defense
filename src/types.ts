@@ -198,6 +198,15 @@ export type GameState = {
     heroCanReposition: boolean;
     bottomBarVisible: boolean;
     hero: HeroGameObj | null;
+    heroButton: {
+        visible: boolean;
+        onClick: () => void;
+    };
+    heroCharge: {
+        damageDealt: number;
+        charge: number;
+        damageRequired: number;
+    };
 };
 
 export type EnemySpawn = {

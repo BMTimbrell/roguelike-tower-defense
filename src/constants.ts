@@ -15,6 +15,7 @@ export const SMALL_DAMAGE_NUMBER_SIZE = 11;
 export const CRIT_DAMAGE_NUMBER_SIZE = 22;
 export const DAMAGE_NUMBER_COLOR = "#fffb00";
 export const CRIT_DAMAGE_NUMBER_COLOR = "#ff0000";
+export const CHARGE_DAMAGE_REQUIRED = 100;
 export const UPGRADES: Upgrade[] = [{
     stat: "damage",
     name: "Damage",
@@ -162,7 +163,7 @@ export const UPGRADES: Upgrade[] = [{
 
 export const LEVEL_WAVES = {
     level1: {
-        startDelay: 30,
+        startDelay: 120,
         waves: [
             {
                 spawns: [
