@@ -51,9 +51,9 @@ export default function makeTower(
             selected: true,
             hovered: true,
             stats: { ...stats },
-            unlockedUpgradeSlots: 1,
+            unlockedUpgradeSlots: 0,
             upgrades: [],
-            upgradeCost: calcUpgradeCost(cost, 1),
+            upgradeCost: calcUpgradeCost(cost, 0),
             element
         },
         "tower",

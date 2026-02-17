@@ -43,4 +43,12 @@ export default function loadAssets(k: KAPLAYCtx) {
             celebrate: { from: 0, to: 29, loop: false }
         }
     });
+    k.loadSprite("slime", "/sprites/slime.png", {
+        sliceX: 7,
+        sliceY: 2,
+        anims: {
+            move: { from: 0, to: 5, loop: true },
+            die: { from: 6, to: 12, loop: false }
+        }
+    });
 }

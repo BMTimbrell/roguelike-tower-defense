@@ -15,7 +15,7 @@ export const SMALL_DAMAGE_NUMBER_SIZE = 11;
 export const CRIT_DAMAGE_NUMBER_SIZE = 22;
 export const DAMAGE_NUMBER_COLOR = "#fffb00";
 export const CRIT_DAMAGE_NUMBER_COLOR = "#ff0000";
-export const CHARGE_DAMAGE_REQUIRED = 100;
+export const CHARGE_DAMAGE_REQUIRED = 80;
 export const UPGRADES: Upgrade[] = [{
     stat: "damage",
     name: "Damage",
@@ -167,13 +167,13 @@ export const LEVEL_WAVES = {
         waves: [
             {
                 spawns: [
-                    { id: "grunt", count: 5, interval: 0.6 },
+                    { id: "slime", count: 5, interval: 1 },
                 ],
                 reward: 50
             },
             {
                 spawns: [
-                    { id: "tank", count: 2, interval: 0.4 }
+                    { id: "slime", count: 10, interval: 0.4 }
                 ],
                 reward: 80
             }
@@ -184,7 +184,7 @@ export const LEVEL_WAVES = {
         startDelay: 30,
         waves: [
             {
-                spawns: [{ id: "fast", count: 5, interval: 0.4 }],
+                spawns: [{ id: "slime", count: 5, interval: 0.4 }],
                 reward: 50
             }
         ],
@@ -194,26 +194,12 @@ export const LEVEL_WAVES = {
 export type LevelId = keyof typeof LEVEL_WAVES;
 
 export const ENEMIES = {
-    grunt: {
-        hp: 15,
+    slime: {
+        hp: 10,
         damage: 1,
-        speed: 60,
-        sprite: "grunt",
-    },
-
-    fast: {
-        hp: 6,
-        damage: 1,
-        speed: 120,
-        sprite: "fast",
-    },
-
-    tank: {
-        hp: 50,
-        damage: 1,
-        speed: 30,
-        sprite: "tank",
-    },
+        speed: 50,
+        sprite: "slime",
+    }
 } as const satisfies Record<string, EnemyConfig>;
 
 export type EnemyId = keyof typeof ENEMIES;

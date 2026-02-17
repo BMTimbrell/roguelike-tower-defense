@@ -8,11 +8,12 @@ export default function makeEnemy(k: KAPLAYCtx, enemyId: EnemyId, waypoints: Vec
 
     const enemy = k.add([
         k.pos(waypoints[0]),
-        k.rect(16, 16),
-        k.anchor("bot"),
+        k.sprite(ENEMIES[enemyId].sprite, { anim: "move" }),
+        k.anchor("center"),
         k.area({
             shape: new k.Rect(k.vec2(0), 16, 16)
         }),
+        k.rotate(),
         k.health(ENEMIES[enemyId].hp, ENEMIES[enemyId].hp),
         {
             path: waypoints,
@@ -20,46 +21,64 @@ export default function makeEnemy(k: KAPLAYCtx, enemyId: EnemyId, waypoints: Vec
             segmentStart: waypoints[0],
             segmentProgress: 0,
             speed: ENEMIES[enemyId].speed,
-            damage: ENEMIES[enemyId].damage
+            damage: ENEMIES[enemyId].damage,
+            isDying: false
         },
         "enemy",
         enemyId
     ]);
 
     enemy.onHurt(amount => {
-        if (enemy.has("healthBar")) {
+        if (!amount) {
             return;
         }
 
-        enemy.use(healthBar(k, 2));
+        const damageDealt = store.get(gameStateAtom).heroCharge.damageDealt;
+        store.set(gameStateAtom, prev => ({
+            ...prev,
+            heroCharge: {
+                ...prev.heroCharge,
+                damageDealt: damageDealt + amount,
+                charge: Math.min((damageDealt + amount) / prev.heroCharge.damageRequired, 1)
+            }
+        }));
 
-        if (amount) {
-            const damageDealt = store.get(gameStateAtom).heroCharge.damageDealt;
-            store.set(gameStateAtom, prev => ({
-                ...prev,
-                heroCharge: {
-                    ...prev.heroCharge,
-                    damageDealt: damageDealt + amount,
-                    charge: Math.min((damageDealt + amount) / prev.heroCharge.damageRequired, 1)
-                }
-            }));
+        if (enemy.isDying) return;
+
+        if (!enemy.has("healthBar")) {
+            enemy.use(healthBar(k, 2));
         }
     });
 
     enemy.onDeath(() => {
+        if (enemy.isDying) return;
+
+        enemy.isDying = true;
         store.set(gameStateAtom, prev => ({
             ...prev,
             gold: prev.gold + enemy.damage
         }));
-        k.destroy(enemy);
+        enemy.untag("enemy");
+        enemy.unuse("area");
+        enemy.play("die");
+    });
+
+    enemy.onAnimEnd(anim => {
+        if (anim === "die") {
+            k.destroy(enemy);
+        }
     });
 
     enemy.onUpdate(() => {
+        if (enemy.isDying) return;
+
         const next = enemy.path[enemy.pathIndex + 1];
         if (!next) return;
 
         const dir = next.sub(enemy.pos).unit();
         enemy.move(dir.scale(enemy.speed));
+
+        enemy.angle = dirToRotation(dir);
 
         const segmentLen = enemy.segmentStart.dist(next);
         const traveled = enemy.pos.dist(enemy.segmentStart);
@@ -85,4 +104,14 @@ export default function makeEnemy(k: KAPLAYCtx, enemyId: EnemyId, waypoints: Vec
     });
 
     return enemy;
+}
+
+function dirToRotation(dir: Vec2) {
+    if (Math.abs(dir.x) > Math.abs(dir.y)) {
+        // horizontal
+        return dir.x > 0 ? -90 : 90;
+    } else {
+        // vertical
+        return dir.y > 0 ? 0 : 180;
+    }
 }

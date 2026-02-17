@@ -1,13 +1,13 @@
 import type { KAPLAYCtx, Vec2, GameObj } from 'kaplay';
 import makeFloatingText from './FloatingText';
-import {CRIT_DAMAGE_NUMBER_SIZE, DAMAGE_NUMBER_SIZE, ELEMENTS, PROJECTILES, TILE_SIZE, type ProjectileId } from '../constants';
+import { CRIT_DAMAGE_NUMBER_SIZE, DAMAGE_NUMBER_SIZE, ELEMENTS, PROJECTILES, TILE_SIZE, type ProjectileId } from '../constants';
 import type { ElementName, ProjectileBehavior } from '../types';
 import { shortestAngleDiff } from '../utils/targetingHelpers';
 
 export default function makeProjectile(k: KAPLAYCtx, opts: {
     id: ProjectileId;
     pos: Vec2;
-    target: GameObj;
+    target: GameObj | null;
     damage: number;
     crit?: boolean;
     angle?: number;
@@ -44,6 +44,19 @@ export default function makeProjectile(k: KAPLAYCtx, opts: {
     let baseDamage = damage;
 
     projectile.onUpdate(() => {
+        if (homing && (!target || !isValidTarget(target))) {
+            target = findNewTarget(k, projectile.pos);
+
+            if (!target) {
+                k.destroy(projectile);
+                return;
+            }
+
+            // snap direction to new target immediately
+            projectile.angle = projectile.pos.angle(target.pos);
+            direction = target.pos.sub(projectile.pos).unit();
+        }
+
         projectile.pos = projectile.pos.add(direction.scale(projectile.speed * k.dt()));
         timeAlive += k.dt();
 
@@ -62,17 +75,17 @@ export default function makeProjectile(k: KAPLAYCtx, opts: {
             direction = target.pos.sub(projectile.pos).unit();
         }
 
-        if (projectile.pos.dist(target.pos) < 4) {
-            target.hurt(damage);
-            makeFloatingText(k, {
-                pos: projectile.pos,
-                text: '' + damage,
-                size: crit ? CRIT_DAMAGE_NUMBER_SIZE : DAMAGE_NUMBER_SIZE,
-                color: ELEMENTS[element].color
-            });
+        if (target && projectile.pos.dist(target?.pos) < 4) {
+            if (!target.isDying) {
+                target.hurt(damage);
+                makeFloatingText(k, {
+                    pos: projectile.pos,
+                    text: '' + damage,
+                    size: crit ? CRIT_DAMAGE_NUMBER_SIZE : DAMAGE_NUMBER_SIZE,
+                    color: ELEMENTS[element].color
+                });
 
-            if (ELEMENTS[element].applyEffect) {
-                ELEMENTS[element].applyEffect!(k, target);
+                ELEMENTS[element].applyEffect?.(k, target);
             }
 
             if (remainingBounces > 0) {
@@ -113,4 +126,22 @@ function selectBounceTarget(k: KAPLAYCtx, from: GameObj, bounceRange?: number) {
         .sort((a, b) =>
             a.pos.dist(from.pos) - b.pos.dist(from.pos)
         )[0];
+}
+
+function isValidTarget(e: GameObj) {
+    return e.is("enemy") && !e.isDying;
+}
+
+function findNewTarget(
+    k: KAPLAYCtx,
+    fromPos: Vec2,
+    maxRange?: number
+): GameObj | null {
+    return k
+        .get("enemy")
+        .filter(e => !e.isDying)
+        .filter(e => !maxRange || e.pos.dist(fromPos) <= maxRange)
+        .sort((a, b) =>
+            a.pos.dist(fromPos) - b.pos.dist(fromPos)
+        )[0] ?? null;
 }

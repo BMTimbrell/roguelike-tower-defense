@@ -20,7 +20,7 @@ export default function burnEffect(k: KAPLAYCtx, duration: number): BurnComp {
             timer = newDuration;
         },
 
-        update(this: GameObj<HealthComp | PosComp>) {
+        update(this: GameObj<HealthComp | PosComp | { isDying: boolean }>) {
             tickTimer += k.dt();
             timer -= k.dt();
 
@@ -38,7 +38,7 @@ export default function burnEffect(k: KAPLAYCtx, duration: number): BurnComp {
                 });
             }
 
-            if (timer <= 0) {
+            if (timer <= 0 || this.isDying) {
                 this.unuse("burn");
             }
         },

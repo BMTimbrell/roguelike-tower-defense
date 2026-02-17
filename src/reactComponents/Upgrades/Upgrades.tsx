@@ -31,11 +31,13 @@ export default function Upgrades({ upgrades }: { upgrades: Upgrade[] }) {
                     classNames={[gameState.selectedUpgrade === upgrade ? styles.selected : '']}
                     handleClick={() => handleClick(upgrade)}
                 >
-                    <div className={styles.icon}>
-                        <img width={`${32 * scale}px`} src={upgrade.icon} />
-                        <div>+{upgrade.amount}{upgrade.percentage ? '%' : ''}</div>
+                    <div className={styles["upgrade-contents"]}>
+                        <div className={styles.icon}>
+                            <img width={`${32 * scale}px`} src={upgrade.icon} />
+                            <div>+{upgrade.amount}{upgrade.percentage ? '%' : ''}</div>
+                        </div>
+                        <div>Cost: {upgrade.cost}</div>
                     </div>
-                    <div>Cost: {upgrade.cost}</div>
                 </Card>
 
             ))}
