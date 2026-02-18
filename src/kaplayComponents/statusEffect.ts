@@ -1,6 +1,6 @@
 import type { Comp } from "kaplay";
 
-export type StatusEffect = "burn" | "poison";
+export type StatusEffect = "burn" | "poison" | "chill";
 
 export type StatusEffectComp = Comp & {
     statuses: StatusEffect[];

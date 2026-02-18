@@ -206,15 +206,15 @@ export default function level1(k: KAPLAYCtx) {
                     },
                 },
                 {
-                    ...TOWERS["fire"],
+                    ...TOWERS["slime"],
                     onClick: () => {
                         if (k.get("hero")[0] && !k.get("hero")[0].placed) return;
                         const unplacedTower = k.get("tower").find(t => !t.placed);
-                        if (!unplacedTower || unplacedTower.towerId !== "fire") {
+                        if (!unplacedTower || unplacedTower.towerId !== "slime") {
                             makeTower(
                                 k,
                                 {
-                                    towerId: "fire",
+                                    towerId: "slime",
                                     pos: k.toWorld(k.mousePos()),
                                     tileGrid
                                 }

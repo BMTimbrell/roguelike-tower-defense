@@ -80,5 +80,6 @@ export default function loadAssets(k: KAPLAYCtx) {
     });
     k.loadSprite("poison", "/sprites/poison-icon.png");
     k.loadSprite("burn", "/sprites/burn-icon.png");
+    k.loadSprite("chill", "/sprites/chill-icon.png");
     k.loadSprite("frost particle", "/sprites/frost-particle.png");
 }

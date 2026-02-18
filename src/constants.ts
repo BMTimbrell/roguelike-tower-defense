@@ -2,6 +2,7 @@ import type { Upgrade, LevelWaves, EnemyConfig, TowerDef, ElementDef, ElementNam
 import burnEffect from "./kaplayComponents/burnEffect";
 import calcFireInterval from "./utils/calcFireInterval";
 import poisonEffect from "./kaplayComponents/poisonEffect";
+import chillEffect from "./kaplayComponents/chillEffect";
 
 export const VIRTUAL_WIDTH = 800;
 export const VIRTUAL_HEIGHT = 600;
@@ -17,6 +18,8 @@ export const CRIT_DAMAGE_NUMBER_SIZE = 22;
 export const DAMAGE_NUMBER_COLOR = "#fffb00";
 export const CRIT_DAMAGE_NUMBER_COLOR = "#ff0000";
 export const CHARGE_DAMAGE_REQUIRED = 10;
+export const CHILL_PERCENT = 6;
+export const MAX_CHILL_STACKS = 5;
 export const UPGRADES: Upgrade[] = [{
     stat: "damage",
     name: "Damage",
@@ -376,7 +379,7 @@ export const ELEMENTS: Record<ElementName, ElementDef> = {
             if (k.randi(100) < 15) {
                 const burn = target.has("burn");
                 if (burn) {
-                    target.refreshBurn(duration);
+                    target.refreshBurn();
                     return;
                 }
                 target.use(burnEffect(k, duration));
@@ -386,9 +389,15 @@ export const ELEMENTS: Record<ElementName, ElementDef> = {
     },
 
     Ice: {
-        description: "Ice attacks apply a stack of chill (up to 3). Each stack reduces enemy speed (5%, 10%, 15%)",
-        applyEffect: (target) => {
-            
+        description: `Ice attacks apply a stack of chill (up to ${MAX_CHILL_STACKS}). Each stack reduces enemy speed by ${CHILL_PERCENT}%`,
+        applyEffect: (k, target) => {
+            const chill = target.has("chill");
+            const duration = 2;
+            if (chill) {
+                target.addChillStack();
+                return;
+            }
+            target.use(chillEffect(k, duration));
         },
         color: "#00FFFF"
     },
@@ -419,7 +428,7 @@ export const ELEMENTS: Record<ElementName, ElementDef> = {
     },
 
     Poison: {
-        description: "Poison attacks add poison stacks (up to 5) to enemies dealing damage equal to number of stacks every 5 seconds. Enemies are cured of poison when healed.",
+        description: "Poison attacks add poison stacks (up to 5) to enemies dealing damage equal to number of stacks every 5 seconds. Poison keeps ticking until the enemy dies or is healed.",
         applyEffect: (k, target) => {
             const poison = target.has("poison");
             if (poison) {

@@ -2,6 +2,7 @@ import type { Comp, GameObj, HealthComp, KAPLAYCtx, RotateComp, SpriteComp } fro
 import type { PoisonComp } from "./poisonEffect";
 import type { BurnComp } from "./burnEffect";
 import type { StatusEffectComp } from "./statusEffect";
+import type { ChillComp } from "./chillEffect";
 
 export default function healthBar(k: KAPLAYCtx, duration: number): Comp {
     let timer = duration;
@@ -11,7 +12,7 @@ export default function healthBar(k: KAPLAYCtx, duration: number): Comp {
 
         require: ["health", "sprite", "rotate"],
 
-        draw(this: GameObj<HealthComp | SpriteComp | RotateComp | PoisonComp | BurnComp | StatusEffectComp>) {
+        draw(this: GameObj<HealthComp | SpriteComp | RotateComp | PoisonComp | BurnComp | ChillComp | StatusEffectComp>) {
             k.pushTransform();
             k.pushRotate(-this.angle);
 
@@ -72,7 +73,7 @@ export default function healthBar(k: KAPLAYCtx, duration: number): Comp {
         update(this: GameObj) {
             timer -= k.dt();
 
-            if (timer <= 0 || this.isDying) {
+            if ((timer <= 0 || this.isDying) && this.statuses.length < 1) {
                 this.unuse("healthbar");
             }
         },

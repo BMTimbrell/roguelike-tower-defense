@@ -6,7 +6,7 @@ import type { StatusEffect, StatusEffectComp } from "./statusEffect";
 
 export type BurnComp = Comp & {
     id: StatusEffect;
-    refreshBurn: (newDuration: number) => void;
+    refreshBurn: () => void;
     burn: () => StatusEffectResult;
 };
 
@@ -20,8 +20,8 @@ export default function burnEffect(k: KAPLAYCtx, duration: number): BurnComp {
 
         require: ["health", "pos", "statusEffect"],
 
-        refreshBurn(newDuration) {
-            timer = newDuration;
+        refreshBurn() {
+            timer = duration;
         },
 
         burn() {
