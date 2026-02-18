@@ -4,60 +4,60 @@ import { ELEMENTS, SMALL_DAMAGE_NUMBER_SIZE } from "../constants";
 import type { StatusEffectResult } from "../types";
 import type { StatusEffect, StatusEffectComp } from "./statusEffect";
 
-export type BurnComp = Comp & {
+export type PoisonComp = Comp & {
     id: StatusEffect;
-    refreshBurn: (newDuration: number) => void;
-    burn: () => StatusEffectResult;
+    addPoisonStack: () => void;
+    poison: () => StatusEffectResult;
 };
 
-export default function burnEffect(k: KAPLAYCtx, duration: number): BurnComp {
-    let timer = duration;
-    const tickRate = 1;
-    let tickTimer = tickRate;
+export default function poisonEffect(k: KAPLAYCtx): PoisonComp {
+    const tickRate = 5;
+    let tickTimer = 0;
+    let stacks = 1;
 
     return {
-        id: "burn",
+        id: "poison",
 
         require: ["health", "pos", "statusEffect"],
 
-        refreshBurn(newDuration) {
-            timer = newDuration;
+        addPoisonStack() {
+            if (stacks < 5) stacks++;
         },
 
-        burn() {
+        poison() {
             return {
-                icon: "burn"
+                icon: "poison",
+                stacks
             };
         },
 
         add(this: GameObj<StatusEffectComp>) {
-            this.addStatus("burn");
+            this.addStatus("poison");
         },
 
         destroy(this: GameObj<StatusEffectComp>) {
-            this.removeStatus("burn");
+            this.removeStatus("poison");
         },
 
         update(this: GameObj<HealthComp | PosComp | { isDying: boolean }>) {
             tickTimer += k.dt();
-            timer -= k.dt();
 
             if (tickTimer >= tickRate) {
                 tickTimer -= tickRate;
 
-                const damage = Math.max(1, Math.round((this.maxHP() ?? 0) * 0.01));
+                const damage = stacks;
                 this.hurt(damage);
 
                 makeFloatingText(k, {
                     pos: this.pos,
                     text: '' + damage,
                     size: SMALL_DAMAGE_NUMBER_SIZE,
-                    color: ELEMENTS["Fire"].color
+                    color: ELEMENTS["Poison"].color
                 });
             }
 
-            if (timer <= 0 || this.isDying) {
-                this.unuse("burn");
+            if (this.isDying) {
+                this.unuse("poison");
             }
         },
     };

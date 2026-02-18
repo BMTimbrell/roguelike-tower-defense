@@ -228,7 +228,33 @@ export default function level1(k: KAPLAYCtx) {
                         if (unplacedTower) {
                             k.destroy(unplacedTower);
                         }
+                    }
+                },
+                {
+                    ...TOWERS["ice"],
+                    onClick: () => {
+                        if (k.get("hero")[0] && !k.get("hero")[0].placed) return;
+                        const unplacedTower = k.get("tower").find(t => !t.placed);
+                        if (!unplacedTower || unplacedTower.towerId !== "ice") {
+                            makeTower(
+                                k,
+                                {
+                                    towerId: "ice",
+                                    pos: k.toWorld(k.mousePos()),
+                                    tileGrid
+                                }
+                            );
+                            store.set(gameStateAtom, prev => ({
+                                ...prev,
+                                nextTowerId: prev.nextTowerId + 1,
+                                selectedTower: null,
+                            }));
+                        }
+                        if (unplacedTower) {
+                            k.destroy(unplacedTower);
+                        }
                     },
+                    
                 }
             ],
             upgrades,

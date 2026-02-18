@@ -1,6 +1,7 @@
 import type { Upgrade, LevelWaves, EnemyConfig, TowerDef, ElementDef, ElementName, ProjectileDef, HeroDef, HeroSkillDef, HeroSkillDefBase } from "./types";
 import burnEffect from "./kaplayComponents/burnEffect";
 import calcFireInterval from "./utils/calcFireInterval";
+import poisonEffect from "./kaplayComponents/poisonEffect";
 
 export const VIRTUAL_WIDTH = 800;
 export const VIRTUAL_HEIGHT = 600;
@@ -15,7 +16,7 @@ export const SMALL_DAMAGE_NUMBER_SIZE = 11;
 export const CRIT_DAMAGE_NUMBER_SIZE = 22;
 export const DAMAGE_NUMBER_COLOR = "#fffb00";
 export const CRIT_DAMAGE_NUMBER_COLOR = "#ff0000";
-export const CHARGE_DAMAGE_REQUIRED = 80;
+export const CHARGE_DAMAGE_REQUIRED = 10;
 export const UPGRADES: Upgrade[] = [{
     stat: "damage",
     name: "Damage",
@@ -173,7 +174,8 @@ export const LEVEL_WAVES = {
             },
             {
                 spawns: [
-                    { id: "slime", count: 10, interval: 0.4 }
+                    { id: "skeleton", count: 5, interval: 1 },
+                    { id: "slime", count: 5, interval: 0.75 }
                 ],
                 reward: 80
             }
@@ -198,7 +200,13 @@ export const ENEMIES = {
         hp: 10,
         damage: 1,
         speed: 50,
-        sprite: "slime",
+        sprite: "slime"
+    },
+    skeleton: {
+        hp: 35,
+        damage: 1,
+        speed: 50,
+        sprite: "skeleton"
     }
 } as const satisfies Record<string, EnemyConfig>;
 
@@ -223,7 +231,8 @@ export const TOWERS = {
         gunOffset: { x: 2, y: 0 },
         anchorOffset: { x: 4 / 32, y: 0 },
         shootOffset: { x: -20, y: 0 },
-        projectile: "basic"
+        projectile: "basic",
+        canRotate: true
     },
     fire: {
         name: "Fire Tower",
@@ -231,7 +240,7 @@ export const TOWERS = {
         baseSprite: "fire tower base",
         sprite: "fire-tower-sprite.png",
         description: "A tower that shoots fireballs at enemies",
-        cost: 70,
+        cost: 60,
         stats: {
             damage: 5,
             range: 4,
@@ -243,8 +252,67 @@ export const TOWERS = {
         gunOffset: { x: 3, y: 0 },
         anchorOffset: { x: 6 / 32, y: 0 },
         shootOffset: { x: -25, y: 0 },
-        projectile: "fireball"
-    }
+        projectile: "fireball",
+        canRotate: true
+    },
+    slime: {
+        name: "Slime Tower",
+        gunSprite: "slime tower",
+        baseSprite: "slime tower base",
+        sprite: "slime-tower-sprite.png",
+        description: "Shoots balls of slime that have a 50% chance to bounce between targets",
+        cost: 75,
+        stats: {
+            damage: 4,
+            range: 4,
+            fireInterval: 0.75,
+            critChance: 5,
+            critDamage: 100
+        },
+        element: "Poison",
+        gunOffset: { x: -4, y: 0 },
+        anchorOffset: { x: -6 / 32, y: 0 },
+        shootOffset: { x: -15, y: 0 },
+        projectile: "slimeball",
+        effects: [{
+            firstEffect(ctx) {
+                ctx.projectiles.forEach(projectile => {
+                    projectile.behaviors ??= {};
+                    projectile.behaviors.bounces ??= 100;
+                    projectile.behaviors.bounceChance ??= 0.5;
+                    projectile.behaviors.bounceRange ??= 3 * TILE_SIZE;
+                    projectile.behaviors.bounceDamageMultiplier ??= 1;
+                });
+            }
+        }],
+        canRotate: true
+    },
+    ice: {
+        name: "Ice Tower",
+        gunSprite: "ice tower",
+        baseSprite: "ice tower base",
+        sprite: "ice-tower-sprite.png",
+        description: "Emit a frost that damages all enemies in range",
+        cost: 75,
+        stats: {
+            damage: 2,
+            range: 3,
+            fireInterval: 1,
+            critChance: 5,
+            critDamage: 100
+        },
+        element: "Ice",
+        gunOffset: { x: 0, y: 0 },
+        anchorOffset: { x: 0, y: 0 },
+        shootOffset: { x: 0, y: 0 },
+        projectile: null,
+        effects: [{
+            firstEffect(ctx) {
+                ctx.aoeAttack = true;
+            }
+        }],
+        canRotate: false
+    },
 } as const satisfies Record<string, TowerDef>;
 
 export type TowerId = keyof typeof TOWERS;
@@ -257,7 +325,7 @@ export const HEROES = {
         gunSprite: "archer",
         baseSprite: "archer base",
         stats: {
-            damage: 8,
+            damage: 12,
             range: 5,
             fireInterval: 1,
             critChance: 10,
@@ -267,7 +335,8 @@ export const HEROES = {
         gunOffset: { x: 0, y: 0 },
         anchorOffset: { x: 9 / 32, y: 9 / 32 },
         shootOffset: { x: 0, y: 0 },
-        projectile: "arrow"
+        projectile: "arrow",
+        canRotate: true
     },
     wizard: {
         name: "Wizard",
@@ -286,7 +355,8 @@ export const HEROES = {
         gunOffset: { x: 0, y: 0 },
         anchorOffset: { x: 0, y: 0 },
         shootOffset: { x: 0, y: 0 },
-        projectile: "arrow"
+        projectile: "arrow",
+        canRotate: true
     }
 } as const satisfies Record<string, HeroDef>;
 
@@ -318,7 +388,7 @@ export const ELEMENTS: Record<ElementName, ElementDef> = {
     Ice: {
         description: "Ice attacks apply a stack of chill (up to 3). Each stack reduces enemy speed (5%, 10%, 15%)",
         applyEffect: (target) => {
-            // Apply slow effect to target
+            
         },
         color: "#00FFFF"
     },
@@ -349,9 +419,14 @@ export const ELEMENTS: Record<ElementName, ElementDef> = {
     },
 
     Poison: {
-        description: "Poison attacks add poison stacks (up to 5) to enemies dealing 1 damage per (5, 4, 3, 2, 1) second(s). Enemies are cured of poison when healed.",
-        applyEffect: (target) => {
-            // Apply poison effect to target
+        description: "Poison attacks add poison stacks (up to 5) to enemies dealing damage equal to number of stacks every 5 seconds. Enemies are cured of poison when healed.",
+        applyEffect: (k, target) => {
+            const poison = target.has("poison");
+            if (poison) {
+                target.addPoisonStack();
+                return;
+            }
+            target.use(poisonEffect(k));
         },
         color: "#00FF00"
     }
@@ -380,6 +455,12 @@ export const PROJECTILES = {
         sprite: "flaming arrow",
         homing: true,
         speed: 300,
+        splashRadius: 0
+    },
+    slimeball: {
+        sprite: "slimeball",
+        homing: true,
+        speed: 200,
         splashRadius: 0
     }
 } as const satisfies Record<string, ProjectileDef>;
@@ -446,7 +527,7 @@ export const SKILLS = [
         description: "25% chance to shoot a volley of 3 arrows",
         apply: hero => {
             hero.effects?.push({
-                onAttack(ctx) {
+                firstEffect(ctx) {
                     if (ctx.projectiles.length === 0) return;
 
                     ctx.archer ??= {};
@@ -474,7 +555,7 @@ export const SKILLS = [
         description: "Arrows bounce to nearby enemies, dealing 50% damage on bounce",
         apply(hero) {
             hero.effects?.push({
-                onHit(ctx) {
+                secondEffect(ctx) {
                     ctx.projectiles.forEach(projectile => {
                         projectile.behaviors ??= {};
                         projectile.behaviors.bounces ??= 1;
@@ -493,7 +574,7 @@ export const SKILLS = [
         description: "50% chance to fire a flaming arrow that deals 50% bonus damage",
         apply(hero) {
             hero.effects?.push({
-                onHit(ctx) {
+                secondEffect(ctx) {
                     ctx.projectiles.forEach(projectile => {
                         if (Math.random() < 0.5) return;
 
@@ -514,7 +595,7 @@ export const SKILLS = [
         description: "Increase arrow bounce by 1",
         apply(hero) {
             hero.effects?.push({
-                onHit(ctx) {
+                secondEffect(ctx) {
                     ctx.projectiles.forEach(projectile => {
                         if (projectile.behaviors?.bounces) projectile.behaviors.bounces += 1;
                     });
@@ -531,7 +612,7 @@ export const SKILLS = [
         description: "Increase chance of volley by 25%",
         apply: hero => {
             hero.effects?.push({
-                onAttack(ctx) {
+                firstEffect(ctx) {
                     if (ctx.projectiles.length === 0) return;
 
                     ctx.archer ??= {};
@@ -549,7 +630,7 @@ export const SKILLS = [
         description: "Arrows do increased damage based on distance travelled (capping at +50%)",
         apply: hero => {
             hero.effects?.push({
-                onHit(ctx) {
+                secondEffect(ctx) {
                     ctx.projectiles.forEach(projectile => {
                         projectile.behaviors ??= {};
                         projectile.behaviors.distanceDamageMultiplier ??= 0;

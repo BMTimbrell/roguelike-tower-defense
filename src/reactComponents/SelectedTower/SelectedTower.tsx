@@ -10,6 +10,7 @@ import Popup from "../Popup/Popup";
 import Button from "../Button/Button";
 import PriorityButton from "../PriorityButton/PriorityButton";
 import Stats from "../Stats/Stats";
+import calcSellPrice from "../../utils/calcSellPrice";
 
 export default function SelectedTower({ tower }: { tower: SelectedTowerUI }) {
     const {
@@ -144,7 +145,7 @@ export default function SelectedTower({ tower }: { tower: SelectedTowerUI }) {
             <PriorityButton scale={scale} priority={priority} setPriority={setPriority} /><br />
 
             <Button onClick={sellTower}>
-                Sell <img style={{ width: `${8 * scale}px`, marginRight: '0.125em'}}  src="sprites/coin.png" />{cost / 2}
+                Sell <img style={{ width: `${8 * scale}px`, marginRight: '0.125em'}}  src="sprites/coin.png" />{calcSellPrice(cost, unlockedUpgradeSlots)}
             </Button>
         </Popup>
     );

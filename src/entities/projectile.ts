@@ -39,6 +39,7 @@ export default function makeProjectile(k: KAPLAYCtx, opts: {
     let timeAlive = 0;
     let distance = 0;
     let direction = k.Vec2.fromAngle(projectile.angle + 180);
+    let willBounce = behaviors?.bounceChance ? Math.random() < behaviors.bounceChance : true;
     let remainingBounces = behaviors?.bounces ?? 0;
     let distanceDamageMultiplier = behaviors?.distanceDamageMultiplier ?? 0;
     let baseDamage = damage;
@@ -88,8 +89,9 @@ export default function makeProjectile(k: KAPLAYCtx, opts: {
                 ELEMENTS[element].applyEffect?.(k, target);
             }
 
-            if (remainingBounces > 0) {
+            if (remainingBounces > 0 && willBounce) {
                 remainingBounces--;
+                willBounce = behaviors?.bounceChance ? Math.random() < behaviors.bounceChance : true;
 
                 const nextTarget = selectBounceTarget(k, target, behaviors?.bounceRange);
 

@@ -7,6 +7,7 @@ import { TOWERS } from '../constants';
 import makePlaceableOnGrid from '../utils/makePlacementOnGrid';
 import makeUnitCombat from '../utils/makeUnitCombat';
 import calcFireInterval from '../utils/calcFireInterval';
+import calcSellPrice from '../utils/calcSellPrice';
 
 export default function makeTower(
     k: KAPLAYCtx,
@@ -29,7 +30,8 @@ export default function makeTower(
         gunOffset,
         anchorOffset,
         shootOffset,
-        projectile
+        projectile,
+        canRotate
     } = TOWERS[towerId];
 
     const tower = k.add([
@@ -53,8 +55,10 @@ export default function makeTower(
             stats: { ...stats },
             unlockedUpgradeSlots: 0,
             upgrades: [],
+            ...("effects" in TOWERS[towerId] ? { effects: TOWERS[towerId].effects } : {} ),
             upgradeCost: calcUpgradeCost(cost, 0),
-            element
+            element,
+            canRotate
         },
         "tower",
         towerId
@@ -167,7 +171,7 @@ export default function makeTower(
                     sellTower: () => {
                         store.set(gameStateAtom, prev => ({
                             ...prev,
-                            gold: prev.gold + tower.cost / 2,
+                            gold: prev.gold + calcSellPrice(tower.cost, tower.unlockedUpgradeSlots),
                             selectedUI: null
                         }));
                         k.destroy(tower);

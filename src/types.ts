@@ -38,6 +38,11 @@ export type ElementDef = {
     color: string;
 };
 
+export type StatusEffectResult = {
+    icon: string;
+    stacks?: number;
+};
+
 export type ProjectileDef = {
     sprite: string;
     homing: boolean;
@@ -46,8 +51,8 @@ export type ProjectileDef = {
 };
 
 export type UnitEffects = {
-    onAttack?: (ctx: AttackContext) => void;
-    onHit?: (ctx: AttackContext) => void;
+    firstEffect?: (ctx: AttackContext) => void;
+    secondEffect?: (ctx: AttackContext) => void;
 }[];
 
 export type TowerDef = {
@@ -59,11 +64,12 @@ export type TowerDef = {
     sprite: string;
     gunSprite: string;
     baseSprite: string;
-    gunOffset: { x: number; y: number };
-    anchorOffset: { x: number; y: number };
-    shootOffset: { x: number; y: number };
-    projectile: ProjectileId;
+    gunOffset: { x: number; y: number; };
+    anchorOffset: { x: number; y: number; };
+    shootOffset: { x: number; y: number; };
+    projectile: ProjectileId | null;
     effects?: UnitEffects;
+    cantRotate?: boolean;
 };
 
 export type UnitInstance = {
@@ -104,7 +110,7 @@ export type HeroSkillDef = Omit<HeroSkillDefBase, "requires"> & {
     requires?: SkillId[];
 };
 
-export type HeroDef = Omit<TowerDef, | 'cost'>;
+export type HeroDef = Omit<TowerDef, 'cost'>;
 export type HeroInstance = UnitInstance & {
     heroId: HeroId;
     skillIds: SkillId[];
@@ -253,6 +259,8 @@ export type AttackContext = {
         element?: ElementName;
     }[];
 
+    aoeAttack: boolean;
+
     archer?: {
         volleyChance?: number;
     };
@@ -262,6 +270,7 @@ export type ProjectileBehavior = {
     bounces?: number;
     bounceRange?: number;
     bounceDamageMultiplier?: number;
+    bounceChance?: number;
     distanceDamageMultiplier?: number;
     distanceDamageCap?: number;
 };

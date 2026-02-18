@@ -1,8 +1,10 @@
 import type { GameObj, KAPLAYCtx, Vec2 } from "kaplay";
 import type { AttackContext, ElementName, HeroGameObj, TowerGameObj } from "../types";
-import { TILE_SIZE, type ProjectileId } from "../constants";
+import { CRIT_DAMAGE_NUMBER_SIZE, DAMAGE_NUMBER_SIZE, ELEMENTS, TILE_SIZE, TOWER_RANGE_TOLERANCE, type ProjectileId } from "../constants";
 import makeProjectile from "../entities/Projectile";
 import { rotateVector, selectTarget, shortestAngleDiff } from "./targetingHelpers";
+import makeFloatingText from "../entities/FloatingText";
+import calcCrit from "./calcCrit";
 
 export default function makeUnitCombat(
     k: KAPLAYCtx,
@@ -15,7 +17,7 @@ export default function makeUnitCombat(
             critChance: number
             critDamage: number
         }
-        projectile: ProjectileId
+        projectile: ProjectileId | null
         element: ElementName
         gunSprite: string
         gunOffset: Vec2
@@ -66,15 +68,40 @@ export default function makeUnitCombat(
             origin: gun.pos,
             damage,
             element: opts.element,
-            projectiles: [{
+            aoeAttack: false,
+            projectiles: opts.projectile ? [{
                 id: opts.projectile,
                 angle: gun.angle,
                 target,
                 homing: true
-            }]
+            }] : []
         };
 
-        opts.owner.effects?.forEach(e => e.onAttack?.(ctx));
+        opts.owner.effects?.forEach(e => e.firstEffect?.(ctx));
+
+        if (ctx.aoeAttack) {
+            const { willCrit, critDamage } = calcCrit(opts.stats.critChance, opts.stats.critDamage);
+
+            frostAoeBurst(k, rangeCircle.pos, ctx.attacker.stats.range * TILE_SIZE);
+
+            k.get("enemy").forEach(e => {
+                if (e.pos.dist(rangeCircle.pos) > ctx.attacker.stats.range * TILE_SIZE + TOWER_RANGE_TOLERANCE) return;
+
+                e.hurt(Math.round(ctx.damage * critDamage));
+
+                makeFloatingText(k, {
+                    pos: e.pos,
+                    text: '' + Math.round(ctx.damage * critDamage),
+                    size: willCrit ? CRIT_DAMAGE_NUMBER_SIZE : DAMAGE_NUMBER_SIZE,
+                    color: ELEMENTS[ctx.element].color
+                });
+
+                ELEMENTS[ctx.element].applyEffect?.(k, e);
+            });
+        }
+
+        if (!ctx.projectiles) return;
+
         if (ctx.archer?.volleyChance && Math.random() < ctx.archer.volleyChance) {
             const base = ctx.projectiles[0];
 
@@ -85,7 +112,7 @@ export default function makeUnitCombat(
             ];
         }
 
-        opts.owner.effects?.forEach(e => e.onHit?.(ctx));
+        opts.owner.effects?.forEach(e => e.secondEffect?.(ctx));
 
         const rotatedOffset = rotateVector(
             k,
@@ -94,10 +121,8 @@ export default function makeUnitCombat(
         );
 
         for (const p of ctx.projectiles) {
-            const roll = Math.random();
-            const willCrit = roll < opts.stats.critChance / 100;
+            const { willCrit, critDamage } = calcCrit(opts.stats.critChance, opts.stats.critDamage);
             const bonusDamage = p?.bonusDamage ?? 0;
-            const critDamage = 1 + (willCrit ? opts.stats.critDamage / 100 : 0);
 
             makeProjectile(k, {
                 id: p.id,
@@ -127,7 +152,7 @@ export default function makeUnitCombat(
             rangeCircle.pos
         );
 
-        if (target) {
+        if (target && opts.owner.canRotate) {
             const desired = gun.pos.angle(target.pos);
             const turnSpeed = 12;
 
@@ -138,7 +163,7 @@ export default function makeUnitCombat(
         while (shootTimer <= 0 && target) {
             shootTimer += opts.stats.fireInterval;
 
-            gun.angle = gun.pos.angle(target.pos);
+            if (opts.owner.canRotate) gun.angle = gun.pos.angle(target.pos);
 
             shoot(target);
             gun.play("shoot");
@@ -154,4 +179,47 @@ export default function makeUnitCombat(
             k.destroy(rangeCircle)
         },
     };
+}
+
+function frostAoeBurst(k: KAPLAYCtx, pos: Vec2, radius: number) {
+  const baseCount = 8;
+  const count = Math.min(
+    baseCount + Math.floor(radius * 0.4),
+    100
+  );
+
+  for (let i = 0; i < count; i++) {
+    const angle = k.rand(0, Math.PI * 2);
+    const dist = k.rand(0, radius);
+
+    const offset = k.vec2(
+      Math.cos(angle),
+      Math.sin(angle)
+    ).scale(dist);
+
+    const life = k.rand(0.25, 0.45);
+    const startScale = k.rand(1, 2);
+
+    const frost = k.add([
+      k.pos(pos.add(offset)),
+      k.sprite("frost particle"),
+      k.opacity(0.8),
+      k.scale(startScale),
+      k.lifespan(life),
+      {
+        time: 0,
+
+        update() {
+          frost.time += k.dt();
+          const t = frost.time / life;
+
+          frost.opacity = 0.8 * (1 - t);
+
+          frost.scale = k.vec2(startScale * (1 - t));
+
+          frost.pos.y -= 6 * k.dt();
+        },
+      },
+    ]);
+  }
 }

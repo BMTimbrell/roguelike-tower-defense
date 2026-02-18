@@ -3,6 +3,7 @@ import { store, gameStateAtom } from '../store';
 import type { EnemyId } from '../constants';
 import { ENEMIES } from '../constants';
 import healthBar from '../kaplayComponents/healthBar';
+import statusEffect from '../kaplayComponents/statusEffect';
 
 export default function makeEnemy(k: KAPLAYCtx, enemyId: EnemyId, waypoints: Vec2[]): GameObj {
 
@@ -20,10 +21,12 @@ export default function makeEnemy(k: KAPLAYCtx, enemyId: EnemyId, waypoints: Vec
             pathIndex: 0,
             segmentStart: waypoints[0],
             segmentProgress: 0,
+            baseSpeed: ENEMIES[enemyId].speed,
             speed: ENEMIES[enemyId].speed,
             damage: ENEMIES[enemyId].damage,
             isDying: false
         },
+        statusEffect(),
         "enemy",
         enemyId
     ]);

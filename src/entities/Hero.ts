@@ -11,7 +11,6 @@ export default function makeHero(k: KAPLAYCtx,
         heroId: HeroId
         pos: Vec2,
         tileGrid: boolean[][],
-
     }
 ): HeroGameObj {
     k.get("tower").forEach(tower => tower.selected = false);
@@ -26,7 +25,8 @@ export default function makeHero(k: KAPLAYCtx,
         gunOffset,
         anchorOffset,
         shootOffset,
-        projectile
+        projectile,
+        canRotate
     } = HEROES[heroId];
 
     const hero = k.make([
@@ -49,7 +49,8 @@ export default function makeHero(k: KAPLAYCtx,
             skillIds: [] satisfies SkillId[],
             level: 1,
             element,
-            effects: []
+            effects: [],
+            canRotate
         },
         "tower",
         "hero",

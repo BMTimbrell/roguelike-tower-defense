@@ -22,8 +22,27 @@ export default function loadAssets(k: KAPLAYCtx) {
         }
     });
     k.loadSprite("fire tower base", "/sprites/fire-tower-base.png");
+    k.loadSprite("slime tower base", "/sprites/slime-tower-base.png");
+    k.loadSprite("slime tower", "/sprites/slime-tower.png", {
+        sliceX: 4,
+        sliceY: 1,
+        anims: {
+            idle: 0,
+            shoot: { from: 0, to: 3, loop: false, speed: 20 }
+        }
+    });
+    k.loadSprite("ice tower base", "/sprites/ice-tower-base.png");
+    k.loadSprite("ice tower", "/sprites/ice-tower.png", {
+        sliceX: 6,
+        sliceY: 1,
+        anims: {
+            idle: 0,
+            shoot: { from: 1, to: 5, loop: false, speed: 20 }
+        }
+    });
     k.loadSprite("fog", "/sprites/fog5.png");
     k.loadSprite("basic projectile", "/sprites/basic-projectile.png");
+    k.loadSprite("slimeball", "/sprites/slimeball.png");
     k.loadSprite("fireball", "/sprites/fireball.png");
     k.loadSprite("arrow", "/sprites/arrow.png");
     k.loadSprite("flaming arrow", "/sprites/flaming-arrow.png");
@@ -48,7 +67,18 @@ export default function loadAssets(k: KAPLAYCtx) {
         sliceY: 2,
         anims: {
             move: { from: 0, to: 5, loop: true },
-            die: { from: 6, to: 12, loop: false }
+            die: { from: 7, to: 12, loop: false }
         }
     });
+    k.loadSprite("skeleton", "/sprites/skeleton.png", {
+        sliceX: 5,
+        sliceY: 2,
+        anims: {
+            move: { from: 0, to: 3, loop: true, speed: 4 },
+            die: { from: 5, to: 9, loop: false }
+        }
+    });
+    k.loadSprite("poison", "/sprites/poison-icon.png");
+    k.loadSprite("burn", "/sprites/burn-icon.png");
+    k.loadSprite("frost particle", "/sprites/frost-particle.png");
 }
