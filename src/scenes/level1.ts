@@ -180,15 +180,15 @@ export default function level1(k: KAPLAYCtx) {
             towerButtons: [
                 ...prev.towerButtons,
                 {
-                    ...TOWERS["basic"],
+                    ...TOWERS["lightning"],
                     onClick: () => {
                         if (k.get("hero")[0] && !k.get("hero")[0].placed) return;
                         const unplacedTower = k.get("tower").find(t => !t.placed);
-                        if (!unplacedTower || unplacedTower.towerId !== "basic") {
+                        if (!unplacedTower || unplacedTower.towerId !== "lightning") {
                             makeTower(
                                 k,
                                 {
-                                    towerId: "basic",
+                                    towerId: "lightning",
                                     pos: k.toWorld(k.mousePos()),
                                     tileGrid
                                 }

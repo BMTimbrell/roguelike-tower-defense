@@ -2,7 +2,7 @@ import type { KAPLAYCtx, Vec2, GameObj } from 'kaplay';
 import makeFloatingText from './FloatingText';
 import { CRIT_DAMAGE_NUMBER_SIZE, DAMAGE_NUMBER_SIZE, ELEMENTS, PROJECTILES, TILE_SIZE, type ProjectileId } from '../constants';
 import type { ElementName, ProjectileBehavior } from '../types';
-import { shortestAngleDiff } from '../utils/targetingHelpers';
+import { findNewTarget, isValidTarget, selectBounceTarget, shortestAngleDiff } from '../utils/targetingHelpers';
 
 export default function makeProjectile(k: KAPLAYCtx, opts: {
     id: ProjectileId;
@@ -43,6 +43,7 @@ export default function makeProjectile(k: KAPLAYCtx, opts: {
     let remainingBounces = behaviors?.bounces ?? 0;
     let distanceDamageMultiplier = behaviors?.distanceDamageMultiplier ?? 0;
     let baseDamage = damage;
+    const hitEnemies = new Set<GameObj>();
 
     projectile.onUpdate(() => {
         if (homing && (!target || !isValidTarget(target))) {
@@ -86,14 +87,15 @@ export default function makeProjectile(k: KAPLAYCtx, opts: {
                     color: ELEMENTS[element].color
                 });
 
-                ELEMENTS[element].applyEffect?.(k, target);
+                ELEMENTS[element].applyEffect?.(k, { target, damage });
             }
 
             if (remainingBounces > 0 && willBounce) {
                 remainingBounces--;
+                hitEnemies.add(target);
                 willBounce = behaviors?.bounceChance ? Math.random() < behaviors.bounceChance : true;
 
-                const nextTarget = selectBounceTarget(k, target, behaviors?.bounceRange);
+                const nextTarget = selectBounceTarget(k, target, { bounceRange: behaviors?.bounceRange, visited: hitEnemies });
 
                 if (nextTarget) {
                     target = nextTarget;
@@ -116,34 +118,4 @@ export default function makeProjectile(k: KAPLAYCtx, opts: {
     });
 
     return projectile;
-}
-
-function selectBounceTarget(k: KAPLAYCtx, from: GameObj, bounceRange?: number) {
-    return k
-        .get("enemy")
-        .filter(e =>
-            e !== from &&
-            e.pos.dist(from.pos) <= (bounceRange ?? 0)
-        )
-        .sort((a, b) =>
-            a.pos.dist(from.pos) - b.pos.dist(from.pos)
-        )[0];
-}
-
-function isValidTarget(e: GameObj) {
-    return e.is("enemy") && !e.isDying;
-}
-
-function findNewTarget(
-    k: KAPLAYCtx,
-    fromPos: Vec2,
-    maxRange?: number
-): GameObj | null {
-    return k
-        .get("enemy")
-        .filter(e => !e.isDying)
-        .filter(e => !maxRange || e.pos.dist(fromPos) <= maxRange)
-        .sort((a, b) =>
-            a.pos.dist(fromPos) - b.pos.dist(fromPos)
-        )[0] ?? null;
 }

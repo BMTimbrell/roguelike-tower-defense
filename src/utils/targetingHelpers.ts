@@ -56,3 +56,53 @@ export function rotateVector(k: KAPLAYCtx, vec: Vec2, angle: number): Vec2 {
         vec.x * sin + vec.y * cos
     );
 }
+
+export function selectBounceTarget(
+    k: KAPLAYCtx, 
+    from: GameObj, 
+    opts?: { 
+        bounceRange?: number, 
+        exclude?: Set<GameObj>,
+        visited?: Set<GameObj>
+    }
+) {
+    const exclude = opts?.exclude ?? new Set();
+    const bounceRange = opts?.bounceRange ?? 0;
+    const visited = opts?.visited ?? new Set();
+
+    return k
+        .get("enemy")
+        .filter(e =>
+            e !== from &&
+            !e.isDying &&
+            !exclude.has(e) &&
+            e.pos.dist(from.pos) <= bounceRange
+        )
+        .sort((a, b) => {
+            const aVisited = visited.has(a);
+            const bVisited = visited.has(b);
+
+            if (aVisited !== bVisited) {
+                return aVisited ? 1 : -1;
+            }
+
+            return a.pos.dist(from.pos) - b.pos.dist(from.pos);
+        })[0];
+}
+
+export function isValidTarget(e: GameObj) {
+    return e.is("enemy") && !e.isDying;
+}
+
+export function findNewTarget(
+    k: KAPLAYCtx,
+    fromPos: Vec2,
+    maxRange?: number
+): GameObj | null {
+    return k
+        .get("enemy")
+        .filter(e => !e.isDying && (!maxRange || e.pos.dist(fromPos) <= maxRange))
+        .sort((a, b) =>
+            a.pos.dist(fromPos) - b.pos.dist(fromPos)
+        )[0] ?? null;
+}

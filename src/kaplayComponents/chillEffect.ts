@@ -45,7 +45,6 @@ export default function chillEffect(k: KAPLAYCtx, duration: number): ChillComp {
             timer -= k.dt();
 
             if (timer <= 0) {
-                console.log(this.speed)
                 stacks--;
                 this.speed = this.baseSpeed * (1 - ((stacks * CHILL_PERCENT) / 100));
                 timer += duration;

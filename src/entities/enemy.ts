@@ -1,7 +1,7 @@
 import type { KAPLAYCtx, Vec2, GameObj } from 'kaplay';
 import { store, gameStateAtom } from '../store';
 import type { EnemyId } from '../constants';
-import { ENEMIES } from '../constants';
+import { ENEMIES, STUN_DURATION } from '../constants';
 import healthBar from '../kaplayComponents/healthBar';
 import statusEffect from '../kaplayComponents/statusEffect';
 
@@ -15,6 +15,7 @@ export default function makeEnemy(k: KAPLAYCtx, enemyId: EnemyId, waypoints: Vec
             shape: new k.Rect(k.vec2(0), 16, 16)
         }),
         k.rotate(),
+        k.timer(),
         k.health(ENEMIES[enemyId].hp, ENEMIES[enemyId].hp),
         {
             path: waypoints,
@@ -26,6 +27,7 @@ export default function makeEnemy(k: KAPLAYCtx, enemyId: EnemyId, waypoints: Vec
             damage: ENEMIES[enemyId].damage,
             isDying: false
         },
+        k.state("move", ["move", "stunned", "attack"]),
         statusEffect(),
         "enemy",
         enemyId
@@ -72,7 +74,17 @@ export default function makeEnemy(k: KAPLAYCtx, enemyId: EnemyId, waypoints: Vec
         }
     });
 
-    enemy.onUpdate(() => {
+    enemy.onStateEnter("move", () => {
+        enemy.play("move");
+    });
+
+    enemy.onStateEnter("stunned", () => {
+        enemy.wait(STUN_DURATION, () => {
+            enemy.enterState("move");
+        });
+    });
+
+    enemy.onStateUpdate("move", () => {
         if (enemy.isDying) return;
 
         const next = enemy.path[enemy.pathIndex + 1];

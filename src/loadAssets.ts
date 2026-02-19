@@ -40,6 +40,15 @@ export default function loadAssets(k: KAPLAYCtx) {
             shoot: { from: 1, to: 5, loop: false, speed: 20 }
         }
     });
+    k.loadSprite("lightning tower base", "/sprites/lightning-tower-base.png");
+    k.loadSprite("lightning tower", "/sprites/lightning-tower.png", {
+        sliceX: 8,
+        sliceY: 1,
+        anims: {
+            idle: 0,
+            shoot: { from: 1, to: 7, loop: false, speed: 35 }
+        }
+    });
     k.loadSprite("fog", "/sprites/fog5.png");
     k.loadSprite("basic projectile", "/sprites/basic-projectile.png");
     k.loadSprite("slimeball", "/sprites/slimeball.png");
@@ -81,5 +90,6 @@ export default function loadAssets(k: KAPLAYCtx) {
     k.loadSprite("poison", "/sprites/poison-icon.png");
     k.loadSprite("burn", "/sprites/burn-icon.png");
     k.loadSprite("chill", "/sprites/chill-icon.png");
+    k.loadSprite("charge", "/sprites/charge-icon.png");
     k.loadSprite("frost particle", "/sprites/frost-particle.png");
 }

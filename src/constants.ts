@@ -3,6 +3,7 @@ import burnEffect from "./kaplayComponents/burnEffect";
 import calcFireInterval from "./utils/calcFireInterval";
 import poisonEffect from "./kaplayComponents/poisonEffect";
 import chillEffect from "./kaplayComponents/chillEffect";
+import chargeEffect from "./kaplayComponents/chargeEffect";
 
 export const VIRTUAL_WIDTH = 800;
 export const VIRTUAL_HEIGHT = 600;
@@ -17,9 +18,12 @@ export const SMALL_DAMAGE_NUMBER_SIZE = 11;
 export const CRIT_DAMAGE_NUMBER_SIZE = 22;
 export const DAMAGE_NUMBER_COLOR = "#fffb00";
 export const CRIT_DAMAGE_NUMBER_COLOR = "#ff0000";
-export const CHARGE_DAMAGE_REQUIRED = 10;
+export const CHARGE_DAMAGE_REQUIRED = 80;
 export const CHILL_PERCENT = 6;
 export const MAX_CHILL_STACKS = 5;
+export const MAX_CHARGE_STACKS = 3;
+export const STUN_PERCENTAGES = [10, 20, 40];
+export const STUN_DURATION = 0.5;
 export const UPGRADES: Upgrade[] = [{
     stat: "damage",
     name: "Damage",
@@ -266,7 +270,7 @@ export const TOWERS = {
         description: "Shoots balls of slime that have a 50% chance to bounce between targets",
         cost: 75,
         stats: {
-            damage: 4,
+            damage: 3,
             range: 4,
             fireInterval: 0.75,
             critChance: 5,
@@ -283,7 +287,7 @@ export const TOWERS = {
                     projectile.behaviors ??= {};
                     projectile.behaviors.bounces ??= 100;
                     projectile.behaviors.bounceChance ??= 0.5;
-                    projectile.behaviors.bounceRange ??= 3 * TILE_SIZE;
+                    projectile.behaviors.bounceRange ??= 4 * TILE_SIZE;
                     projectile.behaviors.bounceDamageMultiplier ??= 1;
                 });
             }
@@ -295,8 +299,8 @@ export const TOWERS = {
         gunSprite: "ice tower",
         baseSprite: "ice tower base",
         sprite: "ice-tower-sprite.png",
-        description: "Emit a frost that damages all enemies in range",
-        cost: 75,
+        description: "Emits a frost that damages all enemies in range",
+        cost: 80,
         stats: {
             damage: 2,
             range: 3,
@@ -312,6 +316,32 @@ export const TOWERS = {
         effects: [{
             firstEffect(ctx) {
                 ctx.aoeAttack = true;
+            }
+        }],
+        canRotate: false
+    },
+    lightning: {
+        name: "Lightning Tower",
+        gunSprite: "lightning tower",
+        baseSprite: "lightning tower base",
+        sprite: "lightning-tower-sprite.png",
+        description: "Fires lightning stikes that hit up to 3 targets at once",
+        cost: 100,
+        stats: {
+            damage: 4,
+            range: 3,
+            fireInterval: 1,
+            critChance: 5,
+            critDamage: 100
+        },
+        element: "Electric",
+        gunOffset: { x: 0, y: 0 },
+        anchorOffset: { x: 0, y: 0 },
+        shootOffset: { x: 0, y: 0 },
+        projectile: null,
+        effects: [{
+            firstEffect(ctx) {
+                ctx.lightningAttack = true;
             }
         }],
         canRotate: false
@@ -374,7 +404,7 @@ export const ELEMENTS: Record<ElementName, ElementDef> = {
 
     Fire: {
         description: "Fire attacks have a 15% chance to burn enemies, dealing 1% max HP damage per second.",
-        applyEffect: (k, target) => {
+        applyEffect: (k, { target }) => {
             const duration = 5;
             if (k.randi(100) < 15) {
                 const burn = target.has("burn");
@@ -390,7 +420,7 @@ export const ELEMENTS: Record<ElementName, ElementDef> = {
 
     Ice: {
         description: `Ice attacks apply a stack of chill (up to ${MAX_CHILL_STACKS}). Each stack reduces enemy speed by ${CHILL_PERCENT}%`,
-        applyEffect: (k, target) => {
+        applyEffect: (k, { target }) => {
             const chill = target.has("chill");
             const duration = 2;
             if (chill) {
@@ -403,17 +433,35 @@ export const ELEMENTS: Record<ElementName, ElementDef> = {
     },
 
     Electric: {
-        description: "Electric attacks add charge stacks to enemies (up to 3). " +
-            "Enemies have a % of electric damage dealt chance to be stunned for 0.5s based on their charge stacks (0 = 2%, 1 = 5%, 2 = 10%, 3 = 20%)",
-        applyEffect: (target) => {
-            // Apply shock effect to target
+        description: `Electric attacks add charge stacks to enemies (up to ${MAX_CHARGE_STACKS}). ` +
+            `Enemies have an electric damage % chance to be stunned for ${STUN_DURATION}s based on their charge stacks (${STUN_PERCENTAGES.join("%, ")}%)`,
+        applyEffect: (k, { target, damage }) => {
+            const charge = target.has("charge");
+            
+            if (charge) {
+                target.addChargeStack()
+                
+                const stacks = target.getChargeStacks();
+                const baseChance = STUN_PERCENTAGES[stacks - 1] ?? 0;
+                
+                const stunChance = (baseChance / 100 * damage) / 100;
+                
+                if (Math.random() < stunChance) {
+                    target.enterState("stunned");
+                    target.unuse("charge");
+                }
+                return;
+            }
+
+            const duration = 2;
+            target.use(chargeEffect(k, duration));
         },
         color: "#FFFF00"
     },
 
     Light: {
         description: "Light attacks blind enemies, preventing them from hitting towers.",
-        applyEffect: (target) => {
+        applyEffect: (k,) => {
             // Apply light effect to target
         },
         color: "#ffff97"
@@ -421,7 +469,7 @@ export const ELEMENTS: Record<ElementName, ElementDef> = {
 
     Dark: {
         description: "Dark attacks apply curse to enemies. Cursed enemies can't be healed and have an extra 10% chance to be critted.",
-        applyEffect: (target) => {
+        applyEffect: (k,) => {
             // Apply dark effect to target
         },
         color: "#800080"
@@ -429,7 +477,7 @@ export const ELEMENTS: Record<ElementName, ElementDef> = {
 
     Poison: {
         description: "Poison attacks add poison stacks (up to 5) to enemies dealing damage equal to number of stacks every 5 seconds. Poison keeps ticking until the enemy dies or is healed.",
-        applyEffect: (k, target) => {
+        applyEffect: (k, { target }) => {
             const poison = target.has("poison");
             if (poison) {
                 target.addPoisonStack();
@@ -568,7 +616,7 @@ export const SKILLS = [
                     ctx.projectiles.forEach(projectile => {
                         projectile.behaviors ??= {};
                         projectile.behaviors.bounces ??= 1;
-                        projectile.behaviors.bounceRange ??= 3 * TILE_SIZE;
+                        projectile.behaviors.bounceRange ??= 4 * TILE_SIZE;
                         projectile.behaviors.bounceDamageMultiplier ??= 0.5;
                     });
                 }

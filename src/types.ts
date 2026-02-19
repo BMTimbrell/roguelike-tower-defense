@@ -34,7 +34,7 @@ export type TowerStats = {
 export type ElementName = "Normal" | "Fire" | "Ice" | "Electric" | "Light" | "Dark" | "Poison";
 export type ElementDef = {
     description: string | null;
-    applyEffect: ((k: KAPLAYCtx, target: GameObj) => void) | null;
+    applyEffect: ((k: KAPLAYCtx, ctx: EffectContext) => void) | null;
     color: string;
 };
 
@@ -69,7 +69,7 @@ export type TowerDef = {
     shootOffset: { x: number; y: number; };
     projectile: ProjectileId | null;
     effects?: UnitEffects;
-    cantRotate?: boolean;
+    canRotate: boolean;
 };
 
 export type UnitInstance = {
@@ -83,6 +83,7 @@ export type UnitInstance = {
     placeable: boolean;
     placed: boolean;
     effects?: UnitEffects;
+    canRotate: boolean;
 };
 
 export type TowerInstance = UnitInstance & {
@@ -260,10 +261,16 @@ export type AttackContext = {
     }[];
 
     aoeAttack: boolean;
+    lightningAttack: boolean;
 
     archer?: {
         volleyChance?: number;
     };
+};
+
+export type EffectContext = {
+    target: GameObj;
+    damage: number;
 };
 
 export type ProjectileBehavior = {
