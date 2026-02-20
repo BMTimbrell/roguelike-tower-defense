@@ -49,10 +49,36 @@ export default function loadAssets(k: KAPLAYCtx) {
             shoot: { from: 1, to: 7, loop: false, speed: 35 }
         }
     });
+    k.loadSprite("lux tower base", "/sprites/lux-tower-base.png");
+    k.loadSprite("lux tower", "/sprites/lux-tower.png", {
+        sliceX: 6,
+        sliceY: 1,
+        anims: {
+            idle: 0,
+            shoot: { from: 1, to: 5, loop: false, speed: 30 }
+        }
+    });
+    k.loadSprite("crow tower base", "/sprites/crow-tower-base.png");
+    k.loadSprite("crow tower", "/sprites/crow-tower.png", {
+        sliceX: 2,
+        sliceY: 1,
+        anims: {
+            idle: 0,
+            shoot: { from: 0, to: 1, loop: false }
+        }
+    });
     k.loadSprite("fog", "/sprites/fog5.png");
     k.loadSprite("basic projectile", "/sprites/basic-projectile.png");
     k.loadSprite("slimeball", "/sprites/slimeball.png");
     k.loadSprite("fireball", "/sprites/fireball.png");
+    k.loadSprite("light orb", "/sprites/light-orb.png");
+    k.loadSprite("crow", "/sprites/crow.png", {
+        sliceX: 4,
+        sliceY: 1,
+        anims: {
+            fly: { from: 0, to: 3, loop: true, speed: 5 }
+        }
+    });
     k.loadSprite("arrow", "/sprites/arrow.png");
     k.loadSprite("flaming arrow", "/sprites/flaming-arrow.png");
     k.loadSprite("archer base", "/sprites/archer-base2.png");
@@ -75,6 +101,7 @@ export default function loadAssets(k: KAPLAYCtx) {
         sliceX: 7,
         sliceY: 2,
         anims: {
+            idle: 0,
             move: { from: 0, to: 5, loop: true },
             die: { from: 7, to: 12, loop: false }
         }
@@ -83,6 +110,7 @@ export default function loadAssets(k: KAPLAYCtx) {
         sliceX: 5,
         sliceY: 2,
         anims: {
+            idle: 0,
             move: { from: 0, to: 3, loop: true, speed: 4 },
             die: { from: 5, to: 9, loop: false }
         }

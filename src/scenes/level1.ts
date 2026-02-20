@@ -180,15 +180,15 @@ export default function level1(k: KAPLAYCtx) {
             towerButtons: [
                 ...prev.towerButtons,
                 {
-                    ...TOWERS["lightning"],
+                    ...TOWERS["crow"],
                     onClick: () => {
                         if (k.get("hero")[0] && !k.get("hero")[0].placed) return;
                         const unplacedTower = k.get("tower").find(t => !t.placed);
-                        if (!unplacedTower || unplacedTower.towerId !== "lightning") {
+                        if (!unplacedTower || unplacedTower.towerId !== "crow") {
                             makeTower(
                                 k,
                                 {
-                                    towerId: "lightning",
+                                    towerId: "crow",
                                     pos: k.toWorld(k.mousePos()),
                                     tileGrid
                                 }
@@ -206,15 +206,15 @@ export default function level1(k: KAPLAYCtx) {
                     },
                 },
                 {
-                    ...TOWERS["slime"],
+                    ...TOWERS["lux"],
                     onClick: () => {
                         if (k.get("hero")[0] && !k.get("hero")[0].placed) return;
                         const unplacedTower = k.get("tower").find(t => !t.placed);
-                        if (!unplacedTower || unplacedTower.towerId !== "slime") {
+                        if (!unplacedTower || unplacedTower.towerId !== "lux") {
                             makeTower(
                                 k,
                                 {
-                                    towerId: "slime",
+                                    towerId: "lux",
                                     pos: k.toWorld(k.mousePos()),
                                     tileGrid
                                 }
@@ -231,15 +231,15 @@ export default function level1(k: KAPLAYCtx) {
                     }
                 },
                 {
-                    ...TOWERS["ice"],
+                    ...TOWERS["lightning"],
                     onClick: () => {
                         if (k.get("hero")[0] && !k.get("hero")[0].placed) return;
                         const unplacedTower = k.get("tower").find(t => !t.placed);
-                        if (!unplacedTower || unplacedTower.towerId !== "ice") {
+                        if (!unplacedTower || unplacedTower.towerId !== "lightning") {
                             makeTower(
                                 k,
                                 {
-                                    towerId: "ice",
+                                    towerId: "lightning",
                                     pos: k.toWorld(k.mousePos()),
                                     tileGrid
                                 }

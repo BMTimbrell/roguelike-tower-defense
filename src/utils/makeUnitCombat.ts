@@ -43,7 +43,7 @@ export default function makeUnitCombat(
     ]);
 
     gun.onAnimEnd(anim => {
-        if (anim === "shoot") {
+        if (anim === "shoot" && !opts.owner.activeProjectile) {
             gun.play("idle");
         }
     });
@@ -58,6 +58,8 @@ export default function makeUnitCombat(
         rangeCircle.pos = opts.owner.pos.add(TILE_SIZE / 2, TILE_SIZE / 2);
         rangeCircle.use(k.circle(opts.stats.range * TILE_SIZE));
         rangeCircle.hidden = !opts.owner.selected && !opts.owner.hovered;
+
+        if (opts.owner.activeProjectile === null) gun.play("idle");
     });
 
     function shoot(target: GameObj) {
@@ -139,7 +141,7 @@ export default function makeUnitCombat(
             const { willCrit, critDamage } = calcCrit(opts.stats.critChance, opts.stats.critDamage);
             const bonusDamage = p?.bonusDamage ?? 0;
 
-            makeProjectile(k, {
+            const projectile = makeProjectile(k, {
                 id: p.id,
                 pos: ctx.origin.add(rotatedOffset),
                 target,
@@ -152,6 +154,10 @@ export default function makeUnitCombat(
                 turnSpeed: p.turnSpeed,
                 behaviors: p?.behaviors
             });
+
+            if (p.behaviors?.persistent) {
+                ctx.attacker.activeProjectile ??= projectile;
+            }
         }
 
     }
@@ -175,11 +181,11 @@ export default function makeUnitCombat(
             gun.angle += diff * Math.min(1, turnSpeed * k.dt());
         } else gun.angle = 0;
 
-        while (shootTimer <= 0 && target) {
+        while (shootTimer <= 0 && target && !opts.owner.activeProjectile) {
             shootTimer += opts.stats.fireInterval;
 
             if (opts.owner.canRotate) gun.angle = gun.pos.angle(target.pos);
-
+            
             shoot(target);
             gun.play("shoot");
         }
@@ -190,6 +196,7 @@ export default function makeUnitCombat(
         rangeCircle,
         update,
         destroy() {
+            opts.owner.activeProjectile && k.destroy(opts.owner.activeProjectile);
             k.destroy(gun)
             k.destroy(rangeCircle)
         },

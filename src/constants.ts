@@ -1,4 +1,4 @@
-import type { Upgrade, LevelWaves, EnemyConfig, TowerDef, ElementDef, ElementName, ProjectileDef, HeroDef, HeroSkillDef, HeroSkillDefBase } from "./types";
+import type { Upgrade, LevelWaves, EnemyConfig, TowerDef, ElementDef, ElementName, ProjectileDef, HeroDef, HeroSkillDef, HeroSkillDefBase, TowerGameObj } from "./types";
 import burnEffect from "./kaplayComponents/burnEffect";
 import calcFireInterval from "./utils/calcFireInterval";
 import poisonEffect from "./kaplayComponents/poisonEffect";
@@ -226,7 +226,7 @@ export const TOWERS = {
         baseSprite: "basic tower base",
         sprite: "basic-tower-sprite.png",
         description: "A cheap but basic tower",
-        cost: 50,
+        cost: 45,
         stats: {
             damage: 4,
             range: 4,
@@ -326,7 +326,7 @@ export const TOWERS = {
         baseSprite: "lightning tower base",
         sprite: "lightning-tower-sprite.png",
         description: "Fires lightning stikes that hit up to 3 targets at once",
-        cost: 100,
+        cost: 90,
         stats: {
             damage: 4,
             range: 3,
@@ -342,6 +342,60 @@ export const TOWERS = {
         effects: [{
             firstEffect(ctx) {
                 ctx.lightningAttack = true;
+            }
+        }],
+        canRotate: false
+    },
+    lux: {
+        name: "Lux Tower",
+        gunSprite: "lux tower",
+        baseSprite: "lux tower base",
+        sprite: "lux-tower-sprite.png",
+        description: "Fires small orbs of light in quick succession",
+        cost: 70,
+        stats: {
+            damage: 2,
+            range: 4,
+            fireInterval: 0.25,
+            critChance: 5,
+            critDamage: 100
+        },
+        element: "Light",
+        gunOffset: { x: -1 / 2, y: -1 /2 },
+        anchorOffset: { x: -1 /32, y: -1 / 32 },
+        shootOffset: { x: -20, y: 0 },
+        projectile: "lightOrb",
+        canRotate: true
+    },
+    crow: {
+        name: "Crow Tower",
+        gunSprite: "crow tower",
+        baseSprite: "crow tower base",
+        sprite: "crow-tower-sprite.png",
+        description: "A shadowy crow follows and attacks enemies in range",
+        cost: 75,
+        stats: {
+            damage: 6,
+            range: 4,
+            fireInterval: 0.75,
+            critChance: 5,
+            critDamage: 100
+        },
+        element: "Dark",
+        gunOffset: { x: 0, y: 0 },
+        anchorOffset: { x: 0, y: 0 },
+        shootOffset: { x: 0, y: 0 },
+        projectile: "crow",
+        effects: [{
+            firstEffect(ctx) {
+                ctx.projectiles.forEach(projectile => {
+                    projectile.behaviors ??= {};
+                    projectile.behaviors.persistent = {
+                        owner: ctx.attacker as TowerGameObj,
+                        state: "flying",
+                        origin: ctx.origin
+                    };
+                });
             }
         }],
         canRotate: false
@@ -367,7 +421,7 @@ export const HEROES = {
         element: "Normal",
         gunOffset: { x: 0, y: 0 },
         anchorOffset: { x: 9 / 32, y: 9 / 32 },
-        shootOffset: { x: 0, y: 0 },
+        shootOffset: { x: 0, y: -5 },
         projectile: "arrow",
         canRotate: true
     },
@@ -460,7 +514,7 @@ export const ELEMENTS: Record<ElementName, ElementDef> = {
     },
 
     Light: {
-        description: "Light attacks blind enemies, preventing them from hitting towers.",
+        description: "Light attacks blind enemies, preventing them from hitting towers",
         applyEffect: (k,) => {
             // Apply light effect to target
         },
@@ -501,6 +555,19 @@ export const PROJECTILES = {
         homing: true,
         speed: 300,
         splashRadius: 0
+    },
+    lightOrb: {
+        sprite: "light orb",
+        homing: true,
+        speed: 300,
+        splashRadius: 0
+    },
+    crow: {
+        sprite: "crow",
+        homing: true,
+        speed: 200,
+        splashRadius: 0,
+        anim: "fly"
     },
     arrow: {
         sprite: "arrow",

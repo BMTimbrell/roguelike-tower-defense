@@ -48,6 +48,7 @@ export type ProjectileDef = {
     homing: boolean;
     speed: number;
     splashRadius: number;
+    anim?: string;
 };
 
 export type UnitEffects = {
@@ -280,6 +281,11 @@ export type ProjectileBehavior = {
     bounceChance?: number;
     distanceDamageMultiplier?: number;
     distanceDamageCap?: number;
+    persistent?: {
+        owner: TowerGameObj;
+        state: "flying" | "attached" | "returning";
+        origin: Vec2;
+    }
 };
 
 export type Rewards = {

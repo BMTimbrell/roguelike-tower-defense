@@ -79,6 +79,7 @@ export default function makeEnemy(k: KAPLAYCtx, enemyId: EnemyId, waypoints: Vec
     });
 
     enemy.onStateEnter("stunned", () => {
+        enemy.play("idle");
         enemy.wait(STUN_DURATION, () => {
             enemy.enterState("move");
         });
