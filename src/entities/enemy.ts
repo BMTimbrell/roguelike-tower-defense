@@ -4,10 +4,11 @@ import type { EnemyId } from '../constants';
 import { ENEMIES, STUN_DURATION } from '../constants';
 import healthBar from '../kaplayComponents/healthBar';
 import statusEffect from '../kaplayComponents/statusEffect';
+import type { EnemyGameObj } from '../types';
 
 export default function makeEnemy(k: KAPLAYCtx, enemyId: EnemyId, waypoints: Vec2[]): GameObj {
 
-    const enemy = k.add([
+    const enemy: EnemyGameObj = k.add([
         k.pos(waypoints[0]),
         k.sprite(ENEMIES[enemyId].sprite, { anim: "move" }),
         k.anchor("center"),

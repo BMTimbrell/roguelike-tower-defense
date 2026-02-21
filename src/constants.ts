@@ -4,6 +4,7 @@ import calcFireInterval from "./utils/calcFireInterval";
 import poisonEffect from "./kaplayComponents/poisonEffect";
 import chillEffect from "./kaplayComponents/chillEffect";
 import chargeEffect from "./kaplayComponents/chargeEffect";
+import curseEffect from "./kaplayComponents/curseEffect";
 
 export const VIRTUAL_WIDTH = 800;
 export const VIRTUAL_HEIGHT = 600;
@@ -21,9 +22,11 @@ export const CRIT_DAMAGE_NUMBER_COLOR = "#ff0000";
 export const CHARGE_DAMAGE_REQUIRED = 80;
 export const CHILL_PERCENT = 6;
 export const MAX_CHILL_STACKS = 5;
+export const ICE_DAMAGE_PER_STACK = 10;
 export const MAX_CHARGE_STACKS = 3;
 export const STUN_PERCENTAGES = [10, 20, 40];
 export const STUN_DURATION = 0.5;
+export const CURSE_CRIT = 10;
 export const UPGRADES: Upgrade[] = [{
     stat: "damage",
     name: "Damage",
@@ -303,7 +306,7 @@ export const TOWERS = {
         cost: 80,
         stats: {
             damage: 2,
-            range: 3,
+            range: 2.5,
             fireInterval: 1,
             critChance: 5,
             critDamage: 100
@@ -355,14 +358,14 @@ export const TOWERS = {
         cost: 70,
         stats: {
             damage: 2,
-            range: 4,
+            range: 3,
             fireInterval: 0.25,
             critChance: 5,
             critDamage: 100
         },
         element: "Light",
-        gunOffset: { x: -1 / 2, y: -1 /2 },
-        anchorOffset: { x: -1 /32, y: -1 / 32 },
+        gunOffset: { x: -1 / 2, y: -1 / 2 },
+        anchorOffset: { x: -1 / 32, y: -1 / 32 },
         shootOffset: { x: -20, y: 0 },
         projectile: "lightOrb",
         canRotate: true
@@ -473,15 +476,16 @@ export const ELEMENTS: Record<ElementName, ElementDef> = {
     },
 
     Ice: {
-        description: `Ice attacks apply a stack of chill (up to ${MAX_CHILL_STACKS}). Each stack reduces enemy speed by ${CHILL_PERCENT}%`,
-        applyEffect: (k, { target }) => {
+        description: `Ice attacks apply a stack of chill (up to ${MAX_CHILL_STACKS}) + 1 bonus stack for every ${ICE_DAMAGE_PER_STACK} damage dealt. Each stack reduces enemy speed by ${CHILL_PERCENT}%`,
+        applyEffect: (k, { target, damage }) => {
             const chill = target.has("chill");
+            const stacks = 1 + Math.floor(damage / ICE_DAMAGE_PER_STACK);
             const duration = 2;
             if (chill) {
-                target.addChillStack();
+                target.addChillStack(stacks);
                 return;
             }
-            target.use(chillEffect(k, duration));
+            target.use(chillEffect(k, duration, stacks));
         },
         color: "#00FFFF"
     },
@@ -491,15 +495,15 @@ export const ELEMENTS: Record<ElementName, ElementDef> = {
             `Enemies have an electric damage % chance to be stunned for ${STUN_DURATION}s based on their charge stacks (${STUN_PERCENTAGES.join("%, ")}%)`,
         applyEffect: (k, { target, damage }) => {
             const charge = target.has("charge");
-            
+
             if (charge) {
                 target.addChargeStack()
-                
+
                 const stacks = target.getChargeStacks();
                 const baseChance = STUN_PERCENTAGES[stacks - 1] ?? 0;
-                
+
                 const stunChance = (baseChance / 100 * damage) / 100;
-                
+
                 if (Math.random() < stunChance) {
                     target.enterState("stunned");
                     target.unuse("charge");
@@ -522,9 +526,15 @@ export const ELEMENTS: Record<ElementName, ElementDef> = {
     },
 
     Dark: {
-        description: "Dark attacks apply curse to enemies. Cursed enemies can't be healed and have an extra 10% chance to be critted.",
-        applyEffect: (k,) => {
-            // Apply dark effect to target
+        description: "Dark attacks apply curse to enemies. Cursed enemies can't be healed and have an extra 10% chance to receive critical hits",
+        applyEffect: (k, { target }) => {
+            const duration = 2;
+            const curse = target.has("curse");
+            if (curse) {
+                target.refreshCurse();
+                return;
+            }
+            target.use(curseEffect(k, duration));
         },
         color: "#800080"
     },

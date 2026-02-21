@@ -18,6 +18,7 @@ export default function levelTransition(k: KAPLAYCtx) {
         });
         store.set(gameStateAtom, prev => ({
             ...prev,
+            scene: "levelTransition",
             bottomBarVisible: false,
             selectedUI: null
         }));

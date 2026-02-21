@@ -1,8 +1,8 @@
 import type { KAPLAYCtx, Vec2 } from "kaplay";
-import makeTower, { addSelectTowerListener } from "../entities/Tower";
-import type { MapData } from "../types";
+import { addSelectTowerListener } from "../entities/Tower";
+import type { MapData, Scene } from "../types";
 import { mapAtom, store, gameStateAtom } from "../store";
-import { TILE_SIZE, TOWERS, MAX_HAND_SIZE, ROUND_DRAW_NUM } from "../constants";
+import { TILE_SIZE, MAX_HAND_SIZE, ROUND_DRAW_NUM } from "../constants";
 import generateDeck from "../utils/generateDeck";
 import drawCards from "../utils/drawCards";
 import reroll from "../utils/reroll";
@@ -14,9 +14,10 @@ import getCamViewRect from "../utils/getCamViewRect";
 import makeHero from "../entities/Hero";
 import initCam from "../utils/initCam";
 import updateSkills from "../utils/updateSkills";
+import addTowers from "../utils/addTowers";
 
 export default function level1(k: KAPLAYCtx) {
-    k.scene("level1", async () => {
+    k.scene("level1" satisfies Scene, async () => {
         const mapData: MapData = await (await fetch("data/level1.json")).json();
 
         k.add([
@@ -164,6 +165,7 @@ export default function level1(k: KAPLAYCtx) {
         const upgrades = drawCards(k, deck, ROUND_DRAW_NUM);
         store.set(gameStateAtom, prev => ({
             ...prev,
+            scene: "level1",
             heroButton: {
                 ...prev.heroButton,
                 onClick: () => {
@@ -177,86 +179,8 @@ export default function level1(k: KAPLAYCtx) {
                     }))
                 }
             },
-            towerButtons: [
-                ...prev.towerButtons,
-                {
-                    ...TOWERS["crow"],
-                    onClick: () => {
-                        if (k.get("hero")[0] && !k.get("hero")[0].placed) return;
-                        const unplacedTower = k.get("tower").find(t => !t.placed);
-                        if (!unplacedTower || unplacedTower.towerId !== "crow") {
-                            makeTower(
-                                k,
-                                {
-                                    towerId: "crow",
-                                    pos: k.toWorld(k.mousePos()),
-                                    tileGrid
-                                }
-                            );
-                            store.set(gameStateAtom, prev => ({
-                                ...prev,
-                                nextTowerId: prev.nextTowerId + 1,
-                                selectedTower: null,
-                            }));
-                        }
-                        if (unplacedTower) {
-                            k.destroy(unplacedTower);
-                        }
-
-                    },
-                },
-                {
-                    ...TOWERS["lux"],
-                    onClick: () => {
-                        if (k.get("hero")[0] && !k.get("hero")[0].placed) return;
-                        const unplacedTower = k.get("tower").find(t => !t.placed);
-                        if (!unplacedTower || unplacedTower.towerId !== "lux") {
-                            makeTower(
-                                k,
-                                {
-                                    towerId: "lux",
-                                    pos: k.toWorld(k.mousePos()),
-                                    tileGrid
-                                }
-                            );
-                            store.set(gameStateAtom, prev => ({
-                                ...prev,
-                                nextTowerId: prev.nextTowerId + 1,
-                                selectedTower: null,
-                            }));
-                        }
-                        if (unplacedTower) {
-                            k.destroy(unplacedTower);
-                        }
-                    }
-                },
-                {
-                    ...TOWERS["lightning"],
-                    onClick: () => {
-                        if (k.get("hero")[0] && !k.get("hero")[0].placed) return;
-                        const unplacedTower = k.get("tower").find(t => !t.placed);
-                        if (!unplacedTower || unplacedTower.towerId !== "lightning") {
-                            makeTower(
-                                k,
-                                {
-                                    towerId: "lightning",
-                                    pos: k.toWorld(k.mousePos()),
-                                    tileGrid
-                                }
-                            );
-                            store.set(gameStateAtom, prev => ({
-                                ...prev,
-                                nextTowerId: prev.nextTowerId + 1,
-                                selectedTower: null,
-                            }));
-                        }
-                        if (unplacedTower) {
-                            k.destroy(unplacedTower);
-                        }
-                    },
-                    
-                }
-            ],
+            towerButtons: addTowers(k, ["crow", "ice", "lux", "lightning", "basic"], tileGrid),
+            bottomBarVisible: true,
             upgrades,
             deck: {
                 ...prev.deck,

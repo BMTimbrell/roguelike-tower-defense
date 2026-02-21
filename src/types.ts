@@ -1,6 +1,6 @@
 import { type MouseEventHandler } from "react";
 import { TILE_SIZE, type EnemyId, type HeroId, type ProjectileId, type SkillId, type TowerId } from "./constants";
-import type { Vec2, GameObj, KAPLAYCtx } from "kaplay";
+import type { Vec2, GameObj, KAPLAYCtx, HealthComp, SpriteComp, StateComp, TimerComp, RotateComp, PosComp } from "kaplay";
 
 type LayerObj = {
     x: number;
@@ -77,7 +77,6 @@ export type UnitInstance = {
     name: string;
     stats: TowerStats;
     element: ElementName;
-    pos: Vec2;
     priority: TargetPriority;
     selected: boolean;
     hovered: boolean;
@@ -121,6 +120,23 @@ export type HeroInstance = UnitInstance & {
 };
 
 export type HeroGameObj = GameObj & HeroInstance;
+
+export type EnemyGameObj = GameObj<
+    HealthComp | 
+    SpriteComp | 
+    StateComp | 
+    TimerComp | 
+    RotateComp | 
+    PosComp> & {
+    path: Vec2[];
+    pathIndex: number;
+    segmentStart: Vec2;
+    segmentProgress: number;
+    baseSpeed: number;
+    speed: number;
+    damage: number;
+    isDying: boolean;
+};
 
 export type Upgrade = {
     stat: "damage" | "range" | "fireInterval" | "critChance" | "critDamage";
@@ -187,6 +203,8 @@ export type Deck = {
     drawCost: number;
 };
 
+export type Scene = "level1" | "levelTransition" | "mainMenu";
+
 export type GameState = {
     towerButtons: TowerButton[];
     nextTowerId: number;
@@ -204,7 +222,7 @@ export type GameState = {
         rerollCount: number;
     };
     heroCanReposition: boolean;
-    bottomBarVisible: boolean;
+    scene: Scene;
     hero: HeroGameObj | null;
     heroButton: {
         visible: boolean;
@@ -241,8 +259,8 @@ export type EnemyConfig = {
 };
 
 export type AttackContext = {
-    attacker: GameObj;
-    target?: GameObj;
+    attacker: TowerGameObj | HeroGameObj;
+    target?: EnemyGameObj;
     origin: Vec2;
 
     damage: number;
@@ -251,7 +269,7 @@ export type AttackContext = {
     projectiles: {
         id: ProjectileId;
         angle: number;
-        target?: GameObj;
+        target?: EnemyGameObj;
         homing: boolean;
         angleOffset?: number;
         homingDelay?: number;

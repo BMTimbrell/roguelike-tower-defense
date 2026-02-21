@@ -1,6 +1,6 @@
 import type { GameObj, KAPLAYCtx, Vec2 } from "kaplay";
 import { selectBounceTarget } from "./targetingHelpers";
-import calcCrit from "./calcCrit";
+import calcCrit from "./calcDamage";
 import type { ElementName } from "../types";
 import makeFloatingText from "../entities/FloatingText";
 import { CRIT_DAMAGE_NUMBER_SIZE, DAMAGE_NUMBER_SIZE, ELEMENTS } from "../constants";

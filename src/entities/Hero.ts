@@ -29,7 +29,9 @@ export default function makeHero(k: KAPLAYCtx,
         canRotate
     } = HEROES[heroId];
 
-    const hero = k.make([
+    const priority: TargetPriority = "Most Progress";
+
+    const hero: HeroGameObj = k.make([
         k.pos(pos),
         k.color("#FFFFFF"),
         k.area({
@@ -39,7 +41,7 @@ export default function makeHero(k: KAPLAYCtx,
         {
             heroId,
             name,
-            priority: "Most Progress",
+            priority,
             placed: false,
             placeable: false,
             selected: true,
@@ -55,7 +57,7 @@ export default function makeHero(k: KAPLAYCtx,
         "tower",
         "hero",
         heroId
-    ]) as HeroGameObj;
+    ]);
 
     hero.onAdd(() => {
         const sprite = hero.add([

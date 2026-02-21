@@ -5,22 +5,21 @@ import { CHILL_PERCENT, MAX_CHILL_STACKS } from "../constants";
 
 export type ChillComp = Comp & {
     id: StatusEffect;
-    addChillStack: () => void;
+    addChillStack: (num: number) => void;
     chill: () => StatusEffectResult;
 };
 
-export default function chillEffect(k: KAPLAYCtx, duration: number): ChillComp {
+export default function chillEffect(k: KAPLAYCtx, duration: number, stacks: number): ChillComp {
     let timer = duration;
-    let stacks = 1;
 
     return {
         id: "chill",
 
         require: ["statusEffect"],
 
-        addChillStack(this: GameObj<{ speed: number; baseSpeed: number; }>) {
+        addChillStack(this: GameObj<{ speed: number; baseSpeed: number; }>, num) {
             timer = duration;
-            if (stacks < MAX_CHILL_STACKS) stacks++;
+            if (stacks < MAX_CHILL_STACKS) stacks += Math.min(num, MAX_CHILL_STACKS - stacks);
             this.speed = this.baseSpeed * (1 - ((stacks * CHILL_PERCENT) / 100));
         },
 

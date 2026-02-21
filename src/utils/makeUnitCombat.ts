@@ -1,11 +1,11 @@
-import type { GameObj, KAPLAYCtx, Vec2 } from "kaplay";
-import type { AttackContext, ElementName, HeroGameObj, TowerGameObj } from "../types";
-import { CRIT_DAMAGE_NUMBER_SIZE, DAMAGE_NUMBER_SIZE, ELEMENTS, TILE_SIZE, TOWER_RANGE_TOLERANCE, type ProjectileId } from "../constants";
+import type { KAPLAYCtx, Vec2 } from "kaplay";
+import type { AttackContext, ElementName, EnemyGameObj, HeroGameObj, TowerGameObj } from "../types";
+import { CRIT_DAMAGE_NUMBER_SIZE, CURSE_CRIT, DAMAGE_NUMBER_SIZE, ELEMENTS, TILE_SIZE, TOWER_RANGE_TOLERANCE, type ProjectileId } from "../constants";
 import makeProjectile from "../entities/Projectile";
 import { rotateVector, selectTarget, shortestAngleDiff } from "./targetingHelpers";
 import makeFloatingText from "../entities/FloatingText";
-import calcCrit from "./calcCrit";
 import { buildLightningSegments, drawLightning, resolveChain } from "./lightningHelpers";
+import calcDamage from "./calcDamage";
 
 export default function makeUnitCombat(
     k: KAPLAYCtx,
@@ -62,7 +62,7 @@ export default function makeUnitCombat(
         if (opts.owner.activeProjectile === null) gun.play("idle");
     });
 
-    function shoot(target: GameObj) {
+    function shoot(target: EnemyGameObj) {
 
         const ctx: AttackContext = {
             attacker: opts.owner,
@@ -82,11 +82,16 @@ export default function makeUnitCombat(
 
         opts.owner.effects?.forEach(e => e.firstEffect?.(ctx));
 
-        const { willCrit, critDamage } = calcCrit(opts.stats.critChance, opts.stats.critDamage);
-        const damage = Math.round(ctx.damage * critDamage);
+        const { isCrit, damage } = calcDamage({
+            bonusDamage: 0,
+            bonusCritChance: target.has("curse") ? CURSE_CRIT : 0,
+            critChance: opts.stats.critChance,
+            critDamage: opts.stats.critDamage,
+            damage: ctx.damage
+        });
 
         if (ctx.aoeAttack) {
-            aoeAttack(k, ctx, { damage, isCrit: willCrit });
+            aoeAttack(k, ctx, { damage, isCrit });
         }
 
         if (ctx.target && ctx.lightningAttack) {
@@ -94,7 +99,7 @@ export default function makeUnitCombat(
                 startPos: ctx.origin,
                 target: ctx.target,
                 damage,
-                isCrit: willCrit,
+                isCrit,
                 element: ctx.element,
                 maxChains: 3,
                 range: TILE_SIZE * 5
@@ -138,15 +143,21 @@ export default function makeUnitCombat(
         );
 
         for (const p of ctx.projectiles) {
-            const { willCrit, critDamage } = calcCrit(opts.stats.critChance, opts.stats.critDamage);
             const bonusDamage = p?.bonusDamage ?? 0;
+            const { isCrit, damage } = calcDamage({
+                bonusDamage,
+                bonusCritChance: target.has("curse") ? CURSE_CRIT : 0,
+                critChance: opts.stats.critChance,
+                critDamage: opts.stats.critDamage,
+                damage: ctx.damage
+            });
 
             const projectile = makeProjectile(k, {
                 id: p.id,
                 pos: ctx.origin.add(rotatedOffset),
                 target,
-                damage: Math.round((ctx.damage + bonusDamage) * critDamage),
-                crit: willCrit,
+                damage: damage,
+                crit: isCrit,
                 angle: p.angle,
                 element: p?.element ?? ctx.element,
                 homing: p.homing,
@@ -168,7 +179,7 @@ export default function makeUnitCombat(
         }
 
         const target = selectTarget(
-            k.get("enemy"),
+            k.get("enemy") as EnemyGameObj[],
             opts.owner,
             rangeCircle.pos
         );
@@ -185,7 +196,7 @@ export default function makeUnitCombat(
             shootTimer += opts.stats.fireInterval;
 
             if (opts.owner.canRotate) gun.angle = gun.pos.angle(target.pos);
-            
+
             shoot(target);
             gun.play("shoot");
         }
@@ -208,7 +219,7 @@ function aoeAttack(k: KAPLAYCtx, ctx: AttackContext, opts: { isCrit: boolean; da
 
     frostAoeBurst(k, ctx.origin, ctx.attacker.stats.range * TILE_SIZE);
 
-    k.get("enemy").forEach(e => {
+    (k.get("enemy") as EnemyGameObj[]).forEach(e => {
         if (e.pos.dist(ctx.origin) > ctx.attacker.stats.range * TILE_SIZE + TOWER_RANGE_TOLERANCE) return;
 
         e.hurt(damage);

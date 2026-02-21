@@ -1,13 +1,14 @@
 import type { GameObj, KAPLAYCtx, Vec2 } from "kaplay";
 import { TILE_SIZE, TOWER_RANGE_TOLERANCE } from "../constants";
+import type { EnemyGameObj, HeroGameObj, TowerGameObj } from "../types";
 
 export function selectTarget(
-    enemies: GameObj[],
-    tower: GameObj,
+    enemies: EnemyGameObj[],
+    tower: TowerGameObj | HeroGameObj,
     rangePos: Vec2,
-): GameObj | null {
+): EnemyGameObj | null {
 
-    let best: GameObj | null = null
+    let best: EnemyGameObj | null = null
 
     for (const e of enemies) {
         if (e.pos.dist(rangePos) > tower.stats.range * TILE_SIZE + TOWER_RANGE_TOLERANCE) {
@@ -59,19 +60,19 @@ export function rotateVector(k: KAPLAYCtx, vec: Vec2, angle: number): Vec2 {
 
 export function selectBounceTarget(
     k: KAPLAYCtx, 
-    from: GameObj, 
+    from: EnemyGameObj, 
     opts?: { 
         bounceRange?: number, 
-        exclude?: Set<GameObj>,
-        visited?: Set<GameObj>
+        exclude?: Set<EnemyGameObj>,
+        visited?: Set<EnemyGameObj>
     }
 ) {
     const exclude = opts?.exclude ?? new Set();
     const bounceRange = opts?.bounceRange ?? 0;
     const visited = opts?.visited ?? new Set();
 
-    return k
-        .get("enemy")
+    return (k
+        .get("enemy") as EnemyGameObj[])
         .filter(e =>
             e !== from &&
             !e.isDying &&
@@ -90,7 +91,7 @@ export function selectBounceTarget(
         })[0];
 }
 
-export function isValidTarget(e: GameObj) {
+export function isValidTarget(e: EnemyGameObj) {
     return e.is("enemy") && !e.isDying;
 }
 
@@ -98,9 +99,9 @@ export function findNewTarget(
     k: KAPLAYCtx,
     fromPos: Vec2,
     maxRange?: number
-): GameObj | null {
-    return k
-        .get("enemy")
+): EnemyGameObj | null {
+    return (k
+        .get("enemy") as EnemyGameObj[])
         .filter(e => !e.isDying && (!maxRange || e.pos.dist(fromPos) <= maxRange))
         .sort((a, b) =>
             a.pos.dist(fromPos) - b.pos.dist(fromPos)

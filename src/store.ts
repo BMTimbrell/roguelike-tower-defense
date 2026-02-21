@@ -23,7 +23,7 @@ export const gameStateAtom = atom<GameState>({
         rerollCount: 0
     },
     heroCanReposition: true,
-    bottomBarVisible: true,
+    scene: "mainMenu",
     hero: null,
     heroButton: {
         visible: true,

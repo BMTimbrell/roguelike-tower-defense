@@ -4,6 +4,7 @@ import { BottomBar } from "./reactComponents/BottomBar/BottomBar";
 import SelectedTower from "./reactComponents/SelectedTower/SelectedTower";
 import SelectedHero from './reactComponents/SelectedHero/SelectedHero';
 import Rewards from './reactComponents/Rewards/Rewards';
+import type { Scene } from './types';
 
 export default function ReactUI() {
     const [gameState] = useAtom(gameStateAtom);
@@ -16,10 +17,11 @@ export default function ReactUI() {
     const selectedHeroUI = selectedUI && "heroId" in selectedUI
         ? selectedUI
         : null;
+    const nonLevelScenes: Scene[] = ["mainMenu", "levelTransition"];
 
     return (
         <>
-            {gameState.bottomBarVisible && <BottomBar />}
+            {!nonLevelScenes.includes(gameState.scene) && <BottomBar />}
 
             {selectedTower &&
                 <SelectedTower

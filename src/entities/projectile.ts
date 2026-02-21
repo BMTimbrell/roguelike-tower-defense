@@ -1,14 +1,14 @@
 import type { KAPLAYCtx, Vec2, GameObj } from 'kaplay';
 import makeFloatingText from './FloatingText';
-import { CRIT_DAMAGE_NUMBER_SIZE, DAMAGE_NUMBER_SIZE, ELEMENTS, PROJECTILES, TILE_SIZE, type ProjectileId } from '../constants';
-import type { ElementName, ProjectileBehavior, ProjectileDef } from '../types';
+import { CRIT_DAMAGE_NUMBER_SIZE, CURSE_CRIT, DAMAGE_NUMBER_SIZE, ELEMENTS, PROJECTILES, TILE_SIZE, type ProjectileId } from '../constants';
+import type { ElementName, EnemyGameObj, ProjectileBehavior, ProjectileDef } from '../types';
 import { findNewTarget, isValidTarget, selectBounceTarget, selectTarget, shortestAngleDiff } from '../utils/targetingHelpers';
-import calcCrit from '../utils/calcCrit';
+import calcDamage from '../utils/calcDamage';
 
 export default function makeProjectile(k: KAPLAYCtx, opts: {
     id: ProjectileId;
     pos: Vec2;
-    target: GameObj | null;
+    target: EnemyGameObj | null;
     damage: number;
     crit?: boolean;
     angle?: number;
@@ -25,7 +25,7 @@ export default function makeProjectile(k: KAPLAYCtx, opts: {
     const anim = (PROJECTILES[id] as ProjectileDef).anim ? (PROJECTILES[id] as ProjectileDef).anim : null;
 
     const projectile = k.add([
-        k.sprite(sprite, {...(anim ? { anim } : {})}),
+        k.sprite(sprite, { ...(anim ? { anim } : {}) }),
         k.anchor("center"),
         k.pos(pos),
         k.rotate(opts.angle ?? 0),
@@ -48,7 +48,7 @@ export default function makeProjectile(k: KAPLAYCtx, opts: {
     let distanceDamageMultiplier = behaviors?.distanceDamageMultiplier ?? 0;
     let baseDamage = damage;
     let attackTimer = behaviors?.persistent ? 0 : null;
-    const hitEnemies = new Set<GameObj>();
+    const hitEnemies = new Set<EnemyGameObj>();
     projectile.onDestroy(() => {
         if (behaviors?.persistent) {
             behaviors.persistent.owner.activeProjectile = null;
@@ -56,11 +56,11 @@ export default function makeProjectile(k: KAPLAYCtx, opts: {
     });
 
     projectile.onUpdate(() => {
-        const persistentAndEnemyOutOfRange = behaviors?.persistent?.owner && behaviors.persistent.origin.dist(target?.pos) > (behaviors.persistent.owner.stats.range + 1) * TILE_SIZE;
+        const persistentAndEnemyOutOfRange = target && behaviors?.persistent?.owner && behaviors.persistent.origin.dist(target.pos) > (behaviors.persistent.owner.stats.range + 1) * TILE_SIZE;
         if (homing && (!target || !isValidTarget(target) || persistentAndEnemyOutOfRange)) {
             const origin = behaviors?.persistent ? behaviors.persistent.origin : projectile.pos;
 
-            target = behaviors?.persistent ? selectTarget(k.get("enemy"), behaviors.persistent.owner, origin) : findNewTarget(k, origin);
+            target = behaviors?.persistent ? selectTarget(k.get("enemy") as EnemyGameObj[], behaviors.persistent.owner, origin) : findNewTarget(k, origin);
             if (behaviors?.persistent) behaviors.persistent.state = "flying";
 
             if (!target) {
@@ -129,9 +129,15 @@ export default function makeProjectile(k: KAPLAYCtx, opts: {
             if (!target.isDying && (behaviors?.persistent?.state !== "attached" || (attackTimer !== null && attackTimer <= 0))) {
                 if (behaviors?.persistent) {
                     const owner = behaviors.persistent.owner;
-                    const { willCrit, critDamage } = calcCrit(owner.stats.critChance, owner.stats.critDamage);
-                    crit = willCrit;
-                    damage = Math.round(owner.stats.damage * critDamage);
+                    const { isCrit, damage: newDamage } = calcDamage({
+                        bonusDamage: 0,
+                        bonusCritChance: target.has("curse") ? CURSE_CRIT : 0,
+                        critChance: owner.stats.critChance,
+                        critDamage: owner.stats.critDamage,
+                        damage: owner.stats.damage
+                    });
+                    crit = isCrit;
+                    damage = newDamage;
                 }
 
                 target.hurt(damage);

@@ -1,6 +1,6 @@
 import type { KAPLAYCtx, Vec2 } from 'kaplay';
 import { TILE_SIZE, type TowerId } from '../constants';
-import type { SelectedTowerUI, Upgrade, TargetPriority, TowerGameObj } from '../types';
+import type { SelectedTowerUI, Upgrade, TargetPriority, TowerGameObj, UnitEffects } from '../types';
 import { store, gameStateAtom } from '../store';
 import { calcUpgradeCost } from '../utils/calcUpgradeCost';
 import { TOWERS } from '../constants';
@@ -34,7 +34,9 @@ export default function makeTower(
         canRotate
     } = TOWERS[towerId];
 
-    const tower = k.add([
+    const priority: TargetPriority = "Most Progress";
+
+    const tower: TowerGameObj = k.add([
         k.sprite(baseSprite),
         k.pos(pos),
         k.color("#FFFFFF"),
@@ -47,7 +49,7 @@ export default function makeTower(
             towerId,
             name,
             cost,
-            priority: "Most Progress",
+            priority,
             placed: false,
             placeable: false,
             selected: true,
@@ -55,14 +57,14 @@ export default function makeTower(
             stats: { ...stats },
             unlockedUpgradeSlots: 0,
             upgrades: [],
-            ...("effects" in TOWERS[towerId] ? { effects: TOWERS[towerId].effects } : {} ),
+            ...("effects" in TOWERS[towerId] ? { effects: TOWERS[towerId].effects as UnitEffects } : {}),
             upgradeCost: calcUpgradeCost(cost, 0),
             element,
             canRotate
         },
         "tower",
         towerId
-    ]) as TowerGameObj;
+    ]);
 
     const combat = makeUnitCombat(k, {
         owner: tower,
