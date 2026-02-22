@@ -7,18 +7,7 @@
     flex: 3 1 0;
 }
 
-.upgrade-contents {
-    display: flex;
-    flex-direction: column;
-    row-gap: 0.125em;
-}
-
 .selected {
     outline: 0.125em solid yellow;
     outline-offset: 1px;
-}
-
-.icon {
-    display: flex;
-    align-items: center;
 }

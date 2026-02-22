@@ -1,0 +1,10 @@
+.upgrade {
+    display: flex;
+    flex-direction: column;
+    row-gap: 0.125em;
+}
+
+.icon {
+    display: flex;
+    align-items: center;
+}

@@ -309,4 +309,10 @@ export type ProjectileBehavior = {
 export type Rewards = {
     skills: SkillId[];
     visible: boolean;
-}
+};
+
+export type StartingOptions = {
+    visible: boolean;
+    options: { ids: TowerId[]; upgrades: Upgrade[] }[];
+    addTowers: (ids: TowerId[]) => void;
+};

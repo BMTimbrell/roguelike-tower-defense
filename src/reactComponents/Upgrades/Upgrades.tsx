@@ -5,6 +5,7 @@ import { useAtom } from 'jotai';
 import { useState } from 'react';
 import UpgradePopup from "../UpgradePopup/UpgradePopup";
 import Card from "../Card/Card";
+import UpgradeCard from "../UpgradeCard/UpgradeCard";
 
 export default function Upgrades({ upgrades }: { upgrades: Upgrade[] }) {
     const [gameState, setGameState] = useAtom(gameStateAtom);
@@ -31,13 +32,7 @@ export default function Upgrades({ upgrades }: { upgrades: Upgrade[] }) {
                     classNames={[gameState.selectedUpgrade === upgrade ? styles.selected : '']}
                     handleClick={() => handleClick(upgrade)}
                 >
-                    <div className={styles["upgrade-contents"]}>
-                        <div className={styles.icon}>
-                            <img width={`${32 * scale}px`} src={upgrade.icon} />
-                            <div>+{upgrade.amount}{upgrade.percentage ? '%' : ''}</div>
-                        </div>
-                        <div>Cost: {upgrade.cost}</div>
-                    </div>
+                    <UpgradeCard upgrade={upgrade} scale={scale} />
                 </Card>
 
             ))}

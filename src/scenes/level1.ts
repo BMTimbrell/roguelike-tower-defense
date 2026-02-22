@@ -1,7 +1,7 @@
 import type { KAPLAYCtx, Vec2 } from "kaplay";
 import { addSelectTowerListener } from "../entities/Tower";
 import type { MapData, Scene } from "../types";
-import { mapAtom, store, gameStateAtom } from "../store";
+import { store, gameStateAtom } from "../store";
 import { TILE_SIZE, MAX_HAND_SIZE, ROUND_DRAW_NUM } from "../constants";
 import generateDeck from "../utils/generateDeck";
 import drawCards from "../utils/drawCards";
@@ -17,8 +17,7 @@ import updateSkills from "../utils/updateSkills";
 import addTowers from "../utils/addTowers";
 
 export default function level1(k: KAPLAYCtx) {
-    k.scene("level1" satisfies Scene, async () => {
-        const mapData: MapData = await (await fetch("data/level1.json")).json();
+    k.scene("level1" satisfies Scene, async (mapData: MapData) => {
 
         k.add([
             k.sprite("level1"),
@@ -103,14 +102,6 @@ export default function level1(k: KAPLAYCtx) {
             k.setCamPos(k.vec2(camX, camY));
         });
 
-        store.set(mapAtom, {
-            x: 0,
-            y: 0,
-            width: 0,
-            height: 0,
-            scale: k.getCamScale().x,
-        });
-
         k.onResize(() => {
             initCam(k);
             viewW = k.width() / zoom;
@@ -119,13 +110,6 @@ export default function level1(k: KAPLAYCtx) {
             minY = viewH / 2;
             maxX = mapWorldWidth - viewW / 2;
             maxY = mapWorldHeight - viewH / 2;
-            store.set(mapAtom, {
-                x: 0,
-                y: 0,
-                width: 0,
-                height: 0,
-                scale: k.getCamScale().x,
-            });
         });
 
         // Generate tile grid for placement logic

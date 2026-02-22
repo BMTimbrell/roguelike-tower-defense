@@ -2,6 +2,8 @@ import makeKaplayCtx from './kaplayCtx';
 import level1 from './scenes/level1';
 import loadAssets from './loadAssets';
 import levelTransition from './scenes/levelTransition';
+import type { Scene } from './types';
+import mainMenu from './scenes/MainMenu';
 
 export default function initGame() {
     // focus back on canvas when clicking on html elements
@@ -11,6 +13,8 @@ export default function initGame() {
 
     level1(k);
 
+    mainMenu(k);
+
     levelTransition(k);
 
     loadAssets(k);
@@ -19,5 +23,5 @@ export default function initGame() {
 
     k.setBackground(k.Color.fromHex("#131313"));
 
-    k.go("level1");
+    k.go("mainMenu" satisfies Scene);
 }
