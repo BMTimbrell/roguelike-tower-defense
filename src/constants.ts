@@ -228,7 +228,7 @@ export const TOWERS = {
         gunSprite: "basic tower",
         baseSprite: "basic tower base",
         sprite: "basic-tower-sprite.png",
-        description: "A cheap but basic tower",
+        description: "A weak but cheap tower",
         cost: 45,
         stats: {
             damage: 4,
@@ -403,6 +403,35 @@ export const TOWERS = {
         }],
         canRotate: false
     },
+    bomb: {
+        name: "Bomb Tower",
+        gunSprite: "bomb tower",
+        baseSprite: "bomb tower base",
+        sprite: "bomb-tower-sprite.png",
+        description: "Shoots bombs that explodes, dealing splash damage",
+        cost: 90,
+        stats: {
+            damage: 8,
+            range: 5,
+            fireInterval: 1.75,
+            critChance: 5,
+            critDamage: 100
+        },
+        element: "Fire",
+        gunOffset: { x: -1, y: 0 },
+        anchorOffset: { x: -2 / 32, y: 0 },
+        shootOffset: { x: -20, y: 0 },
+        projectile: "bomb",
+        canRotate: true,
+        effects: [{
+            firstEffect(ctx) {
+                ctx.projectiles.forEach(projectile => {
+                    projectile.behaviors ??= {};
+                    projectile.behaviors.animOnDestroy = "explode";
+                });
+            }
+        }]
+    },
 } as const satisfies Record<string, TowerDef>;
 
 export type TowerId = keyof typeof TOWERS;
@@ -460,10 +489,10 @@ export const ELEMENTS: Record<ElementName, ElementDef> = {
     },
 
     Fire: {
-        description: "Fire attacks have a 15% chance to burn enemies, dealing 1% max HP damage per second.",
+        description: "Fire attacks have a 20% chance to burn enemies, dealing 1% max HP damage per second.",
         applyEffect: (k, { target }) => {
             const duration = 5;
-            if (k.randi(100) < 15) {
+            if (k.randi(100) < 20) {
                 const burn = target.has("burn");
                 if (burn) {
                     target.refreshBurn();
@@ -596,6 +625,12 @@ export const PROJECTILES = {
         homing: true,
         speed: 200,
         splashRadius: 0
+    },
+    bomb: {
+        sprite: "bomb",
+        homing: true,
+        speed: 200,
+        splashRadius: 1.5
     }
 } as const satisfies Record<string, ProjectileDef>;
 

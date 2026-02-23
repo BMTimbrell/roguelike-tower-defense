@@ -1,4 +1,7 @@
 .upgrade-info {
     font-size: 0.75em;
+}
+
+*:has(> .upgrade-info) {
     pointer-events: none;
 }

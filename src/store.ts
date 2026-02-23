@@ -52,7 +52,7 @@ export const rewardsAtom = atom<Rewards>({
 export const startingOptionsAtom = atom<StartingOptions>({
     visible: false,
     options: [],
-    addTowers: () => {}
+    addLoadout: () => {}
 });
 
 export const store = createStore();

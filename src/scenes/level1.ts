@@ -146,8 +146,8 @@ export default function level1(k: KAPLAYCtx) {
         updateSkills(hero);
 
         // Deck and upgrades setup
-        const deck = generateDeck(k);
-        const upgrades = drawCards(k, deck, ROUND_DRAW_NUM);
+        // const deck = generateDeck(k);
+        const upgrades = drawCards(k, store.get(gameStateAtom).deck.cards, ROUND_DRAW_NUM);
         store.set(gameStateAtom, prev => ({
             ...prev,
             scene: "level1",
@@ -164,12 +164,11 @@ export default function level1(k: KAPLAYCtx) {
                     }))
                 }
             },
-            towerButtons: addTowers(k, ["crow", "ice", "lux"], tileGrid),
+            // towerButtons: addTowers(k, ["crow", "ice", "lux"], tileGrid),
             bottomBarVisible: true,
             upgrades,
             deck: {
                 ...prev.deck,
-                cards: deck,
                 drawCard: () => {
                     if (store.get(gameStateAtom).upgrades.length >= MAX_HAND_SIZE) {
                         makeFloatingText(k, {
@@ -180,7 +179,7 @@ export default function level1(k: KAPLAYCtx) {
                         });
                         return;
                     }
-                    const card = drawCards(k, deck, 1)[0];
+                    const card = drawCards(k, store.get(gameStateAtom).deck.cards, 1)[0];
                     store.set(gameStateAtom, prev => ({
                         ...prev,
                         gold: prev.gold - store.get(gameStateAtom).deck.drawCost,

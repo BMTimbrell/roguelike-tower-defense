@@ -28,23 +28,34 @@ export default function mainMenu(k: KAPLAYCtx) {
         k.onKeyDown("enter", () => {
             k.go("level1" satisfies Scene, mapData);
             store.set(startingOptionsAtom, prev => ({
-            ...prev,
-            visible: false
-        }));
+                ...prev,
+                visible: false
+            }));
         });
 
         const options: { ids: TowerId[]; upgrades: Upgrade[] }[] = [];
 
         for (let i = 0; i < 3; i++) options.push({ ids: generateTowerOptions(), upgrades: generateDeck(k) });
-        
+
         store.set(startingOptionsAtom, prev => ({
             ...prev,
             visible: true,
             options,
-            addTowers: (ids) => store.set(gameStateAtom, prev => ({
-                ...prev,
-                towerButtons: addTowers(k, ids, tileGrid)
-            }))
+            addLoadout: (ids, upgrades) => {
+                store.set(gameStateAtom, prev => ({
+                    ...prev,
+                    towerButtons: addTowers(k, ids, tileGrid),
+                    deck: {
+                        ...prev.deck,
+                        cards: upgrades
+                    }
+                }));
+                k.go("level1" satisfies Scene, mapData);
+                store.set(startingOptionsAtom, prev => ({
+                    ...prev,
+                    visible: false
+                }));
+            }
         }));
     });
 }

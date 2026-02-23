@@ -67,6 +67,15 @@ export default function loadAssets(k: KAPLAYCtx) {
             shoot: { from: 0, to: 1, loop: false }
         }
     });
+    k.loadSprite("bomb tower base", "/sprites/bomb-tower-base.png");
+    k.loadSprite("bomb tower", "/sprites/bomb-tower.png", {
+        sliceX: 6,
+        sliceY: 1,
+        anims: {
+            idle: 0,
+            shoot: { from: 1, to: 5, loop: false, speed: 20 }
+        }
+    });
     k.loadSprite("fog", "/sprites/fog5.png");
     k.loadSprite("basic projectile", "/sprites/basic-projectile.png");
     k.loadSprite("slimeball", "/sprites/slimeball.png");
@@ -81,6 +90,14 @@ export default function loadAssets(k: KAPLAYCtx) {
     });
     k.loadSprite("arrow", "/sprites/arrow.png");
     k.loadSprite("flaming arrow", "/sprites/flaming-arrow.png");
+    k.loadSprite("bomb", "/sprites/bomb.png", {
+        sliceX: 7,
+        sliceY: 1,
+        anims: {
+            idle: 0,
+            explode: { from: 1, to: 6, loop: false, speed: 20 }
+        }
+    });
     k.loadSprite("archer base", "/sprites/archer-base2.png");
     k.loadSprite("archer", "/sprites/archer2.png", {
         sliceX: 5,

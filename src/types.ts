@@ -303,7 +303,8 @@ export type ProjectileBehavior = {
         owner: TowerGameObj;
         state: "flying" | "attached" | "returning";
         origin: Vec2;
-    }
+    };
+    animOnDestroy?: string;
 };
 
 export type Rewards = {
@@ -314,5 +315,5 @@ export type Rewards = {
 export type StartingOptions = {
     visible: boolean;
     options: { ids: TowerId[]; upgrades: Upgrade[] }[];
-    addTowers: (ids: TowerId[]) => void;
+    addLoadout: (ids: TowerId[], upgrades: Upgrade[]) => void;
 };

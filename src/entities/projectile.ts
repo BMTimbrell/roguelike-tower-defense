@@ -53,6 +53,15 @@ export default function makeProjectile(k: KAPLAYCtx, opts: {
         if (behaviors?.persistent) {
             behaviors.persistent.owner.activeProjectile = null;
         }
+
+        if (behaviors?.animOnDestroy) {
+            const animSprite = k.add([
+                k.sprite(sprite, { anim: behaviors?.animOnDestroy }),
+                k.pos(projectile.pos),
+                k.anchor("center")
+            ]);
+            animSprite.onAnimEnd(() => k.destroy(animSprite));
+        }
     });
 
     projectile.onUpdate(() => {
@@ -147,8 +156,20 @@ export default function makeProjectile(k: KAPLAYCtx, opts: {
                     size: crit ? CRIT_DAMAGE_NUMBER_SIZE : DAMAGE_NUMBER_SIZE,
                     color: ELEMENTS[element].color
                 });
-
                 ELEMENTS[element].applyEffect?.(k, { target, damage });
+
+                if (splashRadius) {
+                    k.get("enemy").filter(e => e !== target && e.pos.dist(projectile.pos) < splashRadius * TILE_SIZE).forEach(e => {
+                        e.hurt(damage);
+                        makeFloatingText(k, {
+                            pos: e.pos,
+                            text: '' + damage,
+                            size: crit ? CRIT_DAMAGE_NUMBER_SIZE : DAMAGE_NUMBER_SIZE,
+                            color: ELEMENTS[element].color
+                        });
+                        ELEMENTS[element].applyEffect?.(k, { target: e, damage });
+                    });
+                }
 
                 if (attackTimer !== null && behaviors?.persistent?.owner) attackTimer += behaviors.persistent.owner.stats.fireInterval;
             }
@@ -176,7 +197,9 @@ export default function makeProjectile(k: KAPLAYCtx, opts: {
                 }
             }
 
-            if (!behaviors?.persistent) k.destroy(projectile);
+            if (!behaviors?.persistent) {
+                k.destroy(projectile);
+            }
         }
     });
 

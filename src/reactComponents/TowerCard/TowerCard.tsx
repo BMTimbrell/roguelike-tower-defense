@@ -5,15 +5,21 @@ import styles from './TowerCard.module.css';
 import TowerPopup from "../TowerPopup/TowerPopup";
 
 export default function TowerCard({ id, scale }: { id: TowerId; scale: number; }) {
-    const { element, name, description, stats, cost } = TOWERS[id];
+    const { element, name, description, stats, cost, sprite } = TOWERS[id];
     const popup = useTowerPopup(scale, !!ELEMENTS[element].description);
 
     return (
         <>
             <div
                 {...popup.getTriggerProps<HTMLDivElement>()}
+                className={styles.container}
             >
-                {name}
+                <div>
+                    {name}
+                </div>
+                <div>
+                    <img width={`${scale * 32}px`} src={`sprites/${sprite}`} />
+                </div>
             </div>
 
             {popup.showBase && (
