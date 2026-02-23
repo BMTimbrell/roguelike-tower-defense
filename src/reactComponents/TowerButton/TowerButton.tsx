@@ -39,7 +39,7 @@ export default function TowerButton(
             <button
                 {...popup.getTriggerProps<HTMLButtonElement>()}
                 style={{
-                    fontSize: `calc(16px * ${scale})`
+                    fontSize: `calc(12px * ${scale})`
                 }}
                 className={`${styles.button} ${disabled ? styles.disabled : ''}`}
                 onClick={disabled ? () => null : onClick}

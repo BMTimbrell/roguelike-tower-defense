@@ -1,26 +1,35 @@
 .container {
+    display: flex;
+    justify-content: center;
     position: absolute;
     background: transparent;
     user-select: none;
-    display: flex;
-    justify-content: space-between;
     padding: 0.5em;
     padding-right: 1em;
     pointer-events: none;
-    column-gap: 1em;
     width: 100%;
 }
 
-.tower-container {
-    width: 100%;
+.bottom-bar {
+    max-width: fit-content;
     flex: 1 1 0;
+    display: flex;
+    justify-content: space-between;
+    column-gap: 1em;
+    min-width: min(51.25em, 100%);
+}
+
+.tower-container, .rightcontainer {
+    flex: 0 0 auto;
+}
+
+.tower-container {
     align-self: flex-end;
     display: flex;
     column-gap: 0.25em;
 }
 
 .right-container {
-    flex: 1 1 0;
     align-self: flex-end;
     display: flex;
     column-gap: 1em;

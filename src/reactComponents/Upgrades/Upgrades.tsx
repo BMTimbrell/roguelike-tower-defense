@@ -28,13 +28,12 @@ export default function Upgrades({ upgrades }: { upgrades: Upgrade[] }) {
                     popup={<UpgradePopup upgrade={upgrade} pos={popupPos} />} 
                     setPopupPos={setPopupPos} 
                     scale={scale} 
-                    {... (upgrade?.animationDelay ? { animationDelay: upgrade.animationDelay } : {})}
+                    {...(upgrade?.animationDelay ? { animationDelay: upgrade.animationDelay } : {})}
                     classNames={[gameState.selectedUpgrade === upgrade ? styles.selected : '']}
                     handleClick={() => handleClick(upgrade)}
                 >
                     <UpgradeCard upgrade={upgrade} scale={scale} />
                 </Card>
-
             ))}
         </div>
     );

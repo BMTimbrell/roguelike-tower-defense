@@ -11,22 +11,24 @@ export default function StartingOptions() {
     const options = startingOptions.options;
 
     return (
-        <div style={{ fontSize: `${12 * scale}px`}} className={styles.options}>
-            {options.map((o, index) => (
-                <div className={styles.option} key={index}>
-                    <div className={styles.towers}>
-                        {o.ids.map((i, index) => (
-                            <TowerCard key={index} id={i} scale={scale} />
-                        ))}
-                    </div>
+        <>
+            <div style={{ fontSize: `${16 * scale}px` }} className={styles.options}>
+                {options.map((o, index) => (
+                    <div className={styles.option} key={index}>
+                        <div className={styles.towers}>
+                            {o.ids.map((i, index) => (
+                                <TowerCard key={index} id={i} scale={scale} />
+                            ))}
+                        </div>
 
-                    <div className={styles.upgrades}>
-                        {o.upgrades.map((u, index) => (
-                            <UpgradeCard key={index} upgrade={u} scale={scale / 2} />
-                        ))}
+                        <div className={styles.upgrades}>
+                            {o.upgrades.map((u, index) => (
+                                <UpgradeCard key={index} upgrade={u} scale={2} showPopup={true} />
+                            ))}
+                        </div>
                     </div>
-                </div>
-            ))}
-        </div>
+                ))}
+            </div>
+        </>
     );
 }

@@ -15,38 +15,39 @@ export function BottomBar() {
     return (
         <div
             style={{
-                left: `${map.x}px`,
                 bottom: `${map.y}px`,
                 fontSize: `calc(16px * ${map.scale})`
             }}
             className={styles.container}
         >
-            <div className={styles["tower-container"]}>
-                {gameState.heroButton.visible && <HeroButton
-                    onClick={() => { gameState.heroButton.onClick() }}
-                    sprite={`/sprites/${gameState?.hero?.heroId}-protrait.png`}
-                    charge={gameState.heroCharge.charge}
-                />}
-                {towerButtons.map((t, index) => (
-                    <TowerButton
-                        key={index}
-                        name={t.name}
-                        stats={t.stats}
-                        description={t.description}
-                        scale={map.scale}
-                        onClick={t.onClick}
-                        cost={t.cost}
-                        sprite={t.sprite}
-                        element={t.element}
-                    />
-                ))}
-            </div>
+            <div className={styles["bottom-bar"]}>
+                <div className={styles["tower-container"]}>
+                    {gameState.heroButton.visible && <HeroButton
+                        onClick={() => { gameState.heroButton.onClick() }}
+                        sprite={`/sprites/${gameState?.hero?.heroId}-protrait.png`}
+                        charge={gameState.heroCharge.charge}
+                    />}
+                    {towerButtons.map((t, index) => (
+                        <TowerButton
+                            key={index}
+                            name={t.name}
+                            stats={t.stats}
+                            description={t.description}
+                            scale={map.scale}
+                            onClick={t.onClick}
+                            cost={t.cost}
+                            sprite={t.sprite}
+                            element={t.element}
+                        />
+                    ))}
+                </div>
 
-            <Upgrades upgrades={upgrades} />
+                <Upgrades upgrades={upgrades} />
 
-            <div className={styles["right-container"]}>
-                <RerollCardsButton />
-                <Deck deck={gameState.deck} gold={gameState.gold} />
+                <div className={styles["right-container"]}>
+                    <RerollCardsButton />
+                    <Deck deck={gameState.deck} gold={gameState.gold} />
+                </div>
             </div>
         </div>
     );

@@ -88,28 +88,29 @@ export default function level1(k: KAPLAYCtx) {
 
         let viewW = k.width() / zoom;
         let viewH = k.height() / zoom;
+        const scrollHeight = mapWorldHeight + 2 * TILE_SIZE;
         let minX = viewW / 2;
         let minY = viewH / 2;
         let maxX = mapWorldWidth - viewW / 2;
-        let maxY = mapWorldHeight - viewH / 2;
+        let maxY = scrollHeight - viewH / 2;
 
         generateFog(k, mapWorldWidth, mapWorldHeight);
 
         k.onUpdate(() => {
             const p = k.getCamPos();
             const camX = viewW < mapWorldWidth ? k.clamp(p.x, minX, maxX) : mapWorldWidth / 2;
-            const camY = viewH < mapWorldHeight ? k.clamp(p.y, minY, maxY) : mapWorldHeight / 2;
+            const camY = viewH < scrollHeight ? k.clamp(p.y, minY, maxY) : scrollHeight / 2;
             k.setCamPos(k.vec2(camX, camY));
         });
 
         k.onResize(() => {
-            initCam(k);
+            zoom = initCam(k);
             viewW = k.width() / zoom;
             viewH = k.height() / zoom;
             minX = viewW / 2;
             minY = viewH / 2;
             maxX = mapWorldWidth - viewW / 2;
-            maxY = mapWorldHeight - viewH / 2;
+            maxY = scrollHeight - viewH / 2;
         });
 
         // Generate tile grid for placement logic
@@ -163,7 +164,7 @@ export default function level1(k: KAPLAYCtx) {
                     }))
                 }
             },
-            towerButtons: addTowers(k, ["crow", "ice", "lux", "lightning", "basic"], tileGrid),
+            towerButtons: addTowers(k, ["crow", "ice", "lux"], tileGrid),
             bottomBarVisible: true,
             upgrades,
             deck: {

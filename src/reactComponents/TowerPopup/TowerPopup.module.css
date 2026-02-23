@@ -4,6 +4,10 @@
     row-gap: 0.5em;
 }
 
+*:has(> .popup-contents) {
+    pointer-events: none;
+}
+
 .cost, .description {
     font-size: 0.75em;
 }
