@@ -1,11 +1,12 @@
 import type { GameObj, KAPLAYCtx, Vec2 } from "kaplay";
-import type { EnemyId, LevelId } from "../constants";
-import type { Wave } from "../types";
-import { LEVEL_WAVES, MAX_HAND_SIZE, ROUND_DRAW_NUM } from "../constants";
+import type { EnemyId, LevelId, TowerId } from "../constants";
+import type { TowerGameObj, Wave } from "../types";
+import { LEVEL_WAVES, MAX_HAND_SIZE, ROUND_DRAW_NUM, SEEDS } from "../constants";
 import makeEnemy from "./Enemy";
 import { store, gameStateAtom } from "../store";
 import screenPos from "../utils/screenPos";
 import drawCards from "../utils/drawCards";
+import makeTower from "./Tower";
 
 export default function makeWaveSpawner(k: KAPLAYCtx, levelId: LevelId, waypoints: Vec2[]): GameObj {
     const level = LEVEL_WAVES[levelId];
@@ -109,6 +110,27 @@ export default function makeWaveSpawner(k: KAPLAYCtx, levelId: LevelId, waypoint
 
                 nextWaveTimer = level.startDelay;
                 waitingForNextWave = true;
+                (k.get("tower") as TowerGameObj[]).forEach(e => {
+                    if (e.farmData?.turnsRemaining) {
+                        e.farmData.turnsRemaining--;
+
+                        if (e.farmData.turnsRemaining <= 0) {
+                            const plant = makeTower(k, {
+                                towerId: SEEDS[e.farmData.plantedSeed ?? "nightshade"].growsInto,
+                                pos: e.pos,
+                                tileGrid: e.tileGrid
+                            });
+
+                            k.destroy(e);
+                            plant.placed = true;
+                            plant.opacity = 1;
+                            plant.selected = false;
+                            plant.hovered = false;
+                        } else {
+                            e.gun.play(`grow${3 - e.farmData.turnsRemaining}`);
+                        }
+                    }
+                });
             }
 
             if (waitingForNextWave) {

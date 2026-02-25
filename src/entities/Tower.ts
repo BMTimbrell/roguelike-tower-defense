@@ -1,13 +1,12 @@
 import type { KAPLAYCtx, Vec2 } from 'kaplay';
 import { TILE_SIZE, type TowerId } from '../constants';
-import type { SelectedTowerUI, Upgrade, TargetPriority, TowerGameObj, UnitEffects } from '../types';
+import type { TargetPriority, TowerGameObj, UnitEffects, TowerDef, SeedId } from '../types';
 import { store, gameStateAtom } from '../store';
 import { calcUpgradeCost } from '../utils/calcUpgradeCost';
 import { TOWERS } from '../constants';
 import makePlaceableOnGrid from '../utils/makePlacementOnGrid';
 import makeUnitCombat from '../utils/makeUnitCombat';
-import calcFireInterval from '../utils/calcFireInterval';
-import calcSellPrice from '../utils/calcSellPrice';
+import setTowerUI from '../utils/setTowerUI';
 
 export default function makeTower(
     k: KAPLAYCtx,
@@ -56,8 +55,15 @@ export default function makeTower(
             hovered: true,
             stats: { ...stats },
             unlockedUpgradeSlots: 0,
+            tileGrid,
             upgrades: [],
             ...("effects" in TOWERS[towerId] ? { effects: TOWERS[towerId].effects as UnitEffects } : {}),
+            ...("farmData" in TOWERS[towerId] ? {
+                farmData: TOWERS[towerId].farmData as {
+                    plantedSeed: SeedId | null;
+                    turnsRemaining: 1 | 2 | 3 | null;
+                }
+            } : {}),
             upgradeCost: calcUpgradeCost(cost, 0),
             element,
             canRotate
@@ -77,6 +83,8 @@ export default function makeTower(
         anchorOffset: k.vec2(anchorOffset.x, anchorOffset.y)
     });
 
+    tower.gun ??= combat.gun;
+
     tower.onCollide("cursor", () => {
         tower.hovered = true;
     });
@@ -86,9 +94,11 @@ export default function makeTower(
     });
 
     tower.onDestroy(() => {
-        const gridX = Math.floor(tower.pos.x / TILE_SIZE);
-        const gridY = Math.floor(tower.pos.y / TILE_SIZE);
-        tileGrid[gridY][gridX] = false;
+        if (tower.placed) {
+            const gridX = Math.floor(tower.pos.x / TILE_SIZE);
+            const gridY = Math.floor(tower.pos.y / TILE_SIZE);
+            tileGrid[gridY][gridX] = false;
+        }
         combat.destroy();
     });
 
@@ -109,77 +119,7 @@ export default function makeTower(
 
     tower.onMouseDown("left", () => {
         if (tower.placed && tower.selected) {
-            store.set(gameStateAtom, prev => ({
-                ...prev,
-                selectedUI: {
-                    towerId: tower.instanceId,
-                    pos: tower.screenPos().scale(1 / k.getCamScale().x, 1 / k.getCamScale().y),
-                    priority: tower.priority,
-                    name: tower.name,
-                    stats: tower.stats,
-                    cost: tower.cost,
-                    unlockedUpgradeSlots: tower.unlockedUpgradeSlots,
-                    upgrades: tower.upgrades,
-                    upgradeCost: tower.upgradeCost,
-                    element: tower.element,
-                    addUpgradeSlot: () => {
-                        if (store.get(gameStateAtom).gold >= tower.upgradeCost) {
-                            tower.unlockedUpgradeSlots++;
-
-                            store.set(gameStateAtom, prev => ({
-                                ...prev,
-                                gold: prev.gold - tower.upgradeCost
-                            }));
-
-                            tower.upgradeCost = calcUpgradeCost(tower.cost, tower.unlockedUpgradeSlots);
-                            store.set(gameStateAtom, prev => ({
-                                ...prev,
-                                selectedUI: {
-                                    ...prev.selectedUI,
-                                    unlockedUpgradeSlots: tower.unlockedUpgradeSlots,
-                                    upgradeCost: tower.upgradeCost
-                                } as SelectedTowerUI
-                            }));
-                        }
-                    },
-                    setUpgrades: (upgrades: Upgrade[]) => {
-                        tower.upgrades = upgrades;
-                        tower.upgrades.forEach(upgrade => {
-                            if (upgrade.active && !upgrade.used) {
-                                if (upgrade.stat === "fireInterval") {
-                                    const fireInterval = tower.stats.fireInterval;
-                                    const newInterval = calcFireInterval(fireInterval, upgrade.amount);
-                                    tower.stats.fireInterval = newInterval;
-                                } else if (upgrade.stat === "critChance" || upgrade.stat === "critDamage" || !upgrade.percentage) {
-                                    tower.stats[upgrade.stat] += upgrade.amount;
-                                } else {
-                                    tower.stats[upgrade.stat] += Math.max(1, Math.round(tower.stats[upgrade.stat] * (upgrade.amount / 100)));
-                                }
-                                upgrade.used = true;
-                            }
-                        });
-                        return tower.stats;
-                    },
-                    setPriority: (priority: TargetPriority) => {
-                        tower.priority = priority;
-                        store.set(gameStateAtom, prev => ({
-                            ...prev,
-                            selectedUI: {
-                                ...prev.selectedUI,
-                                priority: tower.priority
-                            } as SelectedTowerUI
-                        }));
-                    },
-                    sellTower: () => {
-                        store.set(gameStateAtom, prev => ({
-                            ...prev,
-                            gold: prev.gold + calcSellPrice(tower.cost, tower.unlockedUpgradeSlots),
-                            selectedUI: null
-                        }));
-                        k.destroy(tower);
-                    }
-                } as SelectedTowerUI
-            }));
+            setTowerUI(k, (TOWERS[towerId] as TowerDef)?.farmData ? "farm" : "combat", tower);
         } else if (!k.get("tower").some(t => t.selected && t.placed)) {
             store.set(gameStateAtom, prev => ({
                 ...prev,

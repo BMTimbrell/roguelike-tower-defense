@@ -1,6 +1,7 @@
 import { type MouseEventHandler } from "react";
 import { TILE_SIZE, type EnemyId, type HeroId, type ProjectileId, type SkillId, type TowerId } from "./constants";
 import type { Vec2, GameObj, KAPLAYCtx, HealthComp, SpriteComp, StateComp, TimerComp, RotateComp, PosComp } from "kaplay";
+import { frostAoeBurst } from "./utils/makeUnitCombat";
 
 type LayerObj = {
     x: number;
@@ -38,6 +39,13 @@ export type ElementDef = {
     color: string;
 };
 
+export type SeedId = "chili" | "starfruit" | "nightshade";
+export type Seed = Record<SeedId, {
+    name: "Chili Pepper" | "Starfruit" | "Nightshade";
+    growsInto: SeedId;
+    turnsToGrow: 1 | 2 | 3;
+}>;
+
 export type StatusEffectResult = {
     icon: string;
     stacks?: number;
@@ -56,6 +64,8 @@ export type UnitEffects = {
     secondEffect?: (ctx: AttackContext) => void;
 }[];
 
+export type TowerSource = "reward" | "starting" | "farm";
+
 export type TowerDef = {
     name: string;
     cost: number;
@@ -71,6 +81,11 @@ export type TowerDef = {
     projectile: ProjectileId | null;
     effects?: UnitEffects;
     canRotate: boolean;
+    source: TowerSource;
+    farmData?: {
+        plantedSeed: SeedId | null;
+        turnsRemaining: 1 | 2 | 3 | null;
+    }
 };
 
 export type UnitInstance = {
@@ -93,6 +108,10 @@ export type TowerInstance = UnitInstance & {
     upgrades: Upgrade[];
     unlockedUpgradeSlots: number;
     upgradeCost: number;
+    farmData?: {
+        plantedSeed: SeedId | null;
+        turnsRemaining: 1 | 2 | 3 | null;
+    }
 };
 
 export type TowerGameObj = GameObj & TowerInstance;
@@ -111,7 +130,7 @@ export type HeroSkillDef = Omit<HeroSkillDefBase, "requires"> & {
     requires?: SkillId[];
 };
 
-export type HeroDef = Omit<TowerDef, 'cost'>;
+export type HeroDef = Omit<TowerDef, 'cost' | "farmData" | "source">;
 export type HeroInstance = UnitInstance & {
     heroId: HeroId;
     skillIds: SkillId[];
@@ -127,7 +146,8 @@ export type EnemyGameObj = GameObj<
     StateComp | 
     TimerComp | 
     RotateComp | 
-    PosComp> & {
+    PosComp
+> & {
     path: Vec2[];
     pathIndex: number;
     segmentStart: Vec2;
@@ -189,13 +209,22 @@ export type SelectedTowerUI = SelectedUnitUI & {
     sellTower: () => void;
 };
 
+export type SelectedFarmTowerUI = Pick<SelectedTowerUI, "towerId" | "cost" | "name" | "pos" | "sellTower" | "element"> & {
+    plantedSeed: SeedId | null;
+    turnsRemaining: 1 | 2 | 3 | null;
+    availableSeeds: ["nightshade", "chili", "starfruit"];
+    plantSeed: (id: SeedId) => void;
+};
+
 export type SelectedHeroUI = SelectedUnitUI & {
     heroId: string;
     level: number;
     skillIds: SkillId[];
     canReposition: boolean;
     reposition: () => void;
-}
+};
+
+export type SelectedUI = SelectedTowerUI | SelectedHeroUI | SelectedFarmTowerUI | null;
 
 export type Deck = {
     cards: Upgrade[];
@@ -208,7 +237,7 @@ export type Scene = "level1" | "levelTransition" | "mainMenu";
 export type GameState = {
     towerButtons: TowerButton[];
     nextTowerId: number;
-    selectedUI: SelectedTowerUI | SelectedHeroUI | null;
+    selectedUI: SelectedUI;
     gold: number;
     health: number;
     maxTowerUpgrades: number;
@@ -280,9 +309,10 @@ export type AttackContext = {
     }[];
 
     aoeAttack: boolean;
+    visualEffect: typeof frostAoeBurst | null;
     lightningAttack: boolean;
 
-    archer?: {
+    volley?: {
         volleyChance?: number;
     };
 };

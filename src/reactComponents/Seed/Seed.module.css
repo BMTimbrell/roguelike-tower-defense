@@ -1,0 +1,14 @@
+.seed {
+    font-size: 0.75em;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.25em;
+    padding: 0.25em;
+    border-radius: 0.25em;
+    border: 1px solid rgba(255, 255, 255, 0.6);
+}
+
+.seed > button {
+    width: 100%;
+}

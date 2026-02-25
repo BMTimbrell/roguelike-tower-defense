@@ -76,6 +76,43 @@ export default function loadAssets(k: KAPLAYCtx) {
             shoot: { from: 1, to: 5, loop: false, speed: 20 }
         }
     });
+    k.loadSprite("farm tower base", "/sprites/farm-tower-base.png");
+    k.loadSprite("farm tower", "/sprites/farm-tower.png", {
+        sliceX: 4,
+        sliceY: 1,
+        anims: {
+            idle: 0,
+            planted: 1,
+            grow1: 2,
+            grow2: 3
+        }
+    });
+    k.loadSprite("plant tower base", "/sprites/plant-tower-base.png");
+    k.loadSprite("chili tower", "/sprites/chili-pepper.png", {
+        sliceX: 8,
+        sliceY: 1,
+        anims: {
+            idle: 0,
+            shoot: { from: 1, to: 7, loop: false }
+        }
+    });
+    k.loadSprite("nightshade tower base", "/sprites/nightshade-base.png");
+    k.loadSprite("nightshade tower", "/sprites/nightshade.png", {
+        sliceX: 5,
+        sliceY: 1,
+        anims: {
+            idle: 0,
+            shoot: { from: 1, to: 4, loop: false }
+        }
+    });
+    k.loadSprite("starfruit tower", "/sprites/starfruit.png", {
+        sliceX: 7,
+        sliceY: 1,
+        anims: {
+            idle: 0,
+            shoot: { from: 1, to: 6, loop: false }
+        }
+    });
     k.loadSprite("fog", "/sprites/fog5.png");
     k.loadSprite("basic projectile", "/sprites/basic-projectile.png");
     k.loadSprite("slimeball", "/sprites/slimeball.png");
@@ -98,6 +135,8 @@ export default function loadAssets(k: KAPLAYCtx) {
             explode: { from: 1, to: 6, loop: false, speed: 20 }
         }
     });
+    k.loadSprite("shadow blob", "/sprites/shadow-blob.png");
+    k.loadSprite("star", "/sprites/star-projectile.png");
     k.loadSprite("archer base", "/sprites/archer-base2.png");
     k.loadSprite("archer", "/sprites/archer2.png", {
         sliceX: 5,
@@ -138,4 +177,5 @@ export default function loadAssets(k: KAPLAYCtx) {
     k.loadSprite("charge", "/sprites/charge-icon.png");
     k.loadSprite("curse", "/sprites/curse-icon.png");
     k.loadSprite("frost particle", "/sprites/frost-particle.png");
+    k.loadSprite("flame particle", "/sprites/flame-particle.png");
 }

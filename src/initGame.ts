@@ -3,7 +3,7 @@ import level1 from './scenes/level1';
 import loadAssets from './loadAssets';
 import levelTransition from './scenes/levelTransition';
 import type { Scene } from './types';
-import mainMenu from './scenes/MainMenu';
+import mainMenu from './scenes/mainMenu';
 
 export default function initGame() {
     // focus back on canvas when clicking on html elements

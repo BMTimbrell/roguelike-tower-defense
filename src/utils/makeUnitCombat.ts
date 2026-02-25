@@ -71,6 +71,7 @@ export default function makeUnitCombat(
             damage: opts.stats.damage,
             element: opts.element,
             aoeAttack: false,
+            visualEffect: null,
             lightningAttack: false,
             projectiles: opts.projectile ? [{
                 id: opts.projectile,
@@ -124,7 +125,7 @@ export default function makeUnitCombat(
 
         if (!ctx.projectiles) return;
 
-        if (ctx.archer?.volleyChance && Math.random() < ctx.archer.volleyChance) {
+        if (ctx.volley?.volleyChance && Math.random() < ctx.volley.volleyChance) {
             const base = ctx.projectiles[0];
 
             ctx.projectiles = [
@@ -216,8 +217,9 @@ export default function makeUnitCombat(
 
 function aoeAttack(k: KAPLAYCtx, ctx: AttackContext, opts: { isCrit: boolean; damage: number; }) {
     const { isCrit, damage } = opts;
+    const visualEffect = ctx.visualEffect;
 
-    frostAoeBurst(k, ctx.origin, ctx.attacker.stats.range * TILE_SIZE);
+    if (visualEffect) visualEffect(k, ctx.origin, ctx.attacker.stats.range * TILE_SIZE);
 
     (k.get("enemy") as EnemyGameObj[]).forEach(e => {
         if (e.pos.dist(ctx.origin) > ctx.attacker.stats.range * TILE_SIZE + TOWER_RANGE_TOLERANCE) return;
@@ -235,7 +237,7 @@ function aoeAttack(k: KAPLAYCtx, ctx: AttackContext, opts: { isCrit: boolean; da
     });
 }
 
-function frostAoeBurst(k: KAPLAYCtx, pos: Vec2, radius: number) {
+export function frostAoeBurst(k: KAPLAYCtx, pos: Vec2, radius: number) {
     const baseCount = 8;
     const count = Math.min(
         baseCount + Math.floor(radius * 0.4),
@@ -272,6 +274,49 @@ function frostAoeBurst(k: KAPLAYCtx, pos: Vec2, radius: number) {
                     frost.scale = k.vec2(startScale * (1 - t));
 
                     frost.pos.y -= 6 * k.dt();
+                },
+            },
+        ]);
+    }
+}
+
+export function flameAoeBurst(k: KAPLAYCtx, pos: Vec2, radius: number) {
+    const baseCount = 8;
+    const count = Math.min(
+        baseCount + Math.floor(radius * 0.4),
+        100
+    );
+
+    for (let i = 0; i < count; i++) {
+        const angle = k.rand(0, Math.PI * 2);
+        const dist = k.rand(TILE_SIZE, radius);
+
+        const offset = k.vec2(
+            Math.cos(angle),
+            Math.sin(angle)
+        ).scale(dist);
+
+        const life = k.rand(0.25, 0.45);
+        const startScale = k.rand(1, 2);
+
+        const flame = k.add([
+            k.pos(pos.add(offset)),
+            k.sprite("flame particle"),
+            k.opacity(0.8),
+            k.scale(startScale),
+            k.lifespan(life),
+            {
+                time: 0,
+
+                update() {
+                    flame.time += k.dt();
+                    const t = flame.time / life;
+
+                    flame.opacity = 0.8 * (1 - t);
+
+                    flame.scale = k.vec2(startScale * (1 - t));
+
+                    flame.pos.y -= 6 * k.dt();
                 },
             },
         ]);

@@ -1,10 +1,11 @@
-import type { Upgrade, LevelWaves, EnemyConfig, TowerDef, ElementDef, ElementName, ProjectileDef, HeroDef, HeroSkillDef, HeroSkillDefBase, TowerGameObj } from "./types";
+import type { Upgrade, LevelWaves, EnemyConfig, TowerDef, ElementDef, ElementName, ProjectileDef, HeroDef, HeroSkillDefBase, TowerGameObj, Seed } from "./types";
 import burnEffect from "./kaplayComponents/burnEffect";
 import calcFireInterval from "./utils/calcFireInterval";
 import poisonEffect from "./kaplayComponents/poisonEffect";
 import chillEffect from "./kaplayComponents/chillEffect";
 import chargeEffect from "./kaplayComponents/chargeEffect";
 import curseEffect from "./kaplayComponents/curseEffect";
+import { flameAoeBurst, frostAoeBurst } from "./utils/makeUnitCombat";
 
 export const VIRTUAL_WIDTH = 800;
 export const VIRTUAL_HEIGHT = 600;
@@ -188,6 +189,13 @@ export const LEVEL_WAVES = {
                     { id: "slime", count: 5, interval: 0.75 }
                 ],
                 reward: 80
+            },
+            {
+                spawns: [
+                    { id: "skeleton", count: 5, interval: 1 },
+                    { id: "slime", count: 5, interval: 0.75 }
+                ],
+                reward: 80
             }
         ],
     },
@@ -242,7 +250,8 @@ export const TOWERS = {
         anchorOffset: { x: 4 / 32, y: 0 },
         shootOffset: { x: -20, y: 0 },
         projectile: "basic",
-        canRotate: true
+        canRotate: true,
+        source: "starting"
     },
     fire: {
         name: "Fire Tower",
@@ -263,7 +272,8 @@ export const TOWERS = {
         anchorOffset: { x: 6 / 32, y: 0 },
         shootOffset: { x: -25, y: 0 },
         projectile: "fireball",
-        canRotate: true
+        canRotate: true,
+        source: "starting"
     },
     slime: {
         name: "Slime Tower",
@@ -295,7 +305,8 @@ export const TOWERS = {
                 });
             }
         }],
-        canRotate: true
+        canRotate: true,
+        source: "starting"
     },
     ice: {
         name: "Ice Tower",
@@ -319,9 +330,11 @@ export const TOWERS = {
         effects: [{
             firstEffect(ctx) {
                 ctx.aoeAttack = true;
+                ctx.visualEffect = frostAoeBurst;
             }
         }],
-        canRotate: false
+        canRotate: false,
+        source: "starting"
     },
     lightning: {
         name: "Lightning Tower",
@@ -347,7 +360,8 @@ export const TOWERS = {
                 ctx.lightningAttack = true;
             }
         }],
-        canRotate: false
+        canRotate: false,
+        source: "starting"
     },
     lux: {
         name: "Lux Tower",
@@ -357,9 +371,9 @@ export const TOWERS = {
         description: "Fires small orbs of light in quick succession",
         cost: 70,
         stats: {
-            damage: 2,
+            damage: 3,
             range: 3,
-            fireInterval: 0.25,
+            fireInterval: 0.375,
             critChance: 5,
             critDamage: 100
         },
@@ -368,7 +382,8 @@ export const TOWERS = {
         anchorOffset: { x: -1 / 32, y: -1 / 32 },
         shootOffset: { x: -20, y: 0 },
         projectile: "lightOrb",
-        canRotate: true
+        canRotate: true,
+        source: "starting"
     },
     crow: {
         name: "Crow Tower",
@@ -401,7 +416,8 @@ export const TOWERS = {
                 });
             }
         }],
-        canRotate: false
+        canRotate: false,
+        source: "starting"
     },
     bomb: {
         name: "Bomb Tower",
@@ -430,7 +446,127 @@ export const TOWERS = {
                     projectile.behaviors.animOnDestroy = "explode";
                 });
             }
-        }]
+        }],
+        source: "starting"
+    },
+    farm: {
+        name: "Farm Tower",
+        gunSprite: "farm tower",
+        baseSprite: "farm tower base",
+        sprite: "farm-tower-sprite.png",
+        description: "You reap what you sow!",
+        cost: 60,
+        stats: {
+            damage: 0,
+            range: 0,
+            fireInterval: 0,
+            critChance: 0,
+            critDamage: 0
+        },
+        element: "Normal",
+        gunOffset: { x: 0, y: 0 },
+        anchorOffset: { x: 0, y: 0 },
+        shootOffset: { x: 0, y: 0 },
+        projectile: null,
+        canRotate: false,
+        effects: [],
+        farmData: {
+            plantedSeed: null,
+            turnsRemaining: null
+        },
+        source: "starting"
+    },
+    nightshade: {
+        name: "Nightshade Tower",
+        gunSprite: "nightshade tower",
+        baseSprite: "nightshade tower base",
+        sprite: "basic-tower-sprite.png",
+        description: "Shoots shadowy blobs that absorb life, dealing bonus damage based on the enemy's missing health",
+        cost: 60,
+        stats: {
+            damage: 4,
+            range: 4,
+            fireInterval: 0.75,
+            critChance: 5,
+            critDamage: 100
+        },
+        element: "Dark",
+        gunOffset: { x: 0, y: 0 },
+        anchorOffset: { x: 0, y: 0 },
+        shootOffset: { x: 0, y: 0 },
+        projectile: "shadowBlob",
+        canRotate: true,
+        effects: [{
+            secondEffect(ctx) {
+                ctx.projectiles.forEach(projectile => {
+                    const maxHp = ctx.target?.maxHP() ?? 1;
+                    const hp = ctx.target?.hp() ?? 0;
+                    const missingHealthPercent = 1 - hp / maxHp;
+                    console.log(missingHealthPercent);
+
+                    projectile.bonusDamage = ctx.damage * missingHealthPercent;
+                });
+            }
+        }],
+        source: "farm"
+    },
+    chili: {
+        name: "Chili Pepper Tower",
+        gunSprite: "chili tower",
+        baseSprite: "plant tower base",
+        sprite: "basic-tower-sprite.png",
+        description: "Deals fire damage to all enemies in range",
+        cost: 60,
+        stats: {
+            damage: 6,
+            range: 2.5,
+            fireInterval: 1.5,
+            critChance: 5,
+            critDamage: 100
+        },
+        element: "Fire",
+        gunOffset: { x: 0, y: 0 },
+        anchorOffset: { x: 0, y: 0 },
+        shootOffset: { x: 0, y: 0 },
+        projectile: null,
+        canRotate: false,
+        effects: [{
+            firstEffect(ctx) {
+                ctx.aoeAttack = true;
+                ctx.visualEffect = flameAoeBurst;
+            }
+        }],
+        source: "farm"
+    },
+    starfruit: {
+        name: "Starfruit Tower",
+        gunSprite: "starfruit tower",
+        baseSprite: "plant tower base",
+        sprite: "basic-tower-sprite.png",
+        description: "Shoots a volley of 3 stars",
+        cost: 60,
+        stats: {
+            damage: 5,
+            range: 4,
+            fireInterval: 1,
+            critChance: 5,
+            critDamage: 100
+        },
+        element: "Light",
+        gunOffset: { x: 0, y: 0 },
+        anchorOffset: { x: 0, y: 0 },
+        shootOffset: { x: 0, y: 0 },
+        projectile: "star",
+        canRotate: false,
+        effects: [{
+            firstEffect(ctx) {
+                if (ctx.projectiles.length === 0) return;
+
+                ctx.volley ??= {};
+                ctx.volley.volleyChance ??= 100;
+            }
+        }],
+        source: "farm"
     },
 } as const satisfies Record<string, TowerDef>;
 
@@ -569,7 +705,7 @@ export const ELEMENTS: Record<ElementName, ElementDef> = {
     },
 
     Poison: {
-        description: "Poison attacks add poison stacks (up to 5) to enemies dealing damage equal to number of stacks every 5 seconds. Poison keeps ticking until the enemy dies or is healed.",
+        description: "Poison attacks add poison stacks (up to 5) to enemies dealing damage equal to number of stacks every 5 seconds. Poison keeps ticking until the enemy dies or is healed",
         applyEffect: (k, { target }) => {
             const poison = target.has("poison");
             if (poison) {
@@ -631,6 +767,18 @@ export const PROJECTILES = {
         homing: true,
         speed: 200,
         splashRadius: 1.5
+    },
+    shadowBlob: {
+        sprite: "shadow blob",
+        homing: true,
+        speed: 200,
+        splashRadius: 0
+    },
+    star: {
+        sprite: "star",
+        homing: true,
+        speed: 200,
+        splashRadius: 0
     }
 } as const satisfies Record<string, ProjectileDef>;
 
@@ -699,9 +847,9 @@ export const SKILLS = [
                 firstEffect(ctx) {
                     if (ctx.projectiles.length === 0) return;
 
-                    ctx.archer ??= {};
-                    ctx.archer.volleyChance ??= 0;
-                    ctx.archer.volleyChance += 0.25;
+                    ctx.volley ??= {};
+                    ctx.volley.volleyChance ??= 0;
+                    ctx.volley.volleyChance += 0.25;
                 }
             });
         },
@@ -784,9 +932,9 @@ export const SKILLS = [
                 firstEffect(ctx) {
                     if (ctx.projectiles.length === 0) return;
 
-                    ctx.archer ??= {};
-                    ctx.archer.volleyChance ??= 0;
-                    ctx.archer.volleyChance += 0.25;
+                    ctx.volley ??= {};
+                    ctx.volley.volleyChance ??= 0;
+                    ctx.volley.volleyChance += 0.25;
                 }
             });
         },
@@ -813,3 +961,21 @@ export const SKILLS = [
 ] as const satisfies HeroSkillDefBase[];
 
 export type SkillId = typeof SKILLS[number]["id"];
+
+export const SEEDS: Seed = {
+    chili: {
+        name: "Chili Pepper",
+        growsInto: "chili",
+        turnsToGrow: 2
+    },
+    starfruit: {
+        name: "Starfruit",
+        growsInto: "starfruit",
+        turnsToGrow: 3
+    },
+    nightshade: {
+        name: "Nightshade",
+        growsInto: "nightshade",
+        turnsToGrow: 1
+    }
+};

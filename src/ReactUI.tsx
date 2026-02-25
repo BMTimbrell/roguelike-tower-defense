@@ -6,19 +6,33 @@ import SelectedHero from './reactComponents/SelectedHero/SelectedHero';
 import Rewards from './reactComponents/Rewards/Rewards';
 import type { Scene } from './types';
 import StartingOptions from './reactComponents/StartingOptions/StartingOptions';
+import type { JSX } from 'react';
+import SelectedFarm from './reactComponents/SelectedFarm/SelectedFarm';
 
 export default function ReactUI() {
     const [gameState] = useAtom(gameStateAtom);
     const [startingOptions] = useAtom(startingOptionsAtom);
     const [rewards] = useAtom(rewardsAtom);
     const selectedUI = gameState.selectedUI;
-    const selectedTower =
-        selectedUI && "towerId" in selectedUI
-            ? selectedUI
-            : null;
-    const selectedHeroUI = selectedUI && "heroId" in selectedUI
-        ? selectedUI
-        : null;
+    let selectedTower: null | JSX.Element = null;
+
+    if (selectedUI) {
+        selectedTower = "plantedSeed" in selectedUI
+            ? <SelectedFarm
+                    key={selectedUI.towerId}
+                    farm={selectedUI}
+                />
+            : "towerId" in selectedUI
+                ? <SelectedTower
+                    key={selectedUI.towerId}
+                    tower={selectedUI}
+                />
+            : <SelectedHero
+                    key={selectedUI.heroId}
+                    hero={selectedUI}
+                />;
+    }
+
     const nonLevelScenes: Scene[] = ["mainMenu", "levelTransition"];
 
     return (
@@ -27,19 +41,7 @@ export default function ReactUI() {
 
             {startingOptions.visible && <StartingOptions />}
 
-            {selectedTower &&
-                <SelectedTower
-                    key={selectedTower.towerId}
-                    tower={selectedTower}
-                />
-            }
-
-            {selectedHeroUI &&
-                <SelectedHero
-                    key={selectedHeroUI.heroId}
-                    hero={selectedHeroUI}
-                />
-            }
+            {selectedTower}
 
             {rewards.visible && <Rewards />}
         </>

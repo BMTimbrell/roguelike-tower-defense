@@ -1,0 +1,9 @@
+.seeds {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25em;
+    margin-bottom: 0.25em;
+}
+.growing-info {
+    font-size: 0.75em;
+}
