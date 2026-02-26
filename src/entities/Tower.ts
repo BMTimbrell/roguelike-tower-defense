@@ -62,7 +62,13 @@ export default function makeTower(
                 farmData: TOWERS[towerId].farmData as {
                     plantedSeed: SeedId | null;
                     turnsRemaining: 1 | 2 | 3 | null;
-                }
+                },
+            } : {}),
+            ...("timeData" in TOWERS[towerId] ? {
+                timeData: {
+                    ...TOWERS[towerId].timeData as { maxMultiplier: number; growthPerSecond: number; },
+                    intervalMultiplier: 1
+                },
             } : {}),
             upgradeCost: calcUpgradeCost(cost, 0),
             element,
@@ -129,9 +135,18 @@ export default function makeTower(
     });
 
     tower.onUpdate(() => {
-        if (tower.placed) {
-            combat.update();
+        if (!tower.placed) return;
+
+        if (tower.timeData) {
+            const td = tower.timeData;
+
+            td.intervalMultiplier = Math.min(
+                td.maxMultiplier,
+                td.intervalMultiplier * Math.pow(td.growthPerSecond, k.dt())
+            );
         }
+
+        combat.update();
     });
 
     return tower;

@@ -1,6 +1,6 @@
 import type { KAPLAYCtx, Vec2 } from "kaplay";
 import type { AttackContext, ElementName, EnemyGameObj, HeroGameObj, TowerGameObj } from "../types";
-import { CRIT_DAMAGE_NUMBER_SIZE, CURSE_CRIT, DAMAGE_NUMBER_SIZE, ELEMENTS, TILE_SIZE, TOWER_RANGE_TOLERANCE, type ProjectileId } from "../constants";
+import { CRIT_DAMAGE_NUMBER_SIZE, CURSE_CRIT, DAMAGE_NUMBER_SIZE, ELEMENTS, TILE_SIZE, TIME_TOWER_BASE_ANIM_SPEED, TOWER_RANGE_TOLERANCE, type ProjectileId } from "../constants";
 import makeProjectile from "../entities/Projectile";
 import { rotateVector, selectTarget, shortestAngleDiff } from "./targetingHelpers";
 import makeFloatingText from "../entities/FloatingText";
@@ -175,6 +175,18 @@ export default function makeUnitCombat(
     }
 
     function update() {
+        const interval =
+            opts.owner.stats.fireInterval *
+            (opts.owner.timeData?.intervalMultiplier ?? 1);
+
+        const anim = gun.getCurAnim();
+
+        if (opts.owner.timeData && anim) {
+            anim.speed =
+                TIME_TOWER_BASE_ANIM_SPEED /
+                (opts.owner.timeData.intervalMultiplier ?? 1);
+        }
+
         if (shootTimer > 0) {
             shootTimer -= k.dt();
         }
@@ -194,12 +206,12 @@ export default function makeUnitCombat(
         } else gun.angle = 0;
 
         while (shootTimer <= 0 && target && !opts.owner.activeProjectile) {
-            shootTimer += opts.stats.fireInterval;
+            shootTimer += interval;
 
             if (opts.owner.canRotate) gun.angle = gun.pos.angle(target.pos);
 
             shoot(target);
-            gun.play("shoot");
+            if (gun.getAnim("shoot")) gun.play("shoot");
         }
     }
 

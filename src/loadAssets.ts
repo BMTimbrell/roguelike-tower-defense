@@ -1,4 +1,5 @@
 import type { KAPLAYCtx } from "kaplay";
+import { TIME_TOWER_BASE_ANIM_SPEED } from "./constants";
 
 export default function loadAssets(k: KAPLAYCtx) {
     k.loadSprite("level1", "/sprites/level1.png");
@@ -111,6 +112,14 @@ export default function loadAssets(k: KAPLAYCtx) {
         anims: {
             idle: 0,
             shoot: { from: 1, to: 6, loop: false }
+        }
+    });
+    k.loadSprite("time tower base", "/sprites/time-tower-base.png");
+    k.loadSprite("time tower", "/sprites/time-tower.png", {
+        sliceX: 64,
+        sliceY: 1,
+        anims: {
+            idle: { from: 0, to: 63, loop: true, speed: TIME_TOWER_BASE_ANIM_SPEED }
         }
     });
     k.loadSprite("fog", "/sprites/fog5.png");

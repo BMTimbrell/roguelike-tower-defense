@@ -85,7 +85,11 @@ export type TowerDef = {
     farmData?: {
         plantedSeed: SeedId | null;
         turnsRemaining: 1 | 2 | 3 | null;
-    }
+    };
+    timeData?: {
+        maxMultiplier: number;
+        growthPerSecond: number;
+    };
 };
 
 export type UnitInstance = {
@@ -111,7 +115,12 @@ export type TowerInstance = UnitInstance & {
     farmData?: {
         plantedSeed: SeedId | null;
         turnsRemaining: 1 | 2 | 3 | null;
-    }
+    };
+    timeData?: {
+        maxMultiplier: number;
+        growthPerSecond: number;
+        intervalMultiplier: number;
+    };
 };
 
 export type TowerGameObj = GameObj & TowerInstance;

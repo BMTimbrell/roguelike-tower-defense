@@ -15,7 +15,10 @@ export default function setTowerUI(k: KAPLAYCtx, type: "combat" | "farm", tower:
                 pos: tower.screenPos().scale(1 / k.getCamScale().x, 1 / k.getCamScale().y),
                 priority: tower.priority,
                 name: tower.name,
-                stats: tower.stats,
+                stats: { 
+                    ...tower.stats,
+                    ...(tower.timeData ? { fireInterval: tower.stats.fireInterval * tower.timeData.intervalMultiplier } : {})
+                },
                 cost: tower.cost,
                 unlockedUpgradeSlots: tower.unlockedUpgradeSlots,
                 upgrades: tower.upgrades,

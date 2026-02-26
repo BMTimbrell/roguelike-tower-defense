@@ -48,6 +48,10 @@ export default function makeWaveSpawner(k: KAPLAYCtx, levelId: LevelId, waypoint
                 spawnQueue = buildQueue(wave);
                 timer = 0;
                 spawning = true;
+
+                (k.get("tower") as TowerGameObj[]).forEach(t => {
+                    if (t.timeData) t.timeData.intervalMultiplier = 1;
+                });
             }
         }
     ]);

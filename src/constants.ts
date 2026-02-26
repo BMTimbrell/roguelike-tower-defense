@@ -28,6 +28,7 @@ export const MAX_CHARGE_STACKS = 3;
 export const STUN_PERCENTAGES = [10, 20, 40];
 export const STUN_DURATION = 0.5;
 export const CURSE_CRIT = 10;
+export const TIME_TOWER_BASE_ANIM_SPEED = 30;
 export const UPGRADES: Upgrade[] = [{
     stat: "damage",
     name: "Damage",
@@ -567,6 +568,37 @@ export const TOWERS = {
             }
         }],
         source: "farm"
+    },
+    time: {
+        name: "Time Tower",
+        gunSprite: "time tower",
+        baseSprite: "time tower base",
+        sprite: "time-tower-sprite.png",
+        description: "Fire rate decreases with time",
+        cost: 60,
+        stats: {
+            damage: 4,
+            range: 3,
+            fireInterval: 0.15,
+            critChance: 5,
+            critDamage: 100
+        },
+        element: "Normal",
+        gunOffset: { x: 2, y: 0 },
+        anchorOffset: { x: 4 / 32, y: 0 },
+        shootOffset: { x: -20, y: 0 },
+        projectile: "basic",
+        canRotate: true,
+        timeData: {
+            maxMultiplier: 10,
+            growthPerSecond: 1.1
+        },
+        effects: [{
+            firstEffect(ctx) {
+                
+            }
+        }],
+        source: "starting"
     },
 } as const satisfies Record<string, TowerDef>;
 
