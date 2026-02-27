@@ -1,9 +1,9 @@
 import type { KAPLAYCtx, Vec2, GameObj } from 'kaplay';
-import makeFloatingText from './FloatingText';
-import { CRIT_DAMAGE_NUMBER_SIZE, CURSE_CRIT, DAMAGE_NUMBER_SIZE, ELEMENTS, PROJECTILES, TILE_SIZE, type ProjectileId } from '../constants';
+import { CURSE_CRIT, PROJECTILES, TILE_SIZE, type ProjectileId } from '../constants';
 import type { ElementName, EnemyGameObj, ProjectileBehavior, ProjectileDef } from '../types';
 import { findNewTarget, isValidTarget, selectBounceTarget, selectTarget, shortestAngleDiff } from '../utils/targetingHelpers';
 import calcDamage from '../utils/calcDamage';
+import hurtEnemy from '../utils/hurtEnemy';
 
 export default function makeProjectile(k: KAPLAYCtx, opts: {
     id: ProjectileId;
@@ -149,25 +149,21 @@ export default function makeProjectile(k: KAPLAYCtx, opts: {
                     damage = newDamage;
                 }
 
-                target.hurt(damage);
-                makeFloatingText(k, {
-                    pos: projectile.pos,
-                    text: '' + damage,
-                    size: crit ? CRIT_DAMAGE_NUMBER_SIZE : DAMAGE_NUMBER_SIZE,
-                    color: ELEMENTS[element].color
+                hurtEnemy(k, {
+                    target,
+                    damage,
+                    isCrit: crit ?? false,
+                    element
                 });
-                ELEMENTS[element].applyEffect?.(k, { target, damage });
 
                 if (splashRadius) {
-                    k.get("enemy").filter(e => e !== target && e.pos.dist(projectile.pos) < splashRadius * TILE_SIZE).forEach(e => {
-                        e.hurt(damage);
-                        makeFloatingText(k, {
-                            pos: e.pos,
-                            text: '' + damage,
-                            size: crit ? CRIT_DAMAGE_NUMBER_SIZE : DAMAGE_NUMBER_SIZE,
-                            color: ELEMENTS[element].color
+                    (k.get("enemy") as EnemyGameObj[]).filter(e => e !== target && e.pos.dist(projectile.pos) < splashRadius * TILE_SIZE).forEach(e => {
+                        hurtEnemy(k, {
+                            target: e,
+                            damage,
+                            isCrit: crit ?? false,
+                            element
                         });
-                        ELEMENTS[element].applyEffect?.(k, { target: e, damage });
                     });
                 }
 

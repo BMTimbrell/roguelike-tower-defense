@@ -252,7 +252,8 @@ export const TOWERS = {
         shootOffset: { x: -20, y: 0 },
         projectile: "basic",
         canRotate: true,
-        source: "starting"
+        source: "starting",
+        targetType: "enemy"
     },
     fire: {
         name: "Fire Tower",
@@ -274,7 +275,8 @@ export const TOWERS = {
         shootOffset: { x: -25, y: 0 },
         projectile: "fireball",
         canRotate: true,
-        source: "starting"
+        source: "starting",
+        targetType: "enemy"
     },
     slime: {
         name: "Slime Tower",
@@ -307,7 +309,8 @@ export const TOWERS = {
             }
         }],
         canRotate: true,
-        source: "starting"
+        source: "starting",
+        targetType: "enemy"
     },
     ice: {
         name: "Ice Tower",
@@ -335,7 +338,8 @@ export const TOWERS = {
             }
         }],
         canRotate: false,
-        source: "starting"
+        source: "starting",
+        targetType: "enemy"
     },
     lightning: {
         name: "Lightning Tower",
@@ -362,7 +366,8 @@ export const TOWERS = {
             }
         }],
         canRotate: false,
-        source: "starting"
+        source: "starting",
+        targetType: "enemy"
     },
     lux: {
         name: "Lux Tower",
@@ -384,7 +389,8 @@ export const TOWERS = {
         shootOffset: { x: -20, y: 0 },
         projectile: "lightOrb",
         canRotate: true,
-        source: "starting"
+        source: "starting",
+        targetType: "enemy"
     },
     crow: {
         name: "Crow Tower",
@@ -418,7 +424,8 @@ export const TOWERS = {
             }
         }],
         canRotate: false,
-        source: "starting"
+        source: "starting",
+        targetType: "enemy"
     },
     bomb: {
         name: "Bomb Tower",
@@ -448,7 +455,8 @@ export const TOWERS = {
                 });
             }
         }],
-        source: "starting"
+        source: "starting",
+        targetType: "enemy"
     },
     farm: {
         name: "Farm Tower",
@@ -458,11 +466,11 @@ export const TOWERS = {
         description: "You reap what you sow!",
         cost: 60,
         stats: {
-            damage: 0,
+            damage: 999,
             range: 0,
             fireInterval: 0,
-            critChance: 0,
-            critDamage: 0
+            critChance: 100,
+            critDamage: 500
         },
         element: "Normal",
         gunOffset: { x: 0, y: 0 },
@@ -475,7 +483,8 @@ export const TOWERS = {
             plantedSeed: null,
             turnsRemaining: null
         },
-        source: "starting"
+        source: "starting",
+        targetType: "enemy"
     },
     nightshade: {
         name: "Nightshade Tower",
@@ -509,7 +518,8 @@ export const TOWERS = {
                 });
             }
         }],
-        source: "farm"
+        source: "farm",
+        targetType: "enemy"
     },
     chili: {
         name: "Chili Pepper Tower",
@@ -537,7 +547,8 @@ export const TOWERS = {
                 ctx.visualEffect = flameAoeBurst;
             }
         }],
-        source: "farm"
+        source: "farm",
+        targetType: "enemy"
     },
     starfruit: {
         name: "Starfruit Tower",
@@ -567,7 +578,8 @@ export const TOWERS = {
                 ctx.volley.volleyChance ??= 100;
             }
         }],
-        source: "farm"
+        source: "farm",
+        targetType: "enemy"
     },
     time: {
         name: "Time Tower",
@@ -593,13 +605,33 @@ export const TOWERS = {
             maxMultiplier: 10,
             growthPerSecond: 1.1
         },
-        effects: [{
-            firstEffect(ctx) {
-                
-            }
-        }],
-        source: "starting"
+        source: "starting",
+        targetType: "enemy"
     },
+    toilet: {
+        name: "Toilet Tower",
+        gunSprite: "toilet tower",
+        baseSprite: "toilet tower base",
+        sprite: "toilet-tower-sprite.png",
+        description: "Spits poop on the path",
+        cost: 50,
+        stats: {
+            damage: 5,
+            range: 3,
+            fireInterval: 2,
+            critChance: 5,
+            critDamage: 100
+        },
+        element: "Poison",
+        gunOffset: { x: 0, y: 0 },
+        anchorOffset: { x: 0, y: 0 },
+        shootOffset: { x: -20, y: 0 },
+        projectile: null,
+        canRotate: false,
+        source: "starting",
+        targetType: "point",
+        pathEntityLimit: 15
+    }
 } as const satisfies Record<string, TowerDef>;
 
 export type TowerId = keyof typeof TOWERS;
@@ -623,7 +655,8 @@ export const HEROES = {
         anchorOffset: { x: 9 / 32, y: 9 / 32 },
         shootOffset: { x: 0, y: -5 },
         projectile: "arrow",
-        canRotate: true
+        canRotate: true,
+        targetType: "enemy"
     },
     wizard: {
         name: "Wizard",
@@ -643,7 +676,8 @@ export const HEROES = {
         anchorOffset: { x: 0, y: 0 },
         shootOffset: { x: 0, y: 0 },
         projectile: "arrow",
-        canRotate: true
+        canRotate: true,
+        targetType: "enemy"
     }
 } as const satisfies Record<string, HeroDef>;
 

@@ -1,19 +1,20 @@
-import type { GameObj, KAPLAYCtx, Vec2 } from "kaplay";
+import type { KAPLAYCtx, Vec2 } from "kaplay";
 import { TILE_SIZE, TOWER_RANGE_TOLERANCE } from "../constants";
-import type { EnemyGameObj, HeroGameObj, TowerGameObj } from "../types";
+import type { EnemyGameObj, HeroGameObj, PathTile, TargetResolver, TowerGameObj } from "../types";
 
 export function selectTarget(
     enemies: EnemyGameObj[],
     tower: TowerGameObj | HeroGameObj,
-    rangePos: Vec2,
+    origin: Vec2,
 ): EnemyGameObj | null {
 
-    let best: EnemyGameObj | null = null
+    let best: EnemyGameObj | null = null;
 
     for (const e of enemies) {
-        if (e.pos.dist(rangePos) > tower.stats.range * TILE_SIZE + TOWER_RANGE_TOLERANCE) {
+        if (e.pos.dist(origin) > tower.stats.range * TILE_SIZE + TOWER_RANGE_TOLERANCE) {
             continue;
         }
+
 
         if (!best) {
             best = e;
@@ -59,10 +60,10 @@ export function rotateVector(k: KAPLAYCtx, vec: Vec2, angle: number): Vec2 {
 }
 
 export function selectBounceTarget(
-    k: KAPLAYCtx, 
-    from: EnemyGameObj, 
-    opts?: { 
-        bounceRange?: number, 
+    k: KAPLAYCtx,
+    from: EnemyGameObj,
+    opts?: {
+        bounceRange?: number,
         exclude?: Set<EnemyGameObj>,
         visited?: Set<EnemyGameObj>
     }
@@ -106,4 +107,47 @@ export function findNewTarget(
         .sort((a, b) =>
             a.pos.dist(fromPos) - b.pos.dist(fromPos)
         )[0] ?? null;
+}
+
+export function enemyTargetResolver(k: KAPLAYCtx, owner: TowerGameObj): TargetResolver {
+
+    return () => {
+        const enemy = selectTarget(
+            k.get("enemy") as EnemyGameObj[],
+            owner,
+            owner.pos.add(TILE_SIZE / 2, TILE_SIZE / 2)
+        );
+
+        return enemy ? { type: "enemy", enemy } : null;
+    };
+}
+
+export function pathTargetResolver(
+    k: KAPLAYCtx,
+    pathTiles: PathTile[],
+    owner: TowerGameObj
+): TargetResolver {
+    return () => {
+        const origin = owner.pos.add(TILE_SIZE / 2, TILE_SIZE / 2);
+        const inRange = pathTiles.filter(t =>
+            k.vec2(t.x * TILE_SIZE + TILE_SIZE / 2, t.y * TILE_SIZE + TILE_SIZE / 2).
+                dist(origin) <= owner.stats.range * TILE_SIZE + TOWER_RANGE_TOLERANCE
+        );
+
+        if (inRange.length === 0) return null;
+
+        // const best = inRange.reduce((a, b) =>
+        //     (a.tile.pathIndex ?? 0) > (b.tile.pathIndex ?? 0) ? a : b
+        // );
+
+        const pathIndex = k.randi(inRange.length);
+        const tile = inRange[pathIndex];
+        const randomOffset = k.vec2(k.randi(-5, 6), k.randi(-5, 6));
+
+        return {
+            type: "point",
+            pos: k.vec2(tile.x * TILE_SIZE + TILE_SIZE / 2, tile.y * TILE_SIZE + TILE_SIZE / 2).add(randomOffset),
+            pathIndex: tile.tile.pathIndex,
+        };
+    }
 }

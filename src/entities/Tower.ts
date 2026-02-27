@@ -1,24 +1,26 @@
 import type { KAPLAYCtx, Vec2 } from 'kaplay';
 import { TILE_SIZE, type TowerId } from '../constants';
-import type { TargetPriority, TowerGameObj, UnitEffects, TowerDef, SeedId } from '../types';
+import type { TargetPriority, TowerGameObj, UnitEffects, TowerDef, SeedId, Tile, PathTile } from '../types';
 import { store, gameStateAtom } from '../store';
 import { calcUpgradeCost } from '../utils/calcUpgradeCost';
 import { TOWERS } from '../constants';
 import makePlaceableOnGrid from '../utils/makePlacementOnGrid';
 import makeUnitCombat from '../utils/makeUnitCombat';
 import setTowerUI from '../utils/setTowerUI';
+import { enemyTargetResolver, pathTargetResolver } from '../utils/targetingHelpers';
 
 export default function makeTower(
     k: KAPLAYCtx,
     opts: {
         towerId: TowerId
         pos: Vec2,
-        tileGrid: boolean[][]
+        tileGrid: Tile[][],
+        pathTiles: PathTile[]
     }
 ): TowerGameObj {
     k.get("tower").forEach(tower => tower.selected = false);
 
-    const { towerId, pos, tileGrid } = opts;
+    const { towerId, pos, tileGrid, pathTiles } = opts;
     const {
         name,
         cost,
@@ -30,7 +32,8 @@ export default function makeTower(
         anchorOffset,
         shootOffset,
         projectile,
-        canRotate
+        canRotate,
+        targetType
     } = TOWERS[towerId];
 
     const priority: TargetPriority = "Most Progress";
@@ -56,6 +59,7 @@ export default function makeTower(
             stats: { ...stats },
             unlockedUpgradeSlots: 0,
             tileGrid,
+            pathTiles,
             upgrades: [],
             ...("effects" in TOWERS[towerId] ? { effects: TOWERS[towerId].effects as UnitEffects } : {}),
             ...("farmData" in TOWERS[towerId] ? {
@@ -72,7 +76,9 @@ export default function makeTower(
             } : {}),
             upgradeCost: calcUpgradeCost(cost, 0),
             element,
-            canRotate
+            canRotate,
+            targetType,
+            ...(targetType === "point" ? { pathEntityLimit: TOWERS[towerId]?.pathEntityLimit ?? 10 } : {})
         },
         "tower",
         towerId
@@ -86,7 +92,8 @@ export default function makeTower(
         gunSprite,
         gunOffset: k.vec2(gunOffset.x, gunOffset.y),
         shootOffset: k.vec2(shootOffset.x, shootOffset.y),
-        anchorOffset: k.vec2(anchorOffset.x, anchorOffset.y)
+        anchorOffset: k.vec2(anchorOffset.x, anchorOffset.y),
+        resolveTarget: tower.targetType === "enemy" ? enemyTargetResolver(k, tower) : pathTargetResolver(k, tower.pathTiles, tower)
     });
 
     tower.gun ??= combat.gun;
@@ -103,7 +110,7 @@ export default function makeTower(
         if (tower.placed) {
             const gridX = Math.floor(tower.pos.x / TILE_SIZE);
             const gridY = Math.floor(tower.pos.y / TILE_SIZE);
-            tileGrid[gridY][gridX] = false;
+            tileGrid[gridY][gridX].blocked = false;
         }
         combat.destroy();
     });

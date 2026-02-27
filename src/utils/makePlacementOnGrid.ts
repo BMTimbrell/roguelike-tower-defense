@@ -1,11 +1,12 @@
 import type { GameObj, KAPLAYCtx } from "kaplay"
+import type { Tile } from "../types";
 
 export default function makePlaceableOnGrid(
     k: KAPLAYCtx,
     opts: {
         obj: GameObj;
         heroSprite?: GameObj;
-        tileGrid: boolean[][];
+        tileGrid: Tile[][];
         tileSize: number;
         canCancel: () => boolean;
         canConfirm: () => boolean;
@@ -19,7 +20,7 @@ export default function makePlaceableOnGrid(
         const gridY = Math.floor(mousePos.y / opts.tileSize);
 
         const blocked =
-            opts.tileGrid[gridY]?.[gridX] !== false;
+            opts.tileGrid[gridY]?.[gridX]?.blocked ?? true;
 
         opts.obj.pos = k.vec2(gridX * opts.tileSize, gridY * opts.tileSize);
         opts.obj.color = k.Color.fromHex(blocked || !opts.canConfirm() ? "#FF0000" : "#FFFFFF");
@@ -38,7 +39,7 @@ export default function makePlaceableOnGrid(
 
             const gridX = Math.floor(opts.obj.pos.x / opts.tileSize);
             const gridY = Math.floor(opts.obj.pos.y / opts.tileSize);
-            opts.tileGrid[gridY][gridX] = true;
+            opts.tileGrid[gridY][gridX].blocked = true;
 
             opts.obj.use(k.color("#ffffff"));
             opts.obj.selected = false;
@@ -62,7 +63,7 @@ export default function makePlaceableOnGrid(
 
             const gridX = Math.floor(opts.obj.pos.x / opts.tileSize);
             const gridY = Math.floor(opts.obj.pos.y / opts.tileSize);
-            opts.tileGrid[gridY][gridX] = false;
+            opts.tileGrid[gridY][gridX].blocked = false;
 
             opts.obj.placed = false;
             return true;

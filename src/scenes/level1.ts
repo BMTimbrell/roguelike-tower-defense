@@ -2,7 +2,7 @@ import type { KAPLAYCtx, Vec2 } from "kaplay";
 import { addSelectTowerListener } from "../entities/Tower";
 import type { MapData, Scene } from "../types";
 import { store, gameStateAtom } from "../store";
-import { TILE_SIZE, MAX_HAND_SIZE, ROUND_DRAW_NUM } from "../constants";
+import { TILE_SIZE, MAX_HAND_SIZE, ROUND_DRAW_NUM, CHARGE_DAMAGE_REQUIRED } from "../constants";
 import generateDeck from "../utils/generateDeck";
 import drawCards from "../utils/drawCards";
 import reroll from "../utils/reroll";
@@ -196,7 +196,11 @@ export default function level1(k: KAPLAYCtx) {
                 roll: () => reroll(k),
             },
             heroCanReposition: true,
-            hero
+            hero,
+            heroCharge: {
+                ...prev.heroCharge,
+                damageRequired: CHARGE_DAMAGE_REQUIRED
+            }
         }));
 
         addSelectTowerListener(k);

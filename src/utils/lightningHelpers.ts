@@ -1,9 +1,10 @@
 import type { GameObj, KAPLAYCtx, Vec2 } from "kaplay";
 import { selectBounceTarget } from "./targetingHelpers";
 import calcCrit from "./calcDamage";
-import type { ElementName } from "../types";
+import type { ElementName, EnemyGameObj } from "../types";
 import makeFloatingText from "../entities/FloatingText";
 import { CRIT_DAMAGE_NUMBER_SIZE, DAMAGE_NUMBER_SIZE, ELEMENTS } from "../constants";
+import hurtEnemy from "./hurtEnemy";
 
 export function resolveChain(k: KAPLAYCtx, {
     startPos,
@@ -15,7 +16,7 @@ export function resolveChain(k: KAPLAYCtx, {
     range
 }: {
     startPos: Vec2;
-    target: GameObj;
+    target: EnemyGameObj;
     element: ElementName;
     damage: number;
     isCrit: boolean;
@@ -23,7 +24,7 @@ export function resolveChain(k: KAPLAYCtx, {
     range: number;
 }
 ): Vec2[] {
-    const targets: GameObj[] = [];
+    const targets: EnemyGameObj[] = [];
     let nextTarget = target;
 
     while (maxChains > 0) {
@@ -31,15 +32,13 @@ export function resolveChain(k: KAPLAYCtx, {
 
         maxChains--;
         targets.push(nextTarget);
-        nextTarget.hurt(damage);
-        makeFloatingText(k, {
-            pos: nextTarget.pos,
-            text: '' + damage,
-            size: isCrit ? CRIT_DAMAGE_NUMBER_SIZE : DAMAGE_NUMBER_SIZE,
-            color: ELEMENTS[element].color
-        });
 
-        ELEMENTS[element].applyEffect?.(k, { target: nextTarget, damage });
+        hurtEnemy(k, {
+            target: nextTarget,
+            damage,
+            isCrit,
+            element
+        });
 
         nextTarget = selectBounceTarget(k, target, { bounceRange: range, exclude: new Set(targets) });
     }

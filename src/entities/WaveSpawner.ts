@@ -49,6 +49,11 @@ export default function makeWaveSpawner(k: KAPLAYCtx, levelId: LevelId, waypoint
                 timer = 0;
                 spawning = true;
 
+                store.set(gameStateAtom, prev => ({
+                    ...prev,
+                    waveActive: spawning
+                }));
+
                 (k.get("tower") as TowerGameObj[]).forEach(t => {
                     if (t.timeData) t.timeData.intervalMultiplier = 1;
                 });
@@ -62,6 +67,11 @@ export default function makeWaveSpawner(k: KAPLAYCtx, levelId: LevelId, waypoint
             // wave complete
             if (enemyDeadCheck && !k.get("enemy").length && !levelComplete) {
 
+                store.set(gameStateAtom, prev => ({
+                    ...prev,
+                    waveActive: false
+                }));
+
                 if (waveIndex === level.waves.length - 1) {
                     levelComplete = true;
                     const complete = k.add([
@@ -74,7 +84,7 @@ export default function makeWaveSpawner(k: KAPLAYCtx, levelId: LevelId, waypoint
                         {
                             update() {
                                 complete.timer -= k.dt();
-                                if (complete.timer <= 1)  {
+                                if (complete.timer <= 1) {
                                     k.go("levelTransition", store.get(gameStateAtom).hero);
                                     complete.pos = k.getCamPos();
                                 }
@@ -114,7 +124,11 @@ export default function makeWaveSpawner(k: KAPLAYCtx, levelId: LevelId, waypoint
 
                 nextWaveTimer = level.startDelay;
                 waitingForNextWave = true;
+
+                k.get("pathEntity").forEach(e => k.destroy(e));
+
                 (k.get("tower") as TowerGameObj[]).forEach(e => {
+
                     if (e.farmData?.turnsRemaining) {
                         e.farmData.turnsRemaining--;
 
@@ -122,7 +136,8 @@ export default function makeWaveSpawner(k: KAPLAYCtx, levelId: LevelId, waypoint
                             const plant = makeTower(k, {
                                 towerId: SEEDS[e.farmData.plantedSeed ?? "nightshade"].growsInto,
                                 pos: e.pos,
-                                tileGrid: e.tileGrid
+                                tileGrid: e.tileGrid,
+                                pathTiles: e.pathTiles
                             });
 
                             k.destroy(e);

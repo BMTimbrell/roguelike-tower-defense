@@ -1,24 +1,16 @@
 import type { KAPLAYCtx } from "kaplay";
 import { gameStateAtom, store, startingOptionsAtom } from "../store";
 import initCam from "../utils/initCam";
-import type { HeroGameObj, MapData, Scene, Upgrade } from "../types";
+import type { Scene, Upgrade } from "../types";
 import type { TowerId } from "../constants";
 import generateTowerOptions from "../utils/generateTowerOptions";
 import addTowers from "../utils/addTowers";
 import generateDeck from "../utils/generateDeck";
+import generateMap from "../utils/generateMap";
 
 export default function mainMenu(k: KAPLAYCtx) {
     k.scene("mainMenu" satisfies Scene, async () => {
-        const mapData: MapData = await (await fetch("data/level1.json")).json();
-
-        // Generate tile grid for placement logic
-        const tileGrid: boolean[][] = [];
-        mapData.layers.find(layer => layer.name === "Ground")?.data?.forEach((tile, index) => {
-            const x = index % mapData.width;
-            const y = Math.floor(index / mapData.width);
-            if (!tileGrid[y]) tileGrid[y] = [];
-            tileGrid[y][x] = tile !== 1;
-        });
+        const { mapData, tileGrid, pathTiles } = await generateMap(k, "data/level1.json");
 
         initCam(k);
         k.onResize(() => {
@@ -44,7 +36,7 @@ export default function mainMenu(k: KAPLAYCtx) {
             addLoadout: (ids, upgrades) => {
                 store.set(gameStateAtom, prev => ({
                     ...prev,
-                    towerButtons: addTowers(k, ids, tileGrid),
+                    towerButtons: addTowers(k, ids, tileGrid, pathTiles),
                     deck: {
                         ...prev.deck,
                         cards: upgrades

@@ -1,10 +1,10 @@
 import type { KAPLAYCtx } from "kaplay";
-import type { TowerButton, TowerGameObj } from "../types";
+import type { PathTile, Tile, TowerButton, TowerGameObj } from "../types";
 import { TOWERS, type TowerId } from "../constants";
 import makeTower from "../entities/Tower";
 import { gameStateAtom, store } from "../store";
 
-export default function addTowers(k: KAPLAYCtx, towers: TowerId[], tileGrid: boolean[][]): TowerButton[] {
+export default function addTowers(k: KAPLAYCtx, towers: TowerId[], tileGrid: Tile[][], pathTiles: PathTile[]): TowerButton[] {
     return towers.map(t => ({
         ...TOWERS[t],
         onClick: () => {
@@ -16,7 +16,8 @@ export default function addTowers(k: KAPLAYCtx, towers: TowerId[], tileGrid: boo
                     {
                         towerId: t,
                         pos: k.toWorld(k.mousePos()),
-                        tileGrid
+                        tileGrid,
+                        pathTiles
                     }
                 );
                 store.set(gameStateAtom, prev => ({

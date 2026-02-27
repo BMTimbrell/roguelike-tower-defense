@@ -122,6 +122,15 @@ export default function loadAssets(k: KAPLAYCtx) {
             idle: { from: 0, to: 63, loop: true, speed: TIME_TOWER_BASE_ANIM_SPEED }
         }
     });
+    k.loadSprite("toilet tower base", "/sprites/toilet-tower-base.png");
+    k.loadSprite("toilet tower", "/sprites/toilet-tower.png", {
+        sliceX: 4,
+        sliceY: 1,
+        anims: {
+            idle: 0,
+            shoot: { from: 1, to: 3, loop: false, speed: 10 }
+        }
+    });
     k.loadSprite("fog", "/sprites/fog5.png");
     k.loadSprite("basic projectile", "/sprites/basic-projectile.png");
     k.loadSprite("slimeball", "/sprites/slimeball.png");
@@ -146,6 +155,7 @@ export default function loadAssets(k: KAPLAYCtx) {
     });
     k.loadSprite("shadow blob", "/sprites/shadow-blob.png");
     k.loadSprite("star", "/sprites/star-projectile.png");
+    k.loadSprite("poop", "/sprites/poop.png");
     k.loadSprite("archer base", "/sprites/archer-base2.png");
     k.loadSprite("archer", "/sprites/archer2.png", {
         sliceX: 5,

@@ -24,6 +24,18 @@ export type MapData = {
     layers: Layer[];
 };
 
+export type Tile = {
+    blocked: boolean;
+    isPath: boolean;
+    pathIndex?: number;
+};
+
+export type PathTile = {
+    x: number;
+    y: number;
+    tile: Tile;
+};
+
 export type TowerStats = {
     damage: number;
     range: number;
@@ -90,6 +102,8 @@ export type TowerDef = {
         maxMultiplier: number;
         growthPerSecond: number;
     };
+    targetType: "enemy" | "point";
+    pathEntityLimit?: number;
 };
 
 export type UnitInstance = {
@@ -103,6 +117,8 @@ export type UnitInstance = {
     placed: boolean;
     effects?: UnitEffects;
     canRotate: boolean;
+    targetType: "enemy" | "point";
+    pathEntityLimit?: number;
 };
 
 export type TowerInstance = UnitInstance & {
@@ -121,6 +137,8 @@ export type TowerInstance = UnitInstance & {
         growthPerSecond: number;
         intervalMultiplier: number;
     };
+    tileGrid: Tile[][];
+    pathTiles: PathTile[];
 };
 
 export type TowerGameObj = GameObj & TowerInstance;
@@ -150,11 +168,11 @@ export type HeroInstance = UnitInstance & {
 export type HeroGameObj = GameObj & HeroInstance;
 
 export type EnemyGameObj = GameObj<
-    HealthComp | 
-    SpriteComp | 
-    StateComp | 
-    TimerComp | 
-    RotateComp | 
+    HealthComp |
+    SpriteComp |
+    StateComp |
+    TimerComp |
+    RotateComp |
     PosComp
 > & {
     path: Vec2[];
@@ -271,6 +289,7 @@ export type GameState = {
         charge: number;
         damageRequired: number;
     };
+    waveActive: boolean;
 };
 
 export type EnemySpawn = {
@@ -356,3 +375,9 @@ export type StartingOptions = {
     options: { ids: TowerId[]; upgrades: Upgrade[] }[];
     addLoadout: (ids: TowerId[], upgrades: Upgrade[]) => void;
 };
+
+export type AttackTarget =
+    | { type: "enemy"; enemy: EnemyGameObj }
+    | { type: "point"; pos: Vec2; pathIndex?: number };
+
+export type TargetResolver = () => AttackTarget | null;

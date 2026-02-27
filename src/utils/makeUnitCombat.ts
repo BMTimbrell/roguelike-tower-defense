@@ -1,29 +1,32 @@
 import type { KAPLAYCtx, Vec2 } from "kaplay";
-import type { AttackContext, ElementName, EnemyGameObj, HeroGameObj, TowerGameObj } from "../types";
-import { CRIT_DAMAGE_NUMBER_SIZE, CURSE_CRIT, DAMAGE_NUMBER_SIZE, ELEMENTS, TILE_SIZE, TIME_TOWER_BASE_ANIM_SPEED, TOWER_RANGE_TOLERANCE, type ProjectileId } from "../constants";
+import type { AttackContext, AttackTarget, ElementName, EnemyGameObj, HeroGameObj, TargetResolver, TowerGameObj } from "../types";
+import { CURSE_CRIT, TILE_SIZE, TIME_TOWER_BASE_ANIM_SPEED, TOWER_RANGE_TOLERANCE, type ProjectileId } from "../constants";
 import makeProjectile from "../entities/Projectile";
-import { rotateVector, selectTarget, shortestAngleDiff } from "./targetingHelpers";
-import makeFloatingText from "../entities/FloatingText";
+import { rotateVector, shortestAngleDiff } from "./targetingHelpers";
 import { buildLightningSegments, drawLightning, resolveChain } from "./lightningHelpers";
 import calcDamage from "./calcDamage";
+import hurtEnemy from "./hurtEnemy";
+import makePathEntity from "../entities/PathEntity";
+import { gameStateAtom, store } from "../store";
 
 export default function makeUnitCombat(
     k: KAPLAYCtx,
     opts: {
-        owner: TowerGameObj | HeroGameObj
+        owner: TowerGameObj | HeroGameObj;
         stats: {
-            damage: number
-            range: number
-            fireInterval: number
-            critChance: number
-            critDamage: number
-        }
-        projectile: ProjectileId | null
-        element: ElementName
-        gunSprite: string
-        gunOffset: Vec2
-        shootOffset: Vec2
-        anchorOffset: Vec2
+            damage: number;
+            range: number;
+            fireInterval: number;
+            critChance: number;
+            critDamage: number;
+        };
+        projectile: ProjectileId | null;
+        element: ElementName;
+        gunSprite: string;
+        gunOffset: Vec2;
+        shootOffset: Vec2;
+        anchorOffset: Vec2;
+        resolveTarget: TargetResolver;
     }
 ) {
     let shootTimer = 0;
@@ -62,119 +65,140 @@ export default function makeUnitCombat(
         if (opts.owner.activeProjectile === null) gun.play("idle");
     });
 
-    function shoot(target: EnemyGameObj) {
+    function shoot(target: AttackTarget) {
 
-        const ctx: AttackContext = {
-            attacker: opts.owner,
-            target,
-            origin: gun.pos,
-            damage: opts.stats.damage,
-            element: opts.element,
-            aoeAttack: false,
-            visualEffect: null,
-            lightningAttack: false,
-            projectiles: opts.projectile ? [{
-                id: opts.projectile,
-                angle: gun.angle,
-                target,
-                homing: true
-            }] : []
-        };
+        if (target.type === "enemy") {
+            const enemy = target.enemy;
 
-        opts.owner.effects?.forEach(e => e.firstEffect?.(ctx));
+            const ctx: AttackContext = {
+                attacker: opts.owner,
+                target: enemy,
+                origin: gun.pos,
+                damage: opts.stats.damage,
+                element: opts.element,
+                aoeAttack: false,
+                visualEffect: null,
+                lightningAttack: false,
+                projectiles: opts.projectile ? [{
+                    id: opts.projectile,
+                    angle: gun.angle,
+                    target: enemy,
+                    homing: true
+                }] : []
+            };
 
-        const { isCrit, damage } = calcDamage({
-            bonusDamage: 0,
-            bonusCritChance: target.has("curse") ? CURSE_CRIT : 0,
-            critChance: opts.stats.critChance,
-            critDamage: opts.stats.critDamage,
-            damage: ctx.damage
-        });
+            opts.owner.effects?.forEach(e => e.firstEffect?.(ctx));
 
-        if (ctx.aoeAttack) {
-            aoeAttack(k, ctx, { damage, isCrit });
-        }
-
-        if (ctx.target && ctx.lightningAttack) {
-            const chain = resolveChain(k, {
-                startPos: ctx.origin,
-                target: ctx.target,
-                damage,
-                isCrit,
-                element: ctx.element,
-                maxChains: 3,
-                range: TILE_SIZE * 5
-            });
-
-            const lightning = k.add([
-                k.pos(0, 0),
-                k.lifespan(0.2),
-                k.opacity(1),
-                {
-                    segments: [] as Vec2[][],
-                    update() {
-                        lightning.segments = buildLightningSegments(k, chain);
-                    },
-                    draw() {
-                        lightning.segments.forEach(points => drawLightning(k, points));
-                    }
-                }
-            ]);
-
-        }
-
-        if (!ctx.projectiles) return;
-
-        if (ctx.volley?.volleyChance && Math.random() < ctx.volley.volleyChance) {
-            const base = ctx.projectiles[0];
-
-            ctx.projectiles = [
-                { ...base, angle: base.angle - 45, homingDelay: 0.2, turnSpeed: 12 },
-                { ...base, angle: base.angle, homingDelay: 0.1, turnSpeed: 12 },
-                { ...base, angle: base.angle + 45, homingDelay: 0.2, turnSpeed: 12 },
-            ];
-        }
-
-        opts.owner.effects?.forEach(e => e.secondEffect?.(ctx));
-
-        const rotatedOffset = rotateVector(
-            k,
-            k.vec2(opts.shootOffset.x, opts.shootOffset.y),
-            gun.angle * Math.PI / 180
-        );
-
-        for (const p of ctx.projectiles) {
-            const bonusDamage = p?.bonusDamage ?? 0;
             const { isCrit, damage } = calcDamage({
-                bonusDamage,
-                bonusCritChance: target.has("curse") ? CURSE_CRIT : 0,
+                bonusDamage: 0,
+                bonusCritChance: enemy.has("curse") ? CURSE_CRIT : 0,
                 critChance: opts.stats.critChance,
                 critDamage: opts.stats.critDamage,
                 damage: ctx.damage
             });
 
-            const projectile = makeProjectile(k, {
-                id: p.id,
-                pos: ctx.origin.add(rotatedOffset),
-                target,
-                damage: damage,
-                crit: isCrit,
-                angle: p.angle,
-                element: p?.element ?? ctx.element,
-                homing: p.homing,
-                homingDelay: p.homingDelay,
-                turnSpeed: p.turnSpeed,
-                behaviors: p?.behaviors
-            });
-
-            if (p.behaviors?.persistent) {
-                ctx.attacker.activeProjectile ??= projectile;
+            if (ctx.aoeAttack) {
+                aoeAttack(k, ctx, { damage, isCrit });
             }
+
+            if (ctx.target && ctx.lightningAttack) {
+                const chain = resolveChain(k, {
+                    startPos: ctx.origin,
+                    target: ctx.target,
+                    damage,
+                    isCrit,
+                    element: ctx.element,
+                    maxChains: 3,
+                    range: TILE_SIZE * 5
+                });
+
+                const lightning = k.add([
+                    k.pos(0, 0),
+                    k.lifespan(0.2),
+                    k.opacity(1),
+                    {
+                        segments: [] as Vec2[][],
+                        update() {
+                            lightning.segments = buildLightningSegments(k, chain);
+                        },
+                        draw() {
+                            lightning.segments.forEach(points => drawLightning(k, points));
+                        }
+                    }
+                ]);
+
+            }
+
+            if (!ctx.projectiles) return;
+
+            if (ctx.volley?.volleyChance && Math.random() < ctx.volley.volleyChance) {
+                const base = ctx.projectiles[0];
+
+                ctx.projectiles = [
+                    { ...base, angle: base.angle - 45, homingDelay: 0.2, turnSpeed: 12 },
+                    { ...base, angle: base.angle, homingDelay: 0.1, turnSpeed: 12 },
+                    { ...base, angle: base.angle + 45, homingDelay: 0.2, turnSpeed: 12 },
+                ];
+            }
+
+            opts.owner.effects?.forEach(e => e.secondEffect?.(ctx));
+
+            const rotatedOffset = rotateVector(
+                k,
+                k.vec2(opts.shootOffset.x, opts.shootOffset.y),
+                gun.angle * Math.PI / 180
+            );
+
+            for (const p of ctx.projectiles) {
+                const bonusDamage = p?.bonusDamage ?? 0;
+                const { isCrit, damage } = calcDamage({
+                    bonusDamage,
+                    bonusCritChance: enemy.has("curse") ? CURSE_CRIT : 0,
+                    critChance: opts.stats.critChance,
+                    critDamage: opts.stats.critDamage,
+                    damage: ctx.damage
+                });
+
+                const projectile = makeProjectile(k, {
+                    id: p.id,
+                    pos: ctx.origin.add(rotatedOffset),
+                    target: enemy,
+                    damage: damage,
+                    crit: isCrit,
+                    angle: p.angle,
+                    element: p?.element ?? ctx.element,
+                    homing: p.homing,
+                    homingDelay: p.homingDelay,
+                    turnSpeed: p.turnSpeed,
+                    behaviors: p?.behaviors
+                });
+
+                if (p.behaviors?.persistent) {
+                    ctx.attacker.activeProjectile ??= projectile;
+                }
+            }
+
+        } else if (target.type === "point") {
+
+            makePathEntity(k, {
+                ownerId: opts.owner.instanceId,
+                from: opts.owner.pos.add(TILE_SIZE / 2, TILE_SIZE / 2),
+                targetPos: target.pos,
+                damage: opts.stats.damage,
+                critChance: opts.stats.critChance,
+                critDamage: opts.stats.critDamage,
+                element: opts.element
+            });
         }
 
     }
 
     function update() {
+        if (!store.get(gameStateAtom).waveActive) {
+            gun.angle = 0;
+            return;
+        }
+
         const interval =
             opts.owner.stats.fireInterval *
             (opts.owner.timeData?.intervalMultiplier ?? 1);
@@ -191,24 +215,26 @@ export default function makeUnitCombat(
             shootTimer -= k.dt();
         }
 
-        const target = selectTarget(
-            k.get("enemy") as EnemyGameObj[],
-            opts.owner,
-            rangeCircle.pos
-        );
+        const target = opts.resolveTarget();
 
         if (target && opts.owner.canRotate) {
-            const desired = gun.pos.angle(target.pos);
+            const desired = gun.pos.angle(target.type === "enemy" ? target.enemy.pos : target.pos);
             const turnSpeed = 12;
 
             const diff = shortestAngleDiff(gun.angle, desired);
             gun.angle += diff * Math.min(1, turnSpeed * k.dt());
+
         } else gun.angle = 0;
 
         while (shootTimer <= 0 && target && !opts.owner.activeProjectile) {
             shootTimer += interval;
 
-            if (opts.owner.canRotate) gun.angle = gun.pos.angle(target.pos);
+            if (opts.owner.canRotate) gun.angle = gun.pos.angle(target.type === "point" ? target.pos : target.enemy.pos);
+
+            if (
+                target.type === "point" && 
+                k.get("pathEntity").filter(e => e.ownerId === opts.owner.instanceId).length >= (opts.owner.pathEntityLimit ?? 1)
+            ) break;
 
             shoot(target);
             if (gun.getAnim("shoot")) gun.play("shoot");
@@ -236,16 +262,12 @@ function aoeAttack(k: KAPLAYCtx, ctx: AttackContext, opts: { isCrit: boolean; da
     (k.get("enemy") as EnemyGameObj[]).forEach(e => {
         if (e.pos.dist(ctx.origin) > ctx.attacker.stats.range * TILE_SIZE + TOWER_RANGE_TOLERANCE) return;
 
-        e.hurt(damage);
-
-        makeFloatingText(k, {
-            pos: e.pos,
-            text: '' + damage,
-            size: isCrit ? CRIT_DAMAGE_NUMBER_SIZE : DAMAGE_NUMBER_SIZE,
-            color: ELEMENTS[ctx.element].color
+        hurtEnemy(k, {
+            target: e,
+            damage,
+            isCrit,
+            element: ctx.element
         });
-
-        ELEMENTS[ctx.element].applyEffect?.(k, { target: e, damage });
     });
 }
 
