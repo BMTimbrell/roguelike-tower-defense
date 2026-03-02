@@ -1,5 +1,5 @@
-import type { KAPLAYCtx, Vec2 } from "kaplay";
-import type { AttackContext, AttackTarget, ElementName, EnemyGameObj, HeroGameObj, TargetResolver, TowerGameObj } from "../types";
+import type { GameObj, KAPLAYCtx, Vec2 } from "kaplay";
+import type { AttackContext, AttackTarget, ElementName, EnemyGameObj, HeroGameObj, RandomProjectiles, TargetResolver, TowerGameObj } from "../types";
 import { CURSE_CRIT, TILE_SIZE, TIME_TOWER_BASE_ANIM_SPEED, TOWER_RANGE_TOLERANCE, type ProjectileId } from "../constants";
 import makeProjectile from "../entities/Projectile";
 import { rotateVector, shortestAngleDiff } from "./targetingHelpers";
@@ -30,6 +30,8 @@ export default function makeUnitCombat(
     }
 ) {
     let shootTimer = 0;
+    let meleeHandle: GameObj | null = null;
+    let meleeHead: GameObj | null = null;
 
     const gun = k.add([
         k.sprite(opts.gunSprite, { anim: "idle" }),
@@ -37,12 +39,51 @@ export default function makeUnitCombat(
         k.anchor(opts.anchorOffset),
         k.rotate(),
         k.opacity(1),
+        k.state("idle", ["idle", "tracking", "meleeSwing"])
     ]);
+
+    if (opts.owner.melee?.meleeHandleSprite && opts.owner.melee?.meleeHeadSprite) {
+        const handleLength = opts.owner.melee?.handleLength;
+
+        meleeHandle = gun.add([
+            k.sprite(opts.owner.melee?.meleeHandleSprite),
+            k.color(255, 255, 255),
+            k.scale(1),
+            k.opacity(1),
+            k.pos(0),
+            {
+                update() {
+                    if (!meleeHandle) return;
+
+                    meleeHandle.opacity = opts.owner.opacity;
+                    if (!opts.owner.placed) meleeHandle.use(k.color(opts.owner.color.r, opts.owner.color.g, opts.owner.color.b));
+                }
+            },
+            k.anchor("right")
+        ]);
+
+        meleeHead = meleeHandle.add([
+            k.sprite(opts.owner.melee?.meleeHeadSprite),
+            k.scale(1),
+            k.opacity(1),
+            k.color(255, 255, 255),
+            k.pos(-handleLength, 0),
+            {
+                update() {
+                    if (!meleeHead) return;
+
+                    meleeHead.opacity = opts.owner.opacity;
+                    if (!opts.owner.placed) meleeHead.use(k.color(opts.owner.color.r, opts.owner.color.g, opts.owner.color.b));
+                }
+            },
+            k.anchor("right")
+        ]);
+    }
 
     const rangeCircle = k.add([
         k.pos(),
         k.circle(opts.stats.range * TILE_SIZE),
-        k.opacity(0.2),
+        k.opacity(0.2)
     ]);
 
     gun.onAnimEnd(anim => {
@@ -69,22 +110,49 @@ export default function makeUnitCombat(
 
         if (target.type === "enemy") {
             const enemy = target.enemy;
+            let projectile = {
+                id: opts.projectile ?? "basic",
+                angle: gun.angle,
+                target: enemy,
+                homing: true,
+                bonusDamage: 0
+            };
+
+            let element = opts.element;
+            let volley = false;
+
+            if (opts.owner.randomProjectiles) {
+                const projectiles: RandomProjectiles = opts.owner.randomProjectiles;
+                const roll = k.randi(projectiles.length);
+                const randomProjectile = projectiles[roll];
+                projectile = {
+                    ...projectile,
+                    ...(randomProjectile.behaviors ? { behaviors: randomProjectile.behaviors } : {}),
+                    id: randomProjectile.projectile
+                };
+                element = randomProjectile.element;
+                volley = randomProjectile.volley ?? false;
+
+                if (projectile.id === "shadowBlob") {
+                    const maxHp = enemy?.maxHP() ?? 1;
+                    const hp = enemy.hp() ?? 0;
+                    const missingHealthPercent = 1 - hp / maxHp;
+
+                    projectile.bonusDamage = opts.stats.damage * missingHealthPercent;
+                }
+            }
 
             const ctx: AttackContext = {
                 attacker: opts.owner,
                 target: enemy,
                 origin: gun.pos,
                 damage: opts.stats.damage,
-                element: opts.element,
+                element,
                 aoeAttack: false,
                 visualEffect: null,
                 lightningAttack: false,
-                projectiles: opts.projectile ? [{
-                    id: opts.projectile,
-                    angle: gun.angle,
-                    target: enemy,
-                    homing: true
-                }] : []
+                ...(volley ? { volley: { volleyChance: 100 } } : {}),
+                projectiles: opts.projectile ? [projectile] : []
             };
 
             opts.owner.effects?.forEach(e => e.firstEffect?.(ctx));
@@ -99,6 +167,13 @@ export default function makeUnitCombat(
 
             if (ctx.aoeAttack) {
                 aoeAttack(k, ctx, { damage, isCrit });
+            }
+
+            if (ctx.meleeAttack) {
+                meleeAttack(k, ctx, {
+                    damage,
+                    isCrit
+                });
             }
 
             if (ctx.target && ctx.lightningAttack) {
@@ -194,11 +269,6 @@ export default function makeUnitCombat(
     }
 
     function update() {
-        if (!store.get(gameStateAtom).waveActive) {
-            gun.angle = 0;
-            return;
-        }
-
         const interval =
             opts.owner.stats.fireInterval *
             (opts.owner.timeData?.intervalMultiplier ?? 1);
@@ -213,6 +283,11 @@ export default function makeUnitCombat(
 
         if (shootTimer > 0) {
             shootTimer -= k.dt();
+        }
+
+        if (!store.get(gameStateAtom).waveActive) {
+            gun.angle = 0;
+            return;
         }
 
         const target = opts.resolveTarget();
@@ -232,7 +307,7 @@ export default function makeUnitCombat(
             if (opts.owner.canRotate) gun.angle = gun.pos.angle(target.type === "point" ? target.pos : target.enemy.pos);
 
             if (
-                target.type === "point" && 
+                target.type === "point" &&
                 k.get("pathEntity").filter(e => e.ownerId === opts.owner.instanceId).length >= (opts.owner.pathEntityLimit ?? 1)
             ) break;
 
@@ -240,6 +315,79 @@ export default function makeUnitCombat(
             if (gun.getAnim("shoot")) gun.play("shoot");
         }
     }
+
+    function meleeAttack(
+        k: KAPLAYCtx,
+        ctx: AttackContext,
+        opts: {
+            damage: number;
+            isCrit: boolean;
+        }
+    ) {
+        const { damage, isCrit } = opts;
+        const { meleeAttack, element, origin, target } = ctx;
+        const { handleLength } = ctx.attacker.melee;
+
+        if (!target) return;
+        if (!meleeAttack) return;
+        const { splashRadius, swingTime, onImpact } = meleeAttack;
+
+        const dir = target.pos.sub(origin);
+        const dist = dir.len();
+
+        gun.enterState("meleeSwing", {
+            dir,
+            distance: dist - handleLength,
+            swingTime: swingTime ?? 0.15,
+            handleLength
+        });
+
+        k.wait(swingTime ?? 0.15, () => {
+            if (splashRadius) {
+                (k.get("enemy") as EnemyGameObj[]).forEach(e => {
+                    if (e.pos.dist(target.pos) < splashRadius * TILE_SIZE) hurtEnemy(k, { target: e, damage, isCrit, element });
+                });
+            } else {
+                hurtEnemy(k, { target, damage, isCrit, element });
+            }
+            if (meleeHandle && meleeHead) {
+                meleeHandle.scale.x = 1;
+                meleeHead.scale.x = 1;
+            }
+            gun.enterState("idle");
+            onImpact(k, target.pos);
+        });
+    }
+
+    gun.onStateEnter("meleeSwing", ({
+        dir,
+        distance,
+        swingTime,
+        handleLength
+    }: {
+        dir: Vec2;
+        distance: number;
+        swingTime: number;
+        handleLength: number;
+    }) => {
+        if (!meleeHandle || !meleeHead) return;
+
+        gun.angle = dir.angle() + 180;
+        gun.angle -= 90;
+
+        const scaleX = distance / handleLength;
+
+        meleeHandle.scale.x = scaleX;
+        meleeHead.scale.x = 1 / scaleX;
+
+        k.tween(
+            gun.angle,
+            gun.angle + 90,
+            swingTime,
+            (a) => gun.angle = a,
+            k.easings.easeOutBack
+        );
+    });
 
     return {
         gun,

@@ -26,7 +26,7 @@ export const MAX_CHILL_STACKS = 5;
 export const ICE_DAMAGE_PER_STACK = 10;
 export const MAX_CHARGE_STACKS = 3;
 export const STUN_PERCENTAGES = [10, 20, 40];
-export const STUN_DURATION = 0.5;
+export const STUN_DURATION = 1;
 export const CURSE_CRIT = 10;
 export const TIME_TOWER_BASE_ANIM_SPEED = 30;
 export const UPGRADES: Upgrade[] = [{
@@ -189,7 +189,7 @@ export const LEVEL_WAVES = {
                     { id: "skeleton", count: 5, interval: 1 },
                     { id: "slime", count: 5, interval: 0.75 }
                 ],
-                reward: 80
+                reward: 100
             },
             {
                 spawns: [
@@ -512,7 +512,6 @@ export const TOWERS = {
                     const maxHp = ctx.target?.maxHP() ?? 1;
                     const hp = ctx.target?.hp() ?? 0;
                     const missingHealthPercent = 1 - hp / maxHp;
-                    console.log(missingHealthPercent);
 
                     projectile.bonusDamage = ctx.damage * missingHealthPercent;
                 });
@@ -630,7 +629,129 @@ export const TOWERS = {
         canRotate: false,
         source: "starting",
         targetType: "point",
-        pathEntityLimit: 15
+        pathEntityLimit: 30
+    },
+    questionMark: {
+        name: "? Tower",
+        gunSprite: "questionMark tower",
+        baseSprite: "questionMark tower base",
+        sprite: "questionMark-tower-sprite.png",
+        description: "Shoots random projectiles",
+        cost: 80,
+        stats: {
+            damage: 4,
+            range: 4,
+            fireInterval: 0.75,
+            critChance: 5,
+            critDamage: 100
+        },
+        element: "Normal",
+        gunOffset: { x: 2, y: 0 },
+        anchorOffset: { x: 4 / 32, y: 0 },
+        shootOffset: { x: -20, y: 0 },
+        projectile: "basic",
+        randomProjectiles: [
+            {
+                projectile: "slimeball",
+                element: "Poison",
+                behaviors: {
+                    bounces: 100,
+                    bounceChance: 0.5,
+                    bounceRange: 4 * TILE_SIZE,
+                    bounceDamageMultiplier: 1
+                }
+            },
+            {
+                projectile: "bomb",
+                element: "Fire",
+                behaviors: {
+                    animOnDestroy: "explode"
+                }
+            },
+            { 
+                projectile: "arrow", 
+                element: "Normal",
+                behaviors: {
+                    distanceDamageMultiplier: 0,
+                    distanceDamageCap: 0.5
+                }
+            },
+            { 
+                projectile: "fireball", 
+                element: "Fire" 
+            },
+            {
+                projectile: "star",
+                element: "Light",
+                volley: true
+            },
+            {
+                projectile: "poop",
+                element: "Poison"
+            },
+            {
+                projectile: "lightOrb",
+                element: "Light"
+            },
+            {
+                projectile: "shadowBlob",
+                element: "Dark"
+            },
+            {
+                projectile: "basic",
+                element: "Normal"
+            },
+        ],
+        canRotate: true,
+        source: "starting",
+        targetType: "enemy"
+    },
+    hammer: {
+        name: "Hammer Tower",
+        gunSprite: "hammer tower",
+        baseSprite: "hammer tower base",
+        sprite: "hammer-tower-sprite.png",
+        description: "Smash enemies with a hammer, dealing damage in a small area",
+        cost: 70,
+        stats: {
+            damage: 30,
+            range: 1.5,
+            fireInterval: 2,
+            critChance: 5,
+            critDamage: 100
+        },
+        element: "Normal",
+        gunOffset: { x: 0, y: 0 },
+        anchorOffset: { x: 0, y: 0 },
+        shootOffset: { x: 0, y: 0 },
+        projectile: null,
+        canRotate: false,
+        source: "starting",
+        targetType: "enemy",
+        melee: {
+            meleeHandleSprite: "hammer handle",
+            meleeHeadSprite: "hammer head",
+            handleLength: 7
+        },
+        effects: [{
+            firstEffect(ctx) {
+                ctx.meleeAttack = {
+                    splashRadius: 1.3,
+                    swingTime: 0.25,
+                    onImpact(k, impactPos) {
+                        const smashEffect = k.add([
+                            k.sprite("smash effect", { anim: "smash" }),
+                            k.anchor("center"),
+                            k.pos(impactPos)
+                        ]);
+
+                        smashEffect.onAnimEnd(() => {
+                            k.destroy(smashEffect);
+                        });
+                    }
+                };
+            }
+        }]
     }
 } as const satisfies Record<string, TowerDef>;
 
@@ -691,7 +812,7 @@ export const ELEMENTS: Record<ElementName, ElementDef> = {
     },
 
     Fire: {
-        description: "Fire attacks have a 20% chance to burn enemies, dealing 1% max HP damage per second.",
+        description: "Fire attacks have a 20% chance to burn enemies, dealing 1% max HP damage per second",
         applyEffect: (k, { target }) => {
             const duration = 5;
             if (k.randi(100) < 20) {
@@ -842,6 +963,12 @@ export const PROJECTILES = {
     },
     star: {
         sprite: "star",
+        homing: true,
+        speed: 200,
+        splashRadius: 0
+    },
+    poop: {
+        sprite: "poop",
         homing: true,
         speed: 200,
         splashRadius: 0

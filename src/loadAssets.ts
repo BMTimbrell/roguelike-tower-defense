@@ -131,6 +131,26 @@ export default function loadAssets(k: KAPLAYCtx) {
             shoot: { from: 1, to: 3, loop: false, speed: 10 }
         }
     });
+    k.loadSprite("questionMark tower", "/sprites/questionMark-tower.png", {
+        sliceX: 4,
+        sliceY: 1,
+        anims: {
+            idle: 0,
+            shoot: { from: 1, to: 3, loop: false, speed: 20 }
+        }
+    });
+    k.loadSprite("questionMark tower base", "/sprites/questionMark-tower-base.png");
+    k.loadSprite("hammer tower", "/sprites/hammer.png", {
+        sliceX: 1,
+        sliceY: 1,
+        anims: {
+            idle: 0
+        }
+    });
+    k.loadSprite("hammer handle", "/sprites/hammer-handle.png");
+    k.loadSprite("hammer head", "/sprites/hammer-head.png");
+    k.loadSprite("hammer tower base", "/sprites/hammer-tower-base.png");
+    k.loadSprite("hammer tower sprite", "/sprites/hammer-tower-sprite.png");
     k.loadSprite("fog", "/sprites/fog5.png");
     k.loadSprite("basic projectile", "/sprites/basic-projectile.png");
     k.loadSprite("slimeball", "/sprites/slimeball.png");
@@ -197,4 +217,11 @@ export default function loadAssets(k: KAPLAYCtx) {
     k.loadSprite("curse", "/sprites/curse-icon.png");
     k.loadSprite("frost particle", "/sprites/frost-particle.png");
     k.loadSprite("flame particle", "/sprites/flame-particle.png");
+    k.loadSprite("smash effect", "/sprites/hammer-smash-effect.png", {
+        sliceX: 4,
+        sliceY: 1,
+        anims: {
+            smash: { from: 0, to: 3, loop: false, speed: 10 }
+        }
+    });
 }

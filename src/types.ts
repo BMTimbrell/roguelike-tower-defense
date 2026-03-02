@@ -71,6 +71,13 @@ export type ProjectileDef = {
     anim?: string;
 };
 
+export type RandomProjectiles = {
+    projectile: ProjectileId;
+    element: ElementName;
+    behaviors?: ProjectileBehavior;
+    volley?: boolean;
+}[];
+
 export type UnitEffects = {
     firstEffect?: (ctx: AttackContext) => void;
     secondEffect?: (ctx: AttackContext) => void;
@@ -91,6 +98,7 @@ export type TowerDef = {
     anchorOffset: { x: number; y: number; };
     shootOffset: { x: number; y: number; };
     projectile: ProjectileId | null;
+    randomProjectiles?: RandomProjectiles;
     effects?: UnitEffects;
     canRotate: boolean;
     source: TowerSource;
@@ -104,6 +112,11 @@ export type TowerDef = {
     };
     targetType: "enemy" | "point";
     pathEntityLimit?: number;
+    melee?: {
+        meleeHandleSprite: string;
+        meleeHeadSprite: string;
+        handleLength: number;
+    }
 };
 
 export type UnitInstance = {
@@ -139,6 +152,7 @@ export type TowerInstance = UnitInstance & {
     };
     tileGrid: Tile[][];
     pathTiles: PathTile[];
+    randomProjectiles?: RandomProjectiles;
 };
 
 export type TowerGameObj = GameObj & TowerInstance;
@@ -343,6 +357,12 @@ export type AttackContext = {
     volley?: {
         volleyChance?: number;
     };
+
+    meleeAttack?: {
+        onImpact: (k: KAPLAYCtx, impactPos: Vec2) => void;
+        splashRadius: number;
+        swingTime: number;
+    }
 };
 
 export type EffectContext = {
