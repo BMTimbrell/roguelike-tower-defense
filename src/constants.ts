@@ -752,6 +752,29 @@ export const TOWERS = {
                 };
             }
         }]
+    },
+    icicle: {
+        name: "Icicle Tower",
+        gunSprite: "icicle tower",
+        baseSprite: "icicle tower base",
+        sprite: "icicle-tower-sprite.png",
+        description: "Shoots icicles. This tower has a high crit chance",
+        cost: 75,
+        stats: {
+            damage: 5,
+            range: 3,
+            fireInterval: 0.75,
+            critChance: 50,
+            critDamage: 100
+        },
+        element: "Ice",
+        gunOffset: { x: 2, y: 0 },
+        anchorOffset: { x: 4 / 32, y: 0 },
+        shootOffset: { x: -20, y: 0 },
+        projectile: "icicle",
+        canRotate: true,
+        source: "starting",
+        targetType: "enemy"
     }
 } as const satisfies Record<string, TowerDef>;
 
@@ -971,6 +994,12 @@ export const PROJECTILES = {
         sprite: "poop",
         homing: true,
         speed: 200,
+        splashRadius: 0
+    },
+    icicle: {
+        sprite: "icicle projectile",
+        homing: true,
+        speed: 300,
         splashRadius: 0
     }
 } as const satisfies Record<string, ProjectileDef>;
