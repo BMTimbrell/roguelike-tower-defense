@@ -115,7 +115,8 @@ export default function makeUnitCombat(
                 angle: gun.angle,
                 target: enemy,
                 homing: true,
-                bonusDamage: 0
+                bonusDamage: 0,
+                bonusCrit: 0
             };
 
             let element = opts.element;
@@ -128,6 +129,7 @@ export default function makeUnitCombat(
                 projectile = {
                     ...projectile,
                     ...(randomProjectile.behaviors ? { behaviors: randomProjectile.behaviors } : {}),
+                    bonusCrit: randomProjectile.behaviors?.critChance || 0,
                     id: randomProjectile.projectile
                 };
                 element = randomProjectile.element;
@@ -226,9 +228,12 @@ export default function makeUnitCombat(
 
             for (const p of ctx.projectiles) {
                 const bonusDamage = p?.bonusDamage ?? 0;
+                let bonusCrit = p?.bonusCrit ?? 0;
+                if (enemy.has("curse")) bonusCrit += 10;
+                
                 const { isCrit, damage } = calcDamage({
                     bonusDamage,
-                    bonusCritChance: enemy.has("curse") ? CURSE_CRIT : 0,
+                    bonusCritChance: bonusCrit,
                     critChance: opts.stats.critChance,
                     critDamage: opts.stats.critDamage,
                     damage: ctx.damage

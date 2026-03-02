@@ -74,7 +74,7 @@ export type ProjectileDef = {
 export type RandomProjectiles = {
     projectile: ProjectileId;
     element: ElementName;
-    behaviors?: ProjectileBehavior;
+    behaviors?: ProjectileBehavior & { critChance?: number };
     volley?: boolean;
 }[];
 
@@ -347,6 +347,7 @@ export type AttackContext = {
         turnSpeed?: number;
         behaviors?: ProjectileBehavior;
         bonusDamage?: number;
+        bonusCrit?: number;
         element?: ElementName;
     }[];
 

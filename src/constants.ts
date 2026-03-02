@@ -701,6 +701,13 @@ export const TOWERS = {
                 projectile: "basic",
                 element: "Normal"
             },
+            {
+                projectile: "icicle",
+                element: "Ice",
+                behaviors: {
+                    critChance: 45
+                }
+            }
         ],
         canRotate: true,
         source: "starting",
