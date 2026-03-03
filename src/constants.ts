@@ -724,17 +724,17 @@ export const TOWERS = {
                     animOnDestroy: "explode"
                 }
             },
-            { 
-                projectile: "arrow", 
+            {
+                projectile: "arrow",
                 element: "Normal",
                 behaviors: {
                     distanceDamageMultiplier: 0,
                     distanceDamageCap: 0.5
                 }
             },
-            { 
-                projectile: "fireball", 
-                element: "Fire" 
+            {
+                projectile: "fireball",
+                element: "Fire"
             },
             {
                 projectile: "star",
@@ -871,7 +871,7 @@ export const TOWERS = {
         shootOffset: { x: -40, y: 0 },
         projectile: "snowball",
         canRotate: true,
-        source: "starting",
+        source: "reward",
         targetType: "enemy",
         footprint: {
             w: 2,
@@ -882,6 +882,44 @@ export const TOWERS = {
                 ctx.projectiles.forEach(projectile => {
                     projectile.behaviors ??= {};
                     projectile.behaviors.animOnDestroy = "explode";
+                });
+            }
+        }]
+    },
+    shadowball: {
+        name: "Shadowball Tower",
+        gunSprite: "shadowball tower",
+        baseSprite: "shadowball tower base",
+        sprite: "shadowball-tower-sprite.png",
+        description: "Shoots a dark, shadowy blob that deals splash damage and has a 50% chance to bounce between enemies",
+        cost: 250,
+        stats: {
+            damage: 12,
+            range: 5,
+            fireInterval: 1.25,
+            critChance: 5,
+            critDamage: 100
+        },
+        element: "Dark",
+        gunOffset: { x: 5, y: -1 },
+        anchorOffset: { x: 10 / 64, y: -2 / 64 },
+        shootOffset: { x: -40, y: 0 },
+        projectile: "shadowball",
+        canRotate: true,
+        source: "starting",
+        targetType: "enemy",
+        footprint: {
+            w: 2,
+            h: 2
+        },
+        effects: [{
+            firstEffect(ctx) {
+                ctx.projectiles.forEach(projectile => {
+                    projectile.behaviors ??= {};
+                    projectile.behaviors.bounces ??= 100;
+                    projectile.behaviors.bounceChance ??= 0.5;
+                    projectile.behaviors.bounceRange ??= 4 * TILE_SIZE;
+                    projectile.behaviors.bounceDamageMultiplier ??= 1;
                 });
             }
         }]
@@ -1122,6 +1160,12 @@ export const PROJECTILES = {
     },
     snowball: {
         sprite: "snowball",
+        homing: true,
+        speed: 200,
+        splashRadius: 1.5
+    },
+    shadowball: {
+        sprite: "shadowball",
         homing: true,
         speed: 200,
         splashRadius: 1.5
