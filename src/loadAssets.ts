@@ -175,6 +175,15 @@ export default function loadAssets(k: KAPLAYCtx) {
             shoot: { from: 1, to: 5, loop: false, speed: 20 }
         }
     });
+    k.loadSprite("sludge bomb tower base", "/sprites/sludge-bomb-tower-base.png");
+    k.loadSprite("sludge bomb tower", "/sprites/sludge-bomb-tower.png", {
+        sliceX: 6,
+        sliceY: 1,
+        anims: {
+            idle: 0,
+            shoot: { from: 1, to: 5, loop: false, speed: 20 }
+        }
+    });
     k.loadSprite("shadowball tower base", "/sprites/shadowball-tower-base.png");
     k.loadSprite("fog", "/sprites/fog5.png");
     k.loadSprite("basic projectile", "/sprites/basic-projectile.png");
@@ -207,6 +216,13 @@ export default function loadAssets(k: KAPLAYCtx) {
         sliceY: 1,
         anims: {
             explode: { from: 1, to: 3, loop: false, speed: 20 }
+        }
+    });
+    k.loadSprite("sludge bomb", "/sprites/sludge-bomb.png", {
+        sliceX: 4,
+        sliceY: 1,
+        anims: {
+            explode: { from: 1, to: 3, loop: false, speed: 10 }
         }
     });
     k.loadSprite("shadowball", "/sprites/shadowball.png");

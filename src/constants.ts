@@ -906,7 +906,7 @@ export const TOWERS = {
         shootOffset: { x: -40, y: 0 },
         projectile: "shadowball",
         canRotate: true,
-        source: "starting",
+        source: "reward",
         targetType: "enemy",
         footprint: {
             w: 2,
@@ -920,6 +920,41 @@ export const TOWERS = {
                     projectile.behaviors.bounceChance ??= 0.5;
                     projectile.behaviors.bounceRange ??= 4 * TILE_SIZE;
                     projectile.behaviors.bounceDamageMultiplier ??= 1;
+                });
+            }
+        }]
+    },
+    sludgeBomb: {
+        name: "Sludge Bomb Tower",
+        gunSprite: "sludge bomb tower",
+        baseSprite: "sludge bomb tower base",
+        sprite: "sludge-bomb-tower-sprite.png",
+        description: "Shoots giant snowballs that deal splash damage",
+        cost: 200,
+        stats: {
+            damage: 20,
+            range: 5,
+            fireInterval: 1.25,
+            critChance: 5,
+            critDamage: 100
+        },
+        element: "Poison",
+        gunOffset: { x: 5, y: -1 },
+        anchorOffset: { x: 10 / 64, y: -2 / 64 },
+        shootOffset: { x: -40, y: 0 },
+        projectile: "sludgeBomb",
+        canRotate: true,
+        source: "reward",
+        targetType: "enemy",
+        footprint: {
+            w: 2,
+            h: 2
+        },
+        effects: [{
+            firstEffect(ctx) {
+                ctx.projectiles.forEach(projectile => {
+                    projectile.behaviors ??= {};
+                    projectile.behaviors.animOnDestroy = "explode";
                 });
             }
         }]
@@ -1169,7 +1204,13 @@ export const PROJECTILES = {
         homing: true,
         speed: 200,
         splashRadius: 1.5
-    }
+    },
+    sludgeBomb: {
+        sprite: "sludge bomb",
+        homing: true,
+        speed: 200,
+        splashRadius: 1.5
+    },
 } as const satisfies Record<string, ProjectileDef>;
 
 export type ProjectileId = keyof typeof PROJECTILES;
