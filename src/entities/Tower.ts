@@ -4,7 +4,7 @@ import type { TargetPriority, TowerGameObj, UnitEffects, TowerDef, SeedId, Tile,
 import { store, gameStateAtom } from '../store';
 import { calcUpgradeCost } from '../utils/calcUpgradeCost';
 import { TOWERS } from '../constants';
-import makePlaceableOnGrid from '../utils/makePlacementOnGrid';
+import makePlaceableOnGrid, { setBlockedTiles } from '../utils/makePlacementOnGrid';
 import makeUnitCombat from '../utils/makeUnitCombat';
 import setTowerUI from '../utils/setTowerUI';
 import { enemyTargetResolver, pathTargetResolver } from '../utils/targetingHelpers';
@@ -33,7 +33,8 @@ export default function makeTower(
         shootOffset,
         projectile,
         canRotate,
-        targetType
+        targetType,
+        footprint
     } = TOWERS[towerId];
 
     const priority: TargetPriority = "Most Progress";
@@ -43,7 +44,7 @@ export default function makeTower(
         k.pos(pos),
         k.color("#FFFFFF"),
         k.area({
-            shape: new k.Rect(k.vec2(0), 32, 32)
+            shape: new k.Rect(k.vec2(0), footprint.w * TILE_SIZE, footprint.h * TILE_SIZE)
         }),
         k.opacity(0.5),
         {
@@ -60,6 +61,7 @@ export default function makeTower(
             unlockedUpgradeSlots: 0,
             tileGrid,
             pathTiles,
+            footprint,
             upgrades: [],
             ...("effects" in TOWERS[towerId] ? { effects: TOWERS[towerId].effects as UnitEffects } : {}),
             ...("farmData" in TOWERS[towerId] ? {
@@ -114,7 +116,13 @@ export default function makeTower(
         if (tower.placed) {
             const gridX = Math.floor(tower.pos.x / TILE_SIZE);
             const gridY = Math.floor(tower.pos.y / TILE_SIZE);
-            tileGrid[gridY][gridX].blocked = false;
+            setBlockedTiles({
+                footprint: tower.footprint,
+                gridX,
+                gridY,
+                tileGrid: tower.tileGrid,
+                blocked: false
+            });
         }
         combat.destroy();
     });

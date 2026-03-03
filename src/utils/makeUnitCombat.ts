@@ -99,7 +99,7 @@ export default function makeUnitCombat(
         );
         gun.opacity = opts.owner.opacity;
         if (!opts.owner.placed) gun.use(k.color(opts.owner.color.r, opts.owner.color.g, opts.owner.color.b));
-        rangeCircle.pos = opts.owner.pos.add(TILE_SIZE / 2, TILE_SIZE / 2);
+        rangeCircle.pos = opts.owner.pos.add((opts.owner.footprint.w * TILE_SIZE) / 2, (opts.owner.footprint.h * TILE_SIZE) / 2);
         rangeCircle.use(k.circle(opts.stats.range * TILE_SIZE));
         rangeCircle.hidden = !opts.owner.selected && !opts.owner.hovered;
 
@@ -262,7 +262,7 @@ export default function makeUnitCombat(
 
             makePathEntity(k, {
                 ownerId: opts.owner.instanceId,
-                from: opts.owner.pos.add(TILE_SIZE / 2, TILE_SIZE / 2),
+                from: opts.owner.pos.add((opts.owner.footprint.w * TILE_SIZE) / 2, (opts.owner.footprint.h * TILE_SIZE) / 2),
                 targetPos: target.pos,
                 damage: opts.stats.damage,
                 critChance: opts.stats.critChance,

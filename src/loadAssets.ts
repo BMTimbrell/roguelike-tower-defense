@@ -150,7 +150,6 @@ export default function loadAssets(k: KAPLAYCtx) {
     k.loadSprite("hammer handle", "/sprites/hammer-handle.png");
     k.loadSprite("hammer head", "/sprites/hammer-head.png");
     k.loadSprite("hammer tower base", "/sprites/hammer-tower-base.png");
-    k.loadSprite("hammer tower sprite", "/sprites/hammer-tower-sprite.png");
     k.loadSprite("icicle tower", "/sprites/icicle-tower.png", {
         sliceX: 4,
         sliceY: 1,
@@ -160,7 +159,15 @@ export default function loadAssets(k: KAPLAYCtx) {
         }
     });
     k.loadSprite("icicle tower base", "/sprites/icicle-tower-base.png");
-    k.loadSprite("icicle tower sprite", "/sprites/icicle-tower-sprite.png");
+    k.loadSprite("snowball tower", "/sprites/snowball-tower.png", {
+        sliceX: 6,
+        sliceY: 1,
+        anims: {
+            idle: 0,
+            shoot: { from: 1, to: 5, loop: false, speed: 20 }
+        }
+    });
+    k.loadSprite("snowball tower base", "/sprites/snowball-tower-base.png");
     k.loadSprite("fog", "/sprites/fog5.png");
     k.loadSprite("basic projectile", "/sprites/basic-projectile.png");
     k.loadSprite("slimeball", "/sprites/slimeball.png");
@@ -187,6 +194,13 @@ export default function loadAssets(k: KAPLAYCtx) {
     k.loadSprite("star", "/sprites/star-projectile.png");
     k.loadSprite("poop", "/sprites/poop.png");
     k.loadSprite("icicle projectile", "/sprites/icicle-projectile.png");
+    k.loadSprite("snowball", "/sprites/snowball.png", {
+        sliceX: 4,
+        sliceY: 1,
+        anims: {
+            explode: { from: 1, to: 3, loop: false, speed: 20 }
+        }
+    });
     k.loadSprite("archer base", "/sprites/archer-base2.png");
     k.loadSprite("archer", "/sprites/archer2.png", {
         sliceX: 5,

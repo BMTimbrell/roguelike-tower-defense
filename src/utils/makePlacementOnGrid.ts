@@ -1,5 +1,5 @@
 import type { GameObj, KAPLAYCtx } from "kaplay"
-import type { Tile } from "../types";
+import type { Footprint, Tile } from "../types";
 
 export default function makePlaceableOnGrid(
     k: KAPLAYCtx,
@@ -14,13 +14,24 @@ export default function makePlaceableOnGrid(
         onCancel?: () => void;
     }
 ) {
+    function isFootprintBlocked(gridX: number, gridY: number) {
+        const { w = 1, h = 1 } = opts.obj.footprint ?? {};
+
+        for (let y = 0; y < h; y++) {
+            for (let x = 0; x < w; x++) {
+                const tile = opts.tileGrid[gridY + y]?.[gridX + x];
+                if (!tile || tile.blocked) return true;
+            }
+        }
+        return false;
+    }
+
     function updatePreview() {
         const mousePos = k.toWorld(k.mousePos());
         const gridX = Math.floor(mousePos.x / opts.tileSize);
         const gridY = Math.floor(mousePos.y / opts.tileSize);
 
-        const blocked =
-            opts.tileGrid[gridY]?.[gridX]?.blocked ?? true;
+        const blocked = isFootprintBlocked(gridX, gridY);
 
         opts.obj.pos = k.vec2(gridX * opts.tileSize, gridY * opts.tileSize);
         opts.obj.color = k.Color.fromHex(blocked || !opts.canConfirm() ? "#FF0000" : "#FFFFFF");
@@ -39,7 +50,14 @@ export default function makePlaceableOnGrid(
 
             const gridX = Math.floor(opts.obj.pos.x / opts.tileSize);
             const gridY = Math.floor(opts.obj.pos.y / opts.tileSize);
-            opts.tileGrid[gridY][gridX].blocked = true;
+
+            setBlockedTiles({
+                footprint: opts.obj.footprint,
+                gridX,
+                gridY,
+                tileGrid: opts.obj.tileGrid,
+                blocked: true
+            });
 
             opts.obj.use(k.color("#ffffff"));
             opts.obj.selected = false;
@@ -56,17 +74,21 @@ export default function makePlaceableOnGrid(
             k.destroy(opts.obj);
         }
     });
-
-    return {
-        tryReposition() {
-            if (!opts.obj.placed) return false;
-
-            const gridX = Math.floor(opts.obj.pos.x / opts.tileSize);
-            const gridY = Math.floor(opts.obj.pos.y / opts.tileSize);
-            opts.tileGrid[gridY][gridX].blocked = false;
-
-            opts.obj.placed = false;
-            return true;
-        },
-    }
 }
+
+export function setBlockedTiles(opts: {
+    footprint: Footprint;
+    tileGrid: Tile[][];
+    gridY: number;
+    gridX: number;
+    blocked: boolean;
+}) {
+        const { w, h } = opts.footprint;
+        const { tileGrid, gridY, gridX, blocked } = opts;
+
+        for (let y = 0; y < h; y++) {
+            for (let x = 0; x < w; x++) {
+                tileGrid[gridY + y][gridX + x].blocked = blocked;
+            }
+        }
+    }

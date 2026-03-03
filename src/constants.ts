@@ -253,7 +253,11 @@ export const TOWERS = {
         projectile: "basic",
         canRotate: true,
         source: "starting",
-        targetType: "enemy"
+        targetType: "enemy",
+        footprint: {
+            w: 1,
+            h: 1
+        }
     },
     fire: {
         name: "Fire Tower",
@@ -276,7 +280,11 @@ export const TOWERS = {
         projectile: "fireball",
         canRotate: true,
         source: "starting",
-        targetType: "enemy"
+        targetType: "enemy",
+        footprint: {
+            w: 1,
+            h: 1
+        }
     },
     slime: {
         name: "Slime Tower",
@@ -310,7 +318,11 @@ export const TOWERS = {
         }],
         canRotate: true,
         source: "starting",
-        targetType: "enemy"
+        targetType: "enemy",
+        footprint: {
+            w: 1,
+            h: 1
+        }
     },
     ice: {
         name: "Ice Tower",
@@ -339,7 +351,11 @@ export const TOWERS = {
         }],
         canRotate: false,
         source: "starting",
-        targetType: "enemy"
+        targetType: "enemy",
+        footprint: {
+            w: 1,
+            h: 1
+        }
     },
     lightning: {
         name: "Lightning Tower",
@@ -367,7 +383,11 @@ export const TOWERS = {
         }],
         canRotate: false,
         source: "starting",
-        targetType: "enemy"
+        targetType: "enemy",
+        footprint: {
+            w: 1,
+            h: 1
+        }
     },
     lux: {
         name: "Lux Tower",
@@ -390,7 +410,11 @@ export const TOWERS = {
         projectile: "lightOrb",
         canRotate: true,
         source: "starting",
-        targetType: "enemy"
+        targetType: "enemy",
+        footprint: {
+            w: 1,
+            h: 1
+        }
     },
     crow: {
         name: "Crow Tower",
@@ -425,7 +449,11 @@ export const TOWERS = {
         }],
         canRotate: false,
         source: "starting",
-        targetType: "enemy"
+        targetType: "enemy",
+        footprint: {
+            w: 1,
+            h: 1
+        }
     },
     bomb: {
         name: "Bomb Tower",
@@ -456,7 +484,11 @@ export const TOWERS = {
             }
         }],
         source: "starting",
-        targetType: "enemy"
+        targetType: "enemy",
+        footprint: {
+            w: 1,
+            h: 1
+        }
     },
     farm: {
         name: "Farm Tower",
@@ -484,7 +516,11 @@ export const TOWERS = {
             turnsRemaining: null
         },
         source: "starting",
-        targetType: "enemy"
+        targetType: "enemy",
+        footprint: {
+            w: 1,
+            h: 1
+        }
     },
     nightshade: {
         name: "Nightshade Tower",
@@ -518,7 +554,11 @@ export const TOWERS = {
             }
         }],
         source: "farm",
-        targetType: "enemy"
+        targetType: "enemy",
+        footprint: {
+            w: 1,
+            h: 1
+        }
     },
     chili: {
         name: "Chili Pepper Tower",
@@ -547,7 +587,11 @@ export const TOWERS = {
             }
         }],
         source: "farm",
-        targetType: "enemy"
+        targetType: "enemy",
+        footprint: {
+            w: 1,
+            h: 1
+        }
     },
     starfruit: {
         name: "Starfruit Tower",
@@ -578,7 +622,11 @@ export const TOWERS = {
             }
         }],
         source: "farm",
-        targetType: "enemy"
+        targetType: "enemy",
+        footprint: {
+            w: 1,
+            h: 1
+        }
     },
     time: {
         name: "Time Tower",
@@ -605,7 +653,11 @@ export const TOWERS = {
             growthPerSecond: 1.1
         },
         source: "starting",
-        targetType: "enemy"
+        targetType: "enemy",
+        footprint: {
+            w: 1,
+            h: 1
+        }
     },
     toilet: {
         name: "Toilet Tower",
@@ -629,7 +681,11 @@ export const TOWERS = {
         canRotate: false,
         source: "starting",
         targetType: "point",
-        pathEntityLimit: 30
+        pathEntityLimit: 30,
+        footprint: {
+            w: 1,
+            h: 1
+        }
     },
     questionMark: {
         name: "? Tower",
@@ -711,7 +767,11 @@ export const TOWERS = {
         ],
         canRotate: true,
         source: "starting",
-        targetType: "enemy"
+        targetType: "enemy",
+        footprint: {
+            w: 1,
+            h: 1
+        }
     },
     hammer: {
         name: "Hammer Tower",
@@ -758,7 +818,11 @@ export const TOWERS = {
                     }
                 };
             }
-        }]
+        }],
+        footprint: {
+            w: 1,
+            h: 1
+        }
     },
     icicle: {
         name: "Icicle Tower",
@@ -781,7 +845,46 @@ export const TOWERS = {
         projectile: "icicle",
         canRotate: true,
         source: "starting",
-        targetType: "enemy"
+        targetType: "enemy",
+        footprint: {
+            w: 1,
+            h: 1
+        }
+    },
+    snowball: {
+        name: "Snowball Tower",
+        gunSprite: "snowball tower",
+        baseSprite: "snowball tower base",
+        sprite: "snowball-tower-sprite.png",
+        description: "Shoots giant snowballs that deal splash damage",
+        cost: 200,
+        stats: {
+            damage: 20,
+            range: 5,
+            fireInterval: 1.25,
+            critChance: 5,
+            critDamage: 100
+        },
+        element: "Ice",
+        gunOffset: { x: 5, y: -1 },
+        anchorOffset: { x: 10 / 64, y: -2 / 64 },
+        shootOffset: { x: -40, y: 0 },
+        projectile: "snowball",
+        canRotate: true,
+        source: "starting",
+        targetType: "enemy",
+        footprint: {
+            w: 2,
+            h: 2
+        },
+        effects: [{
+            firstEffect(ctx) {
+                ctx.projectiles.forEach(projectile => {
+                    projectile.behaviors ??= {};
+                    projectile.behaviors.animOnDestroy = "explode";
+                });
+            }
+        }]
     }
 } as const satisfies Record<string, TowerDef>;
 
@@ -807,7 +910,11 @@ export const HEROES = {
         shootOffset: { x: 0, y: -5 },
         projectile: "arrow",
         canRotate: true,
-        targetType: "enemy"
+        targetType: "enemy",
+        footprint: {
+            w: 1,
+            h: 1
+        }
     },
     wizard: {
         name: "Wizard",
@@ -828,7 +935,11 @@ export const HEROES = {
         shootOffset: { x: 0, y: 0 },
         projectile: "arrow",
         canRotate: true,
-        targetType: "enemy"
+        targetType: "enemy",
+        footprint: {
+            w: 1,
+            h: 1
+        }
     }
 } as const satisfies Record<string, HeroDef>;
 
@@ -1008,6 +1119,12 @@ export const PROJECTILES = {
         homing: true,
         speed: 300,
         splashRadius: 0
+    },
+    snowball: {
+        sprite: "snowball",
+        homing: true,
+        speed: 200,
+        splashRadius: 1.5
     }
 } as const satisfies Record<string, ProjectileDef>;
 

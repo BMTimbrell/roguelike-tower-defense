@@ -85,6 +85,11 @@ export type UnitEffects = {
 
 export type TowerSource = "reward" | "starting" | "farm";
 
+export type Footprint = {
+    w: number;
+    h: number;
+};
+
 export type TowerDef = {
     name: string;
     cost: number;
@@ -116,7 +121,8 @@ export type TowerDef = {
         meleeHandleSprite: string;
         meleeHeadSprite: string;
         handleLength: number;
-    }
+    };
+    footprint: Footprint;
 };
 
 export type UnitInstance = {
@@ -132,6 +138,7 @@ export type UnitInstance = {
     canRotate: boolean;
     targetType: "enemy" | "point";
     pathEntityLimit?: number;
+    footprint: Footprint;
 };
 
 export type TowerInstance = UnitInstance & {
