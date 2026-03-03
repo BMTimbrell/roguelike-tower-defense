@@ -886,13 +886,13 @@ export const TOWERS = {
             }
         }]
     },
-    shadowball: {
-        name: "Shadowball Tower",
-        gunSprite: "shadowball tower",
-        baseSprite: "shadowball tower base",
-        sprite: "shadowball-tower-sprite.png",
+    shadowBall: {
+        name: "Shadow Ball Tower",
+        gunSprite: "shadow ball tower",
+        baseSprite: "shadow ball tower base",
+        sprite: "shadow-ball-tower-sprite.png",
         description: "Shoots a dark, shadowy blob that deals splash damage and has a 50% chance to bounce between enemies",
-        cost: 250,
+        cost: 5,
         stats: {
             damage: 12,
             range: 5,
@@ -904,9 +904,9 @@ export const TOWERS = {
         gunOffset: { x: 5, y: -1 },
         anchorOffset: { x: 10 / 64, y: -2 / 64 },
         shootOffset: { x: -40, y: 0 },
-        projectile: "shadowball",
+        projectile: "shadowBall",
         canRotate: true,
-        source: "reward",
+        source: "starting",
         targetType: "enemy",
         footprint: {
             w: 2,
@@ -1199,8 +1199,8 @@ export const PROJECTILES = {
         speed: 200,
         splashRadius: 1.5
     },
-    shadowball: {
-        sprite: "shadowball",
+    shadowBall: {
+        sprite: "shadow ball",
         homing: true,
         speed: 200,
         splashRadius: 1.5
