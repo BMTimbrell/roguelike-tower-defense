@@ -358,49 +358,18 @@ function aoeAttack(k: KAPLAYCtx, ctx: AttackContext, dmg: DamageResult) {
 }
 
 export function frostAoeBurst(k: KAPLAYCtx, pos: Vec2, radius: number) {
-    const baseCount = 8;
-    const count = Math.min(
-        baseCount + Math.floor(radius * 0.4),
-        100
-    );
-
-    for (let i = 0; i < count; i++) {
-        const angle = k.rand(0, Math.PI * 2);
-        const dist = k.rand(TILE_SIZE, radius);
-
-        const offset = k.vec2(
-            Math.cos(angle),
-            Math.sin(angle)
-        ).scale(dist);
-
-        const life = k.rand(0.25, 0.45);
-        const startScale = k.rand(1, 2);
-
-        const frost = k.add([
-            k.pos(pos.add(offset)),
-            k.sprite("frost particle"),
-            k.opacity(0.8),
-            k.scale(startScale),
-            k.lifespan(life),
-            {
-                time: 0,
-
-                update() {
-                    frost.time += k.dt();
-                    const t = frost.time / life;
-
-                    frost.opacity = 0.8 * (1 - t);
-
-                    frost.scale = k.vec2(startScale * (1 - t));
-
-                    frost.pos.y -= 6 * k.dt();
-                },
-            },
-        ]);
-    }
+    aoeBurst(k, pos, radius, "frost particle");
 }
 
 export function flameAoeBurst(k: KAPLAYCtx, pos: Vec2, radius: number) {
+    aoeBurst(k, pos, radius, "flame particle");
+}
+
+export function electricAoeBurst(k: KAPLAYCtx, pos: Vec2, radius: number) {
+    aoeBurst(k, pos, radius, "electric particle");
+}
+
+function aoeBurst(k: KAPLAYCtx, pos: Vec2, radius: number, particle: string) {
     const baseCount = 8;
     const count = Math.min(
         baseCount + Math.floor(radius * 0.4),
@@ -419,9 +388,10 @@ export function flameAoeBurst(k: KAPLAYCtx, pos: Vec2, radius: number) {
         const life = k.rand(0.25, 0.45);
         const startScale = k.rand(1, 2);
 
-        const flame = k.add([
+        const p = k.add([
             k.pos(pos.add(offset)),
-            k.sprite("flame particle"),
+            k.sprite(particle),
+            k.anchor("center"),
             k.opacity(0.8),
             k.scale(startScale),
             k.lifespan(life),
@@ -429,14 +399,14 @@ export function flameAoeBurst(k: KAPLAYCtx, pos: Vec2, radius: number) {
                 time: 0,
 
                 update() {
-                    flame.time += k.dt();
-                    const t = flame.time / life;
+                    p.time += k.dt();
+                    const t = p.time / life;
 
-                    flame.opacity = 0.8 * (1 - t);
+                    p.opacity = 0.8 * (1 - t);
 
-                    flame.scale = k.vec2(startScale * (1 - t));
+                    p.scale = k.vec2(startScale * (1 - t));
 
-                    flame.pos.y -= 6 * k.dt();
+                    p.pos.y -= 6 * k.dt();
                 },
             },
         ]);

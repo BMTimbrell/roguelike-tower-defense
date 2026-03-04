@@ -5,7 +5,7 @@ import poisonEffect from "./kaplayComponents/poisonEffect";
 import chillEffect from "./kaplayComponents/chillEffect";
 import chargeEffect from "./kaplayComponents/chargeEffect";
 import curseEffect from "./kaplayComponents/curseEffect";
-import { flameAoeBurst, frostAoeBurst } from "./utils/makeUnitCombat";
+import { electricAoeBurst, flameAoeBurst, frostAoeBurst } from "./utils/makeUnitCombat";
 
 export const VIRTUAL_WIDTH = 800;
 export const VIRTUAL_HEIGHT = 600;
@@ -24,8 +24,8 @@ export const CHARGE_DAMAGE_REQUIRED = 80;
 export const CHILL_PERCENT = 6;
 export const MAX_CHILL_STACKS = 5;
 export const ICE_DAMAGE_PER_STACK = 10;
-export const MAX_CHARGE_STACKS = 3;
-export const STUN_PERCENTAGES = [10, 20, 40];
+export const MAX_CHARGE_STACKS = 5;
+export const STUN_PERCENTAGES = [5, 10, 30, 50, 60];
 export const STUN_DURATION = 1;
 export const CURSE_CRIT = 10;
 export const TIME_TOWER_BASE_ANIM_SPEED = 30;
@@ -1025,6 +1025,39 @@ export const TOWERS = {
         effects: [{
             firstEffect(ctx) {
                 ctx.attackType = "piercing_laser";
+            }
+        }]
+    },
+    balloon: {
+        name: "Balloon Tower",
+        gunSprite: "balloon tower",
+        baseSprite: "balloon tower base",
+        sprite: "balloon-tower-sprite.png",
+        description: "Mechanical arms rub a giant balloon, zapping all enemies in range",
+        cost: 250,
+        stats: {
+            damage: 8,
+            range: 3,
+            fireInterval: 1.25,
+            critChance: 5,
+            critDamage: 100
+        },
+        element: "Electric",
+        gunOffset: { x: 0, y: 0 },
+        anchorOffset: { x: 0, y: 0 },
+        shootOffset: { x: 0, y: 0 },
+        projectile: null,
+        canRotate: false,
+        source: "reward",
+        targetType: "enemy",
+        footprint: {
+            w: 2,
+            h: 2
+        },
+        effects: [{
+            firstEffect(ctx) {
+                ctx.attackType = "aoe";
+                ctx.visualEffect = electricAoeBurst;
             }
         }]
     }

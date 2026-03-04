@@ -115,7 +115,7 @@ export function enemyTargetResolver(k: KAPLAYCtx, owner: TowerGameObj): TargetRe
         const enemy = selectTarget(
             k.get("enemy") as EnemyGameObj[],
             owner,
-            owner.pos.add(TILE_SIZE / 2, TILE_SIZE / 2)
+            owner.pos.add((owner.footprint.w * TILE_SIZE) / 2, (owner.footprint.h * TILE_SIZE) / 2)
         );
 
         return enemy ? { type: "enemy", enemy } : null;
@@ -128,7 +128,7 @@ export function pathTargetResolver(
     owner: TowerGameObj
 ): TargetResolver {
     return () => {
-        const origin = owner.pos.add(TILE_SIZE / 2, TILE_SIZE / 2);
+        const origin = owner.pos.add((owner.footprint.w * TILE_SIZE) / 2, (owner.footprint.h * TILE_SIZE) / 2);
         const inRange = pathTiles.filter(t =>
             k.vec2(t.x * TILE_SIZE + TILE_SIZE / 2, t.y * TILE_SIZE + TILE_SIZE / 2).
                 dist(origin) <= owner.stats.range * TILE_SIZE + TOWER_RANGE_TOLERANCE
