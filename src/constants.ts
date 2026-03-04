@@ -196,7 +196,7 @@ export const LEVEL_WAVES = {
                     { id: "skeleton", count: 5, interval: 1 },
                     { id: "slime", count: 5, interval: 0.75 }
                 ],
-                reward: 80
+                reward: 200
             }
         ],
     },
@@ -345,7 +345,7 @@ export const TOWERS = {
         projectile: null,
         effects: [{
             firstEffect(ctx) {
-                ctx.aoeAttack = true;
+                ctx.attackType = "aoe";
                 ctx.visualEffect = frostAoeBurst;
             }
         }],
@@ -378,7 +378,7 @@ export const TOWERS = {
         projectile: null,
         effects: [{
             firstEffect(ctx) {
-                ctx.lightningAttack = true;
+                ctx.attackType = "lightning";
             }
         }],
         canRotate: false,
@@ -582,7 +582,7 @@ export const TOWERS = {
         canRotate: false,
         effects: [{
             firstEffect(ctx) {
-                ctx.aoeAttack = true;
+                ctx.attackType = "aoe";
                 ctx.visualEffect = flameAoeBurst;
             }
         }],
@@ -802,7 +802,12 @@ export const TOWERS = {
         },
         effects: [{
             firstEffect(ctx) {
+                if (!ctx.meleeAttack) return;
+
+                ctx.attackType = "melee";
+
                 ctx.meleeAttack = {
+                    ...ctx.meleeAttack,
                     splashRadius: 1.3,
                     swingTime: 0.25,
                     onImpact(k, impactPos) {
@@ -857,7 +862,7 @@ export const TOWERS = {
         baseSprite: "snowball tower base",
         sprite: "snowball-tower-sprite.png",
         description: "Shoots giant snowballs that deal splash damage",
-        cost: 200,
+        cost: 250,
         stats: {
             damage: 20,
             range: 5,
@@ -892,7 +897,7 @@ export const TOWERS = {
         baseSprite: "shadow ball tower base",
         sprite: "shadow-ball-tower-sprite.png",
         description: "Shoots a dark, shadowy blob that deals splash damage and has a 50% chance to bounce between enemies",
-        cost: 5,
+        cost: 300,
         stats: {
             damage: 12,
             range: 5,
@@ -906,7 +911,7 @@ export const TOWERS = {
         shootOffset: { x: -40, y: 0 },
         projectile: "shadowBall",
         canRotate: true,
-        source: "starting",
+        source: "reward",
         targetType: "enemy",
         footprint: {
             w: 2,
@@ -929,8 +934,8 @@ export const TOWERS = {
         gunSprite: "sludge bomb tower",
         baseSprite: "sludge bomb tower base",
         sprite: "sludge-bomb-tower-sprite.png",
-        description: "Shoots giant snowballs that deal splash damage",
-        cost: 200,
+        description: "Shoots a giant ball of sludge that deals splash damage",
+        cost: 225,
         stats: {
             damage: 20,
             range: 5,
@@ -956,6 +961,70 @@ export const TOWERS = {
                     projectile.behaviors ??= {};
                     projectile.behaviors.animOnDestroy = "explode";
                 });
+            }
+        }]
+    },
+    sniper: {
+        name: "Sniper Tower",
+        gunSprite: "sniper tower",
+        baseSprite: "sniper tower base",
+        sprite: "sniper-tower-sprite.png",
+        description: "Deals devastating damage to targets at a great range",
+        cost: 350,
+        stats: {
+            damage: 70,
+            range: 8,
+            fireInterval: 3,
+            critChance: 5,
+            critDamage: 100
+        },
+        element: "Light",
+        gunOffset: { x: 10, y: -1 },
+        anchorOffset: { x: 20 / 64, y: -2 / 64 },
+        shootOffset: { x: -40, y: 0 },
+        projectile: null,
+        canRotate: true,
+        source: "reward",
+        targetType: "enemy",
+        footprint: {
+            w: 2,
+            h: 2
+        },
+        effects: [{
+            firstEffect(ctx) {
+                ctx.attackType = "sniper_laser";
+            }
+        }]
+    },
+    laserCanon: {
+        name: "Laser Cannon Tower",
+        gunSprite: "laser cannon tower",
+        baseSprite: "laser cannon tower base",
+        sprite: "laser-cannon-tower-sprite.png",
+        description: "Shoots a giant laser beam that damages all enemies in its path",
+        cost: 300,
+        stats: {
+            damage: 30,
+            range: 5,
+            fireInterval: 2.5,
+            critChance: 5,
+            critDamage: 100
+        },
+        element: "Light",
+        gunOffset: { x: 5, y: -1 },
+        anchorOffset: { x: 10 / 64, y: -2 / 64 },
+        shootOffset: { x: -40, y: 1 },
+        projectile: null,
+        canRotate: true,
+        source: "reward",
+        targetType: "enemy",
+        footprint: {
+            w: 2,
+            h: 2
+        },
+        effects: [{
+            firstEffect(ctx) {
+                ctx.attackType = "piercing_laser";
             }
         }]
     }

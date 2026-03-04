@@ -186,6 +186,24 @@ export default function loadAssets(k: KAPLAYCtx) {
             shoot: { from: 1, to: 5, loop: false, speed: 20 }
         }
     });
+    k.loadSprite("sniper tower base", "/sprites/sniper-tower-base.png");
+    k.loadSprite("sniper tower", "/sprites/sniper-tower.png", {
+        sliceX: 4,
+        sliceY: 1,
+        anims: {
+            idle: 0,
+            shoot: { from: 1, to: 3, loop: false, speed: 20 }
+        }
+    });
+    k.loadSprite("laser cannon tower base", "/sprites/laser-cannon-tower-base.png");
+    k.loadSprite("laser cannon tower", "/sprites/laser-cannon-tower.png", {
+        sliceX: 4,
+        sliceY: 1,
+        anims: {
+            idle: 0,
+            shoot: { from: 1, to: 3, loop: false, speed: 20 }
+        }
+    });
     k.loadSprite("fog", "/sprites/fog5.png");
     k.loadSprite("basic projectile", "/sprites/basic-projectile.png");
     k.loadSprite("slimeball", "/sprites/slimeball.png");
@@ -275,4 +293,5 @@ export default function loadAssets(k: KAPLAYCtx) {
             smash: { from: 0, to: 3, loop: false, speed: 10 }
         }
     });
+    k.loadSprite("sniper laser", "/sprites/sniper-laser.png");
 }

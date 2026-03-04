@@ -1,6 +1,6 @@
 import { type MouseEventHandler } from "react";
 import { TILE_SIZE, type EnemyId, type HeroId, type ProjectileId, type SkillId, type TowerId } from "./constants";
-import type { Vec2, GameObj, KAPLAYCtx, HealthComp, SpriteComp, StateComp, TimerComp, RotateComp, PosComp } from "kaplay";
+import type { Vec2, GameObj, KAPLAYCtx, HealthComp, SpriteComp, StateComp, TimerComp, RotateComp, PosComp, Game } from "kaplay";
 import { frostAoeBurst } from "./utils/makeUnitCombat";
 
 type LayerObj = {
@@ -338,11 +338,14 @@ export type EnemyConfig = {
 
 export type AttackContext = {
     attacker: TowerGameObj | HeroGameObj;
+    gun: GameObj;
     target?: EnemyGameObj;
     origin: Vec2;
 
     damage: number;
     element: ElementName;
+
+    attackType: AttackType;
 
     projectiles: {
         id: ProjectileId;
@@ -358,18 +361,22 @@ export type AttackContext = {
         element?: ElementName;
     }[];
 
-    aoeAttack: boolean;
     visualEffect: typeof frostAoeBurst | null;
-    lightningAttack: boolean;
+    lightning?: {
+        maxChains: number;
+        range: number;
+    };
 
     volley?: {
         volleyChance?: number;
     };
 
     meleeAttack?: {
-        onImpact: (k: KAPLAYCtx, impactPos: Vec2) => void;
-        splashRadius: number;
-        swingTime: number;
+        onImpact?: (k: KAPLAYCtx, impactPos: Vec2) => void;
+        splashRadius?: number;
+        swingTime?: number;
+        meleeHead: GameObj;
+        meleeHandle: GameObj;
     }
 };
 
@@ -409,3 +416,10 @@ export type AttackTarget =
     | { type: "point"; pos: Vec2; pathIndex?: number };
 
 export type TargetResolver = () => AttackTarget | null;
+
+export type AttackType = "projectile" | "lightning" | "sniper_laser" | "piercing_laser" | "beam_continuous" | "aoe" | "melee";
+
+export type DamageResult = {
+    damage: number;
+    isCrit: boolean;
+};

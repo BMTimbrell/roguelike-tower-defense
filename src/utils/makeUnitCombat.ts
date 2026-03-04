@@ -1,5 +1,5 @@
 import type { GameObj, KAPLAYCtx, Vec2 } from "kaplay";
-import type { AttackContext, AttackTarget, ElementName, EnemyGameObj, HeroGameObj, RandomProjectiles, TargetResolver, TowerGameObj } from "../types";
+import type { AttackContext, AttackTarget, DamageResult, ElementName, EnemyGameObj, HeroGameObj, RandomProjectiles, TargetResolver, TowerGameObj } from "../types";
 import { CURSE_CRIT, TILE_SIZE, TIME_TOWER_BASE_ANIM_SPEED, TOWER_RANGE_TOLERANCE, type ProjectileId } from "../constants";
 import makeProjectile from "../entities/Projectile";
 import { rotateVector, shortestAngleDiff } from "./targetingHelpers";
@@ -8,6 +8,8 @@ import calcDamage from "./calcDamage";
 import hurtEnemy from "./hurtEnemy";
 import makePathEntity from "../entities/PathEntity";
 import { gameStateAtom, store } from "../store";
+import drawLaser from "./drawLaser";
+import isEnemyOnRay from "./isEnemyOnRay";
 
 export default function makeUnitCombat(
     k: KAPLAYCtx,
@@ -39,6 +41,9 @@ export default function makeUnitCombat(
         k.anchor(opts.anchorOffset),
         k.rotate(),
         k.opacity(1),
+        {
+            shootOffset: opts.shootOffset
+        },
         k.state("idle", ["idle", "tracking", "meleeSwing"])
     ]);
 
@@ -148,11 +153,17 @@ export default function makeUnitCombat(
                 attacker: opts.owner,
                 target: enemy,
                 origin: gun.pos,
+                gun: gun,
                 damage: opts.stats.damage,
                 element,
-                aoeAttack: false,
                 visualEffect: null,
-                lightningAttack: false,
+                ...(meleeHead && meleeHandle ? {
+                    meleeAttack: {
+                        meleeHead,
+                        meleeHandle
+                    }
+                } : {}),
+                attackType: "projectile",
                 ...(volley ? { volley: { volleyChance: 100 } } : {}),
                 projectiles: opts.projectile ? [projectile] : []
             };
@@ -167,44 +178,17 @@ export default function makeUnitCombat(
                 damage: ctx.damage
             });
 
-            if (ctx.aoeAttack) {
-                aoeAttack(k, ctx, { damage, isCrit });
-            }
+            opts.owner.effects?.forEach(e => e.secondEffect?.(ctx));
 
-            if (ctx.meleeAttack) {
-                meleeAttack(k, ctx, {
-                    damage,
-                    isCrit
-                });
-            }
+            const rotatedOffset = rotateVector(
+                k,
+                k.vec2(opts.shootOffset.x, opts.shootOffset.y),
+                gun.angle * Math.PI / 180
+            );
 
-            if (ctx.target && ctx.lightningAttack) {
-                const chain = resolveChain(k, {
-                    startPos: ctx.origin,
-                    target: ctx.target,
-                    damage,
-                    isCrit,
-                    element: ctx.element,
-                    maxChains: 3,
-                    range: TILE_SIZE * 5
-                });
+            ctx.origin = ctx.origin.add(rotatedOffset);
 
-                const lightning = k.add([
-                    k.pos(0, 0),
-                    k.lifespan(0.2),
-                    k.opacity(1),
-                    {
-                        segments: [] as Vec2[][],
-                        update() {
-                            lightning.segments = buildLightningSegments(k, chain);
-                        },
-                        draw() {
-                            lightning.segments.forEach(points => drawLightning(k, points));
-                        }
-                    }
-                ]);
-
-            }
+            executeAttack(k, ctx, { damage, isCrit });
 
             if (!ctx.projectiles) return;
 
@@ -218,19 +202,11 @@ export default function makeUnitCombat(
                 ];
             }
 
-            opts.owner.effects?.forEach(e => e.secondEffect?.(ctx));
-
-            const rotatedOffset = rotateVector(
-                k,
-                k.vec2(opts.shootOffset.x, opts.shootOffset.y),
-                gun.angle * Math.PI / 180
-            );
-
             for (const p of ctx.projectiles) {
                 const bonusDamage = p?.bonusDamage ?? 0;
                 let bonusCrit = p?.bonusCrit ?? 0;
                 if (enemy.has("curse")) bonusCrit += 10;
-                
+
                 const { isCrit, damage } = calcDamage({
                     bonusDamage,
                     bonusCritChance: bonusCrit,
@@ -241,7 +217,7 @@ export default function makeUnitCombat(
 
                 const projectile = makeProjectile(k, {
                     id: p.id,
-                    pos: ctx.origin.add(rotatedOffset),
+                    pos: ctx.origin,
                     target: enemy,
                     damage: damage,
                     crit: isCrit,
@@ -321,49 +297,6 @@ export default function makeUnitCombat(
         }
     }
 
-    function meleeAttack(
-        k: KAPLAYCtx,
-        ctx: AttackContext,
-        opts: {
-            damage: number;
-            isCrit: boolean;
-        }
-    ) {
-        const { damage, isCrit } = opts;
-        const { meleeAttack, element, origin, target } = ctx;
-        const { handleLength } = ctx.attacker.melee;
-
-        if (!target) return;
-        if (!meleeAttack) return;
-        const { splashRadius, swingTime, onImpact } = meleeAttack;
-
-        const dir = target.pos.sub(origin);
-        const dist = dir.len();
-
-        gun.enterState("meleeSwing", {
-            dir,
-            distance: dist - handleLength,
-            swingTime: swingTime ?? 0.15,
-            handleLength
-        });
-
-        k.wait(swingTime ?? 0.15, () => {
-            if (splashRadius) {
-                (k.get("enemy") as EnemyGameObj[]).forEach(e => {
-                    if (e.pos.dist(target.pos) < splashRadius * TILE_SIZE) hurtEnemy(k, { target: e, damage, isCrit, element });
-                });
-            } else {
-                hurtEnemy(k, { target, damage, isCrit, element });
-            }
-            if (meleeHandle && meleeHead) {
-                meleeHandle.scale.x = 1;
-                meleeHead.scale.x = 1;
-            }
-            gun.enterState("idle");
-            onImpact(k, target.pos);
-        });
-    }
-
     gun.onStateEnter("meleeSwing", ({
         dir,
         distance,
@@ -406,8 +339,8 @@ export default function makeUnitCombat(
     };
 }
 
-function aoeAttack(k: KAPLAYCtx, ctx: AttackContext, opts: { isCrit: boolean; damage: number; }) {
-    const { isCrit, damage } = opts;
+function aoeAttack(k: KAPLAYCtx, ctx: AttackContext, dmg: DamageResult) {
+    const { isCrit, damage } = dmg;
     const visualEffect = ctx.visualEffect;
 
     if (visualEffect) visualEffect(k, ctx.origin, ctx.attacker.stats.range * TILE_SIZE);
@@ -509,3 +442,140 @@ export function flameAoeBurst(k: KAPLAYCtx, pos: Vec2, radius: number) {
         ]);
     }
 }
+
+function executeAttack(k: KAPLAYCtx, ctx: AttackContext, dmg: DamageResult) {
+    switch (ctx.attackType) {
+        case "sniper_laser":
+            sniperLaserAttack(k, ctx, dmg);
+            break;
+
+        case "piercing_laser":
+            piercingLaserAttack(k, ctx, dmg);
+            break;
+
+        // case "beam_continuous":
+        //     continuousBeamAttack(k, ctx);
+        //     break;
+
+        case "lightning":
+            lightningAttack(k, ctx, dmg);
+            break;
+
+        case "aoe":
+            aoeAttack(k, ctx, dmg);
+            break;
+        case "melee":
+            meleeAttack(k, ctx, dmg);
+    }
+}
+
+function lightningAttack(k: KAPLAYCtx, ctx: AttackContext, dmg: DamageResult) {
+    if (!ctx.target) return;
+    const { damage, isCrit } = dmg;
+
+    const chain = resolveChain(k, {
+        startPos: ctx.origin,
+        target: ctx.target,
+        damage,
+        isCrit,
+        element: ctx.element,
+        maxChains: 3,
+        range: TILE_SIZE * 5
+    });
+
+    const lightning = k.add([
+        k.pos(0, 0),
+        k.lifespan(0.2),
+        k.opacity(1),
+        {
+            segments: [] as Vec2[][],
+            update() {
+                lightning.segments = buildLightningSegments(k, chain);
+            },
+            draw() {
+                lightning.segments.forEach(points => drawLightning(k, points));
+            }
+        }
+    ]);
+}
+
+function meleeAttack(
+    k: KAPLAYCtx,
+    ctx: AttackContext,
+    opts: {
+        damage: number;
+        isCrit: boolean;
+    }
+) {
+    if (!ctx.meleeAttack) return;
+
+    const { damage, isCrit } = opts;
+    const { meleeAttack, element, origin, target, gun } = ctx;
+    const { meleeHead, meleeHandle } = ctx.meleeAttack;
+    const { handleLength } = ctx.attacker.melee;
+
+    if (!target) return;
+
+    const { splashRadius, swingTime, onImpact } = meleeAttack;
+
+    const dir = target.pos.sub(origin);
+    const dist = dir.len();
+
+    gun.enterState("meleeSwing", {
+        dir,
+        distance: dist - handleLength,
+        swingTime: swingTime ?? 0.15,
+        handleLength
+    });
+
+    k.wait(swingTime ?? 0.15, () => {
+        if (splashRadius) {
+            (k.get("enemy") as EnemyGameObj[]).forEach(e => {
+                if (e.pos.dist(target.pos) < splashRadius * TILE_SIZE) hurtEnemy(k, { target: e, damage, isCrit, element });
+            });
+        } else {
+            hurtEnemy(k, { target, damage, isCrit, element });
+        }
+        if (meleeHandle && meleeHead) {
+            meleeHandle.scale.x = 1;
+            meleeHead.scale.x = 1;
+        }
+        gun.enterState("idle");
+        if (onImpact) onImpact(k, target.pos);
+    });
+}
+
+function sniperLaserAttack(
+    k: KAPLAYCtx,
+    ctx: AttackContext,
+    dmg: DamageResult
+) {
+    if (!ctx.target) return;
+
+    const { damage, isCrit } = dmg;
+
+    drawLaser(k, ctx.origin, ctx.target.pos, 24, 0.04);
+    hurtEnemy(k, { target: ctx.target, damage, isCrit, element: ctx.element });
+}
+
+function piercingLaserAttack(
+    k: KAPLAYCtx,
+    ctx: AttackContext,
+    dmg: DamageResult
+) {
+    if (!ctx.target) return;
+
+    const { damage, isCrit } = dmg;
+    const dir = ctx.target.pos.sub(ctx.origin).unit();
+    const range = ctx.origin.dist(ctx.target.pos);
+
+    drawLaser(k, ctx.origin, ctx.target.pos, 106, 0.24);
+
+    (k.get("enemy") as EnemyGameObj[]).forEach(e => {
+        if (isEnemyOnRay(e, ctx.origin, dir, range, 48)) {
+            hurtEnemy(k, { target: e, damage, isCrit, element: ctx.element });
+        }
+    });
+}
+
+
