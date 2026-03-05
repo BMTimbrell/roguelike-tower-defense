@@ -1099,6 +1099,113 @@ export const TOWERS = {
             w: 2,
             h: 2
         }
+    },
+    storm: {
+        name: "Storm Tower",
+        gunSprite: "storm tower",
+        baseSprite: "storm tower base",
+        sprite: "storm-tower-sprite.png",
+        description: "Summons storm clouds that damage enemies in a small area",
+        cost: 350,
+        stats: {
+            damage: 80,
+            range: 7,
+            fireInterval: 4,
+            critChance: 5,
+            critDamage: 100
+        },
+        element: "Electric",
+        gunOffset: { x: 10, y: -1 },
+        anchorOffset: { x: 20 / 64, y: -2 / 64 },
+        shootOffset: { x: -40, y: 0 },
+        projectile: null,
+        canRotate: false,
+        source: "reward",
+        targetType: "enemy",
+        footprint: {
+            w: 2,
+            h: 2
+        },
+        effects: [{
+            firstEffect(ctx) {
+                ctx.attackType = "thunder";
+            }
+        }]
+    },
+    frostBallista: {
+        name: "Frost Ballista Tower",
+        gunSprite: "frost ballista tower",
+        baseSprite: "frost ballista tower base",
+        sprite: "frost-ballista-tower-sprite.png",
+        description: "Shoots a giant frozen arrow that deals increased damage depending on distance travelled (up to 100%)",
+        cost: 180,
+        stats: {
+            damage: 15,
+            range: 6,
+            fireInterval: 1.5,
+            critChance: 5,
+            critDamage: 100
+        },
+        element: "Ice",
+        gunOffset: { x: 0, y: 0 },
+        anchorOffset: { x: 0, y: 0 },
+        shootOffset: { x: 0, y: 0 },
+        projectile: "frostArrow",
+        canRotate: true,
+        source: "reward",
+        targetType: "enemy",
+        footprint: {
+            w: 2,
+            h: 2
+        },
+        effects: [{
+            firstEffect(ctx) {
+                ctx.projectiles.forEach(projectile => {
+                    projectile.behaviors ??= {};
+                    projectile.behaviors.distanceDamageMultiplier ??= 0;
+                    projectile.behaviors.damagePerTile = 0.1;
+                    projectile.behaviors.distanceDamageCap = 1;
+                });
+            }
+        }]
+    },
+    skull: {
+        name: "Skull Tower",
+        gunSprite: "skull tower",
+        baseSprite: "skull tower base",
+        sprite: "skull-tower-sprite.png",
+        description: "Shoots ghostly skulls that have bonus crit chance when targeting low health enemies",
+        cost: 225,
+        stats: {
+            damage: 15,
+            range: 5,
+            fireInterval: 1.5,
+            critChance: 5,
+            critDamage: 100
+        },
+        element: "Dark",
+        gunOffset: { x: 0, y: 2 },
+        anchorOffset: { x: 0, y: 4 / 64 },
+        shootOffset: { x: -25, y: 0 },
+        projectile: "ghostlySkull",
+        canRotate: true,
+        source: "reward",
+        targetType: "enemy",
+        footprint: {
+            w: 2,
+            h: 2
+        },
+        effects: [{
+            firstEffect(ctx) {
+                ctx.projectiles.forEach(projectile => {
+                    const maxHp = ctx.target?.maxHP() ?? 1;
+                    const hp = ctx.target?.hp() ?? 0;
+                    const missingHealthPercent = 1 - hp / maxHp;
+
+                    projectile.bonusCrit = 100 * missingHealthPercent * 0.8;
+                });
+            }
+        }]
     }
 } as const satisfies Record<string, TowerDef>;
 
@@ -1357,6 +1464,18 @@ export const PROJECTILES = {
         homing: true,
         speed: 200,
         splashRadius: 1.5
+    },
+    frostArrow: {
+        sprite: "frost arrow",
+        homing: true,
+        speed: 300,
+        splashRadius: 0
+    },
+    ghostlySkull: {
+        sprite: "ghostly skull",
+        homing: true,
+        speed: 200,
+        splashRadius: 0
     }
 } as const satisfies Record<string, ProjectileDef>;
 

@@ -392,6 +392,7 @@ export type ProjectileBehavior = {
     bounceChance?: number;
     distanceDamageMultiplier?: number;
     distanceDamageCap?: number;
+    damagePerTile?: number;
     persistent?: {
         owner: TowerGameObj;
         state: "flying" | "attached" | "returning";
@@ -417,7 +418,7 @@ export type AttackTarget =
 
 export type TargetResolver = () => AttackTarget | null;
 
-export type AttackType = "projectile" | "lightning" | "sniper_laser" | "piercing_laser" | "beam_continuous" | "aoe" | "melee";
+export type AttackType = "projectile" | "lightning" | "sniper_laser" | "piercing_laser" | "beam_continuous" | "aoe" | "melee" | "thunder";
 
 export type DamageResult = {
     damage: number;

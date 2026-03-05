@@ -114,7 +114,7 @@ export default function makeProjectile(k: KAPLAYCtx, opts: {
         if (behaviors?.distanceDamageCap && behaviors.distanceDamageCap > distanceDamageMultiplier) {
             distance += k.dt() * speed;
             const distanceTiles = distance / TILE_SIZE;
-            distanceDamageMultiplier = Math.min(distanceTiles * 0.05, behaviors.distanceDamageCap);
+            distanceDamageMultiplier = Math.min(distanceTiles * (behaviors.damagePerTile ?? 0.05), behaviors.distanceDamageCap);
             damage = Math.round(baseDamage + baseDamage * distanceDamageMultiplier);
         }
 

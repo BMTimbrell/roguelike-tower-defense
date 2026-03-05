@@ -205,6 +205,7 @@ export default function makeUnitCombat(
             for (const p of ctx.projectiles) {
                 const bonusDamage = p?.bonusDamage ?? 0;
                 let bonusCrit = p?.bonusCrit ?? 0;
+
                 if (enemy.has("curse")) bonusCrit += 10;
 
                 const { isCrit, damage } = calcDamage({
@@ -423,9 +424,9 @@ function executeAttack(k: KAPLAYCtx, ctx: AttackContext, dmg: DamageResult) {
             piercingLaserAttack(k, ctx, dmg);
             break;
 
-        // case "beam_continuous":
-        //     continuousBeamAttack(k, ctx);
-        //     break;
+        case "thunder":
+            thunderAttack(k, ctx, dmg);
+            break;
 
         case "lightning":
             lightningAttack(k, ctx, dmg);
@@ -543,6 +544,31 @@ function piercingLaserAttack(
 
     (k.get("enemy") as EnemyGameObj[]).forEach(e => {
         if (isEnemyOnRay(e, ctx.origin, dir, range, 48)) {
+            hurtEnemy(k, { target: e, damage, isCrit, element: ctx.element });
+        }
+    });
+}
+
+function thunderAttack(
+    k: KAPLAYCtx,
+    ctx: AttackContext,
+    dmg: DamageResult
+) {
+    if (!ctx.target) return;
+
+    const { damage, isCrit } = dmg;
+
+    const stormCloud = k.add([
+        k.sprite("thunder effect", { anim: "thunder" }),
+        k.pos(ctx.target.pos),
+        k.anchor("center")
+    ]);
+
+    stormCloud.onAnimEnd(() => {
+        k.destroy(stormCloud);
+    });
+    (k.get("enemy") as EnemyGameObj[]).forEach(e => {
+        if (e.pos.dist(stormCloud.pos) < 1.5 * TILE_SIZE) {
             hurtEnemy(k, { target: e, damage, isCrit, element: ctx.element });
         }
     });

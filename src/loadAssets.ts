@@ -221,6 +221,33 @@ export default function loadAssets(k: KAPLAYCtx) {
             idle: 0
         }
     });
+    k.loadSprite("storm tower base", "/sprites/storm-tower-base.png");
+    k.loadSprite("storm tower", "/sprites/storm-tower.png", {
+        sliceX: 2,
+        sliceY: 1,
+        anims: {
+            idle: 0,
+            shoot: { from: 0, to: 1, loop: false }
+        }
+    });
+    k.loadSprite("frost ballista tower base", "/sprites/frost-ballista-tower-base.png");
+    k.loadSprite("frost ballista tower", "/sprites/frost-ballista-tower.png", {
+        sliceX: 5,
+        sliceY: 1,
+        anims: {
+            idle: 0,
+            shoot: { from: 1, to: 4, loop: false }
+        }
+    });
+    k.loadSprite("skull tower base", "/sprites/skull-tower-base.png");
+    k.loadSprite("skull tower", "/sprites/skull-tower.png", {
+        sliceX: 2,
+        sliceY: 1,
+        anims: {
+            idle: 0,
+            shoot: { from: 0, to: 1, loop: false }
+        }
+    });
     k.loadSprite("fog", "/sprites/fog5.png");
     k.loadSprite("basic projectile", "/sprites/basic-projectile.png");
     k.loadSprite("slimeball", "/sprites/slimeball.png");
@@ -243,6 +270,7 @@ export default function loadAssets(k: KAPLAYCtx) {
             explode: { from: 1, to: 6, loop: false, speed: 20 }
         }
     });
+    k.loadSprite("frost arrow", "/sprites/frost-arrow.png");
     k.loadSprite("shadow blob", "/sprites/shadow-blob.png");
     k.loadSprite("star", "/sprites/star-projectile.png");
     k.loadSprite("poop", "/sprites/poop.png");
@@ -263,6 +291,7 @@ export default function loadAssets(k: KAPLAYCtx) {
     });
     k.loadSprite("shadow ball", "/sprites/shadow-ball.png");
     k.loadSprite("bees", "/sprites/bees.png");
+    k.loadSprite("ghostly skull", "/sprites/ghostly-skull.png");
     k.loadSprite("archer base", "/sprites/archer-base2.png");
     k.loadSprite("archer", "/sprites/archer2.png", {
         sliceX: 5,
@@ -313,4 +342,11 @@ export default function loadAssets(k: KAPLAYCtx) {
         }
     });
     k.loadSprite("sniper laser", "/sprites/sniper-laser.png");
+    k.loadSprite("thunder effect", "/sprites/thunder-effect.png", {
+        sliceX: 7,
+        sliceY: 1,
+        anims: {
+            thunder: { from: 0, to: 6, loop: false, speed: 40 }
+        }
+    });
 }
