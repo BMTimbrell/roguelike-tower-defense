@@ -1060,6 +1060,45 @@ export const TOWERS = {
                 ctx.visualEffect = electricAoeBurst;
             }
         }]
+    },
+    beeHive: {
+        name: "Beehive Tower",
+        gunSprite: "beehive tower",
+        baseSprite: "beehive tower base",
+        sprite: "beehive-tower-sprite.png",
+        description: "Sends out a swarm of bees that follow the target dealing damage in a small area",
+        cost: 200,
+        stats: {
+            damage: 12,
+            range: 5,
+            fireInterval: 0.75,
+            critChance: 5,
+            critDamage: 100
+        },
+        element: "Poison",
+        gunOffset: { x: 0, y: 0 },
+        anchorOffset: { x: 0, y: 0 },
+        shootOffset: { x: 0, y: 0 },
+        projectile: "bees",
+        effects: [{
+            firstEffect(ctx) {
+                ctx.projectiles.forEach(projectile => {
+                    projectile.behaviors ??= {};
+                    projectile.behaviors.persistent = {
+                        owner: ctx.attacker as TowerGameObj,
+                        state: "flying",
+                        origin: ctx.origin
+                    };
+                });
+            }
+        }],
+        canRotate: false,
+        source: "reward",
+        targetType: "enemy",
+        footprint: {
+            w: 2,
+            h: 2
+        }
     }
 } as const satisfies Record<string, TowerDef>;
 
@@ -1313,6 +1352,12 @@ export const PROJECTILES = {
         speed: 200,
         splashRadius: 1.5
     },
+    bees: {
+        sprite: "bees",
+        homing: true,
+        speed: 200,
+        splashRadius: 1.5
+    }
 } as const satisfies Record<string, ProjectileDef>;
 
 export type ProjectileId = keyof typeof PROJECTILES;
@@ -1504,7 +1549,7 @@ export const SEEDS: Seed = {
     starfruit: {
         name: "Starfruit",
         growsInto: "starfruit",
-        turnsToGrow: 3
+        turnsToGrow: 1
     },
     nightshade: {
         name: "Nightshade",

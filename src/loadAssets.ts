@@ -213,6 +213,14 @@ export default function loadAssets(k: KAPLAYCtx) {
             shoot: { from: 1, to: 3, loop: false, speed: 20 }
         }
     });
+    k.loadSprite("beehive tower base", "/sprites/beehive-tower-base.png");
+    k.loadSprite("beehive tower", "/sprites/beehive-tower.png", {
+        sliceX: 1,
+        sliceY: 1,
+        anims: {
+            idle: 0
+        }
+    });
     k.loadSprite("fog", "/sprites/fog5.png");
     k.loadSprite("basic projectile", "/sprites/basic-projectile.png");
     k.loadSprite("slimeball", "/sprites/slimeball.png");
@@ -254,6 +262,7 @@ export default function loadAssets(k: KAPLAYCtx) {
         }
     });
     k.loadSprite("shadow ball", "/sprites/shadow-ball.png");
+    k.loadSprite("bees", "/sprites/bees.png");
     k.loadSprite("archer base", "/sprites/archer-base2.png");
     k.loadSprite("archer", "/sprites/archer2.png", {
         sliceX: 5,
