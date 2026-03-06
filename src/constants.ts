@@ -29,6 +29,7 @@ export const STUN_PERCENTAGES = [5, 10, 30, 50, 60];
 export const STUN_DURATION = 1;
 export const CURSE_CRIT = 10;
 export const TIME_TOWER_BASE_ANIM_SPEED = 30;
+export const SCYTHE_MAX_KILL_STACKS = 70;
 export const UPGRADES: Upgrade[] = [{
     stat: "damage",
     name: "Damage",
@@ -650,7 +651,12 @@ export const TOWERS = {
         canRotate: true,
         timeData: {
             maxMultiplier: 10,
-            growthPerSecond: 1.1
+            growthPerSecond: 1.1,
+            timeScaling: {
+                interval: true,
+                damage: false,
+                damagePow: 1
+            }
         },
         source: "starting",
         targetType: "enemy",
@@ -798,7 +804,8 @@ export const TOWERS = {
         melee: {
             meleeHandleSprite: "hammer handle",
             meleeHeadSprite: "hammer head",
-            handleLength: 7
+            handleLength: 7,
+            swingAngle: 90
         },
         effects: [{
             firstEffect(ctx) {
@@ -1206,7 +1213,102 @@ export const TOWERS = {
                 });
             }
         }]
-    }
+    },
+    timeCannon: {
+        name: "Time Cannon Tower",
+        gunSprite: "time cannon tower",
+        baseSprite: "time cannon tower base",
+        sprite: "time-cannon-tower-sprite.png",
+        description: "Fire rate decreases with time, but damage and splash radius increases",
+        cost: 250,
+        stats: {
+            damage: 1,
+            range: 5,
+            fireInterval: 0.25,
+            critChance: 5,
+            critDamage: 100
+        },
+        element: "Normal",
+        gunOffset: { x: 5, y: 0 },
+        anchorOffset: { x: 10 / 64, y: 0 },
+        shootOffset: { x: -40, y: 0 },
+        projectile: "basicSplash",
+        canRotate: true,
+        timeData: {
+            maxMultiplier: 8,
+            growthPerSecond: 1.025,
+            timeScaling: {
+                interval: true,
+                damage: true,
+                damagePow: 2
+            }
+        },
+        source: "reward",
+        targetType: "enemy",
+        footprint: {
+            w: 2,
+            h: 2
+        }
+    },
+    scythe: {
+        name: "Scythe Tower",
+        gunSprite: "scythe tower",
+        baseSprite: "scythe tower base",
+        sprite: "scythe-tower-sprite.png",
+        description: `Reap enemies' souls, gaining +1 damage per enemy killed (up to +${SCYTHE_MAX_KILL_STACKS})`,
+        cost: 300,
+        stats: {
+            damage: 30,
+            range: 2.5,
+            fireInterval: 2,
+            critChance: 5,
+            critDamage: 100
+        },
+        element: "Dark",
+        gunOffset: { x: 0, y: 0 },
+        anchorOffset: { x: 0, y: 0 },
+        shootOffset: { x: 0, y: 0 },
+        projectile: null,
+        canRotate: false,
+        source: "starting",
+        targetType: "enemy",
+        melee: {
+            meleeHandleSprite: "scythe handle",
+            meleeHeadSprite: "scythe head",
+            handleLength: 23,
+            headOffset: 15 / 32,
+            swingAngle: 130
+        },
+        killStacks: 0,
+        effects: [{
+            firstEffect(ctx) {
+                if (!ctx.meleeAttack) return;
+
+                ctx.attackType = "melee";
+
+                ctx.meleeAttack = {
+                    ...ctx.meleeAttack,
+                    splashRadius: 2,
+                    swingTime: 0.25,
+                    onImpact(k, impactPos) {
+                        k.add([
+                            k.sprite("slash effect", { width: 32, height: 64 }),
+                            k.anchor("center"),
+                            k.rotate(ctx.gun.angle + 180),
+                            k.opacity(1),
+                            k.scale(2),
+                            k.lifespan(0.25),
+                            k.pos(impactPos)
+                        ]);
+                    }
+                };
+            }
+        }],
+        footprint: {
+            w: 2,
+            h: 2
+        }
+    },
 } as const satisfies Record<string, TowerDef>;
 
 export type TowerId = keyof typeof TOWERS;
@@ -1476,7 +1578,13 @@ export const PROJECTILES = {
         homing: true,
         speed: 200,
         splashRadius: 0
-    }
+    },
+    basicSplash: {
+        sprite: "basic projectile",
+        homing: true,
+        speed: 300,
+        splashRadius: 0.2
+    },
 } as const satisfies Record<string, ProjectileDef>;
 
 export type ProjectileId = keyof typeof PROJECTILES;

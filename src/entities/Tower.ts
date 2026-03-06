@@ -1,6 +1,6 @@
 import type { KAPLAYCtx, Vec2 } from 'kaplay';
 import { TILE_SIZE, type TowerId } from '../constants';
-import type { TargetPriority, TowerGameObj, UnitEffects, TowerDef, SeedId, Tile, PathTile, RandomProjectiles} from '../types';
+import type { TargetPriority, TowerGameObj, UnitEffects, TowerDef, SeedId, Tile, PathTile, RandomProjectiles, TimeData} from '../types';
 import { store, gameStateAtom } from '../store';
 import { calcUpgradeCost } from '../utils/calcUpgradeCost';
 import { TOWERS } from '../constants';
@@ -72,8 +72,8 @@ export default function makeTower(
             } : {}),
             ...("timeData" in TOWERS[towerId] ? {
                 timeData: {
-                    ...TOWERS[towerId].timeData as { maxMultiplier: number; growthPerSecond: number; },
-                    intervalMultiplier: 1
+                    ...TOWERS[towerId].timeData as TimeData,
+                    timeMultiplier: 1
                 },
             } : {}),
             ...("randomProjectiles" in TOWERS[towerId] ? {
@@ -85,6 +85,7 @@ export default function makeTower(
             targetType,
             ...(targetType === "point" ? { pathEntityLimit: TOWERS[towerId]?.pathEntityLimit ?? 10 } : {}),
             ...("melee" in TOWERS[towerId] ? { melee: TOWERS[towerId]?.melee } : {}),
+            ...("killStacks" in TOWERS[towerId] ? { killStacks: TOWERS[towerId].killStacks as number } : {})
         },
         "tower",
         towerId
@@ -159,9 +160,9 @@ export default function makeTower(
         if (tower.timeData) {
             const td = tower.timeData;
 
-            td.intervalMultiplier = Math.min(
+            td.timeMultiplier = Math.min(
                 td.maxMultiplier,
-                td.intervalMultiplier * Math.pow(td.growthPerSecond, k.dt())
+                td.timeMultiplier * Math.pow(td.growthPerSecond, k.dt())
             );
         }
 

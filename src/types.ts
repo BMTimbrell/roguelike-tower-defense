@@ -111,17 +111,17 @@ export type TowerDef = {
         plantedSeed: SeedId | null;
         turnsRemaining: 1 | 2 | 3 | null;
     };
-    timeData?: {
-        maxMultiplier: number;
-        growthPerSecond: number;
-    };
+    timeData?: TimeData;
     targetType: "enemy" | "point";
     pathEntityLimit?: number;
     melee?: {
         meleeHandleSprite: string;
         meleeHeadSprite: string;
         handleLength: number;
+        headOffset?: number;
+        swingAngle: number;
     };
+    killStacks?: number;
     footprint: Footprint;
 };
 
@@ -141,6 +141,16 @@ export type UnitInstance = {
     footprint: Footprint;
 };
 
+export type TimeData = {
+    maxMultiplier: number;
+    growthPerSecond: number;
+    timeScaling: {
+        damage: boolean;
+        damagePow: number;
+        interval: boolean;
+    };
+};
+
 export type TowerInstance = UnitInstance & {
     instanceId: string;
     towerId: TowerId;
@@ -152,14 +162,13 @@ export type TowerInstance = UnitInstance & {
         plantedSeed: SeedId | null;
         turnsRemaining: 1 | 2 | 3 | null;
     };
-    timeData?: {
-        maxMultiplier: number;
-        growthPerSecond: number;
-        intervalMultiplier: number;
+    timeData?: TimeData & {
+        timeMultiplier: number;
     };
     tileGrid: Tile[][];
     pathTiles: PathTile[];
     randomProjectiles?: RandomProjectiles;
+    killStacks?: number;
 };
 
 export type TowerGameObj = GameObj & TowerInstance;
@@ -377,6 +386,8 @@ export type AttackContext = {
         swingTime?: number;
         meleeHead: GameObj;
         meleeHandle: GameObj;
+        headOffset?: number;
+        swingAngle: number;
     }
 };
 

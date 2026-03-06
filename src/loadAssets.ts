@@ -248,6 +248,24 @@ export default function loadAssets(k: KAPLAYCtx) {
             shoot: { from: 0, to: 1, loop: false }
         }
     });
+    k.loadSprite("time cannon tower base", "/sprites/time-cannon-tower-base.png");
+    k.loadSprite("time cannon tower", "/sprites/time-cannon-tower.png", {
+        sliceX: 64,
+        sliceY: 1,
+        anims: {
+            idle: { from: 0, to: 63, loop: true, speed: TIME_TOWER_BASE_ANIM_SPEED }
+        }
+    });
+    k.loadSprite("scythe tower", "/sprites/scythe-tower.png", {
+        sliceX: 1,
+        sliceY: 1,
+        anims: {
+            idle: 0
+        }
+    });
+    k.loadSprite("scythe handle", "/sprites/scythe-handle.png");
+    k.loadSprite("scythe head", "/sprites/scythe-head.png");
+    k.loadSprite("scythe tower base", "/sprites/scythe-tower-base.png");
     k.loadSprite("fog", "/sprites/fog5.png");
     k.loadSprite("basic projectile", "/sprites/basic-projectile.png");
     k.loadSprite("slimeball", "/sprites/slimeball.png");
@@ -341,6 +359,7 @@ export default function loadAssets(k: KAPLAYCtx) {
             smash: { from: 0, to: 3, loop: false }
         }
     });
+    k.loadSprite("slash effect", "/sprites/slash-effect.png");
     k.loadSprite("sniper laser", "/sprites/sniper-laser.png");
     k.loadSprite("thunder effect", "/sprites/thunder-effect.png", {
         sliceX: 7,

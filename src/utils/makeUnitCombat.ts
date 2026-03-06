@@ -1,6 +1,6 @@
 import type { GameObj, KAPLAYCtx, Vec2 } from "kaplay";
 import type { AttackContext, AttackTarget, DamageResult, ElementName, EnemyGameObj, HeroGameObj, RandomProjectiles, TargetResolver, TowerGameObj } from "../types";
-import { CURSE_CRIT, TILE_SIZE, TIME_TOWER_BASE_ANIM_SPEED, TOWER_RANGE_TOLERANCE, type ProjectileId } from "../constants";
+import { CURSE_CRIT, PROJECTILES, SCYTHE_MAX_KILL_STACKS, TILE_SIZE, TIME_TOWER_BASE_ANIM_SPEED, TOWER_RANGE_TOLERANCE, type ProjectileId } from "../constants";
 import makeProjectile from "../entities/Projectile";
 import { rotateVector, shortestAngleDiff } from "./targetingHelpers";
 import { buildLightningSegments, drawLightning, resolveChain } from "./lightningHelpers";
@@ -37,14 +37,15 @@ export default function makeUnitCombat(
 
     const gun = k.add([
         k.sprite(opts.gunSprite, { anim: "idle" }),
-        k.pos(),
+        k.pos(opts.owner.width / 2 + opts.gunOffset.x,
+            opts.owner.height / 2 + opts.gunOffset.y),
         k.anchor(opts.anchorOffset),
         k.rotate(),
         k.opacity(1),
         {
             shootOffset: opts.shootOffset
         },
-        k.state("idle", ["idle", "tracking", "meleeSwing"])
+        k.state("idle", ["idle", "meleeSwing"])
     ]);
 
     if (opts.owner.melee?.meleeHandleSprite && opts.owner.melee?.meleeHeadSprite) {
@@ -81,8 +82,9 @@ export default function makeUnitCombat(
                     if (!opts.owner.placed) meleeHead.use(k.color(opts.owner.color.r, opts.owner.color.g, opts.owner.color.b));
                 }
             },
-            k.anchor("right")
+            k.anchor(k.vec2(1 - (opts.owner.melee?.headOffset ?? 0), 0))
         ]);
+
     }
 
     const rangeCircle = k.add([
@@ -149,18 +151,24 @@ export default function makeUnitCombat(
                 }
             }
 
+            const killBonus =
+                opts.owner?.killStacks <= SCYTHE_MAX_KILL_STACKS
+                    ? opts.owner.killStacks
+                    : 0;
+
             const ctx: AttackContext = {
                 attacker: opts.owner,
                 target: enemy,
                 origin: gun.pos,
                 gun: gun,
-                damage: opts.stats.damage,
+                damage: opts.stats.damage * (opts.owner.timeData?.timeScaling?.damage ? opts.owner.timeData.timeMultiplier ** 2 : 1) + killBonus,
                 element,
                 visualEffect: null,
                 ...(meleeHead && meleeHandle ? {
                     meleeAttack: {
                         meleeHead,
-                        meleeHandle
+                        meleeHandle,
+                        swingAngle: opts.owner.melee.swingAngle
                     }
                 } : {}),
                 attackType: "projectile",
@@ -227,7 +235,9 @@ export default function makeUnitCombat(
                     homing: p.homing,
                     homingDelay: p.homingDelay,
                     turnSpeed: p.turnSpeed,
-                    behaviors: p?.behaviors
+                    behaviors: p?.behaviors,
+                    splashRadius: PROJECTILES[p.id].splashRadius * (opts.owner.timeData?.timeScaling?.damage ? opts.owner.timeData.timeMultiplier : 1),
+                    scale: (opts.owner.timeData?.timeScaling?.damage ? opts.owner.timeData.timeMultiplier : 1)
                 });
 
                 if (p.behaviors?.persistent) {
@@ -253,14 +263,14 @@ export default function makeUnitCombat(
     function update() {
         const interval =
             opts.owner.stats.fireInterval *
-            (opts.owner.timeData?.intervalMultiplier ?? 1);
+            (opts.owner.timeData?.timeMultiplier ?? 1);
 
         const anim = gun.getCurAnim();
 
         if (opts.owner.timeData && anim) {
             anim.speed =
                 TIME_TOWER_BASE_ANIM_SPEED /
-                (opts.owner.timeData.intervalMultiplier ?? 1);
+                (opts.owner.timeData.timeMultiplier ?? 1);
         }
 
         if (shootTimer > 0) {
@@ -302,12 +312,14 @@ export default function makeUnitCombat(
         dir,
         distance,
         swingTime,
+        swingAngle,
         handleLength
     }: {
         dir: Vec2;
         distance: number;
         swingTime: number;
         handleLength: number;
+        swingAngle: number;
     }) => {
         if (!meleeHandle || !meleeHead) return;
 
@@ -321,7 +333,7 @@ export default function makeUnitCombat(
 
         k.tween(
             gun.angle,
-            gun.angle + 90,
+            gun.angle + swingAngle,
             swingTime,
             (a) => gun.angle = a,
             k.easings.easeOutBack
@@ -482,7 +494,7 @@ function meleeAttack(
 
     const { damage, isCrit } = opts;
     const { meleeAttack, element, origin, target, gun } = ctx;
-    const { meleeHead, meleeHandle } = ctx.meleeAttack;
+    const { meleeHead, meleeHandle, swingAngle } = ctx.meleeAttack;
     const { handleLength } = ctx.attacker.melee;
 
     if (!target) return;
@@ -496,16 +508,23 @@ function meleeAttack(
         dir,
         distance: dist - handleLength,
         swingTime: swingTime ?? 0.15,
+        swingAngle,
         handleLength
     });
 
     k.wait(swingTime ?? 0.15, () => {
         if (splashRadius) {
             (k.get("enemy") as EnemyGameObj[]).forEach(e => {
-                if (e.pos.dist(target.pos) < splashRadius * TILE_SIZE) hurtEnemy(k, { target: e, damage, isCrit, element });
+                if (e.pos.dist(target.pos) < splashRadius * TILE_SIZE) hurtEnemy(k, {
+                    target: e,
+                    damage,
+                    isCrit,
+                    element,
+                    attacker: ctx.attacker as TowerGameObj
+                });
             });
         } else {
-            hurtEnemy(k, { target, damage, isCrit, element });
+            hurtEnemy(k, { target, damage, isCrit, element, attacker: ctx.attacker as TowerGameObj });
         }
         if (meleeHandle && meleeHead) {
             meleeHandle.scale.x = 1;

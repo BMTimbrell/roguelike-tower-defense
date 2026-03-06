@@ -10,18 +10,20 @@ export default function makeProjectile(k: KAPLAYCtx, opts: {
     pos: Vec2;
     target: EnemyGameObj | null;
     damage: number;
+    splashRadius: number;
+    element: ElementName;
     crit?: boolean;
     angle?: number;
     homing: boolean;
     homingDelay?: number;
     turnSpeed?: number;
-    element: ElementName;
     behaviors?: ProjectileBehavior;
+    scale: number;
 }): GameObj {
-    const { pos, id, element, homing, homingDelay, turnSpeed, behaviors } = opts;
+    const { pos, id, element, homing, homingDelay, turnSpeed, behaviors, splashRadius, scale } = opts;
     let crit = opts.crit;
     let { damage, target } = opts;
-    const { sprite, speed, splashRadius } = PROJECTILES[id];
+    const { sprite, speed } = PROJECTILES[id];
     const anim = (PROJECTILES[id] as ProjectileDef).anim ? (PROJECTILES[id] as ProjectileDef).anim : null;
 
     const projectile = k.add([
@@ -29,8 +31,9 @@ export default function makeProjectile(k: KAPLAYCtx, opts: {
         k.anchor("center"),
         k.pos(pos),
         k.rotate(opts.angle ?? 0),
+        k.scale(scale),
         {
-            splashRadius: splashRadius,
+            splashRadius,
             speed,
             homing,
             homingDelay: homingDelay ?? 0,
