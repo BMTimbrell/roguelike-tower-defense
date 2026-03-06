@@ -116,7 +116,6 @@ export default function setTowerUI(k: KAPLAYCtx, type: "combat" | "farm", tower:
                     };
 
                     tower.gun.play("planted");
-                    console.log(tower.gun.getCurAnim().name)
 
                     store.set(gameStateAtom, prev => ({
                         ...prev,

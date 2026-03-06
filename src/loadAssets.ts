@@ -263,6 +263,15 @@ export default function loadAssets(k: KAPLAYCtx) {
             idle: 0
         }
     });
+    k.loadSprite("god tower base", "/sprites/god-tower-base.png");
+    k.loadSprite("god tower", "/sprites/god-tower.png", {
+        sliceX: 2,
+        sliceY: 1,
+        anims: {
+            idle: 0,
+            shoot: { from: 0, to: 1, loop: false }
+        }
+    });
     k.loadSprite("scythe handle", "/sprites/scythe-handle.png");
     k.loadSprite("scythe head", "/sprites/scythe-head.png");
     k.loadSprite("scythe tower base", "/sprites/scythe-tower-base.png");
@@ -310,6 +319,7 @@ export default function loadAssets(k: KAPLAYCtx) {
     k.loadSprite("shadow ball", "/sprites/shadow-ball.png");
     k.loadSprite("bees", "/sprites/bees.png");
     k.loadSprite("ghostly skull", "/sprites/ghostly-skull.png");
+    k.loadSprite("angel", "/sprites/angel.png");
     k.loadSprite("archer base", "/sprites/archer-base2.png");
     k.loadSprite("archer", "/sprites/archer2.png", {
         sliceX: 5,

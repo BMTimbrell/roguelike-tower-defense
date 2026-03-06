@@ -203,10 +203,21 @@ export default function makeUnitCombat(
             if (ctx.volley?.volleyChance && Math.random() < ctx.volley.volleyChance) {
                 const base = ctx.projectiles[0];
 
+                const volleyCount = ctx.volley.volleyCount ?? 3;
+                const homingDelay = ctx.volley.homingDelay ?? 0.2;
+                const projectiles = [];
+                const mid = Math.floor(volleyCount / 2);
+
+                for (let i = 0; i < volleyCount; i++) {
+                    const angleMult = 45 * (i - mid);
+
+                    projectiles.push(
+                        { ...base, angle: base.angle + angleMult, homingDelay, turnSpeed: 12 }
+                    );
+                }
+
                 ctx.projectiles = [
-                    { ...base, angle: base.angle - 45, homingDelay: 0.2, turnSpeed: 12 },
-                    { ...base, angle: base.angle, homingDelay: 0.1, turnSpeed: 12 },
-                    { ...base, angle: base.angle + 45, homingDelay: 0.2, turnSpeed: 12 },
+                    ...projectiles
                 ];
             }
 

@@ -378,6 +378,8 @@ export type AttackContext = {
 
     volley?: {
         volleyChance?: number;
+        volleyCount?: number;
+        homingDelay?: number;
     };
 
     meleeAttack?: {

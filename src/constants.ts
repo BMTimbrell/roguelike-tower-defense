@@ -1270,7 +1270,7 @@ export const TOWERS = {
         shootOffset: { x: 0, y: 0 },
         projectile: null,
         canRotate: false,
-        source: "starting",
+        source: "reward",
         targetType: "enemy",
         melee: {
             meleeHandleSprite: "scythe handle",
@@ -1309,6 +1309,43 @@ export const TOWERS = {
             h: 2
         }
     },
+    god: {
+        name: "God Tower",
+        gunSprite: "god tower",
+        baseSprite: "god tower base",
+        sprite: "god-tower-sprite.png",
+        description: "Shoots 8 angels at the enemy",
+        cost: 300,
+        stats: {
+            damage: 5,
+            range: 6,
+            fireInterval: 1.5,
+            critChance: 5,
+            critDamage: 100
+        },
+        element: "Light",
+        gunOffset: { x: 0, y: 0 },
+        anchorOffset: { x: 0, y: 0 },
+        shootOffset: { x: 0, y: 0 },
+        projectile: "angel",
+        canRotate: false,
+        source: "reward",
+        targetType: "enemy",
+        footprint: {
+            w: 2,
+            h: 2
+        },
+        effects: [{
+            firstEffect(ctx) {
+                if (ctx.projectiles.length === 0) return;
+
+                ctx.volley ??= {};
+                ctx.volley.volleyChance ??= 100;
+                ctx.volley.volleyCount ??= 8;
+                ctx.volley.homingDelay ??= 0.4;
+            }
+        }]
+    }
 } as const satisfies Record<string, TowerDef>;
 
 export type TowerId = keyof typeof TOWERS;
@@ -1585,6 +1622,12 @@ export const PROJECTILES = {
         speed: 300,
         splashRadius: 0.2
     },
+    angel: {
+        sprite: "angel",
+        homing: true,
+        speed: 300,
+        splashRadius: 0
+    }
 } as const satisfies Record<string, ProjectileDef>;
 
 export type ProjectileId = keyof typeof PROJECTILES;
@@ -1776,7 +1819,7 @@ export const SEEDS: Seed = {
     starfruit: {
         name: "Starfruit",
         growsInto: "starfruit",
-        turnsToGrow: 1
+        turnsToGrow: 3
     },
     nightshade: {
         name: "Nightshade",
