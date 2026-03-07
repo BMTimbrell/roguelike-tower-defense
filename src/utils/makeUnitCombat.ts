@@ -452,6 +452,10 @@ function executeAttack(k: KAPLAYCtx, ctx: AttackContext, dmg: DamageResult) {
             thunderAttack(k, ctx, dmg);
             break;
 
+        case "blizzard":
+            blizzardAttack(k, ctx, dmg);
+            break;
+
         case "lightning":
             lightningAttack(k, ctx, dmg);
             break;
@@ -605,4 +609,32 @@ function thunderAttack(
     });
 }
 
+function blizzardAttack(
+    k: KAPLAYCtx,
+    ctx: AttackContext,
+    dmg: DamageResult
+) {
+    if (!ctx.target) return;
 
+    const { damage, isCrit } = dmg;
+
+    for (let i = 0; i < 140; i++) {
+        k.add([
+            k.pos(ctx.target.pos.add(k.rand(-40, 40), k.rand(-60, 60))),
+            k.sprite("snow"),
+            k.move(
+                k.vec2(k.rand(-80, -40), -10),
+                k.rand(20, 80)
+            ),
+            k.lifespan(0.6),
+            k.opacity(k.rand(0.5, 1)),
+            k.scale(k.rand(0.5, 1.2)),
+        ]);
+    }
+
+    (k.get("enemy") as EnemyGameObj[]).forEach(e => {
+        if (e.pos.dist(ctx.target?.pos ?? k.vec2(0)) < 2.5 * TILE_SIZE) {
+            hurtEnemy(k, { target: e, damage, isCrit, element: ctx.element });
+        }
+    });
+}

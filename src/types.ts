@@ -431,7 +431,7 @@ export type AttackTarget =
 
 export type TargetResolver = () => AttackTarget | null;
 
-export type AttackType = "projectile" | "lightning" | "sniper_laser" | "piercing_laser" | "beam_continuous" | "aoe" | "melee" | "thunder";
+export type AttackType = "projectile" | "lightning" | "sniper_laser" | "piercing_laser" | "beam_continuous" | "aoe" | "melee" | "thunder" | "blizzard";
 
 export type DamageResult = {
     damage: number;

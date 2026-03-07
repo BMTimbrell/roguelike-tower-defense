@@ -284,6 +284,15 @@ export default function loadAssets(k: KAPLAYCtx) {
             shoot: { from: 0, to: 2, loop: false }
         }
     });
+    k.loadSprite("blizzard tower base", "/sprites/blizzard-tower-base.png");
+    k.loadSprite("blizzard tower", "/sprites/blizzard-tower.png", {
+        sliceX: 2,
+        sliceY: 1,
+        anims: {
+            idle: 0,
+            shoot: { from: 1, to: 1, loop: false, speed: 3 }
+        }
+    });
     k.loadSprite("fog", "/sprites/fog5.png");
     k.loadSprite("basic projectile", "/sprites/basic-projectile.png");
     k.loadSprite("slimeball", "/sprites/slimeball.png");
@@ -394,4 +403,5 @@ export default function loadAssets(k: KAPLAYCtx) {
             thunder: { from: 0, to: 6, loop: false, speed: 40 }
         }
     });
+    k.loadSprite("snow", "/sprites/snow.png");
 }

@@ -1113,7 +1113,7 @@ export const TOWERS = {
         baseSprite: "storm tower base",
         sprite: "storm-tower-sprite.png",
         description: "Summons storm clouds that damage enemies in a small area",
-        cost: 350,
+        cost: 400,
         stats: {
             damage: 80,
             range: 7,
@@ -1374,6 +1374,38 @@ export const TOWERS = {
             h: 2
         }
     },
+    blizzard: {
+        name: "Blizzard Tower",
+        gunSprite: "blizzard tower",
+        baseSprite: "blizzard tower base",
+        sprite: "blizzard-tower-sprite.png",
+        description: "Summons a blizzard that deals devastating damage to enemies in a large area",
+        cost: 400,
+        stats: {
+            damage: 40,
+            range: 7,
+            fireInterval: 4,
+            critChance: 5,
+            critDamage: 100
+        },
+        element: "Ice",
+        gunOffset: { x: 10, y: -1 },
+        anchorOffset: { x: 20 / 64, y: -2 / 64 },
+        shootOffset: { x: -40, y: 0 },
+        projectile: null,
+        canRotate: false,
+        source: "reward",
+        targetType: "enemy",
+        footprint: {
+            w: 2,
+            h: 2
+        },
+        effects: [{
+            firstEffect(ctx) {
+                ctx.attackType = "blizzard";
+            }
+        }]
+    }
 } as const satisfies Record<string, TowerDef>;
 
 export type TowerId = keyof typeof TOWERS;
