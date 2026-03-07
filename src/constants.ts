@@ -683,7 +683,7 @@ export const TOWERS = {
         gunOffset: { x: 0, y: 0 },
         anchorOffset: { x: 0, y: 0 },
         shootOffset: { x: -20, y: 0 },
-        projectile: null,
+        projectile: "poop",
         canRotate: false,
         source: "starting",
         targetType: "point",
@@ -1345,7 +1345,35 @@ export const TOWERS = {
                 ctx.volley.homingDelay ??= 0.4;
             }
         }]
-    }
+    },
+    mine: {
+        name: "Mine Tower",
+        gunSprite: "mine tower",
+        baseSprite: "mine tower base",
+        sprite: "mine-tower-sprite.png",
+        description: "Places mines on the path",
+        cost: 200,
+        stats: {
+            damage: 10,
+            range: 3,
+            fireInterval: 2,
+            critChance: 5,
+            critDamage: 100
+        },
+        element: "Fire",
+        gunOffset: { x: 0, y: 0 },
+        anchorOffset: { x: 0, y: 0 },
+        shootOffset: { x: -20, y: 0 },
+        projectile: "mine",
+        canRotate: false,
+        source: "reward",
+        targetType: "point",
+        pathEntityLimit: 30,
+        footprint: {
+            w: 2,
+            h: 2
+        }
+    },
 } as const satisfies Record<string, TowerDef>;
 
 export type TowerId = keyof typeof TOWERS;
@@ -1627,7 +1655,13 @@ export const PROJECTILES = {
         homing: true,
         speed: 300,
         splashRadius: 0
-    }
+    },
+    mine: {
+        sprite: "mine",
+        homing: true,
+        speed: 200,
+        splashRadius: 1.5
+    },
 } as const satisfies Record<string, ProjectileDef>;
 
 export type ProjectileId = keyof typeof PROJECTILES;

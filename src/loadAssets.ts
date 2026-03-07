@@ -275,6 +275,15 @@ export default function loadAssets(k: KAPLAYCtx) {
     k.loadSprite("scythe handle", "/sprites/scythe-handle.png");
     k.loadSprite("scythe head", "/sprites/scythe-head.png");
     k.loadSprite("scythe tower base", "/sprites/scythe-tower-base.png");
+    k.loadSprite("mine tower base", "/sprites/mine-tower-base.png");
+    k.loadSprite("mine tower", "/sprites/mine-tower.png", {
+        sliceX: 3,
+        sliceY: 1,
+        anims: {
+            idle: 0,
+            shoot: { from: 0, to: 2, loop: false }
+        }
+    });
     k.loadSprite("fog", "/sprites/fog5.png");
     k.loadSprite("basic projectile", "/sprites/basic-projectile.png");
     k.loadSprite("slimeball", "/sprites/slimeball.png");
@@ -320,6 +329,13 @@ export default function loadAssets(k: KAPLAYCtx) {
     k.loadSprite("bees", "/sprites/bees.png");
     k.loadSprite("ghostly skull", "/sprites/ghostly-skull.png");
     k.loadSprite("angel", "/sprites/angel.png");
+    k.loadSprite("mine", "/sprites/mine.png", {
+        sliceX: 7,
+        sliceY: 1,
+        anims: {
+            explode: { from: 1, to: 6, loop: false, speed: 10 }
+        }
+    });
     k.loadSprite("archer base", "/sprites/archer-base2.png");
     k.loadSprite("archer", "/sprites/archer2.png", {
         sliceX: 5,

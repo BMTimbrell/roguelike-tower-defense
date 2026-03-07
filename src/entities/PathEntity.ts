@@ -2,24 +2,26 @@ import type { GameObj, KAPLAYCtx, Vec2 } from "kaplay";
 import type { ElementName, EnemyGameObj, TowerStats } from "../types";
 import hurtEnemy from "../utils/hurtEnemy";
 import calcDamage from "../utils/calcDamage";
-import { CURSE_CRIT } from "../constants";
+import { CURSE_CRIT, PROJECTILES, TILE_SIZE, type ProjectileId } from "../constants";
 
 export default function makePathEntity(
-    k: KAPLAYCtx, 
-    opts: { 
-        ownerId: string; 
-        from: Vec2; 
-        targetPos: Vec2; 
+    k: KAPLAYCtx,
+    opts: {
+        ownerId: string;
+        from: Vec2;
+        targetPos: Vec2;
         damage: number;
         critChance: number;
         critDamage: number;
-        element: ElementName; 
+        element: ElementName;
+        projectileId: ProjectileId;
     }
 ) {
-    const { from, targetPos, critChance, critDamage, element, ownerId } = opts;
+    const { from, targetPos, critChance, critDamage, element, ownerId, projectileId } = opts;
+    const sprite = PROJECTILES[projectileId].sprite;
 
     const entity = k.add([
-        k.sprite("poop"),
+        k.sprite(sprite),
         k.anchor("center"),
         k.pos(from),
         {
@@ -29,6 +31,7 @@ export default function makePathEntity(
     ]);
 
     let pathEntity: GameObj | null = null;
+    const splashRadius = PROJECTILES[projectileId].splashRadius * TILE_SIZE;
 
     entity.onUpdate(() => {
         const direction = targetPos.sub(entity.pos).unit();
@@ -36,7 +39,7 @@ export default function makePathEntity(
 
         if (entity.pos.dist(targetPos) < 4) {
             pathEntity = k.add([
-                k.sprite("poop"),
+                k.sprite(sprite),
                 k.pos(entity.pos),
                 k.anchor("center"),
                 {
@@ -46,28 +49,62 @@ export default function makePathEntity(
 
                         enemies.forEach(e => {
                             if (pathEntity?.pos.dist(e.pos) < 10) {
-                                const { isCrit, damage } = calcDamage({
-                                    bonusDamage: 0,
-                                    bonusCritChance: e.has("curse") ? CURSE_CRIT : 0,
-                                    critChance: critChance,
-                                    critDamage: critDamage,
-                                    damage: opts.damage
-                                });
+                                if (splashRadius) {
+                                    enemies.forEach(enemy => {
+                                        if (pathEntity?.pos.dist(enemy.pos) < splashRadius) {
+                                            const { isCrit, damage } = calcDamage({
+                                                bonusDamage: 0,
+                                                bonusCritChance: enemy.has("curse") ? CURSE_CRIT : 0,
+                                                critChance: critChance,
+                                                critDamage: critDamage,
+                                                damage: opts.damage
+                                            });
 
-                                hurtEnemy(k, {
-                                    target: e,
-                                    damage,
-                                    isCrit,
-                                    element
-                                });
+                                            hurtEnemy(k, {
+                                                target: enemy,
+                                                damage,
+                                                isCrit,
+                                                element
+                                            });
+                                        }
+                                    });
+                                } else {
+                                    const { isCrit, damage } = calcDamage({
+                                        bonusDamage: 0,
+                                        bonusCritChance: e.has("curse") ? CURSE_CRIT : 0,
+                                        critChance: critChance,
+                                        critDamage: critDamage,
+                                        damage: opts.damage
+                                    });
+
+                                    hurtEnemy(k, {
+                                        target: e,
+                                        damage,
+                                        isCrit,
+                                        element
+                                    });
+                                }
 
                                 pathEntity && k.destroy(pathEntity);
+                                return;
                             }
                         });
                     }
                 },
                 "pathEntity"
             ]);
+
+            pathEntity.onDestroy(() => {
+                if (splashRadius) {
+                    const explosion = k.add([
+                        k.sprite(sprite, { anim: "explode" }),
+                        k.anchor("center"),
+                        k.pos(entity.pos)
+                    ]);
+
+                    explosion.onAnimEnd(() => k.destroy(explosion));
+                }
+            });
 
             k.destroy(entity);
         }

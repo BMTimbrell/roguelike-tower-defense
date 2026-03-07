@@ -265,7 +265,8 @@ export default function makeUnitCombat(
                 damage: opts.stats.damage,
                 critChance: opts.stats.critChance,
                 critDamage: opts.stats.critDamage,
-                element: opts.element
+                element: opts.element,
+                projectileId: opts.projectile ?? "basic"
             });
         }
 
