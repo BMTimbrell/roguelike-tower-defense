@@ -767,7 +767,7 @@ export const TOWERS = {
                 projectile: "icicle",
                 element: "Ice",
                 behaviors: {
-                    critChance: 45
+                    critChance: 75
                 }
             }
         ],
@@ -842,12 +842,12 @@ export const TOWERS = {
         baseSprite: "icicle tower base",
         sprite: "icicle-tower-sprite.png",
         description: "Shoots icicles. This tower has a high crit chance",
-        cost: 75,
+        cost: 70,
         stats: {
-            damage: 5,
-            range: 3,
+            damage: 3,
+            range: 4,
             fireInterval: 0.75,
-            critChance: 50,
+            critChance: 80,
             critDamage: 100
         },
         element: "Ice",
@@ -1403,6 +1403,39 @@ export const TOWERS = {
         effects: [{
             firstEffect(ctx) {
                 ctx.attackType = "blizzard";
+            }
+        }]
+    },
+    flamethrower: {
+        name: "Flamethrower Tower",
+        gunSprite: "flamethrower tower",
+        baseSprite: "flamethrower tower base",
+        sprite: "flamethrower-tower-sprite.png",
+        description: "Summons a blizzard that deals devastating damage to enemies in a large area",
+        cost: 300,
+        stats: {
+            damage: 4,
+            range: 3.5,
+            fireInterval: 0.25,
+            critChance: 5,
+            critDamage: 100
+        },
+        element: "Fire",
+        gunOffset: { x: 7, y: -1 },
+        anchorOffset: { x: 14 / 64, y: -2 / 64 },
+        shootOffset: { x: -40, y: 0 },
+        projectile: null,
+        canRotate: true,
+        continuousEffect: "flame particle",
+        source: "reward",
+        targetType: "enemy",
+        footprint: {
+            w: 2,
+            h: 2
+        },
+        effects: [{
+            firstEffect(ctx) {
+                ctx.attackType = "cone";
             }
         }]
     }

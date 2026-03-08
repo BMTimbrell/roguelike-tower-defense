@@ -10,6 +10,7 @@ import makePathEntity from "../entities/PathEntity";
 import { gameStateAtom, store } from "../store";
 import drawLaser from "./drawLaser";
 import isEnemyOnRay from "./isEnemyOnRay";
+import enemiesInCone from "./enemiesInCone";
 
 export default function makeUnitCombat(
     k: KAPLAYCtx,
@@ -43,7 +44,8 @@ export default function makeUnitCombat(
         k.rotate(),
         k.opacity(1),
         {
-            shootOffset: opts.shootOffset
+            shootOffset: opts.shootOffset,
+            anchorOffset: opts.anchorOffset
         },
         k.state("idle", ["idle", "meleeSwing"])
     ]);
@@ -305,6 +307,17 @@ export default function makeUnitCombat(
 
         } else gun.angle = 0;
 
+        if (target && opts.owner.continuousEffect && target.type === "enemy") {
+            const rotatedOffset = rotateVector(
+                k,
+                k.vec2(opts.shootOffset.x, opts.shootOffset.y),
+                gun.angle * Math.PI / 180
+            );
+
+            const origin = gun.pos.add(rotatedOffset);
+            spawnFlameParticles(k, origin, target.enemy, opts.stats.range * TILE_SIZE - origin.dist(rangeCircle.pos), opts.owner.continuousEffect);
+        }
+
         while (shootTimer <= 0 && target && !opts.owner.activeProjectile) {
             shootTimer += interval;
 
@@ -463,8 +476,14 @@ function executeAttack(k: KAPLAYCtx, ctx: AttackContext, dmg: DamageResult) {
         case "aoe":
             aoeAttack(k, ctx, dmg);
             break;
+
         case "melee":
             meleeAttack(k, ctx, dmg);
+            break;
+
+        case "cone":
+            coneAttack(k, ctx, dmg);
+            break;
     }
 }
 
@@ -637,4 +656,109 @@ function blizzardAttack(
             hurtEnemy(k, { target: e, damage, isCrit, element: ctx.element });
         }
     });
+}
+
+function coneAttack(k: KAPLAYCtx, ctx: AttackContext, dmg: DamageResult) {
+    const { gun, element } = ctx;
+    const { damage, isCrit } = dmg;
+    const range = ctx.attacker.stats.range;
+
+    const forward = k.vec2(
+        Math.cos((gun.angle + 180) * Math.PI / 180),
+        Math.sin((gun.angle + 180) * Math.PI / 180)
+    );
+
+    const enemies = enemiesInCone(
+        k,
+        ctx.origin,
+        forward,
+        range * TILE_SIZE - ctx.origin.dist(ctx.attacker.pos.add((ctx.attacker.footprint.w * TILE_SIZE) / 2)),
+        20
+    );
+
+    enemies.forEach(e => {
+        hurtEnemy(k, {
+            target: e,
+            damage,
+            isCrit,
+            element: element
+        });
+    });
+}
+
+function spawnFlameParticles(
+    k: KAPLAYCtx,
+    origin: Vec2,
+    target: EnemyGameObj,
+    range: number,
+    sprite: string
+) {
+
+    const forward = target.pos.sub(origin).unit();
+
+    const coneAngle = 20;
+    const half = coneAngle / 2;
+
+    const dist = range;
+    const t = Math.min(dist / range, 1);
+
+    const minParticles = 4;
+    const maxParticles = 20;
+
+    const particleCount = Math.floor(
+        minParticles + (maxParticles - minParticles) * t
+    );
+
+    for (let i = 0; i < particleCount; i++) {
+
+        const angleOffset = k.rand(-half, half) * Math.PI / 180;
+
+        const dir = rotateVector(k, forward, angleOffset);
+
+        const life = k.rand(
+            0.25,
+            0.4
+        );
+
+        const speed = (dist / life);
+
+        const vel = dir.scale(speed);
+
+        const flame = k.add([
+            k.sprite(sprite),
+            k.pos(origin),
+            k.anchor("center"),
+            k.opacity(1),
+            k.scale(k.rand(0.8, 1.4)),
+            k.lifespan(life),
+            {
+                vel,
+                time: 0,
+                update() {
+                    flame.time += k.dt();
+
+                    flame.pos = flame.pos.add(flame.vel.scale(k.dt()));
+
+                    const p = flame.time / life;
+
+                    flame.opacity = 1 - p / 3;
+                    flame.scale = k.vec2(1.4 * (1 - p / 2));
+
+                    flame.pos.y -= 12 * k.dt();
+                }
+            }
+        ]);
+    }
+}
+
+function getBarrelTip(k: KAPLAYCtx, opts: { shootOffset: Vec2; anchorOffset: Vec2; origin: Vec2; angle: number; }) {
+    const { shootOffset, anchorOffset, angle, origin } = opts;
+    const dx = shootOffset.x
+    const dy = shootOffset.y
+    const barrelLength = Math.sqrt(dx * dx + dy * dy);
+
+    return origin.add(k.vec2(
+        Math.cos((angle + 180) * Math.PI / 180) * barrelLength,
+        Math.sin((angle + 180) * Math.PI / 180) * barrelLength
+    ));
 }

@@ -293,6 +293,14 @@ export default function loadAssets(k: KAPLAYCtx) {
             shoot: { from: 1, to: 1, loop: false, speed: 3 }
         }
     });
+    k.loadSprite("flamethrower tower base", "/sprites/flamethrower-tower-base.png");
+    k.loadSprite("flamethrower tower", "/sprites/flamethrower-tower.png", {
+        sliceX: 1,
+        sliceY: 1,
+        anims: {
+            idle: 0
+        }
+    });
     k.loadSprite("fog", "/sprites/fog5.png");
     k.loadSprite("basic projectile", "/sprites/basic-projectile.png");
     k.loadSprite("slimeball", "/sprites/slimeball.png");

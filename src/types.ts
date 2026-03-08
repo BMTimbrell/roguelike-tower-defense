@@ -112,6 +112,7 @@ export type TowerDef = {
         turnsRemaining: 1 | 2 | 3 | null;
     };
     timeData?: TimeData;
+    continuousEffect?: ContinuousEffect;
     targetType: "enemy" | "point";
     pathEntityLimit?: number;
     melee?: {
@@ -151,10 +152,13 @@ export type TimeData = {
     };
 };
 
+export type ContinuousEffect = "flame particle";
+
 export type TowerInstance = UnitInstance & {
     instanceId: string;
     towerId: TowerId;
     cost: number;
+    continuousEffect?: ContinuousEffect;
     upgrades: Upgrade[];
     unlockedUpgradeSlots: number;
     upgradeCost: number;
@@ -431,7 +435,7 @@ export type AttackTarget =
 
 export type TargetResolver = () => AttackTarget | null;
 
-export type AttackType = "projectile" | "lightning" | "sniper_laser" | "piercing_laser" | "beam_continuous" | "aoe" | "melee" | "thunder" | "blizzard";
+export type AttackType = "projectile" | "lightning" | "sniper_laser" | "piercing_laser" | "cone" | "aoe" | "melee" | "thunder" | "blizzard";
 
 export type DamageResult = {
     damage: number;
