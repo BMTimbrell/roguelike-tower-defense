@@ -9,33 +9,60 @@ export function selectTarget(
 ): EnemyGameObj | null {
 
     let best: EnemyGameObj | null = null;
+    let bestDist = 0;
 
     for (const e of enemies) {
-        if (e.pos.dist(origin) > tower.stats.range * TILE_SIZE + TOWER_RANGE_TOLERANCE) {
+
+        const dist = e.pos.dist(origin);
+
+        if (dist > tower.stats.range * TILE_SIZE + TOWER_RANGE_TOLERANCE) {
             continue;
         }
 
-
         if (!best) {
             best = e;
+            bestDist = dist;
             continue;
         }
 
         switch (tower.priority) {
+
             case "Most Progress":
-                if (e.pathIndex + e.segmentProgress > best.pathIndex + best.segmentProgress) best = e;
+                if (e.pathIndex + e.segmentProgress > best.pathIndex + best.segmentProgress) {
+                    best = e;
+                }
                 break;
 
             case "Least Progress":
-                if (e.pathIndex + e.segmentProgress < best.pathIndex + best.segmentProgress) best = e;
+                if (e.pathIndex + e.segmentProgress < best.pathIndex + best.segmentProgress) {
+                    best = e;
+                }
                 break;
 
             case "Highest HP":
-                if (e.hp() > best.hp()) best = e;
+                if (e.hp() > best.hp()) {
+                    best = e;
+                }
                 break;
 
             case "Lowest HP":
-                if (e.hp() < best.hp()) best = e;
+                if (e.hp() < best.hp()) {
+                    best = e;
+                }
+                break;
+
+            case "Closest":
+                if (dist < bestDist) {
+                    best = e;
+                    bestDist = dist;
+                }
+                break;
+
+            case "Furthest":
+                if (dist > bestDist) {
+                    best = e;
+                    bestDist = dist;
+                }
                 break;
         }
     }

@@ -12,7 +12,7 @@ export default function PriorityButton({
     setPriority: (priority: TargetPriority) => void;
 }) {
 
-    const priorities: TargetPriority[] = ["Most Progress", "Least Progress", "Highest HP", "Lowest HP"];
+    const priorities: TargetPriority[] = ["Most Progress", "Least Progress", "Highest HP", "Lowest HP", "Closest", "Furthest"];
     let priorityIndex = priorities.findIndex(p => p === priority);
 
     return (

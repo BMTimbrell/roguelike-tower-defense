@@ -30,6 +30,7 @@ export default function makeEnemy(k: KAPLAYCtx, enemyId: EnemyId, waypoints: Vec
         },
         k.state("move", ["move", "stunned", "attack"]),
         statusEffect(),
+        k.z(1),
         "enemy",
         enemyId
     ]);
@@ -88,6 +89,8 @@ export default function makeEnemy(k: KAPLAYCtx, enemyId: EnemyId, waypoints: Vec
 
     enemy.onStateUpdate("move", () => {
         if (enemy.isDying) return;
+
+        enemy.z = enemy.pos.y;
 
         const next = enemy.path[enemy.pathIndex + 1];
         if (!next) return;

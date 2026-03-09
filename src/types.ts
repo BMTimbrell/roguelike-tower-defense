@@ -1,6 +1,6 @@
 import { type MouseEventHandler } from "react";
 import { TILE_SIZE, type EnemyId, type HeroId, type ProjectileId, type SkillId, type TowerId } from "./constants";
-import type { Vec2, GameObj, KAPLAYCtx, HealthComp, SpriteComp, StateComp, TimerComp, RotateComp, PosComp, Game } from "kaplay";
+import type { Vec2, GameObj, KAPLAYCtx, HealthComp, SpriteComp, StateComp, TimerComp, RotateComp, PosComp, Game, ZComp } from "kaplay";
 import { frostAoeBurst } from "./utils/makeUnitCombat";
 
 type LayerObj = {
@@ -218,7 +218,8 @@ export type EnemyGameObj = GameObj<
     StateComp |
     TimerComp |
     RotateComp |
-    PosComp
+    PosComp |
+    ZComp
 > & {
     path: Vec2[];
     pathIndex: number;
@@ -253,7 +254,7 @@ export type TowerButton = Pick<TowerDef, 'name' | 'cost' | 'stats' | 'element' |
     onClick: MouseEventHandler<HTMLButtonElement>;
 };
 
-export type TargetPriority = "Most Progress" | "Least Progress" | "Highest HP" | "Lowest HP";
+export type TargetPriority = "Most Progress" | "Least Progress" | "Highest HP" | "Lowest HP" | "Closest" | "Furthest";
 
 export type SelectedUnitUI = {
     name: string;
