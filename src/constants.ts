@@ -1496,9 +1496,9 @@ export const TOWERS = {
         baseSprite: "lava tower base",
         sprite: "lava-tower-sprite.png",
         description: "Pours lava onto the path. This tower receives half the amount from range upgrades",
-        cost: 5,
+        cost: 350,
         stats: {
-            damage: 2,
+            damage: 3,
             range: 2.5,
             fireInterval: 1,
             critChance: 5,
@@ -1510,7 +1510,7 @@ export const TOWERS = {
         shootOffset: { x: 0, y: 0 },
         projectile: null,
         canRotate: false,
-        source: "starting",
+        source: "reward",
         targetType: "enemy",
         footprint: {
             w: 2,

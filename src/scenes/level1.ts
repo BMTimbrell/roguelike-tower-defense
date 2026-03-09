@@ -15,6 +15,7 @@ import makeHero from "../entities/Hero";
 import initCam from "../utils/initCam";
 import updateSkills from "../utils/updateSkills";
 import addTowers from "../utils/addTowers";
+import { makeLavaManager } from "../utils/lavaHelpers";
 
 export default function level1(k: KAPLAYCtx) {
     k.scene("level1" satisfies Scene, async (mapData: MapData) => {
@@ -204,6 +205,7 @@ export default function level1(k: KAPLAYCtx) {
         }));
 
         addSelectTowerListener(k);
+        makeLavaManager(k);
 
         // Waypoints for enemies
         const waypoints = mapData.layers

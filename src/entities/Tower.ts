@@ -8,7 +8,7 @@ import makePlaceableOnGrid, { setBlockedTiles } from '../utils/makePlacementOnGr
 import makeUnitCombat from '../utils/makeUnitCombat';
 import setTowerUI from '../utils/setTowerUI';
 import { enemyTargetResolver, pathTargetResolver } from '../utils/targetingHelpers';
-import { getLavaTiles, makeLavaTile } from '../utils/lavaHelpers';
+import { getLavaTiles, makeLavaTile, rebuildLava } from '../utils/lavaHelpers';
 
 export default function makeTower(
     k: KAPLAYCtx,
@@ -131,10 +131,17 @@ export default function makeTower(
         combat.destroy();
 
         if (tower.lavaTiles) {
-            k.get("lava").forEach(l => {
+            k.get("lava tile").forEach(l => {
                 if (l.towerId === tower.instanceId) k.destroy(l);
             });
         }
+
+        (k.get("tower") as TowerGameObj[]).forEach(t => {
+            if (t.lavaTiles) {
+                rebuildLava(k, t);
+            }
+        });
+
     });
 
     makePlaceableOnGrid(k, {
@@ -150,7 +157,7 @@ export default function makeTower(
                 selectedUI: null
             }));
 
-            if (TOWERS[towerId].lavaTiles) {
+            if ((TOWERS[towerId] as Record<"lavaTiles", []>).lavaTiles) {
                 tower.lavaTiles ??= getLavaTiles(k, tower.pos, tower.stats.range * TILE_SIZE, tower.tileGrid);
                 tower.lavaTiles.forEach(pos => makeLavaTile(k, pos, tower));
                 combat.gun.play("pouring");
