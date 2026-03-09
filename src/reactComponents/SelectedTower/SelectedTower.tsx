@@ -4,7 +4,7 @@ import { gameStateAtom, mapAtom } from '../../store';
 import { useAtom } from 'jotai';
 import type { SelectedTowerUI, USlot } from '../../types';
 import UpgradeSlot from "../UpgradeSlot/UpgradeSlot";
-import { MAX_TOWER_UPGRADES } from '../../constants';
+import { MAX_TOWER_UPGRADES, REDUCED_RANGE_TOWERS } from '../../constants';
 import CostText from "../CostText/CostText";
 import Popup from "../Popup/Popup";
 import Button from "../Button/Button";
@@ -80,10 +80,20 @@ export default function SelectedTower({ tower }: { tower: SelectedTowerUI }) {
 
         const firstIndex = highlightedIndexes[0];
 
+        let adjustedUpgrade = { ...selectedUpgrade };
+
+        // halve range for aoe towers and lava tower
+        if (
+            adjustedUpgrade.stat === "range" &&
+            REDUCED_RANGE_TOWERS.includes(name)
+        ) {
+            adjustedUpgrade.amount /= 2;
+        }
+
         const newUpgrades = [
             ...upgrades,
             ...highlightedIndexes.map((index) => ({
-                ...selectedUpgrade,
+                ...adjustedUpgrade,
                 active: index === firstIndex,
             })),
         ];
@@ -145,7 +155,7 @@ export default function SelectedTower({ tower }: { tower: SelectedTowerUI }) {
             <PriorityButton scale={scale} priority={priority} setPriority={setPriority} /><br />
 
             <Button onClick={sellTower}>
-                Sell <img style={{ width: `${8 * scale}px`, marginRight: '0.125em'}}  src="sprites/coin.png" />{calcSellPrice(cost, unlockedUpgradeSlots)}
+                Sell <img style={{ width: `${8 * scale}px`, marginRight: '0.125em' }} src="sprites/coin.png" />{calcSellPrice(cost, unlockedUpgradeSlots)}
             </Button>
         </Popup>
     );

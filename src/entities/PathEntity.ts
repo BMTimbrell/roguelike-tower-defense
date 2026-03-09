@@ -1,5 +1,5 @@
 import type { GameObj, KAPLAYCtx, Vec2 } from "kaplay";
-import type { ElementName, EnemyGameObj, TowerStats } from "../types";
+import type { ElementName, EnemyGameObj } from "../types";
 import hurtEnemy from "../utils/hurtEnemy";
 import calcDamage from "../utils/calcDamage";
 import { CURSE_CRIT, PROJECTILES, TILE_SIZE, type ProjectileId } from "../constants";

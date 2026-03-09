@@ -301,6 +301,28 @@ export default function loadAssets(k: KAPLAYCtx) {
             idle: 0
         }
     });
+    k.loadSprite("charge tower base", "/sprites/charge-tower-base.png");
+    k.loadSprite("charge tower", "/sprites/charge-tower.png", {
+        sliceX: 1,
+        sliceY: 1,
+        anims: {
+            idle: 0
+        }
+    });
+    k.loadSprite("lava tower base", "/sprites/lava-tower-base.png");
+    k.loadSprite("lava tower", "/sprites/lava-tower.png", {
+        sliceX: 4,
+        sliceY: 1,
+        anims: {
+            idle: 0,
+            pouring: {
+                from: 1, 
+                to: 3, 
+                loop: true,
+                speed: 7
+            }
+        }
+    });
     k.loadSprite("fog", "/sprites/fog5.png");
     k.loadSprite("basic projectile", "/sprites/basic-projectile.png");
     k.loadSprite("slimeball", "/sprites/slimeball.png");
@@ -412,4 +434,5 @@ export default function loadAssets(k: KAPLAYCtx) {
         }
     });
     k.loadSprite("snow", "/sprites/snow.png");
+    k.loadSprite("lava tile", "/sprites/lava-tile.png");
 }

@@ -30,6 +30,7 @@ export const STUN_DURATION = 1;
 export const CURSE_CRIT = 10;
 export const TIME_TOWER_BASE_ANIM_SPEED = 30;
 export const SCYTHE_MAX_KILL_STACKS = 70;
+export const REDUCED_RANGE_TOWERS = ["Chili Pepper Tower", "Ice Tower", "Balloon Tower", "Lava Tower"];
 export const UPGRADES: Upgrade[] = [{
     stat: "damage",
     name: "Damage",
@@ -330,7 +331,7 @@ export const TOWERS = {
         gunSprite: "ice tower",
         baseSprite: "ice tower base",
         sprite: "ice-tower-sprite.png",
-        description: "Emits a frost that damages all enemies in range",
+        description: "Emits a frost that damages all enemies in range. This tower receives half the amount from range upgrades",
         cost: 80,
         stats: {
             damage: 2,
@@ -380,6 +381,12 @@ export const TOWERS = {
         effects: [{
             firstEffect(ctx) {
                 ctx.attackType = "lightning";
+                if (!ctx.lightning) {
+                    ctx.lightning = {
+                        maxChains: 3,
+                        range: 5
+                    }
+                }
             }
         }],
         canRotate: false,
@@ -566,7 +573,7 @@ export const TOWERS = {
         gunSprite: "chili tower",
         baseSprite: "plant tower base",
         sprite: "basic-tower-sprite.png",
-        description: "Deals fire damage to all enemies in range",
+        description: "Deals fire damage to all enemies in range. This tower receives half the amount from range upgrades",
         cost: 60,
         stats: {
             damage: 6,
@@ -942,7 +949,7 @@ export const TOWERS = {
         baseSprite: "sludge bomb tower base",
         sprite: "sludge-bomb-tower-sprite.png",
         description: "Shoots a giant ball of sludge that deals splash damage",
-        cost: 225,
+        cost: 200,
         stats: {
             damage: 20,
             range: 5,
@@ -1011,8 +1018,8 @@ export const TOWERS = {
         description: "Shoots a giant laser beam that damages all enemies in its path",
         cost: 300,
         stats: {
-            damage: 30,
-            range: 5,
+            damage: 25,
+            range: 4,
             fireInterval: 2.5,
             critChance: 5,
             critDamage: 100
@@ -1040,7 +1047,7 @@ export const TOWERS = {
         gunSprite: "balloon tower",
         baseSprite: "balloon tower base",
         sprite: "balloon-tower-sprite.png",
-        description: "Mechanical arms rub a giant balloon, zapping all enemies in range",
+        description: "Mechanical arms rub a giant balloon, zapping all enemies in range. This tower receives half the amount from range upgrades",
         cost: 250,
         stats: {
             damage: 8,
@@ -1411,7 +1418,7 @@ export const TOWERS = {
         gunSprite: "flamethrower tower",
         baseSprite: "flamethrower tower base",
         sprite: "flamethrower-tower-sprite.png",
-        description: "Summons a blizzard that deals devastating damage to enemies in a large area",
+        description: "Shoots a cone of flames, dealing devastating damage to nearby enemies",
         cost: 300,
         stats: {
             damage: 4,
@@ -1438,6 +1445,78 @@ export const TOWERS = {
                 ctx.attackType = "cone";
             }
         }]
+    },
+    charge: {
+        name: "Charge Tower",
+        gunSprite: "charge tower",
+        baseSprite: "charge tower base",
+        sprite: "charge-tower-sprite.png",
+        description: "Gains charge as it shoots, increasing its fire rate",
+        cost: 250,
+        stats: {
+            damage: 8,
+            range: 5,
+            fireInterval: 1,
+            critChance: 5,
+            critDamage: 100
+        },
+        element: "Electric",
+        gunOffset: { x: 7, y: -1 },
+        anchorOffset: { x: 14 / 64, y: -2 / 64 },
+        shootOffset: { x: -40, y: 0 },
+        projectile: null,
+        canRotate: true,
+        source: "reward",
+        targetType: "enemy",
+        footprint: {
+            w: 2,
+            h: 2
+        },
+        effects: [{
+            firstEffect(ctx) {
+                ctx.attackType = "lightning";
+                if (!ctx.lightning) {
+                    ctx.lightning = {
+                        maxChains: 1,
+                        range: 5
+                    }
+                }
+            }
+        }],
+        charge: {
+            currentCharge: 0,
+            maxCharge: 0.7,
+            chargePerShot: 0.04,
+            decayDelay: 1.25
+        }
+    },
+    lava: {
+        name: "Lava Tower",
+        gunSprite: "lava tower",
+        baseSprite: "lava tower base",
+        sprite: "lava-tower-sprite.png",
+        description: "Pours lava onto the path. This tower receives half the amount from range upgrades",
+        cost: 5,
+        stats: {
+            damage: 2,
+            range: 2.5,
+            fireInterval: 1,
+            critChance: 5,
+            critDamage: 100
+        },
+        element: "Fire",
+        gunOffset: { x: 0, y: 0 },
+        anchorOffset: { x: 0, y: 0 },
+        shootOffset: { x: 0, y: 0 },
+        projectile: null,
+        canRotate: false,
+        source: "starting",
+        targetType: "enemy",
+        footprint: {
+            w: 2,
+            h: 2
+        },
+        lavaTiles: []
     }
 } as const satisfies Record<string, TowerDef>;
 

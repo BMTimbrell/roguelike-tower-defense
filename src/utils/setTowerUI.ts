@@ -4,7 +4,8 @@ import { calcUpgradeCost } from "./calcUpgradeCost";
 import type { SelectedFarmTowerUI, SelectedTowerUI, TargetPriority, TowerGameObj, Upgrade } from "../types";
 import calcFireInterval from "./calcFireInterval";
 import calcSellPrice from "./calcSellPrice";
-import { SEEDS } from "../constants";
+import { REDUCED_RANGE_TOWERS, SEEDS } from "../constants";
+import { rebuildLava } from "./lavaHelpers";
 
 export default function setTowerUI(k: KAPLAYCtx, type: "combat" | "farm", tower: TowerGameObj) {
     if (type === "combat") {
@@ -15,11 +16,13 @@ export default function setTowerUI(k: KAPLAYCtx, type: "combat" | "farm", tower:
                 pos: tower.screenPos().scale(1 / k.getCamScale().x, 1 / k.getCamScale().y),
                 priority: tower.priority,
                 name: tower.name,
-                stats: { 
+                stats: {
                     ...tower.stats,
-                    ...(tower.timeData ? { 
-                        fireInterval: tower.stats.fireInterval * (tower.timeData.timeScaling.interval ? tower.timeData.timeMultiplier : 1),
-                        damage: Math.round(tower.stats.damage * (tower.timeData.timeScaling.damage ? tower.timeData.timeMultiplier ** 2 : 1))  
+                    ...(tower.timeData || tower.charge ? {
+                        fireInterval: tower.stats.fireInterval *
+                            (tower.timeData?.timeScaling.interval ? tower.timeData.timeMultiplier : 1) *
+                            (1 - (tower.charge?.currentCharge ?? 0)),
+                        damage: Math.round(tower.stats.damage * (tower.timeData?.timeScaling.damage ? tower.timeData.timeMultiplier ** 2 : 1))
                     } : {})
                 },
                 cost: tower.cost,
@@ -63,6 +66,10 @@ export default function setTowerUI(k: KAPLAYCtx, type: "combat" | "farm", tower:
                             upgrade.used = true;
                         }
                     });
+
+                    if (tower.lavaTiles) {
+                        rebuildLava(k, tower);
+                    }
                     return tower.stats;
                 },
                 setPriority: (priority: TargetPriority) => {

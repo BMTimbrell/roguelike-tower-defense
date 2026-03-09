@@ -1,6 +1,6 @@
 import type { KAPLAYCtx, Vec2 } from 'kaplay';
 import { TILE_SIZE, type TowerId } from '../constants';
-import type { TargetPriority, TowerGameObj, UnitEffects, TowerDef, SeedId, Tile, PathTile, RandomProjectiles, TimeData, ContinuousEffect} from '../types';
+import type { TargetPriority, TowerGameObj, UnitEffects, TowerDef, SeedId, Tile, PathTile, RandomProjectiles, TimeData, ContinuousEffect, Charge } from '../types';
 import { store, gameStateAtom } from '../store';
 import { calcUpgradeCost } from '../utils/calcUpgradeCost';
 import { TOWERS } from '../constants';
@@ -8,6 +8,7 @@ import makePlaceableOnGrid, { setBlockedTiles } from '../utils/makePlacementOnGr
 import makeUnitCombat from '../utils/makeUnitCombat';
 import setTowerUI from '../utils/setTowerUI';
 import { enemyTargetResolver, pathTargetResolver } from '../utils/targetingHelpers';
+import { getLavaTiles, makeLavaTile } from '../utils/lavaHelpers';
 
 export default function makeTower(
     k: KAPLAYCtx,
@@ -86,7 +87,8 @@ export default function makeTower(
             ...(targetType === "point" ? { pathEntityLimit: TOWERS[towerId]?.pathEntityLimit ?? 10 } : {}),
             ...("melee" in TOWERS[towerId] ? { melee: TOWERS[towerId]?.melee } : {}),
             ...("killStacks" in TOWERS[towerId] ? { killStacks: TOWERS[towerId].killStacks as number } : {}),
-            ...("continuousEffect" in TOWERS[towerId] ? { continuousEffect: TOWERS[towerId].continuousEffect as ContinuousEffect } : {})
+            ...("continuousEffect" in TOWERS[towerId] ? { continuousEffect: TOWERS[towerId].continuousEffect as ContinuousEffect } : {}),
+            ...("charge" in TOWERS[towerId] ? { charge: TOWERS[towerId].charge as Charge } : {})
         },
         "tower",
         towerId
@@ -127,6 +129,12 @@ export default function makeTower(
             });
         }
         combat.destroy();
+
+        if (tower.lavaTiles) {
+            k.get("lava").forEach(l => {
+                if (l.towerId === tower.instanceId) k.destroy(l);
+            });
+        }
     });
 
     makePlaceableOnGrid(k, {
@@ -141,6 +149,12 @@ export default function makeTower(
                 gold: prev.gold - tower.cost,
                 selectedUI: null
             }));
+
+            if (TOWERS[towerId].lavaTiles) {
+                tower.lavaTiles ??= getLavaTiles(k, tower.pos, tower.stats.range * TILE_SIZE, tower.tileGrid);
+                tower.lavaTiles.forEach(pos => makeLavaTile(k, pos, tower));
+                combat.gun.play("pouring");
+            }
         },
     });
 

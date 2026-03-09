@@ -123,7 +123,16 @@ export type TowerDef = {
         swingAngle: number;
     };
     killStacks?: number;
+    charge?: Charge;
     footprint: Footprint;
+    lavaTiles?: Vec2[];
+};
+
+export type Charge = {
+    currentCharge: number;
+    maxCharge: number;
+    chargePerShot: number;
+    decayDelay: number;
 };
 
 export type UnitInstance = {
@@ -140,6 +149,7 @@ export type UnitInstance = {
     targetType: "enemy" | "point";
     pathEntityLimit?: number;
     footprint: Footprint;
+    chargeStacks?: Charge;
 };
 
 export type TimeData = {
@@ -173,6 +183,7 @@ export type TowerInstance = UnitInstance & {
     pathTiles: PathTile[];
     randomProjectiles?: RandomProjectiles;
     killStacks?: number;
+    lavaTiles?: Vec2[];
 };
 
 export type TowerGameObj = GameObj & TowerInstance;

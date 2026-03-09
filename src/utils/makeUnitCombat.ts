@@ -158,6 +158,13 @@ export default function makeUnitCombat(
                     ? opts.owner.killStacks
                     : 0;
 
+            if (opts.owner.charge) {
+                opts.owner.charge.currentCharge = Math.min(
+                    opts.owner.charge.currentCharge + opts.owner.charge.chargePerShot,
+                    opts.owner.charge.maxCharge
+                );
+            }
+
             const ctx: AttackContext = {
                 attacker: opts.owner,
                 target: enemy,
@@ -274,10 +281,22 @@ export default function makeUnitCombat(
 
     }
 
+    let lastShotTime = 0;
+
     function update() {
+        lastShotTime += k.dt();
+
+        if (opts.owner.charge && lastShotTime > opts.owner.charge.decayDelay) {
+            opts.owner.charge.currentCharge = Math.max(
+                0,
+                opts.owner.charge.currentCharge - 0.5 * k.dt()
+            )
+        }
+
         const interval =
             opts.owner.stats.fireInterval *
-            (opts.owner.timeData?.timeMultiplier ?? 1);
+            (opts.owner.timeData?.timeMultiplier ?? 1)
+            * (1 - (opts.owner.charge?.currentCharge ?? 0));
 
         const anim = gun.getCurAnim();
 
@@ -329,6 +348,8 @@ export default function makeUnitCombat(
             ) break;
 
             shoot(target);
+            lastShotTime = 0;
+
             if (gun.getAnim("shoot")) gun.play("shoot");
         }
     }
@@ -491,14 +512,17 @@ function lightningAttack(k: KAPLAYCtx, ctx: AttackContext, dmg: DamageResult) {
     if (!ctx.target) return;
     const { damage, isCrit } = dmg;
 
+    const maxChains = ctx.lightning?.maxChains ?? 3;
+    const range = (ctx.lightning?.range ?? 5) * TILE_SIZE;
+
     const chain = resolveChain(k, {
         startPos: ctx.origin,
         target: ctx.target,
         damage,
         isCrit,
         element: ctx.element,
-        maxChains: 3,
-        range: TILE_SIZE * 5
+        maxChains,
+        range,
     });
 
     const lightning = k.add([
