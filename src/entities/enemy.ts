@@ -1,7 +1,7 @@
 import type { KAPLAYCtx, Vec2, GameObj } from 'kaplay';
 import { store, gameStateAtom } from '../store';
 import type { EnemyId } from '../constants';
-import { ENEMIES, STUN_DURATION } from '../constants';
+import { ENEMIES, STUN_DURATION, TILE_SIZE } from '../constants';
 import healthBar from '../kaplayComponents/healthBar';
 import statusEffect from '../kaplayComponents/statusEffect';
 import type { EnemyGameObj } from '../types';
@@ -26,7 +26,10 @@ export default function makeEnemy(k: KAPLAYCtx, enemyId: EnemyId, waypoints: Vec
             baseSpeed: ENEMIES[enemyId].speed,
             speed: ENEMIES[enemyId].speed,
             damage: ENEMIES[enemyId].damage,
-            isDying: false
+            isDying: false,
+            armour: (ENEMIES[enemyId] as Record<"armour", number>).armour ?? 0,
+            maxArmour: (ENEMIES[enemyId] as Record<"armour", number>).armour ?? 0,
+            ...("healer" in ENEMIES[enemyId] ? { healer: ENEMIES[enemyId].healer as { amount: number; range: number; }, healTickRate: 2 } : {}),
         },
         k.state("move", ["move", "stunned", "attack"]),
         statusEffect(),
@@ -36,7 +39,7 @@ export default function makeEnemy(k: KAPLAYCtx, enemyId: EnemyId, waypoints: Vec
     ]);
 
     enemy.onHurt(amount => {
-        if (!amount) {
+        if (amount === undefined) {
             return;
         }
 
@@ -121,6 +124,55 @@ export default function makeEnemy(k: KAPLAYCtx, enemyId: EnemyId, waypoints: Vec
             }
         }
 
+    });
+
+    let healTimer = enemy.healTickRate ?? 0;
+
+    enemy.onUpdate(() => {
+        if (!enemy.healer && !enemy.healTickRate) return;
+
+        healTimer -= k.dt();
+
+        if (healTimer <= 0) {
+            const circleEffect = k.add([
+                k.circle(2, { fill: false }),
+                k.color(),
+                k.outline(1, k.rgb(0, 255, 0)),
+                k.anchor("center"),
+                k.pos(enemy.pos),
+                k.lifespan(0.5),
+                k.opacity(1),
+                k.scale(1),
+                {
+                    update() {
+                        circleEffect.radius += k.dt() * 90;
+                        circleEffect.opacity -= k.dt() * 0.5;
+                        circleEffect.pos = enemy.pos
+                    }
+                }
+            ]);
+
+            k.get("enemy").forEach(e => {
+                if (e.pos.dist(enemy.pos) <= enemy.healer!.range * TILE_SIZE) {
+                    e.heal(enemy.healer!.amount);
+                    const healEffect = k.add([
+                        k.sprite("heal effect", { anim: "heal" }),
+                        k.pos(e.pos),
+                        k.anchor("center"),
+                        k.opacity(1),
+                        {
+                            update() {
+                                healEffect.pos = e.pos;
+                            }
+                        }
+                    ]);
+
+                    healEffect.onAnimEnd(() => k.destroy(healEffect));
+                }
+            });
+
+            healTimer += enemy.healTickRate!;
+        }
     });
 
     return enemy;

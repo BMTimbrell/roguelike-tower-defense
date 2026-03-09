@@ -1,6 +1,6 @@
 import type { KAPLAYCtx } from "kaplay";
 import makeFloatingText from "../entities/FloatingText";
-import { CRIT_DAMAGE_NUMBER_SIZE, DAMAGE_NUMBER_SIZE, ELEMENTS } from "../constants";
+import { CRIT_DAMAGE_NUMBER_SIZE, DAMAGE_NUMBER_SIZE, ELEMENTS, SMALL_DAMAGE_NUMBER_SIZE } from "../constants";
 import type { ElementName, EnemyGameObj, TowerGameObj } from "../types";
 
 export default function hurtEnemy(k: KAPLAYCtx, opts: {
@@ -8,9 +8,11 @@ export default function hurtEnemy(k: KAPLAYCtx, opts: {
     damage: number;
     element: ElementName;
     isCrit: boolean;
-    attacker?: TowerGameObj
+    ignoreArmour?: boolean;
+    attacker?: TowerGameObj;
+    statusDamage?: boolean;
 }) {
-    const { target, damage, element, isCrit, attacker } = opts;
+    const { target, damage, element, isCrit, attacker, statusDamage, ignoreArmour } = opts;
 
     if (attacker?.killStacks !== undefined && target.hp() <= damage) {
         attacker.killStacks++;
@@ -29,13 +31,31 @@ export default function hurtEnemy(k: KAPLAYCtx, opts: {
         }
     }
 
-    target.hurt(damage);
+    let remainingDamage = damage;
+    let effectiveDamage = damage;
+
+    if (target.armour && target.armour > 0) {
+        // crits ignore reduced
+        effectiveDamage = Math.round(damage * (isCrit || ignoreArmour ? 1 : 0.5));
+
+        target.armour -= effectiveDamage;
+
+        if (target.armour < 0) {
+            remainingDamage = -target.armour;
+            target.armour = 0;
+        } else {
+            remainingDamage = 0;
+        }
+    }
+
+    target.hurt(remainingDamage);
+
     makeFloatingText(k, {
         pos: target.pos,
-        text: '' + damage,
-        size: isCrit ? CRIT_DAMAGE_NUMBER_SIZE : DAMAGE_NUMBER_SIZE,
+        text: '' + effectiveDamage,
+        size: isCrit ? CRIT_DAMAGE_NUMBER_SIZE : statusDamage ? SMALL_DAMAGE_NUMBER_SIZE : DAMAGE_NUMBER_SIZE,
         color: ELEMENTS[element].color
     });
 
-    ELEMENTS[element].applyEffect?.(k, { target, damage });
+    if (!statusDamage) ELEMENTS[element].applyEffect?.(k, { target, damage: effectiveDamage });
 }

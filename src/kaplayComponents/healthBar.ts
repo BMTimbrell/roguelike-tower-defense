@@ -15,16 +15,16 @@ export default function healthBar(k: KAPLAYCtx, duration: number): Comp {
         require: ["health", "sprite", "rotate"],
 
         draw(this: GameObj<
-            HealthComp | 
-            SpriteComp | 
-            RotateComp | 
-            PoisonComp | 
-            BurnComp | 
-            ChillComp | 
-            ChargeComp | 
-            CurseComp | 
+            HealthComp |
+            SpriteComp |
+            RotateComp |
+            PoisonComp |
+            BurnComp |
+            ChillComp |
+            ChargeComp |
+            CurseComp |
             StatusEffectComp
-        >) {
+        > & { armour: number; maxArmour: number; }) {
             k.pushTransform();
             k.pushRotate(-this.angle);
 
@@ -37,7 +37,7 @@ export default function healthBar(k: KAPLAYCtx, duration: number): Comp {
 
                     let effectPos = hbBarPos.sub(k.vec2(0 - index * 10, 11));
                     const stacks = effect?.stacks ?? 0;
-                    
+
                     k.drawSprite({
                         sprite: effect.icon,
                         pos: effectPos
@@ -54,6 +54,18 @@ export default function healthBar(k: KAPLAYCtx, duration: number): Comp {
                 }
             });
 
+            const hp = this.hp();
+            const maxHP = this.maxHP() ?? 1;
+
+            const armour = this.armour ?? 0;
+            const maxArmour = this.maxArmour ?? 0;
+
+            const total = maxHP + maxArmour;
+
+            const hpWidth = this.width * (hp / total);
+            const armourWidth = this.width * (armour / total);
+
+            // background
             k.drawRect({
                 width: this.width,
                 height: 4,
@@ -62,14 +74,25 @@ export default function healthBar(k: KAPLAYCtx, duration: number): Comp {
                 radius: 2
             });
 
+            // HP (green)
             k.drawRect({
-                width: this.width * (this.hp() / (this.maxHP() ?? 1)),
+                width: hpWidth,
                 height: 4,
                 pos: hbBarPos,
                 color: k.Color.fromHex("#5ba675"),
                 radius: 2
             });
 
+            // armor (yellow)
+            k.drawRect({
+                width: armourWidth,
+                height: 4,
+                pos: hbBarPos.add(hpWidth, 0),
+                color: k.Color.fromHex("#e5c84b"),
+                radius: 2
+            });
+
+            // outline
             k.drawRect({
                 width: this.width,
                 height: 4,

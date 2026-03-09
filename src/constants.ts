@@ -182,7 +182,7 @@ export const LEVEL_WAVES = {
         waves: [
             {
                 spawns: [
-                    { id: "slime", count: 5, interval: 1 },
+                    { id: "slime", count: 5, interval: 1 }
                 ],
                 reward: 50
             },
@@ -228,6 +228,23 @@ export const ENEMIES = {
         damage: 1,
         speed: 50,
         sprite: "skeleton"
+    },
+    armouredSkeleton: {
+        hp: 40,
+        armour: 15,
+        damage: 1,
+        speed: 40,
+        sprite: "armoured skeleton"
+    },
+    fairy: {
+        hp: 50,
+        damage: 1,
+        speed: 60,
+        sprite: "fairy",
+        healer: {
+            amount: 10,
+            range: 2
+        }
     }
 } as const satisfies Record<string, EnemyConfig>;
 

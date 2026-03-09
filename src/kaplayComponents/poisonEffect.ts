@@ -1,8 +1,9 @@
 import type { KAPLAYCtx, Comp, HealthComp, GameObj, PosComp } from "kaplay";
 import makeFloatingText from "../entities/FloatingText";
 import { ELEMENTS, SMALL_DAMAGE_NUMBER_SIZE } from "../constants";
-import type { StatusEffectResult } from "../types";
+import type { EnemyGameObj, StatusEffectResult } from "../types";
 import type { StatusEffect, StatusEffectComp } from "./statusEffect";
+import hurtEnemy from "../utils/hurtEnemy";
 
 export type PoisonComp = Comp & {
     id: StatusEffect;
@@ -46,14 +47,8 @@ export default function poisonEffect(k: KAPLAYCtx): PoisonComp {
                 tickTimer -= tickRate;
 
                 const damage = stacks;
-                this.hurt(damage);
 
-                makeFloatingText(k, {
-                    pos: this.pos,
-                    text: '' + damage,
-                    size: SMALL_DAMAGE_NUMBER_SIZE,
-                    color: ELEMENTS["Poison"].color
-                });
+                hurtEnemy(k, { target: this as EnemyGameObj, element: "Poison", damage, isCrit: false, statusDamage: true, ignoreArmour: true });
             }
 
             if (this.isDying) {

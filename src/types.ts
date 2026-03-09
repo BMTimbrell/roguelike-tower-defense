@@ -229,6 +229,13 @@ export type EnemyGameObj = GameObj<
     speed: number;
     damage: number;
     isDying: boolean;
+    armour: number;
+    maxArmour: number;
+    healer?: {
+        amount: number;
+        range: number;
+    };
+    healTickRate?: number;
 };
 
 export type Upgrade = {
@@ -359,6 +366,11 @@ export type EnemyConfig = {
     damage: number;
     speed: number;
     sprite: string;
+    armour?: number;
+    healer?: {
+        amount: number;
+        range: number;
+    };
 };
 
 export type AttackContext = {

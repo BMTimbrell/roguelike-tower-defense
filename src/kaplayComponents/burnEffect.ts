@@ -1,8 +1,9 @@
 import type { KAPLAYCtx, Comp, HealthComp, GameObj, PosComp } from "kaplay";
 import makeFloatingText from "../entities/FloatingText";
 import { ELEMENTS, SMALL_DAMAGE_NUMBER_SIZE } from "../constants";
-import type { StatusEffectResult } from "../types";
+import type { EnemyGameObj, StatusEffectResult } from "../types";
 import type { StatusEffect, StatusEffectComp } from "./statusEffect";
+import hurtEnemy from "../utils/hurtEnemy";
 
 export type BurnComp = Comp & {
     id: StatusEffect;
@@ -38,7 +39,7 @@ export default function burnEffect(k: KAPLAYCtx, duration: number): BurnComp {
             this.removeStatus("burn");
         },
 
-        update(this: GameObj<HealthComp | PosComp | { isDying: boolean }>) {
+        update(this: GameObj<HealthComp | PosComp | { isDying: boolean, armour: number; }>) {
             tickTimer += k.dt();
             timer -= k.dt();
 
@@ -46,14 +47,7 @@ export default function burnEffect(k: KAPLAYCtx, duration: number): BurnComp {
                 tickTimer -= tickRate;
 
                 const damage = Math.max(1, Math.round((this.maxHP() ?? 0) * 0.01));
-                this.hurt(damage);
-
-                makeFloatingText(k, {
-                    pos: this.pos,
-                    text: '' + damage,
-                    size: SMALL_DAMAGE_NUMBER_SIZE,
-                    color: ELEMENTS["Fire"].color
-                });
+                hurtEnemy(k, { target: this as EnemyGameObj, element: "Fire", damage, isCrit: false, statusDamage: true, ignoreArmour: true });
             }
 
             if (timer <= 0 || this.isDying) {
