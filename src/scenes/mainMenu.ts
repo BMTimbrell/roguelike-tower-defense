@@ -18,7 +18,7 @@ export default function mainMenu(k: KAPLAYCtx) {
         });
 
         k.onKeyDown("enter", () => {
-            k.go("level1" satisfies Scene, mapData);
+            k.go("level1" satisfies Scene, { mapData, tileGrid, pathTiles });
             store.set(startingOptionsAtom, prev => ({
                 ...prev,
                 visible: false
@@ -42,7 +42,7 @@ export default function mainMenu(k: KAPLAYCtx) {
                         cards: upgrades
                     }
                 }));
-                k.go("level1" satisfies Scene, mapData);
+                k.go("level1" satisfies Scene, { mapData, tileGrid, pathTiles });
                 store.set(startingOptionsAtom, prev => ({
                     ...prev,
                     visible: false

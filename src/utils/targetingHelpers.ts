@@ -136,7 +136,7 @@ export function findNewTarget(
         )[0] ?? null;
 }
 
-export function enemyTargetResolver(k: KAPLAYCtx, owner: TowerGameObj): TargetResolver {
+export function enemyTargetResolver(k: KAPLAYCtx, owner: TowerGameObj | HeroGameObj): TargetResolver {
 
     return () => {
         const enemy = selectTarget(
@@ -152,7 +152,7 @@ export function enemyTargetResolver(k: KAPLAYCtx, owner: TowerGameObj): TargetRe
 export function pathTargetResolver(
     k: KAPLAYCtx,
     pathTiles: PathTile[],
-    owner: TowerGameObj
+    owner: TowerGameObj | HeroGameObj
 ): TargetResolver {
     return () => {
         const origin = owner.pos.add((owner.footprint.w * TILE_SIZE) / 2, (owner.footprint.h * TILE_SIZE) / 2);

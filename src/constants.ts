@@ -195,8 +195,12 @@ export const LEVEL_WAVES = {
             },
             {
                 spawns: [
-                    { id: "skeleton", count: 5, interval: 1 },
-                    { id: "slime", count: 5, interval: 0.75 }
+                    { id: "armouredSkeleton", count: 3, interval: 1 },
+                    { id: "fairy", count: 1, interval: 1 },
+                    { id: "armouredSkeleton", count: 2, interval: 1 },
+                    { id: "fairy", count: 1, interval: 1 },
+                    { id: "skeleton", count: 10, interval: 0.75 },
+                    { id: "fairy", count: 1, interval: 1 },
                 ],
                 reward: 200
             }

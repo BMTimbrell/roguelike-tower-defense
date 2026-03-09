@@ -34,9 +34,9 @@ export default function hurtEnemy(k: KAPLAYCtx, opts: {
     let remainingDamage = damage;
     let effectiveDamage = damage;
 
-    if (target.armour && target.armour > 0) {
+    if (target.armour && target.armour > 0 && !ignoreArmour) {
         // crits ignore reduced
-        effectiveDamage = Math.round(damage * (isCrit || ignoreArmour ? 1 : 0.5));
+        effectiveDamage = Math.round(damage * (isCrit ? 1 : 0.5));
 
         target.armour -= effectiveDamage;
 

@@ -208,6 +208,8 @@ export type HeroInstance = UnitInstance & {
     skillIds: SkillId[];
     level: number;
     canReposition: boolean;
+    tileGrid: Tile[][];
+    pathTiles: PathTile[];
 };
 
 export type HeroGameObj = GameObj & HeroInstance;

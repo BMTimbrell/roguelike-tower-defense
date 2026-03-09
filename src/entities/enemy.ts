@@ -153,7 +153,7 @@ export default function makeEnemy(k: KAPLAYCtx, enemyId: EnemyId, waypoints: Vec
             ]);
 
             k.get("enemy").forEach(e => {
-                if (e.pos.dist(enemy.pos) <= enemy.healer!.range * TILE_SIZE) {
+                if (!enemy.has("curse") && e.pos.dist(enemy.pos) <= enemy.healer!.range * TILE_SIZE) {
                     e.heal(enemy.healer!.amount);
                     const healEffect = k.add([
                         k.sprite("heal effect", { anim: "heal" }),
@@ -172,6 +172,12 @@ export default function makeEnemy(k: KAPLAYCtx, enemyId: EnemyId, waypoints: Vec
             });
 
             healTimer += enemy.healTickRate!;
+        }
+    });
+
+    enemy.onHeal(() => {
+        if (enemy.has("poison")) {
+            enemy.unuse("poison");
         }
     });
 

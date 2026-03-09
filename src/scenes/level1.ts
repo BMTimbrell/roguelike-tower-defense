@@ -1,6 +1,6 @@
 import type { KAPLAYCtx, Vec2 } from "kaplay";
 import { addSelectTowerListener } from "../entities/Tower";
-import type { MapData, Scene } from "../types";
+import type { MapData, PathTile, Scene, Tile } from "../types";
 import { store, gameStateAtom } from "../store";
 import { TILE_SIZE, MAX_HAND_SIZE, ROUND_DRAW_NUM, CHARGE_DAMAGE_REQUIRED } from "../constants";
 import generateDeck from "../utils/generateDeck";
@@ -14,11 +14,10 @@ import getCamViewRect from "../utils/getCamViewRect";
 import makeHero from "../entities/Hero";
 import initCam from "../utils/initCam";
 import updateSkills from "../utils/updateSkills";
-import addTowers from "../utils/addTowers";
 import { makeLavaManager } from "../utils/lavaHelpers";
 
 export default function level1(k: KAPLAYCtx) {
-    k.scene("level1" satisfies Scene, async (mapData: MapData) => {
+    k.scene("level1" satisfies Scene, async ({ mapData, tileGrid, pathTiles }: { mapData: MapData, tileGrid: Tile[][], pathTiles: PathTile[] }) => {
 
         k.add([
             k.sprite("level1"),
@@ -115,13 +114,13 @@ export default function level1(k: KAPLAYCtx) {
         });
 
         // Generate tile grid for placement logic
-        const tileGrid: boolean[][] = [];
-        mapData.layers.find(layer => layer.name === "Ground")?.data?.forEach((tile, index) => {
-            const x = index % mapData.width;
-            const y = Math.floor(index / mapData.width);
-            if (!tileGrid[y]) tileGrid[y] = [];
-            tileGrid[y][x] = tile !== 1;
-        });
+        // const tileGrid: boolean[][] = [];
+        // mapData.layers.find(layer => layer.name === "Ground")?.data?.forEach((tile, index) => {
+        //     const x = index % mapData.width;
+        //     const y = Math.floor(index / mapData.width);
+        //     if (!tileGrid[y]) tileGrid[y] = [];
+        //     tileGrid[y][x] = tile !== 1;
+        // });
 
         const cursor = k.add([
             "cursor",
@@ -139,8 +138,9 @@ export default function level1(k: KAPLAYCtx) {
             k,
             {
                 heroId: "archer",
-                pos: k.vec2(64, 64),
-                tileGrid
+                pos: k.toWorld(k.mousePos()),
+                tileGrid,
+                pathTiles
             }
         );
 

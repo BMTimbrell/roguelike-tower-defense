@@ -1,21 +1,23 @@
 import type { KAPLAYCtx, Vec2 } from "kaplay";
 import { HEROES, TILE_SIZE, type HeroId, type SkillId } from "../constants";
 import { gameStateAtom, store } from "../store";
-import type { HeroGameObj, SelectedHeroUI, TargetPriority } from "../types";
+import type { HeroGameObj, PathTile, SelectedHeroUI, TargetPriority, Tile } from "../types";
 import makeUnitCombat from "../utils/makeUnitCombat";
-import makePlaceableOnGrid from "../utils/makePlacementOnGrid";
+import makePlaceableOnGrid, { setBlockedTiles } from "../utils/makePlacementOnGrid";
 import { SKILLS } from "../constants";
+import { enemyTargetResolver, pathTargetResolver } from "../utils/targetingHelpers";
 
 export default function makeHero(k: KAPLAYCtx,
     opts: {
         heroId: HeroId
         pos: Vec2,
-        tileGrid: boolean[][],
+        tileGrid: Tile[][],
+        pathTiles: PathTile[]
     }
 ): HeroGameObj {
     k.get("tower").forEach(tower => tower.selected = false);
 
-    const { heroId, pos, tileGrid } = opts;
+    const { heroId, pos, tileGrid, pathTiles } = opts;
     const {
         name,
         stats,
@@ -26,7 +28,8 @@ export default function makeHero(k: KAPLAYCtx,
         anchorOffset,
         shootOffset,
         projectile,
-        canRotate
+        canRotate,
+        targetType
     } = HEROES[heroId];
 
     const priority: TargetPriority = "Most Progress";
@@ -46,10 +49,14 @@ export default function makeHero(k: KAPLAYCtx,
             placeable: false,
             selected: true,
             hovered: true,
+            tileGrid,
+            pathTiles,
+            targetType,
             stats: { ...stats },
             canReposition: true,
             skillIds: [] satisfies SkillId[],
             level: 1,
+            footprint: { w: 1, h: 1},
             element,
             effects: [],
             canRotate
@@ -82,7 +89,8 @@ export default function makeHero(k: KAPLAYCtx,
             gunSprite,
             gunOffset: k.vec2(gunOffset.x, gunOffset.y),
             shootOffset: k.vec2(shootOffset.x, shootOffset.y),
-            anchorOffset: k.vec2(anchorOffset.x, anchorOffset.y)
+            anchorOffset: k.vec2(anchorOffset.x, anchorOffset.y),
+            resolveTarget: hero.targetType === "enemy" ? enemyTargetResolver(k, hero) : pathTargetResolver(k, hero.pathTiles, hero)
         });
 
         hero.onCollide("cursor", () => {
@@ -94,9 +102,18 @@ export default function makeHero(k: KAPLAYCtx,
         });
 
         hero.onDestroy(() => {
-            const gridX = Math.floor(hero.pos.x / TILE_SIZE);
-            const gridY = Math.floor(hero.pos.y / TILE_SIZE);
-            tileGrid[gridY][gridX] = false;
+            if (hero.placed) {
+                const gridX = Math.floor(hero.pos.x / TILE_SIZE);
+                const gridY = Math.floor(hero.pos.y / TILE_SIZE);
+                setBlockedTiles({
+                    footprint: hero.footprint,
+                    gridX,
+                    gridY,
+                    tileGrid: hero.tileGrid,
+                    blocked: false
+                });
+            }
+
             combat.destroy();
         });
 
@@ -136,11 +153,6 @@ export default function makeHero(k: KAPLAYCtx,
                                     priority: hero.priority
                                 } as SelectedHeroUI
                             }));
-                        },
-                        reposition: () => {
-                            if (store.get(gameStateAtom).heroCanReposition) {
-                                placement.tryReposition();
-                            }
                         },
                         skillIds: hero.skillIds,
                         level: hero.level
