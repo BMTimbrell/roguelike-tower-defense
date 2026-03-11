@@ -177,7 +177,8 @@ export default function makeUnitCombat(
                     meleeAttack: {
                         meleeHead,
                         meleeHandle,
-                        swingAngle: opts.owner.melee.swingAngle
+                        swingAngle: opts.owner.melee.swingAngle,
+                        startAngle: opts.owner.melee.startAngle
                     }
                 } : {}),
                 attackType: "projectile",
@@ -281,12 +282,9 @@ export default function makeUnitCombat(
 
     }
 
-    let lastShotTime = 0;
-
     function update() {
-        lastShotTime += k.dt();
 
-        if (opts.owner.charge && lastShotTime > opts.owner.charge.decayDelay) {
+        if (opts.owner.charge && opts.owner.lastShotTime > opts.owner.charge.decayDelay) {
             opts.owner.charge.currentCharge = Math.max(
                 0,
                 opts.owner.charge.currentCharge - 0.5 * k.dt()
@@ -348,7 +346,7 @@ export default function makeUnitCombat(
             ) break;
 
             shoot(target);
-            lastShotTime = 0;
+            opts.owner.lastShotTime = 0;
 
             if (gun.getAnim("shoot")) gun.play("shoot");
         }
@@ -359,6 +357,7 @@ export default function makeUnitCombat(
         distance,
         swingTime,
         swingAngle,
+        startAngle,
         handleLength
     }: {
         dir: Vec2;
@@ -366,11 +365,12 @@ export default function makeUnitCombat(
         swingTime: number;
         handleLength: number;
         swingAngle: number;
+        startAngle: number;
     }) => {
         if (!meleeHandle || !meleeHead) return;
 
         gun.angle = dir.angle() + 180;
-        gun.angle -= 90;
+        gun.angle -= startAngle;
 
         const scaleX = distance / handleLength;
 
@@ -388,6 +388,8 @@ export default function makeUnitCombat(
 
     return {
         gun,
+        meleeHandle,
+        meleeHead,
         rangeCircle,
         update,
         destroy() {
@@ -553,7 +555,7 @@ function meleeAttack(
 
     const { damage, isCrit } = opts;
     const { meleeAttack, element, origin, target, gun } = ctx;
-    const { meleeHead, meleeHandle, swingAngle } = ctx.meleeAttack;
+    const { meleeHead, meleeHandle, swingAngle, startAngle } = ctx.meleeAttack;
     const { handleLength } = ctx.attacker.melee;
 
     if (!target) return;
@@ -568,6 +570,7 @@ function meleeAttack(
         distance: dist - handleLength,
         swingTime: swingTime ?? 0.15,
         swingAngle,
+        startAngle,
         handleLength
     });
 
@@ -775,14 +778,14 @@ function spawnFlameParticles(
     }
 }
 
-function getBarrelTip(k: KAPLAYCtx, opts: { shootOffset: Vec2; anchorOffset: Vec2; origin: Vec2; angle: number; }) {
-    const { shootOffset, anchorOffset, angle, origin } = opts;
-    const dx = shootOffset.x
-    const dy = shootOffset.y
-    const barrelLength = Math.sqrt(dx * dx + dy * dy);
+// function getBarrelTip(k: KAPLAYCtx, opts: { shootOffset: Vec2; anchorOffset: Vec2; origin: Vec2; angle: number; }) {
+//     const { shootOffset, anchorOffset, angle, origin } = opts;
+//     const dx = shootOffset.x
+//     const dy = shootOffset.y
+//     const barrelLength = Math.sqrt(dx * dx + dy * dy);
 
-    return origin.add(k.vec2(
-        Math.cos((angle + 180) * Math.PI / 180) * barrelLength,
-        Math.sin((angle + 180) * Math.PI / 180) * barrelLength
-    ));
-}
+//     return origin.add(k.vec2(
+//         Math.cos((angle + 180) * Math.PI / 180) * barrelLength,
+//         Math.sin((angle + 180) * Math.PI / 180) * barrelLength
+//     ));
+// }

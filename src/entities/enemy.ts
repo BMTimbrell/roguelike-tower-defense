@@ -1,15 +1,16 @@
 import type { KAPLAYCtx, Vec2, GameObj } from 'kaplay';
 import { store, gameStateAtom } from '../store';
-import type { EnemyId } from '../constants';
+import type { EnemyId, ProjectileId } from '../constants';
 import { ENEMIES, STUN_DURATION, TILE_SIZE } from '../constants';
 import healthBar from '../kaplayComponents/healthBar';
 import statusEffect from '../kaplayComponents/statusEffect';
-import type { EnemyGameObj } from '../types';
+import type { EnemyGameObj, TowerGameObj } from '../types';
+import makeEnemyProjectile from './EnemyProjectile';
 
-export default function makeEnemy(k: KAPLAYCtx, enemyId: EnemyId, waypoints: Vec2[]): GameObj {
+export default function makeEnemy(k: KAPLAYCtx, enemyId: EnemyId, waypoints: Vec2[], pathIndex: number = 0, pos?: Vec2): GameObj {
 
     const enemy: EnemyGameObj = k.add([
-        k.pos(waypoints[0]),
+        k.pos(pos ?? waypoints[pathIndex]),
         k.sprite(ENEMIES[enemyId].sprite, { anim: "move" }),
         k.anchor("center"),
         k.area({
@@ -20,7 +21,7 @@ export default function makeEnemy(k: KAPLAYCtx, enemyId: EnemyId, waypoints: Vec
         k.health(ENEMIES[enemyId].hp, ENEMIES[enemyId].hp),
         {
             path: waypoints,
-            pathIndex: 0,
+            pathIndex,
             segmentStart: waypoints[0],
             segmentProgress: 0,
             baseSpeed: ENEMIES[enemyId].speed,
@@ -30,6 +31,13 @@ export default function makeEnemy(k: KAPLAYCtx, enemyId: EnemyId, waypoints: Vec
             armour: (ENEMIES[enemyId] as Record<"armour", number>).armour ?? 0,
             maxArmour: (ENEMIES[enemyId] as Record<"armour", number>).armour ?? 0,
             ...("healer" in ENEMIES[enemyId] ? { healer: ENEMIES[enemyId].healer as { amount: number; range: number; }, healTickRate: 2 } : {}),
+            ...("spawnOnDeath" in ENEMIES[enemyId] ? { spawnOnDeath: ENEMIES[enemyId].spawnOnDeath as { id: "slime"; amount: number; } } : {}),
+            ...("attacker" in ENEMIES[enemyId] ? { attacker: ENEMIES[enemyId].attacker as { 
+                projectile: ProjectileId;
+                attackRange: number;
+                attackCooldown: number;
+                canAttack: boolean;
+             } } : {}),
         },
         k.state("move", ["move", "stunned", "attack"]),
         statusEffect(),
@@ -43,13 +51,15 @@ export default function makeEnemy(k: KAPLAYCtx, enemyId: EnemyId, waypoints: Vec
             return;
         }
 
-        const damageDealt = store.get(gameStateAtom).heroCharge.damageDealt;
+        const prevDamageDealt = store.get(gameStateAtom).heroCharge.damageDealt;
+        const damageDealt = prevDamageDealt + (enemy.hp() > 0 ? amount : amount + enemy.hp());
+
         store.set(gameStateAtom, prev => ({
             ...prev,
             heroCharge: {
                 ...prev.heroCharge,
-                damageDealt: damageDealt + amount,
-                charge: Math.min((damageDealt + amount) / prev.heroCharge.damageRequired, 1)
+                damageDealt,
+                charge: Math.min((damageDealt) / prev.heroCharge.damageRequired, 1)
             }
         }));
 
@@ -60,19 +70,6 @@ export default function makeEnemy(k: KAPLAYCtx, enemyId: EnemyId, waypoints: Vec
         }
     });
 
-    enemy.onDeath(() => {
-        if (enemy.isDying) return;
-
-        enemy.isDying = true;
-        store.set(gameStateAtom, prev => ({
-            ...prev,
-            gold: prev.gold + enemy.damage
-        }));
-        enemy.untag("enemy");
-        enemy.unuse("area");
-        enemy.play("die");
-    });
-
     enemy.onAnimEnd(anim => {
         if (anim === "die") {
             k.destroy(enemy);
@@ -81,7 +78,7 @@ export default function makeEnemy(k: KAPLAYCtx, enemyId: EnemyId, waypoints: Vec
 
     enemy.onStateEnter("move", () => {
         enemy.play("move");
-    });
+    }); 
 
     enemy.onStateEnter("stunned", () => {
         enemy.play("idle");
@@ -89,6 +86,10 @@ export default function makeEnemy(k: KAPLAYCtx, enemyId: EnemyId, waypoints: Vec
             enemy.enterState("move");
         });
     });
+
+    let healTimer = enemy.healTickRate ?? 0;
+    let attackTimer = enemy.attacker?.attackCooldown ?? 0;
+    let dir = k.vec2(0);
 
     enemy.onStateUpdate("move", () => {
         if (enemy.isDying) return;
@@ -98,7 +99,7 @@ export default function makeEnemy(k: KAPLAYCtx, enemyId: EnemyId, waypoints: Vec
         const next = enemy.path[enemy.pathIndex + 1];
         if (!next) return;
 
-        const dir = next.sub(enemy.pos).unit();
+        dir = next.sub(enemy.pos).unit();
         enemy.move(dir.scale(enemy.speed));
 
         enemy.angle = dirToRotation(dir);
@@ -124,16 +125,30 @@ export default function makeEnemy(k: KAPLAYCtx, enemyId: EnemyId, waypoints: Vec
             }
         }
 
-    });
+        // attacker
+        if (enemy.attacker) {
+            attackTimer -= k.dt();
+    
+            while (attackTimer <= 0) {
+                const towers = (k.get("tower") as TowerGameObj[]).filter(
+                    t => t.placed && enemy.pos.dist(t.pos) <= enemy.attacker!.attackRange * TILE_SIZE
+                );
+                if (!towers.length) break;
+    
+                const index = k.randi(towers.length);
+                makeEnemyProjectile(k, { id: enemy.attacker.projectile as ProjectileId, pos: enemy.pos, target: towers[index] });
+    
+                attackTimer += enemy.attacker.attackCooldown;
+            }
+        }
 
-    let healTimer = enemy.healTickRate ?? 0;
 
-    enemy.onUpdate(() => {
+        // healing enemies if healer
         if (!enemy.healer && !enemy.healTickRate) return;
 
         healTimer -= k.dt();
 
-        if (healTimer <= 0) {
+        while (healTimer <= 0) {
             const circleEffect = k.add([
                 k.circle(2, { fill: false }),
                 k.color(),
@@ -173,12 +188,39 @@ export default function makeEnemy(k: KAPLAYCtx, enemyId: EnemyId, waypoints: Vec
 
             healTimer += enemy.healTickRate!;
         }
+
     });
 
     enemy.onHeal(() => {
         if (enemy.has("poison")) {
             enemy.unuse("poison");
         }
+    });
+
+    enemy.onDeath(() => {
+        if (enemy.isDying) return;
+
+        if (enemy.spawnOnDeath) {
+
+            const mid = enemy.spawnOnDeath.amount / 2;
+
+            for (let i = 0; i < enemy.spawnOnDeath.amount; i++) {
+                const posOffset = (i - mid) * 12;
+                const posOffsetX = Math.abs(dir.x) > 0.5 ? posOffset : 0;
+                const posOffsetY = Math.abs(dir.y) > 0.5 ? posOffset : 0;
+
+                makeEnemy(k, enemy.spawnOnDeath.id, enemy.path, enemy.pathIndex, k.vec2(enemy.pos).add(posOffsetX, posOffsetY));
+            }
+        }
+
+        enemy.isDying = true;
+        store.set(gameStateAtom, prev => ({
+            ...prev,
+            gold: prev.gold + enemy.damage
+        }));
+        enemy.untag("enemy");
+        enemy.unuse("area");
+        enemy.play("die");
     });
 
     return enemy;

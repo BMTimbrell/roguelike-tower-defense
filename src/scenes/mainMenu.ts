@@ -17,14 +17,6 @@ export default function mainMenu(k: KAPLAYCtx) {
             initCam(k);
         });
 
-        k.onKeyDown("enter", () => {
-            k.go("level1" satisfies Scene, { mapData, tileGrid, pathTiles });
-            store.set(startingOptionsAtom, prev => ({
-                ...prev,
-                visible: false
-            }));
-        });
-
         const options: { ids: TowerId[]; upgrades: Upgrade[] }[] = [];
 
         for (let i = 0; i < 3; i++) options.push({ ids: generateTowerOptions(), upgrades: generateDeck(k) });

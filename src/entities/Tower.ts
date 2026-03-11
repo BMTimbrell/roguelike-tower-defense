@@ -63,6 +63,7 @@ export default function makeTower(
             tileGrid,
             pathTiles,
             footprint,
+            lastShotTime: 0,
             upgrades: [],
             ...("effects" in TOWERS[towerId] ? { effects: TOWERS[towerId].effects as UnitEffects } : {}),
             ...("farmData" in TOWERS[towerId] ? {
@@ -88,8 +89,10 @@ export default function makeTower(
             ...("melee" in TOWERS[towerId] ? { melee: TOWERS[towerId]?.melee } : {}),
             ...("killStacks" in TOWERS[towerId] ? { killStacks: TOWERS[towerId].killStacks as number } : {}),
             ...("continuousEffect" in TOWERS[towerId] ? { continuousEffect: TOWERS[towerId].continuousEffect as ContinuousEffect } : {}),
-            ...("charge" in TOWERS[towerId] ? { charge: TOWERS[towerId].charge as Charge } : {})
+            ...("charge" in TOWERS[towerId] ? { charge: TOWERS[towerId].charge as Charge } : {}),
+            disabledUntil: 0
         },
+        k.state("active", ["active", "disabled"]),
         "tower",
         towerId
     ]);
@@ -179,6 +182,14 @@ export default function makeTower(
     tower.onUpdate(() => {
         if (!tower.placed) return;
 
+        if (tower.state === "disabled" && k.time() >= tower.disabledUntil) {
+            tower.enterState("active");
+        }
+
+        tower.lastShotTime += k.dt();
+
+        if (tower.state === "disabled") return;
+
         if (tower.timeData) {
             const td = tower.timeData;
 
@@ -189,6 +200,41 @@ export default function makeTower(
         }
 
         combat.update();
+    });
+
+    tower.onStateEnter("disabled", () => {
+        tower.color = k.rgb(150, 150, 150);
+        combat.gun.use(k.color(150, 150, 150));
+        if (combat.meleeHandle && combat.meleeHead) {
+            combat.meleeHandle.use(k.color(150, 150, 150));
+            combat.meleeHead.use(k.color(150, 150, 150));
+        }
+
+        combat.gun.play("idle");
+        if (combat.gun.getCurAnim()?.speed) combat.gun.getCurAnim()!.speed = 0;
+
+        if (!tower.lavaTiles) return;
+
+        k.get("lava tile").forEach(l => {
+            if (l.towerId === tower.instanceId) k.destroy(l);
+        });
+    });
+
+    tower.onStateEnter("active", () => {
+        tower.color = k.rgb(255, 255, 255);
+        combat.gun.use(k.color(255, 255, 255));
+
+        if (combat.meleeHandle && combat.meleeHead) {
+            combat.meleeHandle.use(k.color(255, 255, 255));
+            combat.meleeHead.use(k.color(255, 255, 255));
+        }
+
+        if (combat.gun.hasAnim("pouring")) combat.gun.play("pouring");
+        else combat.gun.play("idle");
+
+        if (!tower.lavaTiles) return;
+
+        tower.lavaTiles.forEach(pos => makeLavaTile(k, pos, tower));
     });
 
     return tower;

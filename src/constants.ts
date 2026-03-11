@@ -29,8 +29,8 @@ export const STUN_PERCENTAGES = [5, 10, 30, 50, 60];
 export const STUN_DURATION = 1;
 export const CURSE_CRIT = 10;
 export const TIME_TOWER_BASE_ANIM_SPEED = 30;
-export const SCYTHE_MAX_KILL_STACKS = 70;
-export const REDUCED_RANGE_TOWERS = ["Chili Pepper Tower", "Ice Tower", "Balloon Tower", "Lava Tower"];
+export const SCYTHE_MAX_KILL_STACKS = 60;
+export const REDUCED_RANGE_TOWERS = ["Chili Pepper Tower", "Ice Tower", "Balloon Tower", "Lava Tower", "Hammer Tower", "Scythe Tower"];
 export const UPGRADES: Upgrade[] = [{
     stat: "damage",
     name: "Damage",
@@ -184,25 +184,36 @@ export const LEVEL_WAVES = {
                 spawns: [
                     { id: "slime", count: 5, interval: 1 }
                 ],
-                reward: 50
+                reward: 80
             },
             {
                 spawns: [
                     { id: "skeleton", count: 5, interval: 1 },
                     { id: "slime", count: 5, interval: 0.75 }
                 ],
-                reward: 100
+                reward: 150
             },
             {
                 spawns: [
                     { id: "armouredSkeleton", count: 3, interval: 1 },
+                    { id: "skeleton", count: 3, interval: 1 },
                     { id: "fairy", count: 1, interval: 1 },
-                    { id: "armouredSkeleton", count: 2, interval: 1 },
-                    { id: "fairy", count: 1, interval: 1 },
-                    { id: "skeleton", count: 10, interval: 0.75 },
-                    { id: "fairy", count: 1, interval: 1 },
+                    { id: "skeleton", count: 7, interval: 1 },
+                    { id: "fairy", count: 1, interval: 1 }
                 ],
-                reward: 200
+                reward: 300
+            },
+            {
+                spawns: [
+                    { id: "armouredSkeleton", count: 5, interval: 1 },
+                    { id: "fairy", count: 1, interval: 1 },
+                    { id: "giantSlime", count: 1, interval: 1 },
+                    { id: "skeleton", count: 7, interval: 1 },
+                    { id: "fairy", count: 1, interval: 1 },
+                    { id: "skeleton", count: 8, interval: 1 },
+                    { id: "fairy", count: 1, interval: 1 }
+                ],
+                reward: 600
             }
         ],
     },
@@ -235,7 +246,7 @@ export const ENEMIES = {
     },
     armouredSkeleton: {
         hp: 40,
-        armour: 15,
+        armour: 30,
         damage: 1,
         speed: 40,
         sprite: "armoured skeleton"
@@ -249,6 +260,22 @@ export const ENEMIES = {
             amount: 10,
             range: 2
         }
+    },
+    giantSlime: {
+        hp: 200,
+        damage: 5,
+        speed: 25,
+        spawnOnDeath: {
+            id: "slime",
+            amount: 4
+        },
+        attacker: {
+            projectile: "slimeball",
+            attackRange: 4,
+            canAttack: false,
+            attackCooldown: 2
+        },
+        sprite: "giant slime"
     }
 } as const satisfies Record<string, EnemyConfig>;
 
@@ -353,7 +380,7 @@ export const TOWERS = {
         baseSprite: "ice tower base",
         sprite: "ice-tower-sprite.png",
         description: "Emits a frost that damages all enemies in range. This tower receives half the amount from range upgrades",
-        cost: 80,
+        cost: 90,
         stats: {
             damage: 2,
             range: 2.5,
@@ -812,7 +839,7 @@ export const TOWERS = {
         gunSprite: "hammer tower",
         baseSprite: "hammer tower base",
         sprite: "hammer-tower-sprite.png",
-        description: "Smash enemies with a hammer, dealing damage in a small area",
+        description: "Smash enemies with a hammer, dealing damage in a small area. This tower receives half the amount from range upgrades",
         cost: 70,
         stats: {
             damage: 30,
@@ -832,8 +859,9 @@ export const TOWERS = {
         melee: {
             meleeHandleSprite: "hammer handle",
             meleeHeadSprite: "hammer head",
-            handleLength: 7,
-            swingAngle: 90
+            handleLength: 8,
+            swingAngle: 30,
+            startAngle: 45
         },
         effects: [{
             firstEffect(ctx) {
@@ -843,7 +871,7 @@ export const TOWERS = {
 
                 ctx.meleeAttack = {
                     ...ctx.meleeAttack,
-                    splashRadius: 1.3,
+                    splashRadius: 1,
                     swingTime: 0.25,
                     onImpact(k, impactPos) {
                         const smashEffect = k.add([
@@ -901,7 +929,7 @@ export const TOWERS = {
         stats: {
             damage: 20,
             range: 5,
-            fireInterval: 1.25,
+            fireInterval: 1.5,
             critChance: 5,
             critDamage: 100
         },
@@ -932,7 +960,7 @@ export const TOWERS = {
         baseSprite: "shadow ball tower base",
         sprite: "shadow-ball-tower-sprite.png",
         description: "Shoots a dark, shadowy blob that deals splash damage and has a 50% chance to bounce between enemies",
-        cost: 300,
+        cost: 350,
         stats: {
             damage: 12,
             range: 5,
@@ -974,7 +1002,7 @@ export const TOWERS = {
         stats: {
             damage: 20,
             range: 5,
-            fireInterval: 1.25,
+            fireInterval: 1.5,
             critChance: 5,
             critDamage: 100
         },
@@ -1005,10 +1033,10 @@ export const TOWERS = {
         baseSprite: "sniper tower base",
         sprite: "sniper-tower-sprite.png",
         description: "Deals devastating damage to targets at a great range",
-        cost: 350,
+        cost: 300,
         stats: {
             damage: 70,
-            range: 8,
+            range: 9,
             fireInterval: 3,
             critChance: 5,
             critDamage: 100
@@ -1039,7 +1067,7 @@ export const TOWERS = {
         description: "Shoots a giant laser beam that damages all enemies in its path",
         cost: 300,
         stats: {
-            damage: 25,
+            damage: 30,
             range: 4,
             fireInterval: 2.5,
             critChance: 5,
@@ -1104,7 +1132,7 @@ export const TOWERS = {
         description: "Sends out a swarm of bees that follow the target dealing damage in a small area",
         cost: 200,
         stats: {
-            damage: 12,
+            damage: 10,
             range: 5,
             fireInterval: 0.75,
             critChance: 5,
@@ -1248,7 +1276,7 @@ export const TOWERS = {
         baseSprite: "time cannon tower base",
         sprite: "time-cannon-tower-sprite.png",
         description: "Fire rate decreases with time, but damage and splash radius increases",
-        cost: 250,
+        cost: 200,
         stats: {
             damage: 1,
             range: 5,
@@ -1283,10 +1311,10 @@ export const TOWERS = {
         gunSprite: "scythe tower",
         baseSprite: "scythe tower base",
         sprite: "scythe-tower-sprite.png",
-        description: `Reap enemies' souls, gaining +1 damage per enemy killed (up to +${SCYTHE_MAX_KILL_STACKS})`,
+        description: `Reap enemies' souls, gaining +1 damage per enemy killed (up to +${SCYTHE_MAX_KILL_STACKS}). This tower receives half the amount from range upgrades`,
         cost: 300,
         stats: {
-            damage: 30,
+            damage: 25,
             range: 2.5,
             fireInterval: 2,
             critChance: 5,
@@ -1305,6 +1333,7 @@ export const TOWERS = {
             meleeHeadSprite: "scythe head",
             handleLength: 23,
             headOffset: 15 / 32,
+            startAngle: 90,
             swingAngle: 130
         },
         killStacks: 0,

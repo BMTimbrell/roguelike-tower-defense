@@ -427,6 +427,24 @@ export default function loadAssets(k: KAPLAYCtx) {
             die: { from: 4, to: 7, loop: false, speed: 7 }
         }
     });
+    k.loadSprite("orc", "/sprites/orc.png", {
+        sliceX: 5,
+        sliceY: 2,
+        anims: {
+            idle: 0,
+            move: { from: 0, to: 3, loop: true, speed: 4 },
+            die: { from: 5, to: 9, loop: false, speed: 7 }
+        }
+    });
+    k.loadSprite("giant slime", "/sprites/giant-slime.png", {
+        sliceX: 7,
+        sliceY: 2,
+        anims: {
+            idle: 0,
+            move: { from: 0, to: 5, loop: true },
+            die: { from: 7, to: 10, loop: false }
+        }
+    });
     k.loadSprite("poison", "/sprites/poison-icon.png");
     k.loadSprite("burn", "/sprites/burn-icon.png");
     k.loadSprite("chill", "/sprites/chill-icon.png");

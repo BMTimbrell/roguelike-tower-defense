@@ -121,6 +121,7 @@ export type TowerDef = {
         handleLength: number;
         headOffset?: number;
         swingAngle: number;
+        startAngle: number;
     };
     killStacks?: number;
     charge?: Charge;
@@ -238,6 +239,16 @@ export type EnemyGameObj = GameObj<
         range: number;
     };
     healTickRate?: number;
+    spawnOnDeath?: {
+        id: "slime",
+        amount: number;
+    };
+    attacker?: {
+        projectile?: ProjectileId;
+        attackRange: number;
+        attackCooldown: number;
+        canAttack: boolean;
+    };
 };
 
 export type Upgrade = {
@@ -373,6 +384,16 @@ export type EnemyConfig = {
         amount: number;
         range: number;
     };
+    spawnOnDeath?: {
+        id: "slime";
+        amount: number;
+    };
+    attacker?: {
+        projectile?: ProjectileId;
+        attackRange: number;
+        attackCooldown: number;
+        canAttack: boolean;
+    };
 };
 
 export type AttackContext = {
@@ -420,6 +441,7 @@ export type AttackContext = {
         meleeHandle: GameObj;
         headOffset?: number;
         swingAngle: number;
+        startAngle: number;
     }
 };
 

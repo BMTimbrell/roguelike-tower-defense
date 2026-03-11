@@ -41,6 +41,7 @@ export default function makeHero(k: KAPLAYCtx,
             shape: new k.Rect(k.vec2(0), 32, 32)
         }),
         k.opacity(0.5),
+        k.state("active", ["active", "disabled"]),
         {
             heroId,
             name,
@@ -56,10 +57,11 @@ export default function makeHero(k: KAPLAYCtx,
             canReposition: true,
             skillIds: [] satisfies SkillId[],
             level: 1,
-            footprint: { w: 1, h: 1},
+            footprint: { w: 1, h: 1 },
             element,
             effects: [],
-            canRotate
+            canRotate,
+            disabledUntil: 0
         },
         "tower",
         "hero",
@@ -117,6 +119,30 @@ export default function makeHero(k: KAPLAYCtx,
             combat.destroy();
         });
 
+        hero.onStateEnter("active", () => {
+            sprite.color = k.rgb(255, 255, 255);
+            combat.gun.use(k.color(255, 255, 255));
+
+            if (combat.meleeHandle && combat.meleeHead) {
+                combat.meleeHandle.use(k.color(255, 255, 255));
+                combat.meleeHead.use(k.color(255, 255, 255));
+            }
+
+            combat.gun.play("idle");
+        });
+
+        hero.onStateEnter("disabled", () => {
+            sprite.color = k.rgb(150, 150, 150);
+            combat.gun.use(k.color(150, 150, 150));
+            if (combat.meleeHandle && combat.meleeHead) {
+                combat.meleeHandle.use(k.color(150, 150, 150));
+                combat.meleeHead.use(k.color(150, 150, 150));
+            }
+
+            combat.gun.play("idle");
+            if (combat.gun.getCurAnim()?.speed) combat.gun.getCurAnim()!.speed = 0;
+        });
+
         const placement = makePlaceableOnGrid(k, {
             obj: hero,
             heroSprite: sprite,
@@ -168,10 +194,14 @@ export default function makeHero(k: KAPLAYCtx,
 
         hero.onUpdate(() => {
             if (hero.placed) {
+                if (hero.state === "disabled" && k.time() >= hero.disabledUntil) {
+                    hero.enterState("active");
+                }
+
+                if (hero.state === "disabled") return;
+
                 combat.update();
-                // if (combat.gun.angle > 90 || combat.gun.angle < -90) {
-                //     hero.flipX = true;
-                // } else hero.flipX = false;
+
                 sprite.angle = combat.gun.angle + 90;
             }
         });
