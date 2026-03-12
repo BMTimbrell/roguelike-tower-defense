@@ -19,8 +19,8 @@ export default function chargeEffect(k: KAPLAYCtx, duration: number): ChargeComp
 
         require: ["statusEffect"],
 
-        addChargeStack(this: GameObj) {
-            timer = duration;
+        addChargeStack(this: GameObj<{ debuffDurationMultiplier: number; }>) {
+            timer = duration * this.debuffDurationMultiplier;
             if (stacks < MAX_CHARGE_STACKS) stacks++;
         },
 
@@ -35,7 +35,8 @@ export default function chargeEffect(k: KAPLAYCtx, duration: number): ChargeComp
             };
         },
 
-        add(this: GameObj<StatusEffectComp>) {
+        add(this: GameObj<StatusEffectComp | { debuffDurationMultiplier: number; }>) {
+            timer *= this.debuffDurationMultiplier;
             this.addStatus("charge");
         },
 

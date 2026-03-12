@@ -4,42 +4,43 @@ import type { StatusEffect, StatusEffectComp } from "./statusEffect";
 
 export type CurseComp = Comp & {
     id: StatusEffect;
-    refreshCurse: () => void;
-    curse: () => StatusEffectResult;
+    refreshBlind: () => void;
+    blind: () => StatusEffectResult;
 };
 
-export default function curseEffect(k: KAPLAYCtx, duration: number): CurseComp {
+export default function blindEffect(k: KAPLAYCtx, duration: number): CurseComp {
     let timer = duration;
 
     return {
-        id: "curse",
+        id: "blind",
 
         require: ["statusEffect"],
 
-        refreshCurse() {
+        refreshBlind() {
             timer = duration;
         },
 
-        curse() {
+        blind() {
             return {
-                icon: "curse"
+                icon: "blind"
             };
         },
 
         add(this: GameObj<StatusEffectComp | { debuffDurationMultiplier: number; }>) {
-            timer = duration * this.debuffDurationMultiplier;
-            this.addStatus("curse");
+            this.debuffDurationMultiplier = 1.5;
+            this.addStatus("blind");
         },
 
-        destroy(this: GameObj<StatusEffectComp>) {
-            this.removeStatus("curse");
+        destroy(this: GameObj<StatusEffectComp | { debuffDurationMultiplier: number; }>) {
+            this.debuffDurationMultiplier = 1;
+            this.removeStatus("blind");
         },
 
         update(this: GameObj<{ isDying: boolean }>) {
             timer -= k.dt();
 
             if (timer <= 0 || this.isDying) {
-                this.unuse("curse");
+                this.unuse("blind");
             }
         },
     };

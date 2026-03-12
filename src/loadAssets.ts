@@ -450,6 +450,7 @@ export default function loadAssets(k: KAPLAYCtx) {
     k.loadSprite("chill", "/sprites/chill-icon.png");
     k.loadSprite("charge", "/sprites/charge-icon.png");
     k.loadSprite("curse", "/sprites/curse-icon.png");
+    k.loadSprite("blind", "/sprites/blind-icon.png");
     k.loadSprite("frost particle", "/sprites/frost-particle.png");
     k.loadSprite("flame particle", "/sprites/flame-particle.png");
     k.loadSprite("electric particle", "/sprites/electric-particle.png");

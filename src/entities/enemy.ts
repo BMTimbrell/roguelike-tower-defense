@@ -38,6 +38,7 @@ export default function makeEnemy(k: KAPLAYCtx, enemyId: EnemyId, waypoints: Vec
                 attackCooldown: number;
                 canAttack: boolean;
              } } : {}),
+             debuffDurationMultiplier: 1
         },
         k.state("move", ["move", "stunned", "attack"]),
         statusEffect(),
@@ -136,7 +137,12 @@ export default function makeEnemy(k: KAPLAYCtx, enemyId: EnemyId, waypoints: Vec
                 if (!towers.length) break;
     
                 const index = k.randi(towers.length);
-                makeEnemyProjectile(k, { id: enemy.attacker.projectile as ProjectileId, pos: enemy.pos, target: towers[index] });
+                makeEnemyProjectile(k, { 
+                    id: enemy.attacker.projectile as ProjectileId, 
+                    pos: enemy.pos, 
+                    target: towers[index], 
+                    hitChance: enemy.has("blind") ? 0.5 : 1
+                });
     
                 attackTimer += enemy.attacker.attackCooldown;
             }

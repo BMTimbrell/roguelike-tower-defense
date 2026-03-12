@@ -1,6 +1,4 @@
 import type { KAPLAYCtx, Comp, HealthComp, GameObj, PosComp } from "kaplay";
-import makeFloatingText from "../entities/FloatingText";
-import { ELEMENTS, SMALL_DAMAGE_NUMBER_SIZE } from "../constants";
 import type { EnemyGameObj, StatusEffectResult } from "../types";
 import type { StatusEffect, StatusEffectComp } from "./statusEffect";
 import hurtEnemy from "../utils/hurtEnemy";
@@ -21,8 +19,8 @@ export default function burnEffect(k: KAPLAYCtx, duration: number): BurnComp {
 
         require: ["health", "pos", "statusEffect"],
 
-        refreshBurn() {
-            timer = duration;
+        refreshBurn(this: GameObj<{ debuffDurationMultiplier: number; }>) {
+            timer = duration * this.debuffDurationMultiplier;
         },
 
         burn() {
@@ -31,7 +29,8 @@ export default function burnEffect(k: KAPLAYCtx, duration: number): BurnComp {
             };
         },
 
-        add(this: GameObj<StatusEffectComp>) {
+        add(this: GameObj<StatusEffectComp | { debuffDurationMultiplier: number; }>) {
+            timer *= this.debuffDurationMultiplier;
             this.addStatus("burn");
         },
 

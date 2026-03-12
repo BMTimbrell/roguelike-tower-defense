@@ -1,13 +1,15 @@
 import type { KAPLAYCtx, Vec2 } from "kaplay";
 import { TILE_SIZE, type ProjectileId } from "../constants";
 import type { HeroGameObj, TowerGameObj } from "../types";
+import makeFloatingText from "./FloatingText";
 
 export default function makeEnemyProjectile(k: KAPLAYCtx, opts: {
     id: ProjectileId;
     pos: Vec2;
     target: TowerGameObj | HeroGameObj;
+    hitChance: number;
 }) {
-    const { id, pos, target } = opts;
+    const { id, pos, target, hitChance } = opts;
 
     const projectile = k.add([
         k.sprite(id),
@@ -28,14 +30,25 @@ export default function makeEnemyProjectile(k: KAPLAYCtx, opts: {
         projectile.pos = projectile.pos.add(dir.scale(projectile.speed * k.dt()));
 
         if (projectile.pos.dist(targetPos) < 4) {
-            const duration = 2;
 
-            target.disabledUntil = Math.max(
-                target.disabledUntil,
-                k.time() + duration
-            );
+            if (Math.random() < hitChance) {
+                const duration = 2;
+    
+                target.disabledUntil = Math.max(
+                    target.disabledUntil,
+                    k.time() + duration
+                );
+    
+                target.enterState("disabled");
 
-            target.enterState("disabled");
+            } else {
+                makeFloatingText(k, {
+                    text: "Miss",
+                    color: "#FFFFFF",
+                    size: 12,
+                    pos: targetPos
+                });
+            }
 
             k.destroy(projectile);
         }

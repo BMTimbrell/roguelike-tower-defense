@@ -3,7 +3,6 @@ import { addSelectTowerListener } from "../entities/Tower";
 import type { MapData, PathTile, Scene, Tile } from "../types";
 import { store, gameStateAtom } from "../store";
 import { TILE_SIZE, MAX_HAND_SIZE, ROUND_DRAW_NUM, CHARGE_DAMAGE_REQUIRED } from "../constants";
-import generateDeck from "../utils/generateDeck";
 import drawCards from "../utils/drawCards";
 import reroll from "../utils/reroll";
 import showLevelStats from "../utils/showLevelStats";

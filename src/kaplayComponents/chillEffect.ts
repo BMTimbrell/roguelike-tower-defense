@@ -11,14 +11,15 @@ export type ChillComp = Comp & {
 
 export default function chillEffect(k: KAPLAYCtx, duration: number, stacks: number): ChillComp {
     let timer = duration;
+    stacks = Math.min(stacks, MAX_CHILL_STACKS);
 
     return {
         id: "chill",
 
         require: ["statusEffect"],
 
-        addChillStack(this: GameObj<{ speed: number; baseSpeed: number; }>, num) {
-            timer = duration;
+        addChillStack(this: GameObj<{ speed: number; baseSpeed: number; debuffDurationMultiplier: number; }>, num) {
+            timer = duration * this.debuffDurationMultiplier;
             if (stacks < MAX_CHILL_STACKS) stacks += Math.min(num, MAX_CHILL_STACKS - stacks);
             this.speed = this.baseSpeed * (1 - ((stacks * CHILL_PERCENT) / 100));
         },
@@ -30,7 +31,8 @@ export default function chillEffect(k: KAPLAYCtx, duration: number, stacks: numb
             };
         },
 
-        add(this: GameObj<StatusEffectComp | { speed: number; baseSpeed: number; }>) {
+        add(this: GameObj<StatusEffectComp | { speed: number; baseSpeed: number; debuffDurationMultiplier: number; }>) {
+            timer *= this.debuffDurationMultiplier;
             this.addStatus("chill");
             this.speed = this.baseSpeed * (1 - ((stacks * CHILL_PERCENT) / 100));
         },

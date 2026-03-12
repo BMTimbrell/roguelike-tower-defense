@@ -58,7 +58,7 @@ export default function setTowerUI(k: KAPLAYCtx, type: "combat" | "farm", tower:
                                 const fireInterval = tower.stats.fireInterval;
                                 const newInterval = calcFireInterval(fireInterval, upgrade.amount);
                                 tower.stats.fireInterval = newInterval;
-                            } else if (upgrade.stat === "critChance" || upgrade.stat === "critDamage" || !upgrade.percentage) {
+                            } else if (upgrade.stat === "critChance" || !upgrade.percentage) {
                                 tower.stats[upgrade.stat] += upgrade.amount;
                             } else {
                                 tower.stats[upgrade.stat] += Math.max(1, Math.round(tower.stats[upgrade.stat] * (upgrade.amount / 100)));

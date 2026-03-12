@@ -10,7 +10,7 @@ export default function calcDamage(opts: {
     const roll = Math.random();
     const isCrit = roll < (critChance + bonusCritChance) / 100;
 
-    const critDamageMod = 1 + (isCrit ? critDamage / 100 : 0);
+    const critDamageMod = isCrit ? critDamage / 100 : 1;
     const finalDamage = Math.round((damage + bonusDamage) * critDamageMod);
 
     return {

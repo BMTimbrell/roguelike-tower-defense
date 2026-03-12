@@ -6,6 +6,7 @@ import chillEffect from "./kaplayComponents/chillEffect";
 import chargeEffect from "./kaplayComponents/chargeEffect";
 import curseEffect from "./kaplayComponents/curseEffect";
 import { electricAoeBurst, flameAoeBurst, frostAoeBurst } from "./utils/makeUnitCombat";
+import blindEffect from "./kaplayComponents/blindEffect";
 
 export const VIRTUAL_WIDTH = 800;
 export const VIRTUAL_HEIGHT = 600;
@@ -31,6 +32,8 @@ export const CURSE_CRIT = 10;
 export const TIME_TOWER_BASE_ANIM_SPEED = 30;
 export const SCYTHE_MAX_KILL_STACKS = 60;
 export const REDUCED_RANGE_TOWERS = ["Chili Pepper Tower", "Ice Tower", "Balloon Tower", "Lava Tower", "Hammer Tower", "Scythe Tower"];
+export const BASE_REROLL_COST = 5;
+export const BASE_DRAW_COST = 10;
 export const UPGRADES: Upgrade[] = [{
     stat: "damage",
     name: "Damage",
@@ -131,7 +134,7 @@ export const UPGRADES: Upgrade[] = [{
     stat: "critChance",
     name: "Crit Chance",
     icon: "sprites/critchance-icon.png",
-    amount: 20,
+    amount: 10,
     cost: 1,
     percentage: true
 },
@@ -139,7 +142,7 @@ export const UPGRADES: Upgrade[] = [{
     stat: "critChance",
     name: "Crit Chance",
     icon: "sprites/critchance-icon.png",
-    amount: 50,
+    amount: 25,
     cost: 2,
     percentage: true
 },
@@ -147,7 +150,7 @@ export const UPGRADES: Upgrade[] = [{
     stat: "critChance",
     name: "Crit Chance",
     icon: "sprites/critchance-icon.png",
-    amount: 80,
+    amount: 40,
     cost: 3,
     percentage: true
 },
@@ -163,7 +166,7 @@ export const UPGRADES: Upgrade[] = [{
     stat: "critDamage",
     name: "Crit Damage",
     icon: "sprites/critdamage-icon.png",
-    amount: 120,
+    amount: 140,
     cost: 2,
     percentage: true
 },
@@ -171,7 +174,7 @@ export const UPGRADES: Upgrade[] = [{
     stat: "critDamage",
     name: "Crit Damage",
     icon: "sprites/critdamage-icon.png",
-    amount: 180,
+    amount: 260,
     cost: 3,
     percentage: true
 }] as const;
@@ -294,7 +297,7 @@ export const TOWERS = {
             range: 4,
             fireInterval: 0.75,
             critChance: 5,
-            critDamage: 100
+            critDamage: 200
         },
         element: "Normal",
         gunOffset: { x: 2, y: 0 },
@@ -321,7 +324,7 @@ export const TOWERS = {
             range: 4,
             fireInterval: 0.75,
             critChance: 5,
-            critDamage: 100
+            critDamage: 200
         },
         element: "Fire",
         gunOffset: { x: 3, y: 0 },
@@ -348,7 +351,7 @@ export const TOWERS = {
             range: 4,
             fireInterval: 0.75,
             critChance: 5,
-            critDamage: 100
+            critDamage: 200
         },
         element: "Poison",
         gunOffset: { x: -4, y: 0 },
@@ -386,7 +389,7 @@ export const TOWERS = {
             range: 2.5,
             fireInterval: 1,
             critChance: 5,
-            critDamage: 100
+            critDamage: 200
         },
         element: "Ice",
         gunOffset: { x: 0, y: 0 },
@@ -419,7 +422,7 @@ export const TOWERS = {
             range: 3,
             fireInterval: 1,
             critChance: 5,
-            critDamage: 100
+            critDamage: 200
         },
         element: "Electric",
         gunOffset: { x: 0, y: 0 },
@@ -457,7 +460,7 @@ export const TOWERS = {
             range: 3,
             fireInterval: 0.375,
             critChance: 5,
-            critDamage: 100
+            critDamage: 200
         },
         element: "Light",
         gunOffset: { x: -1 / 2, y: -1 / 2 },
@@ -484,7 +487,7 @@ export const TOWERS = {
             range: 4,
             fireInterval: 0.75,
             critChance: 5,
-            critDamage: 100
+            critDamage: 200
         },
         element: "Dark",
         gunOffset: { x: 0, y: 0 },
@@ -523,7 +526,7 @@ export const TOWERS = {
             range: 5,
             fireInterval: 1.75,
             critChance: 5,
-            critDamage: 100
+            critDamage: 200
         },
         element: "Fire",
         gunOffset: { x: -1, y: 0 },
@@ -590,7 +593,7 @@ export const TOWERS = {
             range: 4,
             fireInterval: 0.75,
             critChance: 5,
-            critDamage: 100
+            critDamage: 200
         },
         element: "Dark",
         gunOffset: { x: 0, y: 0 },
@@ -628,7 +631,7 @@ export const TOWERS = {
             range: 2.5,
             fireInterval: 1.5,
             critChance: 5,
-            critDamage: 100
+            critDamage: 200
         },
         element: "Fire",
         gunOffset: { x: 0, y: 0 },
@@ -661,7 +664,7 @@ export const TOWERS = {
             range: 4,
             fireInterval: 1,
             critChance: 5,
-            critDamage: 100
+            critDamage: 200
         },
         element: "Light",
         gunOffset: { x: 0, y: 0 },
@@ -696,7 +699,7 @@ export const TOWERS = {
             range: 3,
             fireInterval: 0.15,
             critChance: 5,
-            critDamage: 100
+            critDamage: 200
         },
         element: "Normal",
         gunOffset: { x: 2, y: 0 },
@@ -732,7 +735,7 @@ export const TOWERS = {
             range: 3,
             fireInterval: 2,
             critChance: 5,
-            critDamage: 100
+            critDamage: 200
         },
         element: "Poison",
         gunOffset: { x: 0, y: 0 },
@@ -760,7 +763,7 @@ export const TOWERS = {
             range: 4,
             fireInterval: 0.75,
             critChance: 5,
-            critDamage: 100
+            critDamage: 200
         },
         element: "Normal",
         gunOffset: { x: 2, y: 0 },
@@ -822,7 +825,7 @@ export const TOWERS = {
                 projectile: "icicle",
                 element: "Ice",
                 behaviors: {
-                    critChance: 75
+                    critChance: 35
                 }
             }
         ],
@@ -846,7 +849,7 @@ export const TOWERS = {
             range: 1.5,
             fireInterval: 2,
             critChance: 5,
-            critDamage: 100
+            critDamage: 200
         },
         element: "Normal",
         gunOffset: { x: 0, y: 0 },
@@ -903,8 +906,8 @@ export const TOWERS = {
             damage: 3,
             range: 4,
             fireInterval: 0.75,
-            critChance: 80,
-            critDamage: 100
+            critChance: 40,
+            critDamage: 200
         },
         element: "Ice",
         gunOffset: { x: 2, y: 0 },
@@ -931,7 +934,7 @@ export const TOWERS = {
             range: 5,
             fireInterval: 1.5,
             critChance: 5,
-            critDamage: 100
+            critDamage: 200
         },
         element: "Ice",
         gunOffset: { x: 5, y: -1 },
@@ -966,7 +969,7 @@ export const TOWERS = {
             range: 5,
             fireInterval: 1.25,
             critChance: 5,
-            critDamage: 100
+            critDamage: 200
         },
         element: "Dark",
         gunOffset: { x: 5, y: -1 },
@@ -1004,7 +1007,7 @@ export const TOWERS = {
             range: 5,
             fireInterval: 1.5,
             critChance: 5,
-            critDamage: 100
+            critDamage: 200
         },
         element: "Poison",
         gunOffset: { x: 5, y: -1 },
@@ -1039,7 +1042,7 @@ export const TOWERS = {
             range: 9,
             fireInterval: 3,
             critChance: 5,
-            critDamage: 100
+            critDamage: 200
         },
         element: "Light",
         gunOffset: { x: 10, y: -1 },
@@ -1071,7 +1074,7 @@ export const TOWERS = {
             range: 4,
             fireInterval: 2.5,
             critChance: 5,
-            critDamage: 100
+            critDamage: 200
         },
         element: "Light",
         gunOffset: { x: 5, y: -1 },
@@ -1103,7 +1106,7 @@ export const TOWERS = {
             range: 3,
             fireInterval: 1.25,
             critChance: 5,
-            critDamage: 100
+            critDamage: 200
         },
         element: "Electric",
         gunOffset: { x: 0, y: 0 },
@@ -1136,7 +1139,7 @@ export const TOWERS = {
             range: 5,
             fireInterval: 0.75,
             critChance: 5,
-            critDamage: 100
+            critDamage: 200
         },
         element: "Poison",
         gunOffset: { x: 0, y: 0 },
@@ -1175,7 +1178,7 @@ export const TOWERS = {
             range: 7,
             fireInterval: 4,
             critChance: 5,
-            critDamage: 100
+            critDamage: 200
         },
         element: "Electric",
         gunOffset: { x: 10, y: -1 },
@@ -1207,7 +1210,7 @@ export const TOWERS = {
             range: 6,
             fireInterval: 1.5,
             critChance: 5,
-            critDamage: 100
+            critDamage: 200
         },
         element: "Ice",
         gunOffset: { x: 0, y: 0 },
@@ -1244,7 +1247,7 @@ export const TOWERS = {
             range: 5,
             fireInterval: 1.5,
             critChance: 5,
-            critDamage: 100
+            critDamage: 200
         },
         element: "Dark",
         gunOffset: { x: 0, y: 2 },
@@ -1282,7 +1285,7 @@ export const TOWERS = {
             range: 5,
             fireInterval: 0.25,
             critChance: 5,
-            critDamage: 100
+            critDamage: 200
         },
         element: "Normal",
         gunOffset: { x: 5, y: 0 },
@@ -1318,7 +1321,7 @@ export const TOWERS = {
             range: 2.5,
             fireInterval: 2,
             critChance: 5,
-            critDamage: 100
+            critDamage: 200
         },
         element: "Dark",
         gunOffset: { x: 0, y: 0 },
@@ -1378,7 +1381,7 @@ export const TOWERS = {
             range: 6,
             fireInterval: 1.5,
             critChance: 5,
-            critDamage: 100
+            critDamage: 200
         },
         element: "Light",
         gunOffset: { x: 0, y: 0 },
@@ -1415,7 +1418,7 @@ export const TOWERS = {
             range: 3,
             fireInterval: 2,
             critChance: 5,
-            critDamage: 100
+            critDamage: 200
         },
         element: "Fire",
         gunOffset: { x: 0, y: 0 },
@@ -1443,7 +1446,7 @@ export const TOWERS = {
             range: 7,
             fireInterval: 4,
             critChance: 5,
-            critDamage: 100
+            critDamage: 200
         },
         element: "Ice",
         gunOffset: { x: 10, y: -1 },
@@ -1475,7 +1478,7 @@ export const TOWERS = {
             range: 3.5,
             fireInterval: 0.25,
             critChance: 5,
-            critDamage: 100
+            critDamage: 200
         },
         element: "Fire",
         gunOffset: { x: 7, y: -1 },
@@ -1508,7 +1511,7 @@ export const TOWERS = {
             range: 5,
             fireInterval: 1,
             critChance: 5,
-            critDamage: 100
+            critDamage: 200
         },
         element: "Electric",
         gunOffset: { x: 7, y: -1 },
@@ -1552,7 +1555,7 @@ export const TOWERS = {
             range: 2.5,
             fireInterval: 1,
             critChance: 5,
-            critDamage: 100
+            critDamage: 200
         },
         element: "Fire",
         gunOffset: { x: 0, y: 0 },
@@ -1584,7 +1587,7 @@ export const HEROES = {
             range: 5,
             fireInterval: 1,
             critChance: 10,
-            critDamage: 100
+            critDamage: 200
         },
         element: "Normal",
         gunOffset: { x: 0, y: 0 },
@@ -1609,7 +1612,7 @@ export const HEROES = {
             range: 5,
             fireInterval: 1,
             critChance: 10,
-            critDamage: 100
+            critDamage: 200
         },
         element: "Normal",
         gunOffset: { x: 0, y: 0 },
@@ -1694,8 +1697,17 @@ export const ELEMENTS: Record<ElementName, ElementDef> = {
 
     Light: {
         description: "Light attacks blind enemies, preventing them from hitting towers",
-        applyEffect: (k,) => {
-            // Apply light effect to target
+        applyEffect: (k, { target }) => {
+            const duration = 2;
+
+            const blind = target.has("blind");
+
+            if (blind) {
+                target.refreshBlind();
+                return;
+            }
+
+            target.use(blindEffect(k, duration));
         },
         color: "#ffff97"
     },
@@ -1703,7 +1715,7 @@ export const ELEMENTS: Record<ElementName, ElementDef> = {
     Dark: {
         description: "Dark attacks apply curse to enemies. Cursed enemies can't be healed and have an extra 10% chance to receive critical hits",
         applyEffect: (k, { target }) => {
-            const duration = 2;
+            const duration = 3;
             const curse = target.has("curse");
             if (curse) {
                 target.refreshCurse();
@@ -1892,12 +1904,12 @@ export const SKILLS = [
         icon: "sprites/critchance-icon.png"
     },
     {
-        id: "crit-damage+20%",
+        id: "crit-damage+50%",
         heroIds: ["archer", "wizard"],
         name: "Crit Damage +50%",
         description: "Increase crit damage by 50%",
         apply: hero => {
-            hero.stats.critDamage += 50;
+            hero.stats.critDamage *= 1.5;
         },
         icon: "sprites/critdamage-icon.png"
     },
