@@ -211,8 +211,10 @@ export default function level1(k: KAPLAYCtx) {
             .find(layer => layer.name === "Waypoints")
             ?.objects?.map(obj => k.vec2(obj.x + TILE_SIZE / 2, obj.y + TILE_SIZE / 2));
 
+        const rand = k.randi();
+
         if (waypoints) {
-            makeWaveSpawner(k, "level1", waypoints);
+            makeWaveSpawner(k, rand === 1 ? "level1-1" : "level1-2", waypoints);
         } else throw new Error("Waypoints undefined");
 
     });

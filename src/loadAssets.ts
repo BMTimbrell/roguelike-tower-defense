@@ -436,6 +436,15 @@ export default function loadAssets(k: KAPLAYCtx) {
             die: { from: 5, to: 9, loop: false, speed: 7 }
         }
     });
+    k.loadSprite("armoured orc", "/sprites/armoured-orc.png", {
+        sliceX: 5,
+        sliceY: 2,
+        anims: {
+            idle: 0,
+            move: { from: 0, to: 3, loop: true, speed: 4 },
+            die: { from: 5, to: 9, loop: false, speed: 7 }
+        }
+    });
     k.loadSprite("giant slime", "/sprites/giant-slime.png", {
         sliceX: 7,
         sliceY: 2,
@@ -452,6 +461,26 @@ export default function loadAssets(k: KAPLAYCtx) {
             idle: 0,
             move: { from: 0, to: 3, loop: true, speed: 4 },
             die: { from: 8, to: 13, loop: false }
+        }
+    });
+
+    k.loadSprite("bee", "/sprites/bee.png", {
+        sliceX: 6,
+        sliceY: 2,
+        anims: {
+            idle: 0,
+            move: { from: 0, to: 3, loop: true, speed: 10 },
+            die: { from: 6, to: 11, loop: false }
+        }
+    });
+
+    k.loadSprite("giant bee", "/sprites/giant-bee.png", {
+        sliceX: 5,
+        sliceY: 2,
+        anims: {
+            idle: 0,
+            move: { from: 0, to: 3, loop: true, speed: 10 },
+            die: { from: 5, to: 9, loop: false }
         }
     });
 
@@ -489,4 +518,5 @@ export default function loadAssets(k: KAPLAYCtx) {
     });
     k.loadSprite("snow", "/sprites/snow.png");
     k.loadSprite("lava tile", "/sprites/lava-tile.png");
+    k.loadSprite("stinger", "/sprites/bee-stinger.png");
 }

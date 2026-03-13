@@ -51,6 +51,7 @@ export default function makeProjectile(k: KAPLAYCtx, opts: {
     let distanceDamageMultiplier = behaviors?.distanceDamageMultiplier ?? 0;
     let baseDamage = damage;
     let attackTimer = behaviors?.persistent ? 0 : null;
+    let retargetTimer = 0.2;
     const hitEnemies = new Set<EnemyGameObj>();
     projectile.onDestroy(() => {
         if (behaviors?.persistent) {
@@ -111,6 +112,26 @@ export default function makeProjectile(k: KAPLAYCtx, opts: {
 
         if (behaviors?.persistent?.state === "attached") {
             projectile.pos = target?.pos ?? projectile.pos;
+            retargetTimer -= k.dt();
+
+            if (behaviors?.persistent && retargetTimer <= 0) {
+                retargetTimer = 0.2;
+
+                const owner = behaviors.persistent.owner;
+                const origin = behaviors.persistent.origin;
+
+                const bestTarget = selectTarget(k.get("enemy") as EnemyGameObj[], owner, origin);
+
+                if (bestTarget && bestTarget !== target) {
+                    target = bestTarget;
+                    behaviors.persistent.state = "flying";
+                    projectile.angle = projectile.pos.angle(target.pos);
+                    direction = target.pos.sub(projectile.pos).unit();
+                }
+            }
+
+            if (behaviors.persistent.owner.state === "disabled") k.destroy(projectile);
+    
         } else projectile.pos = projectile.pos.add(direction.scale(projectile.speed * k.dt()));
         timeAlive += k.dt();
 

@@ -784,15 +784,3 @@ function spawnFlameParticles(
         ]);
     }
 }
-
-// function getBarrelTip(k: KAPLAYCtx, opts: { shootOffset: Vec2; anchorOffset: Vec2; origin: Vec2; angle: number; }) {
-//     const { shootOffset, anchorOffset, angle, origin } = opts;
-//     const dx = shootOffset.x
-//     const dy = shootOffset.y
-//     const barrelLength = Math.sqrt(dx * dx + dy * dy);
-
-//     return origin.add(k.vec2(
-//         Math.cos((angle + 180) * Math.PI / 180) * barrelLength,
-//         Math.sin((angle + 180) * Math.PI / 180) * barrelLength
-//     ));
-// }

@@ -180,7 +180,7 @@ export const UPGRADES: Upgrade[] = [{
 }] as const;
 
 export const LEVEL_WAVES = {
-    level1: {
+    "level1-1": {
         startDelay: 120,
         waves: [
             {
@@ -203,6 +203,62 @@ export const LEVEL_WAVES = {
                     { id: "fairy", count: 1, interval: 1 },
                     { id: "skeleton", count: 7, interval: 1 },
                     { id: "fairy", count: 1, interval: 1 }
+                ],
+                reward: 300
+            },
+            {
+                spawns: [
+                    { id: "armouredSkeleton", count: 5, interval: 1 },
+                    { id: "fairy", count: 1, interval: 1 },
+                    { id: "giantSlime", count: 1, interval: 1 },
+                    { id: "skeleton", count: 7, interval: 1 },
+                    { id: "fairy", count: 1, interval: 1 },
+                    { id: "skeleton", count: 8, interval: 1 },
+                    { id: "fairy", count: 1, interval: 1 }
+                ],
+                reward: 600
+            },
+            {
+                spawns: [
+                    { id: "armouredSkeleton", count: 10, interval: 1 },
+                    { id: "fairy", count: 1, interval: 1 },
+                    { id: "giantSlime", count: 1, interval: 1 },
+                    { id: "skeleton", count: 10, interval: 1 },
+                    { id: "giantSkeleton", count: 1, interval: 1 },
+                    { id: "fairy", count: 1, interval: 1 },
+                    { id: "armouredSkeleton", count: 10, interval: 1 },
+                    { id: "giantSlime", count: 1, interval: 1 },
+                    { id: "fairy", count: 1, interval: 1 },
+                    { id: "giantSkeleton", count: 1, interval: 1},
+                    { id: "fairy", count: 1, interval: 1 },
+                ],
+                reward: 600
+            }
+        ],
+    },
+
+    "level1-2": {
+        startDelay: 120,
+        waves: [
+            {
+                spawns: [
+                    { id: "bee", count: 5, interval: 1 }
+                ],
+                reward: 80
+            },
+            {
+                spawns: [
+                    { id: "orc", count: 5, interval: 1.5 },
+                    { id: "bee", count: 5, interval: 0.75 }
+                ],
+                reward: 150
+            },
+            {
+                spawns: [
+                    { id: "armouredOrc", count: 2, interval: 1 },
+                    { id: "orc", count: 5, interval: 1 },
+                    { id: "fairy", count: 1, interval: 1 },
+                    { id: "bee", count: 10, interval: 1 },
                 ],
                 reward: 300
             },
@@ -297,10 +353,41 @@ export const ENEMIES = {
         sprite: "giant slime"
     },
     giantSkeleton: {
-        hp: 400,
+        hp: 500,
         damage: 5,
         speed: 25,
         sprite: "giant skeleton"
+    },
+    bee: {
+        hp: 8,
+        damage: 1,
+        speed: 75,
+        sprite: "bee"
+    },
+    orc: {
+        hp: 50,
+        damage: 1,
+        speed: 50,
+        sprite: "orc"
+    },
+    armouredOrc: {
+        hp: 60,
+        armour: 40,
+        damage: 1,
+        speed: 40,
+        sprite: "armoured orc"
+    },
+    giantBee: {
+        hp: 200,
+        damage: 1,
+        speed: 35,
+        sprite: "giant bee",
+        attacker: {
+            projectile: "stinger",
+            attackRange: 4,
+            canAttack: false,
+            attackCooldown: 2
+        }
     }
 } as const satisfies Record<string, EnemyConfig>;
 
@@ -1927,6 +2014,12 @@ export const PROJECTILES = {
         speed: 200,
         splashRadius: 1.2
     },
+    stinger: {
+        sprite: "stinger",
+        homing: true,
+        speed: 200,
+        splashRadius: 0
+    }
 } as const satisfies Record<string, ProjectileDef>;
 
 export type ProjectileId = keyof typeof PROJECTILES;
@@ -1955,10 +2048,10 @@ export const SKILLS = [
     {
         id: "crit-chance+20%",
         heroIds: ["archer", "wizard"],
-        name: "Crit Chance +20%",
-        description: "Increase crit chance by 20%",
+        name: "Crit Chance 10%",
+        description: "Increase crit chance by 10%",
         apply: hero => {
-            hero.stats.critChance += 20;
+            hero.stats.critChance += 10;
         },
         icon: "sprites/critchance-icon.png"
     },

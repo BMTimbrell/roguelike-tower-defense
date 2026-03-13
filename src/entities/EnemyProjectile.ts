@@ -15,6 +15,7 @@ export default function makeEnemyProjectile(k: KAPLAYCtx, opts: {
         k.sprite(id),
         k.pos(pos),
         k.anchor("center"),
+        k.rotate(0),
         k.offscreen({ destroy: true }),
         {
             speed: 200
@@ -26,6 +27,7 @@ export default function makeEnemyProjectile(k: KAPLAYCtx, opts: {
 
     projectile.onUpdate(() => {
         const dir = targetPos.sub(projectile.pos).unit();
+        projectile.angle = targetPos.angle(projectile.pos);
 
         projectile.pos = projectile.pos.add(dir.scale(projectile.speed * k.dt()));
 
