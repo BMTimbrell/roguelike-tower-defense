@@ -217,6 +217,22 @@ export const LEVEL_WAVES = {
                     { id: "fairy", count: 1, interval: 1 }
                 ],
                 reward: 600
+            },
+            {
+                spawns: [
+                    { id: "armouredSkeleton", count: 10, interval: 1 },
+                    { id: "fairy", count: 1, interval: 1 },
+                    { id: "giantSlime", count: 1, interval: 1 },
+                    { id: "skeleton", count: 10, interval: 1 },
+                    { id: "giantSkeleton", count: 1, interval: 1 },
+                    { id: "fairy", count: 1, interval: 1 },
+                    { id: "armouredSkeleton", count: 10, interval: 1 },
+                    { id: "giantSlime", count: 1, interval: 1 },
+                    { id: "fairy", count: 1, interval: 1 },
+                    { id: "giantSkeleton", count: 1, interval: 1},
+                    { id: "fairy", count: 1, interval: 1 },
+                ],
+                reward: 600
             }
         ],
     },
@@ -279,6 +295,12 @@ export const ENEMIES = {
             attackCooldown: 2
         },
         sprite: "giant slime"
+    },
+    giantSkeleton: {
+        hp: 400,
+        damage: 5,
+        speed: 25,
+        sprite: "giant skeleton"
     }
 } as const satisfies Record<string, EnemyConfig>;
 
@@ -1342,10 +1364,10 @@ export const TOWERS = {
         gunSprite: "scythe tower",
         baseSprite: "scythe tower base",
         sprite: "scythe-tower-sprite.png",
-        description: `Reap enemies' souls, gaining +1 damage per enemy killed (up to +${SCYTHE_MAX_KILL_STACKS}). This tower receives half the amount from range upgrades`,
+        description: `Reap enemies' souls, dealing +1 bonus damage per enemy killed (up to +${SCYTHE_MAX_KILL_STACKS}). This tower receives half the amount from range upgrades`,
         cost: 300,
         stats: {
-            damage: 25,
+            damage: 20,
             range: 2.5,
             fireInterval: 2,
             critChance: 5,

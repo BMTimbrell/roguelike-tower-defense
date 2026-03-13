@@ -445,6 +445,16 @@ export default function loadAssets(k: KAPLAYCtx) {
             die: { from: 7, to: 10, loop: false }
         }
     });
+    k.loadSprite("giant skeleton", "/sprites/giant-skeleton.png", {
+        sliceX: 7,
+        sliceY: 2,
+        anims: {
+            idle: 0,
+            move: { from: 0, to: 3, loop: true, speed: 4 },
+            die: { from: 8, to: 13, loop: false }
+        }
+    });
+
     k.loadSprite("poison", "/sprites/poison-icon.png");
     k.loadSprite("burn", "/sprites/burn-icon.png");
     k.loadSprite("chill", "/sprites/chill-icon.png");
