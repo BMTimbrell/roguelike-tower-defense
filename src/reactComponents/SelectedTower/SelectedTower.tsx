@@ -152,7 +152,9 @@ export default function SelectedTower({ tower }: { tower: SelectedTowerUI }) {
                 ))}
             </div>
 
-            <PriorityButton scale={scale} priority={priority} setPriority={setPriority} /><br />
+            {priority && <>
+                <PriorityButton scale={scale} priority={priority} setPriority={setPriority} /><br />
+            </>}
 
             <Button onClick={sellTower}>
                 Sell <img style={{ width: `${8 * scale}px`, marginRight: '0.125em' }} src="sprites/coin.png" />{calcSellPrice(cost, unlockedUpgradeSlots)}

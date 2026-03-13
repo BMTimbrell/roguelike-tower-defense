@@ -35,10 +35,9 @@ export default function makeTower(
         projectile,
         canRotate,
         targetType,
-        footprint
+        footprint,
+        priority
     } = TOWERS[towerId];
-
-    const priority: TargetPriority = "Most Progress";
 
     const tower: TowerGameObj = k.add([
         k.sprite(baseSprite),

@@ -311,13 +311,13 @@ export default function loadAssets(k: KAPLAYCtx) {
     });
     k.loadSprite("lava tower base", "/sprites/lava-tower-base.png");
     k.loadSprite("lava tower", "/sprites/lava-tower.png", {
-        sliceX: 4,
+        sliceX: 5,
         sliceY: 1,
         anims: {
             idle: 0,
             pouring: {
                 from: 1, 
-                to: 3, 
+                to: 4, 
                 loop: true,
                 speed: 7
             }
@@ -463,11 +463,11 @@ export default function loadAssets(k: KAPLAYCtx) {
     });
     k.loadSprite("slash effect", "/sprites/slash-effect.png");
     k.loadSprite("sniper laser", "/sprites/sniper-laser.png");
-    k.loadSprite("thunder effect", "/sprites/thunder-effect.png", {
-        sliceX: 7,
+    k.loadSprite("thunder effect", "/sprites/thunder-effect3.png", {
+        sliceX: 13,
         sliceY: 1,
         anims: {
-            thunder: { from: 0, to: 6, loop: false, speed: 40 }
+            thunder: { from: 0, to: 12, loop: false, speed: 25 }
         }
     });
     k.loadSprite("heal effect", "/sprites/heal-effect.png", {

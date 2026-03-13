@@ -4,7 +4,7 @@ import { calcUpgradeCost } from "./calcUpgradeCost";
 import type { SelectedFarmTowerUI, SelectedTowerUI, TargetPriority, TowerGameObj, Upgrade } from "../types";
 import calcFireInterval from "./calcFireInterval";
 import calcSellPrice from "./calcSellPrice";
-import { REDUCED_RANGE_TOWERS, SEEDS } from "../constants";
+import { SEEDS } from "../constants";
 import { rebuildLava } from "./lavaHelpers";
 
 export default function setTowerUI(k: KAPLAYCtx, type: "combat" | "farm", tower: TowerGameObj) {

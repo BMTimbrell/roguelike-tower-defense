@@ -310,7 +310,8 @@ export const TOWERS = {
         footprint: {
             w: 1,
             h: 1
-        }
+        },
+        priority: "Most Progress"
     },
     fire: {
         name: "Fire Tower",
@@ -337,7 +338,8 @@ export const TOWERS = {
         footprint: {
             w: 1,
             h: 1
-        }
+        },
+        priority: "Most Progress"
     },
     slime: {
         name: "Slime Tower",
@@ -375,7 +377,8 @@ export const TOWERS = {
         footprint: {
             w: 1,
             h: 1
-        }
+        },
+        priority: "Most Progress"
     },
     ice: {
         name: "Ice Tower",
@@ -408,7 +411,8 @@ export const TOWERS = {
         footprint: {
             w: 1,
             h: 1
-        }
+        },
+        priority: null
     },
     lightning: {
         name: "Lightning Tower",
@@ -446,7 +450,8 @@ export const TOWERS = {
         footprint: {
             w: 1,
             h: 1
-        }
+        },
+        priority: "Most Progress"
     },
     lux: {
         name: "Lux Tower",
@@ -473,7 +478,8 @@ export const TOWERS = {
         footprint: {
             w: 1,
             h: 1
-        }
+        },
+        priority: "Most Progress"
     },
     crow: {
         name: "Crow Tower",
@@ -512,7 +518,8 @@ export const TOWERS = {
         footprint: {
             w: 1,
             h: 1
-        }
+        },
+        priority: "Most Progress"
     },
     bomb: {
         name: "Bomb Tower",
@@ -547,7 +554,8 @@ export const TOWERS = {
         footprint: {
             w: 1,
             h: 1
-        }
+        },
+        priority: "Most Progress"
     },
     farm: {
         name: "Farm Tower",
@@ -579,7 +587,8 @@ export const TOWERS = {
         footprint: {
             w: 1,
             h: 1
-        }
+        },
+        priority: null
     },
     nightshade: {
         name: "Nightshade Tower",
@@ -617,7 +626,8 @@ export const TOWERS = {
         footprint: {
             w: 1,
             h: 1
-        }
+        },
+        priority: "Most Progress"
     },
     chili: {
         name: "Chili Pepper Tower",
@@ -650,7 +660,8 @@ export const TOWERS = {
         footprint: {
             w: 1,
             h: 1
-        }
+        },
+        priority: null
     },
     starfruit: {
         name: "Starfruit Tower",
@@ -685,7 +696,8 @@ export const TOWERS = {
         footprint: {
             w: 1,
             h: 1
-        }
+        },
+        priority: "Most Progress"
     },
     time: {
         name: "Time Tower",
@@ -721,7 +733,8 @@ export const TOWERS = {
         footprint: {
             w: 1,
             h: 1
-        }
+        },
+        priority: "Most Progress"
     },
     toilet: {
         name: "Toilet Tower",
@@ -749,7 +762,8 @@ export const TOWERS = {
         footprint: {
             w: 1,
             h: 1
-        }
+        },
+        priority: null
     },
     questionMark: {
         name: "? Tower",
@@ -835,7 +849,8 @@ export const TOWERS = {
         footprint: {
             w: 1,
             h: 1
-        }
+        },
+        priority: "Most Progress"
     },
     hammer: {
         name: "Hammer Tower",
@@ -893,7 +908,8 @@ export const TOWERS = {
         footprint: {
             w: 1,
             h: 1
-        }
+        },
+        priority: "Most Progress"
     },
     icicle: {
         name: "Icicle Tower",
@@ -920,7 +936,8 @@ export const TOWERS = {
         footprint: {
             w: 1,
             h: 1
-        }
+        },
+        priority: "Most Progress"
     },
     snowball: {
         name: "Snowball Tower",
@@ -955,7 +972,8 @@ export const TOWERS = {
                     projectile.behaviors.animOnDestroy = "explode";
                 });
             }
-        }]
+        }],
+        priority: "Most Progress"
     },
     shadowBall: {
         name: "Shadow Ball Tower",
@@ -993,7 +1011,8 @@ export const TOWERS = {
                     projectile.behaviors.bounceDamageMultiplier ??= 1;
                 });
             }
-        }]
+        }],
+        priority: "Most Progress"
     },
     sludgeBomb: {
         name: "Sludge Bomb Tower",
@@ -1028,7 +1047,8 @@ export const TOWERS = {
                     projectile.behaviors.animOnDestroy = "explode";
                 });
             }
-        }]
+        }],
+        priority: "Most Progress"
     },
     sniper: {
         name: "Sniper Tower",
@@ -1060,7 +1080,8 @@ export const TOWERS = {
             firstEffect(ctx) {
                 ctx.attackType = "sniper_laser";
             }
-        }]
+        }],
+        priority: "Most Progress"
     },
     laserCanon: {
         name: "Laser Cannon Tower",
@@ -1092,7 +1113,8 @@ export const TOWERS = {
             firstEffect(ctx) {
                 ctx.attackType = "piercing_laser";
             }
-        }]
+        }],
+        priority: "Most Progress"
     },
     balloon: {
         name: "Balloon Tower",
@@ -1125,7 +1147,8 @@ export const TOWERS = {
                 ctx.attackType = "aoe";
                 ctx.visualEffect = electricAoeBurst;
             }
-        }]
+        }],
+        priority: null
     },
     beeHive: {
         name: "Beehive Tower",
@@ -1135,7 +1158,7 @@ export const TOWERS = {
         description: "Sends out a swarm of bees that follow the target dealing damage in a small area",
         cost: 200,
         stats: {
-            damage: 10,
+            damage: 8,
             range: 5,
             fireInterval: 0.75,
             critChance: 5,
@@ -1164,7 +1187,8 @@ export const TOWERS = {
         footprint: {
             w: 2,
             h: 2
-        }
+        },
+        priority: "Most Progress"
     },
     storm: {
         name: "Storm Tower",
@@ -1196,7 +1220,8 @@ export const TOWERS = {
             firstEffect(ctx) {
                 ctx.attackType = "thunder";
             }
-        }]
+        }],
+        priority: "Most Progress"
     },
     frostBallista: {
         name: "Frost Ballista Tower",
@@ -1233,7 +1258,8 @@ export const TOWERS = {
                     projectile.behaviors.distanceDamageCap = 1;
                 });
             }
-        }]
+        }],
+        priority: "Most Progress"
     },
     skull: {
         name: "Skull Tower",
@@ -1271,7 +1297,8 @@ export const TOWERS = {
                     projectile.bonusCrit = 100 * missingHealthPercent * 0.8;
                 });
             }
-        }]
+        }],
+        priority: "Most Progress"
     },
     timeCannon: {
         name: "Time Cannon Tower",
@@ -1307,7 +1334,8 @@ export const TOWERS = {
         footprint: {
             w: 2,
             h: 2
-        }
+        },
+        priority: "Most Progress"
     },
     scythe: {
         name: "Scythe Tower",
@@ -1367,17 +1395,18 @@ export const TOWERS = {
         footprint: {
             w: 2,
             h: 2
-        }
+        },
+        priority: "Most Progress"
     },
     god: {
         name: "God Tower",
         gunSprite: "god tower",
         baseSprite: "god tower base",
         sprite: "god-tower-sprite.png",
-        description: "Shoots 8 angels at the enemy",
+        description: "Shoots 8 angels at random targets",
         cost: 300,
         stats: {
-            damage: 5,
+            damage: 6,
             range: 6,
             fireInterval: 1.5,
             critChance: 5,
@@ -1404,7 +1433,8 @@ export const TOWERS = {
                 ctx.volley.volleyCount ??= 8;
                 ctx.volley.homingDelay ??= 0.4;
             }
-        }]
+        }],
+        priority: null
     },
     mine: {
         name: "Mine Tower",
@@ -1432,7 +1462,8 @@ export const TOWERS = {
         footprint: {
             w: 2,
             h: 2
-        }
+        },
+        priority: null
     },
     blizzard: {
         name: "Blizzard Tower",
@@ -1444,7 +1475,7 @@ export const TOWERS = {
         stats: {
             damage: 40,
             range: 7,
-            fireInterval: 4,
+            fireInterval: 5,
             critChance: 5,
             critDamage: 200
         },
@@ -1464,7 +1495,8 @@ export const TOWERS = {
             firstEffect(ctx) {
                 ctx.attackType = "blizzard";
             }
-        }]
+        }],
+        priority: "Most Progress"
     },
     flamethrower: {
         name: "Flamethrower Tower",
@@ -1497,7 +1529,8 @@ export const TOWERS = {
             firstEffect(ctx) {
                 ctx.attackType = "cone";
             }
-        }]
+        }],
+        priority: "Most Progress"
     },
     charge: {
         name: "Charge Tower",
@@ -1541,7 +1574,8 @@ export const TOWERS = {
             maxCharge: 0.7,
             chargePerShot: 0.04,
             decayDelay: 1.25
-        }
+        },
+        priority: "Most Progress"
     },
     lava: {
         name: "Lava Tower",
@@ -1569,7 +1603,8 @@ export const TOWERS = {
             w: 2,
             h: 2
         },
-        lavaTiles: []
+        lavaTiles: [],
+        priority: null
     }
 } as const satisfies Record<string, TowerDef>;
 
@@ -1599,7 +1634,8 @@ export const HEROES = {
         footprint: {
             w: 1,
             h: 1
-        }
+        },
+        priority: "Most Progress"
     },
     wizard: {
         name: "Wizard",
@@ -1624,7 +1660,8 @@ export const HEROES = {
         footprint: {
             w: 1,
             h: 1
-        }
+        },
+        priority: "Most Progress"
     }
 } as const satisfies Record<string, HeroDef>;
 
@@ -1696,9 +1733,9 @@ export const ELEMENTS: Record<ElementName, ElementDef> = {
     },
 
     Light: {
-        description: "Light attacks blind enemies, preventing them from hitting towers",
+        description: "Light attacks blind enemies, disorienting them. Blinded enemies have a 50% chance to miss tower attacks and suffer 50% longer debuff durations.",
         applyEffect: (k, { target }) => {
-            const duration = 2;
+            const duration = 3;
 
             const blind = target.has("blind");
 
@@ -1788,7 +1825,7 @@ export const PROJECTILES = {
         sprite: "bomb",
         homing: true,
         speed: 200,
-        splashRadius: 1.5
+        splashRadius: 1.2
     },
     shadowBlob: {
         sprite: "shadow blob",
@@ -1818,19 +1855,19 @@ export const PROJECTILES = {
         sprite: "snowball",
         homing: true,
         speed: 200,
-        splashRadius: 1.5
+        splashRadius: 1.2
     },
     shadowBall: {
         sprite: "shadow ball",
         homing: true,
         speed: 200,
-        splashRadius: 1.5
+        splashRadius: 1.2
     },
     sludgeBomb: {
         sprite: "sludge bomb",
         homing: true,
         speed: 200,
-        splashRadius: 1.5
+        splashRadius: 1.2
     },
     bees: {
         sprite: "bees",
@@ -1866,7 +1903,7 @@ export const PROJECTILES = {
         sprite: "mine",
         homing: true,
         speed: 200,
-        splashRadius: 1.5
+        splashRadius: 1.2
     },
 } as const satisfies Record<string, ProjectileDef>;
 

@@ -2,7 +2,7 @@ import type { GameObj, KAPLAYCtx, Vec2 } from "kaplay";
 import type { AttackContext, AttackTarget, DamageResult, ElementName, EnemyGameObj, HeroGameObj, RandomProjectiles, TargetResolver, TowerGameObj } from "../types";
 import { CURSE_CRIT, PROJECTILES, SCYTHE_MAX_KILL_STACKS, TILE_SIZE, TIME_TOWER_BASE_ANIM_SPEED, TOWER_RANGE_TOLERANCE, type ProjectileId } from "../constants";
 import makeProjectile from "../entities/Projectile";
-import { rotateVector, shortestAngleDiff } from "./targetingHelpers";
+import { enemyTargetResolver, rotateVector, selectTarget, shortestAngleDiff } from "./targetingHelpers";
 import { buildLightningSegments, drawLightning, resolveChain } from "./lightningHelpers";
 import calcDamage from "./calcDamage";
 import hurtEnemy from "./hurtEnemy";
@@ -118,7 +118,7 @@ export default function makeUnitCombat(
     function shoot(target: AttackTarget) {
 
         if (target.type === "enemy") {
-            const enemy = target.enemy;
+            let enemy = target.enemy;
             let projectile = {
                 id: opts.projectile ?? "basic",
                 angle: gun.angle,
@@ -263,6 +263,11 @@ export default function makeUnitCombat(
 
                 if (p.behaviors?.persistent) {
                     ctx.attacker.activeProjectile ??= projectile;
+                }
+
+                if (!ctx.attacker.priority) {
+                    const resolveTarget = enemyTargetResolver(k, opts.owner);
+                    enemy = (resolveTarget() as { type: "enemy", enemy: EnemyGameObj}).enemy;
                 }
             }
 
@@ -642,14 +647,15 @@ function thunderAttack(
     const stormCloud = k.add([
         k.sprite("thunder effect", { anim: "thunder" }),
         k.pos(ctx.target.pos),
-        k.anchor("center")
+        k.z(9999),
+        k.anchor(k.vec2(0))
     ]);
 
     stormCloud.onAnimEnd(() => {
         k.destroy(stormCloud);
     });
     (k.get("enemy") as EnemyGameObj[]).forEach(e => {
-        if (e.pos.dist(stormCloud.pos) < 1.5 * TILE_SIZE) {
+        if (e.pos.dist(stormCloud.pos) < 1.2 * TILE_SIZE) {
             hurtEnemy(k, { target: e, damage, isCrit, element: ctx.element });
         }
     });
@@ -673,6 +679,7 @@ function blizzardAttack(
                 k.rand(20, 80)
             ),
             k.lifespan(0.6),
+            k.z(9999),
             k.opacity(k.rand(0.5, 1)),
             k.scale(k.rand(0.5, 1.2)),
         ]);

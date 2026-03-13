@@ -8,6 +8,19 @@ export function selectTarget(
     origin: Vec2,
 ): EnemyGameObj | null {
 
+    // random target if no priority
+    if (!tower.priority) {
+        const enemiesInRange = enemies.filter(e => {
+            const dist = e.pos.dist(origin);
+            return dist <= tower.stats.range * TILE_SIZE + TOWER_RANGE_TOLERANCE;
+        });
+
+        if (!enemiesInRange.length) return null;
+
+        const randomIndex = Math.floor(Math.random() * enemiesInRange.length);
+        return enemiesInRange[randomIndex];
+    }
+
     let best: EnemyGameObj | null = null;
     let bestDist = 0;
 
