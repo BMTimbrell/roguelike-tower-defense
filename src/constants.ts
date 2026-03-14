@@ -14,7 +14,7 @@ export const TILE_SIZE = 32;
 export const TOWER_RANGE_TOLERANCE = 5;
 export const MAX_TOWER_UPGRADES = 5;
 export const FOG_Z = 900;
-export const MAX_HAND_SIZE = 6;
+export const MAX_HAND_SIZE = 12;
 export const ROUND_DRAW_NUM = 3;
 export const DAMAGE_NUMBER_SIZE = 14;
 export const SMALL_DAMAGE_NUMBER_SIZE = 11;
@@ -264,27 +264,24 @@ export const LEVEL_WAVES = {
             },
             {
                 spawns: [
-                    { id: "armouredSkeleton", count: 5, interval: 1 },
+                    { id: "armouredOrc", count: 4, interval: 1 },
                     { id: "fairy", count: 1, interval: 1 },
-                    { id: "giantSlime", count: 1, interval: 1 },
-                    { id: "skeleton", count: 7, interval: 1 },
-                    { id: "fairy", count: 1, interval: 1 },
-                    { id: "skeleton", count: 8, interval: 1 },
+                    { id: "giantBee", count: 1, interval: 1 },
+                    { id: "orc", count: 12, interval: 1 },
                     { id: "fairy", count: 1, interval: 1 }
                 ],
                 reward: 600
             },
             {
                 spawns: [
-                    { id: "armouredSkeleton", count: 10, interval: 1 },
+                    { id: "armouredOrc", count: 7, interval: 1 },
                     { id: "fairy", count: 1, interval: 1 },
-                    { id: "giantSlime", count: 1, interval: 1 },
-                    { id: "skeleton", count: 10, interval: 1 },
+                    { id: "giantBee", count: 1, interval: 1 },
+                    { id: "orc", count: 7, interval: 1 },
                     { id: "giantSkeleton", count: 1, interval: 1 },
                     { id: "fairy", count: 1, interval: 1 },
-                    { id: "armouredSkeleton", count: 10, interval: 1 },
-                    { id: "giantSlime", count: 1, interval: 1 },
-                    { id: "fairy", count: 1, interval: 1 },
+                    { id: "armouredOrc", count: 7, interval: 1 },
+                    { id: "giantBee", count: 1, interval: 1.5 },
                     { id: "giantSkeleton", count: 1, interval: 1},
                     { id: "fairy", count: 1, interval: 1 },
                 ],

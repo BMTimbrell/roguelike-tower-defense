@@ -30,7 +30,7 @@
 }
 
 .right-container {
-    align-self: flex-end;
+    /* align-self: flex-end; */
     display: flex;
     column-gap: 1em;
     justify-content: flex-end;

@@ -186,7 +186,7 @@ export default function level1(k: KAPLAYCtx) {
                         upgrades: [...prev.upgrades, card],
                         deck: {
                             ...prev.deck,
-                            drawCost: Math.min(160, prev.deck.drawCost * 2),
+                            drawCost: Math.min(40, prev.deck.drawCost + 10),
                         },
                     }));
                 },

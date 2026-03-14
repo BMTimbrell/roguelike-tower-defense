@@ -1,10 +1,16 @@
 .card-wrap {
     display: flex;
     transition: transform 0.15s ease;
+    flex: 0 0 auto;
+}
+
+.card-wrap:not(:first-child) {
+    margin-left: calc(-1 * var(--overlap, 0px));
 }
 
 .card-wrap:hover {
     transform: translateY(-0.125em);
+    z-index: 10;
 }
 
 .card-wrap:hover .card {

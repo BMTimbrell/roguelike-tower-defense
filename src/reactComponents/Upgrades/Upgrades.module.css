@@ -2,11 +2,18 @@
     display: flex;
     justify-content: center;
     align-items: center;
+    flex-wrap: nowrap;
+    /* flex: 0 1 auto; */
     gap: 0.5em;
-    flex-wrap: wrap-reverse;
-    flex: 0 1 auto;
     min-width: 0;
+}
 
+.card {
+    flex-shrink: 0;
+}
+
+.card:not(:first-child) {
+    margin-left: calc(-1 * var(--overlap, 0px));
 }
 
 .selected {

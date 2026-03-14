@@ -45,7 +45,7 @@ export function BottomBar() {
                 <Upgrades upgrades={upgrades} />
 
                 <div className={styles["right-container"]}>
-                    <RerollCardsButton />
+                    {/* <RerollCardsButton /> */}
                     <Deck deck={gameState.deck} gold={gameState.gold} />
                 </div>
             </div>
