@@ -3,6 +3,7 @@ import { TIME_TOWER_BASE_ANIM_SPEED } from "./constants";
 
 export default function loadAssets(k: KAPLAYCtx) {
     k.loadSprite("level1", "/sprites/level1.png");
+    k.loadSprite("level1-2", "/sprites/level1-2.png");
     k.loadSprite("gold", "/sprites/coin.png");
     k.loadSprite("heart", "/sprites/heart.png");
     k.loadSprite("basic tower", "/sprites/basic-tower.png", {
@@ -454,6 +455,7 @@ export default function loadAssets(k: KAPLAYCtx) {
             die: { from: 7, to: 10, loop: false }
         }
     });
+
     k.loadSprite("giant skeleton", "/sprites/giant-skeleton.png", {
         sliceX: 7,
         sliceY: 2,
@@ -461,6 +463,16 @@ export default function loadAssets(k: KAPLAYCtx) {
             idle: 0,
             move: { from: 0, to: 3, loop: true, speed: 4 },
             die: { from: 8, to: 13, loop: false }
+        }
+    });
+
+    k.loadSprite("giant orc", "/sprites/giant-orc.png", {
+        sliceX: 7,
+        sliceY: 2,
+        anims: {
+            idle: 0,
+            move: { from: 0, to: 3, loop: true, speed: 4 },
+            die: { from: 8, to: 11, loop: false }
         }
     });
 

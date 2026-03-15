@@ -4,6 +4,7 @@ import loadAssets from './loadAssets';
 import levelTransition from './scenes/levelTransition';
 import type { Scene } from './types';
 import mainMenu from './scenes/mainMenu';
+import level1_2 from './scenes/level1-2';
 
 export default function initGame() {
     // focus back on canvas when clicking on html elements
@@ -12,6 +13,8 @@ export default function initGame() {
     const k = makeKaplayCtx();
 
     level1(k);
+
+    level1_2(k);
 
     mainMenu(k);
 

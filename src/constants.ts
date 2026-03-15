@@ -187,52 +187,48 @@ export const LEVEL_WAVES = {
                 spawns: [
                     { id: "slime", count: 5, interval: 1 }
                 ],
-                reward: 80
+                reward: 50
             },
             {
                 spawns: [
                     { id: "skeleton", count: 5, interval: 1 },
                     { id: "slime", count: 5, interval: 0.75 }
                 ],
-                reward: 150
+                reward: 100
             },
             {
                 spawns: [
                     { id: "armouredSkeleton", count: 3, interval: 1 },
-                    { id: "skeleton", count: 3, interval: 1 },
-                    { id: "fairy", count: 1, interval: 1 },
-                    { id: "skeleton", count: 7, interval: 1 },
+                    { id: "skeleton", count: 6, interval: 1 },
                     { id: "fairy", count: 1, interval: 1 }
                 ],
-                reward: 300
+                reward: 200
             },
             {
                 spawns: [
                     { id: "armouredSkeleton", count: 5, interval: 1 },
                     { id: "fairy", count: 1, interval: 1 },
                     { id: "giantSlime", count: 1, interval: 1 },
-                    { id: "skeleton", count: 7, interval: 1 },
-                    { id: "fairy", count: 1, interval: 1 },
-                    { id: "skeleton", count: 8, interval: 1 },
+                    { id: "skeleton", count: 10, interval: 1 },
                     { id: "fairy", count: 1, interval: 1 }
                 ],
-                reward: 600
+                reward: 300
             },
             {
                 spawns: [
-                    { id: "armouredSkeleton", count: 10, interval: 1 },
+                    { id: "armouredSkeleton", count: 8, interval: 1 },
                     { id: "fairy", count: 1, interval: 1 },
                     { id: "giantSlime", count: 1, interval: 1 },
                     { id: "skeleton", count: 10, interval: 1 },
                     { id: "giantSkeleton", count: 1, interval: 1 },
                     { id: "fairy", count: 1, interval: 1 },
-                    { id: "armouredSkeleton", count: 10, interval: 1 },
+                    { id: "armouredSkeleton", count: 8, interval: 1 },
                     { id: "giantSlime", count: 1, interval: 1 },
                     { id: "fairy", count: 1, interval: 1 },
                     { id: "giantSkeleton", count: 1, interval: 1},
                     { id: "fairy", count: 1, interval: 1 },
                 ],
-                reward: 600
+                reward: 0
             }
         ],
     },
@@ -244,48 +240,48 @@ export const LEVEL_WAVES = {
                 spawns: [
                     { id: "bee", count: 5, interval: 1 }
                 ],
-                reward: 80
+                reward: 50
             },
             {
                 spawns: [
                     { id: "orc", count: 5, interval: 1.5 },
                     { id: "bee", count: 5, interval: 0.75 }
                 ],
-                reward: 150
+                reward: 100
             },
             {
                 spawns: [
-                    { id: "armouredOrc", count: 2, interval: 1 },
-                    { id: "orc", count: 5, interval: 1 },
+                    { id: "armouredOrc", count: 1, interval: 1.5 },
+                    { id: "orc", count: 3, interval: 1.5 },
                     { id: "fairy", count: 1, interval: 1 },
                     { id: "bee", count: 10, interval: 1 },
+                ],
+                reward: 200
+            },
+            {
+                spawns: [
+                    { id: "armouredOrc", count: 3, interval: 2 },
+                    { id: "giantBee", count: 1, interval: 2 },
+                    { id: "bee", count: 5, interval: 1 },
+                    { id: "orc", count: 8, interval: 1.4 },
+                    { id: "fairy", count: 1, interval: 1 }
                 ],
                 reward: 300
             },
             {
                 spawns: [
-                    { id: "armouredOrc", count: 4, interval: 1 },
+                    { id: "armouredOrc", count: 7, interval: 1.5 },
                     { id: "fairy", count: 1, interval: 1 },
                     { id: "giantBee", count: 1, interval: 1 },
-                    { id: "orc", count: 12, interval: 1 },
-                    { id: "fairy", count: 1, interval: 1 }
-                ],
-                reward: 600
-            },
-            {
-                spawns: [
-                    { id: "armouredOrc", count: 7, interval: 1 },
-                    { id: "fairy", count: 1, interval: 1 },
-                    { id: "giantBee", count: 1, interval: 1 },
-                    { id: "orc", count: 7, interval: 1 },
-                    { id: "giantSkeleton", count: 1, interval: 1 },
-                    { id: "fairy", count: 1, interval: 1 },
-                    { id: "armouredOrc", count: 7, interval: 1 },
-                    { id: "giantBee", count: 1, interval: 1.5 },
-                    { id: "giantSkeleton", count: 1, interval: 1},
+                    { id: "orc", count: 10, interval: 1 },
+                    { id: "giantOrc", count: 1, interval: 1.5 },
+                    { id: "armouredOrc", count: 7, interval: 1.5 },
+                    { id: "giantBee", count: 1, interval: 2 },
+                    { id: "bee", count: 10, interval: 1},
+                    { id: "giantOrc", count: 1, interval: 2},
                     { id: "fairy", count: 1, interval: 1 },
                 ],
-                reward: 600
+                reward: 0
             }
         ],
     },
@@ -385,7 +381,13 @@ export const ENEMIES = {
             canAttack: false,
             attackCooldown: 2
         }
-    }
+    },
+    giantOrc: {
+        hp: 700,
+        damage: 5,
+        speed: 25,
+        sprite: "giant orc"
+    },
 } as const satisfies Record<string, EnemyConfig>;
 
 export type EnemyId = keyof typeof ENEMIES;

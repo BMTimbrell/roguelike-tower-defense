@@ -326,7 +326,7 @@ export type Deck = {
     drawCost: number;
 };
 
-export type Scene = "level1" | "levelTransition" | "mainMenu";
+export type Scene = "level1" | "level1-2" | "levelTransition" | "mainMenu";
 
 export type GameState = {
     towerButtons: TowerButton[];
