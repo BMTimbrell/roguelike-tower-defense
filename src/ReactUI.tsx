@@ -1,5 +1,5 @@
 import { useAtom } from 'jotai';
-import { gameStateAtom, rewardsAtom, startingOptionsAtom } from './store';
+import { gameStateAtom, rewardsAtom, selectHeroUIAtom, startingOptionsAtom } from './store';
 import { BottomBar } from "./reactComponents/BottomBar/BottomBar";
 import SelectedTower from "./reactComponents/SelectedTower/SelectedTower";
 import SelectedHero from './reactComponents/SelectedHero/SelectedHero';
@@ -8,11 +8,13 @@ import type { Scene } from './types';
 import StartingOptions from './reactComponents/StartingOptions/StartingOptions';
 import type { JSX } from 'react';
 import SelectedFarm from './reactComponents/SelectedFarm/SelectedFarm';
+import SelectHeroUI from './reactComponents/SelectHeroUI/SelectHeroUI';
 
 export default function ReactUI() {
     const [gameState] = useAtom(gameStateAtom);
     const [startingOptions] = useAtom(startingOptionsAtom);
     const [rewards] = useAtom(rewardsAtom);
+    const [selectHeroUI] = useAtom(selectHeroUIAtom);
     const selectedUI = gameState.selectedUI;
     let selectedTower: null | JSX.Element = null;
 
@@ -38,6 +40,8 @@ export default function ReactUI() {
     return (
         <>
             {!nonLevelScenes.includes(gameState.scene) && <BottomBar />}
+
+            {selectHeroUI.visible && <SelectHeroUI />}
 
             {startingOptions.visible && <StartingOptions />}
 

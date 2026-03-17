@@ -528,6 +528,8 @@ export default function loadAssets(k: KAPLAYCtx) {
            heal: { from: 0, to: 6, loop: false, speed: 20 }
         }
     });
+    k.loadSprite("entrance arrow", "/sprites/green-arrow.png");
+    k.loadSprite("exit arrow", "/sprites/red-arrow.png");
     k.loadSprite("snow", "/sprites/snow.png");
     k.loadSprite("lava tile", "/sprites/lava-tile.png");
     k.loadSprite("stinger", "/sprites/bee-stinger.png");

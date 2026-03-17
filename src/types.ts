@@ -326,7 +326,9 @@ export type Deck = {
     drawCost: number;
 };
 
-export type Scene = "level1" | "level1-2" | "levelTransition" | "mainMenu";
+export type Scene = "level1" | "level1-2" | "levelTransition" | "mainMenu" | "level2" | "level2-2";
+
+export type Scenes = Scene[][];
 
 export type GameState = {
     towerButtons: TowerButton[];
@@ -344,7 +346,6 @@ export type GameState = {
         roll: () => void;
         rerollCount: number;
     };
-    heroCanReposition: boolean;
     scene: Scene;
     hero: HeroGameObj | null;
     heroButton: {
@@ -357,6 +358,7 @@ export type GameState = {
         damageRequired: number;
     };
     waveActive: boolean;
+    sceneIndex: number;
 };
 
 export type EnemySpawn = {
@@ -371,6 +373,7 @@ export type Wave = {
 };
 
 export type LevelWaves = {
+    startingGold: number;
     startDelay: number;
     waves: Wave[];
 };
@@ -469,7 +472,18 @@ export type ProjectileBehavior = {
 
 export type Rewards = {
     skills: SkillId[];
+    upgrades: Upgrade[];
+    towers: TowerId[];
+    addSkill: (id: SkillId) => void;
     visible: boolean;
+    show: ["skills", "upgrades", "towers"],
+    rewardIndex: number;
+};
+
+export type startingHeroUI = {
+    visible: boolean;
+    options: HeroId[];
+    addHero: (id: HeroId) => void;
 };
 
 export type StartingOptions = {

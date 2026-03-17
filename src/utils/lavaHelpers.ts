@@ -6,7 +6,7 @@ import calcDamage from "./calcDamage";
 
 export function makeLavaManager(k: KAPLAYCtx) {
     let tick = 0;
-    const tickRate = 0.4;
+    const tickRate = 0.5;
 
     k.onUpdate(() => {
         tick += k.dt();
@@ -25,7 +25,7 @@ export function makeLavaManager(k: KAPLAYCtx) {
                 if (e.pos.dist(lava.pos) < TILE_SIZE / 2 + e.width / 2) {
 
                     if (damaged.has(e.id ?? 0)) break;
-                    console.log("hi")
+
                     damaged.add(e.id ?? 0);
 
                     const tower = (k.get("tower") as TowerGameObj[]).find(t => t.instanceId === lava.towerId);

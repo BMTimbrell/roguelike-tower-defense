@@ -1,5 +1,5 @@
 import { atom, createStore } from "jotai";
-import type { GameState, Rewards, StartingOptions } from "./types";
+import { type startingHeroUI, type GameState, type Rewards, type StartingOptions } from "./types";
 
 export const gameStateAtom = atom<GameState>({
     towerButtons: [],
@@ -10,6 +10,7 @@ export const gameStateAtom = atom<GameState>({
     gold: 100,
     maxTowerUpgrades: 5,
     upgrades: [],
+    sceneIndex: 0,
     deck: {
         cards: [],
         drawCard: () => {},
@@ -22,7 +23,6 @@ export const gameStateAtom = atom<GameState>({
         roll: () => null,
         rerollCount: 0
     },
-    heroCanReposition: true,
     scene: "mainMenu",
     hero: null,
     heroButton: {
@@ -46,13 +46,22 @@ export const mapAtom = atom({
 
 export const rewardsAtom = atom<Rewards>({
     skills: [],
-    visible: false
+    visible: false,
+    show: ["skills", "upgrades", "towers"],
+    rewardIndex: 0,
+    addSkill: () => {}
 });
 
 export const startingOptionsAtom = atom<StartingOptions>({
     visible: false,
     options: [],
     addLoadout: () => {}
+});
+
+export const selectHeroUIAtom = atom<startingHeroUI>({
+    visible: false,
+    options: ["archer", "wizard"],
+    addHero: () => {}
 });
 
 export const store = createStore();

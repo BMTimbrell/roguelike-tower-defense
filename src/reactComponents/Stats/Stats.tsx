@@ -16,7 +16,7 @@ export default function ({ stats, element, scale }: { stats: TowerStats, element
             </div>
             <div>
                 <img width={`${16 * scale}px`} src="sprites/firerate-icon.png" />
-                Fire Rate: {(1 / fireInterval).toFixed(2).replace(/\.?0+$/, "")}/sec
+                Fire Rate: {fireInterval > 100 ? 0 : (1 / fireInterval).toFixed(2).replace(/\.?0+$/, "")}/sec
             </div>
             <div>
                 <img width={`${16 * scale}px`} src="sprites/range-icon.png" />

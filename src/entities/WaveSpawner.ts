@@ -40,7 +40,7 @@ export default function makeWaveSpawner(k: KAPLAYCtx, levelId: LevelId, waypoint
         {
             startNextWave() {
                 if (waveIndex < 0) {
-                    store.set(gameStateAtom, prev => ({ ...prev, heroCanReposition: false }));
+                    k.get("arrow").forEach(a => k.destroy(a));
                 }
 
                 waveIndex++;

@@ -1,0 +1,47 @@
+.container {
+    width: 100%;
+    height: 100dvh;
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    row-gap: 5em;
+}
+
+.heading {
+    font-size: 1.25em;
+    color: white;
+}
+
+.options {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: 5em;
+    color: white;
+}
+
+.option {
+    display: flex;
+    border: 1px solid white;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1em;
+    border-radius: 0.25em;
+    border: 1px solid rgba(255, 255, 255, 0.6);
+    background-color: var(--card-color);
+    gap: 0.25em;
+    max-width: 10em;
+}
+
+.option:hover {
+    cursor: pointer;
+    background-color: rgb(122, 122, 122);
+}
+
+.description {
+    font-size: 0.75em;
+}

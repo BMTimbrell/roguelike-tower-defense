@@ -3,19 +3,18 @@ import type { MapData, PathTile, Scene, Tile } from "../types";
 import showLevelStats from "./showLevelStats";
 import initCam from "./initCam";
 import generateFog from "./generateFog";
-import makeHero from "../entities/Hero";
-import updateSkills from "./updateSkills";
 import drawCards from "./drawCards";
 import { gameStateAtom, store } from "../store";
 import makeFloatingText from "../entities/FloatingText";
 import getCamViewRect from "./getCamViewRect";
-import { CHARGE_DAMAGE_REQUIRED, MAX_HAND_SIZE, ROUND_DRAW_NUM, TILE_SIZE, type LevelId } from "../constants";
+import { LEVEL_WAVES, MAX_HAND_SIZE, ROUND_DRAW_NUM, TILE_SIZE, type LevelId } from "../constants";
 import reroll from "./reroll";
 import { addSelectTowerListener } from "../entities/Tower";
 import { makeLavaManager } from "./lavaHelpers";
 import makeWaveSpawner from "../entities/WaveSpawner";
+import updateSkills from "./updateSkills";
 
-export default function makeLevelScene(k: KAPLAYCtx, sceneName: Scene ) {
+export default function makeLevelScene(k: KAPLAYCtx, sceneName: Scene) {
 
     k.scene(sceneName, async ({ mapData, tileGrid, pathTiles, wave }: { mapData: MapData, tileGrid: Tile[][], pathTiles: PathTile[], wave: LevelId }) => {
 
@@ -113,15 +112,6 @@ export default function makeLevelScene(k: KAPLAYCtx, sceneName: Scene ) {
             maxY = scrollHeight - viewH / 2;
         });
 
-        // Generate tile grid for placement logic
-        // const tileGrid: boolean[][] = [];
-        // mapData.layers.find(layer => layer.name === "Ground")?.data?.forEach((tile, index) => {
-        //     const x = index % mapData.width;
-        //     const y = Math.floor(index / mapData.width);
-        //     if (!tileGrid[y]) tileGrid[y] = [];
-        //     tileGrid[y][x] = tile !== 1;
-        // });
-
         const cursor = k.add([
             "cursor",
             k.pos(k.toWorld(k.mousePos())),
@@ -134,37 +124,11 @@ export default function makeLevelScene(k: KAPLAYCtx, sceneName: Scene ) {
             cursor.pos = k.toWorld(k.mousePos());
         });
 
-        const hero = makeHero(
-            k,
-            {
-                heroId: "archer",
-                pos: k.toWorld(k.mousePos()),
-                tileGrid,
-                pathTiles
-            }
-        );
-
-        updateSkills(hero);
-
-        // Deck and upgrades setup
-        // const deck = generateDeck(k);
         const upgrades = drawCards(k, store.get(gameStateAtom).deck.cards, ROUND_DRAW_NUM);
         store.set(gameStateAtom, prev => ({
             ...prev,
             scene: sceneName,
-            heroButton: {
-                ...prev.heroButton,
-                onClick: () => {
-                    k.add(hero);
-                    store.set(gameStateAtom, prev => ({
-                        ...prev,
-                        heroButton: {
-                            ...prev.heroButton,
-                            visible: false
-                        }
-                    }))
-                }
-            },
+            gold: LEVEL_WAVES[wave].startingGold,
             // towerButtons: addTowers(k, ["crow", "ice", "lux"], tileGrid),
             bottomBarVisible: true,
             upgrades,
@@ -195,14 +159,13 @@ export default function makeLevelScene(k: KAPLAYCtx, sceneName: Scene ) {
             reroll: {
                 ...prev.reroll,
                 roll: () => reroll(k),
-            },
-            heroCanReposition: true,
-            hero,
-            heroCharge: {
-                ...prev.heroCharge,
-                damageRequired: CHARGE_DAMAGE_REQUIRED
             }
         }));
+
+        const hero = store.get(gameStateAtom).hero;
+        if (hero) {
+            updateSkills(hero);
+        }
 
         addSelectTowerListener(k);
         makeLavaManager(k);
@@ -214,6 +177,48 @@ export default function makeLevelScene(k: KAPLAYCtx, sceneName: Scene ) {
 
         if (waypoints) {
             makeWaveSpawner(k, wave, waypoints);
+
+            if (waypoints.length >= 2) {
+                // --- Entrance arrow ---
+                const start = waypoints[0];
+                const next = waypoints[1];
+
+                const startAngle= next.sub(start).angle();
+
+                const entranceArrow = k.add([
+                    k.sprite("entrance arrow"),
+                    k.pos(start.add(next.sub(start).unit().scale(TILE_SIZE + 4))),
+                    k.rotate(startAngle),
+                    k.anchor("center"),
+                    k.scale(1),
+                    {
+                        update() {
+                            entranceArrow.scale = k.vec2(1 + Math.sin(k.time() * 3) * 0.1);
+                        }
+                    },
+                    "arrow",
+                ]);
+
+                // --- Exit arrow ---
+                const end = waypoints[waypoints.length - 1];
+                const prev = waypoints[waypoints.length - 2];
+
+                const endAngle = end.sub(prev).angle();
+
+                const exitArrow = k.add([
+                    k.sprite("exit arrow"),
+                    k.pos(end.add(prev.sub(end).unit().scale(TILE_SIZE + 4))),
+                    k.rotate(endAngle),
+                    k.anchor("center"),
+                    k.scale(1),
+                    {
+                        update() {
+                            exitArrow.scale = k.vec2(1 + Math.sin(k.time() * 3) * 0.1);
+                        }
+                    },
+                    "arrow",
+                ]);
+            }
         } else throw new Error("Waypoints undefined");
 
     });

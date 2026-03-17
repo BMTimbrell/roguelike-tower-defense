@@ -3,6 +3,7 @@ import { useTowerPopup } from "../../reactHooks/useTowerPopup";
 import DescriptionPopup from "../DescriptionPopup/DescriptionPopup";
 import styles from './TowerCard.module.css';
 import TowerPopup from "../TowerPopup/TowerPopup";
+import { createPortal } from "react-dom";
 
 export default function TowerCard({ id, scale }: { id: TowerId; scale: number; }) {
     const { element, name, description, stats, cost, sprite } = TOWERS[id];
@@ -22,7 +23,7 @@ export default function TowerCard({ id, scale }: { id: TowerId; scale: number; }
                 </div>
             </div>
 
-            {popup.showBase && (
+            {popup.showBase && createPortal(
                 <TowerPopup
                     ref={popup.popupRef}
                     name={name}
@@ -32,13 +33,15 @@ export default function TowerCard({ id, scale }: { id: TowerId; scale: number; }
                     cost={cost}
                     pos={popup.basePos}
                     scale={scale}
-                />
+                />,
+                document.body
             )}
 
-            {popup.showElement && (
+            {popup.showElement && createPortal(
                 <DescriptionPopup pos={popup.elementPos}>
                     {ELEMENTS[element].description}
-                </DescriptionPopup>
+                </DescriptionPopup>,
+                document.body
             )}
 
         </>

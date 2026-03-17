@@ -30,7 +30,7 @@ export default function card({ children, popup, setPopupPos, handleClick, scale,
                     }}
                     onMouseLeave={() => setHovered(false)}
                     style={{ ...(animationDelay ? { animationDelay: `${animationDelay}ms` } : '' )}}
-                    className={`${styles.card} ${classNames?.map(c => c)}`}
+                    className={`${styles.card} ${classNames?.map(c => c) || ''}`}
                 >
                     {children}
                 </div>

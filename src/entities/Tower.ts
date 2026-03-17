@@ -1,6 +1,6 @@
 import type { KAPLAYCtx, Vec2 } from 'kaplay';
 import { TILE_SIZE, type TowerId } from '../constants';
-import type { TargetPriority, TowerGameObj, UnitEffects, TowerDef, SeedId, Tile, PathTile, RandomProjectiles, TimeData, ContinuousEffect, Charge } from '../types';
+import type { TowerGameObj, UnitEffects, TowerDef, SeedId, Tile, PathTile, RandomProjectiles, TimeData, ContinuousEffect, Charge } from '../types';
 import { store, gameStateAtom } from '../store';
 import { calcUpgradeCost } from '../utils/calcUpgradeCost';
 import { TOWERS } from '../constants';

@@ -2,7 +2,7 @@ import type { GameObj, KAPLAYCtx, Vec2 } from "kaplay";
 import type { AttackContext, AttackTarget, DamageResult, ElementName, EnemyGameObj, HeroGameObj, RandomProjectiles, TargetResolver, TowerGameObj } from "../types";
 import { CURSE_CRIT, PROJECTILES, SCYTHE_MAX_KILL_STACKS, TILE_SIZE, TIME_TOWER_BASE_ANIM_SPEED, TOWER_RANGE_TOLERANCE, type ProjectileId } from "../constants";
 import makeProjectile from "../entities/Projectile";
-import { enemyTargetResolver, rotateVector, selectTarget, shortestAngleDiff } from "./targetingHelpers";
+import { enemyTargetResolver, rotateVector, shortestAngleDiff } from "./targetingHelpers";
 import { buildLightningSegments, drawLightning, resolveChain } from "./lightningHelpers";
 import calcDamage from "./calcDamage";
 import hurtEnemy from "./hurtEnemy";
@@ -170,7 +170,10 @@ export default function makeUnitCombat(
                 target: enemy,
                 origin: gun.pos,
                 gun: gun,
-                damage: opts.stats.damage * (opts.owner.timeData?.timeScaling?.damage ? opts.owner.timeData.timeMultiplier ** 2 : 1) + killBonus,
+                damage: opts.stats.damage + (
+                    opts.owner.timeData?.timeScaling?.damage ? 
+                        opts.owner.timeData.timeMultiplier ** opts.owner.timeData.timeScaling.damagePow - 1 : 0
+                ) + killBonus,
                 element,
                 visualEffect: null,
                 ...(meleeHead && meleeHandle ? {

@@ -1,12 +1,13 @@
 import type { KAPLAYCtx } from "kaplay";
-import { gameStateAtom, store, startingOptionsAtom } from "../store";
+import { gameStateAtom, store, startingOptionsAtom, selectHeroUIAtom } from "../store";
 import initCam from "../utils/initCam";
 import type { Scene, Upgrade } from "../types";
-import type { TowerId } from "../constants";
+import { CHARGE_DAMAGE_REQUIRED, type HeroId, type TowerId } from "../constants";
 import generateTowerOptions from "../utils/generateTowerOptions";
 import addTowers from "../utils/addTowers";
 import generateDeck from "../utils/generateDeck";
 import generateMap from "../utils/generateMap";
+import makeHero from "../entities/Hero";
 
 export default function mainMenu(k: KAPLAYCtx) {
     k.scene("mainMenu" satisfies Scene, async () => {
@@ -19,6 +20,54 @@ export default function mainMenu(k: KAPLAYCtx) {
             initCam(k);
         });
 
+        store.set(selectHeroUIAtom, prev => ({
+            ...prev,
+            visible: true,
+            addHero: (id: HeroId) => {
+                const hero = makeHero(
+                    k,
+                    {
+                        heroId: id,
+                        pos: k.toWorld(k.mousePos()),
+                        tileGrid,
+                        pathTiles
+                    }
+                );
+
+                store.set(gameStateAtom, prev => ({
+                    ...prev,
+                    heroButton: {
+                        ...prev.heroButton,
+                        onClick: () => {
+                            k.add(hero);
+                            store.set(gameStateAtom, prev => ({
+                                ...prev,
+                                heroButton: {
+                                    ...prev.heroButton,
+                                    visible: false
+                                }
+                            }))
+                        }
+                    },
+                    hero,
+                    heroCharge: {
+                        ...prev.heroCharge,
+                        damageRequired: CHARGE_DAMAGE_REQUIRED
+                    }
+                }));
+
+                store.set(selectHeroUIAtom, prev => ({
+                    ...prev,
+                    visible: false
+                }));
+
+                store.set(startingOptionsAtom, prev => ({
+                    ...prev,
+                    visible: true
+                }))
+            }
+        }));
+
         const options: { ids: TowerId[]; upgrades: Upgrade[] }[] = [];
 
         for (let i = 0; i < 3; i++) options.push({ ids: generateTowerOptions(), upgrades: generateDeck(k) });
@@ -28,7 +77,6 @@ export default function mainMenu(k: KAPLAYCtx) {
 
         store.set(startingOptionsAtom, prev => ({
             ...prev,
-            visible: true,
             options,
             addLoadout: (ids, upgrades) => {
                 store.set(gameStateAtom, prev => ({

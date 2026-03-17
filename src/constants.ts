@@ -1,4 +1,4 @@
-import type { Upgrade, LevelWaves, EnemyConfig, TowerDef, ElementDef, ElementName, ProjectileDef, HeroDef, HeroSkillDefBase, TowerGameObj, Seed } from "./types";
+import type { Upgrade, LevelWaves, EnemyConfig, TowerDef, ElementDef, ElementName, ProjectileDef, HeroDef, HeroSkillDefBase, TowerGameObj, Seed, Scenes } from "./types";
 import burnEffect from "./kaplayComponents/burnEffect";
 import calcFireInterval from "./utils/calcFireInterval";
 import poisonEffect from "./kaplayComponents/poisonEffect";
@@ -26,8 +26,8 @@ export const CHILL_PERCENT = 6;
 export const MAX_CHILL_STACKS = 5;
 export const ICE_DAMAGE_PER_STACK = 10;
 export const MAX_CHARGE_STACKS = 5;
-export const STUN_PERCENTAGES = [5, 10, 30, 50, 60];
-export const STUN_DURATION = 1;
+export const STUN_PERCENTAGES = [5, 10, 20, 40, 60];
+export const STUN_DURATION = 0.75;
 export const CURSE_CRIT = 10;
 export const TIME_TOWER_BASE_ANIM_SPEED = 30;
 export const SCYTHE_MAX_KILL_STACKS = 60;
@@ -181,6 +181,7 @@ export const UPGRADES: Upgrade[] = [{
 
 export const LEVEL_WAVES = {
     "level1-1": {
+        startingGold: 100,
         startDelay: 120,
         waves: [
             {
@@ -189,51 +190,52 @@ export const LEVEL_WAVES = {
                 ],
                 reward: 50
             },
-            {
-                spawns: [
-                    { id: "skeleton", count: 5, interval: 1 },
-                    { id: "slime", count: 5, interval: 0.75 }
-                ],
-                reward: 100
-            },
-            {
-                spawns: [
-                    { id: "armouredSkeleton", count: 3, interval: 1 },
-                    { id: "skeleton", count: 6, interval: 1 },
-                    { id: "fairy", count: 1, interval: 1 }
-                ],
-                reward: 200
-            },
-            {
-                spawns: [
-                    { id: "armouredSkeleton", count: 5, interval: 1 },
-                    { id: "fairy", count: 1, interval: 1 },
-                    { id: "giantSlime", count: 1, interval: 1 },
-                    { id: "skeleton", count: 10, interval: 1 },
-                    { id: "fairy", count: 1, interval: 1 }
-                ],
-                reward: 300
-            },
-            {
-                spawns: [
-                    { id: "armouredSkeleton", count: 8, interval: 1 },
-                    { id: "fairy", count: 1, interval: 1 },
-                    { id: "giantSlime", count: 1, interval: 1 },
-                    { id: "skeleton", count: 10, interval: 1 },
-                    { id: "giantSkeleton", count: 1, interval: 1 },
-                    { id: "fairy", count: 1, interval: 1 },
-                    { id: "armouredSkeleton", count: 8, interval: 1 },
-                    { id: "giantSlime", count: 1, interval: 1 },
-                    { id: "fairy", count: 1, interval: 1 },
-                    { id: "giantSkeleton", count: 1, interval: 1},
-                    { id: "fairy", count: 1, interval: 1 },
-                ],
-                reward: 0
-            }
+            // {
+            //     spawns: [
+            //         { id: "skeleton", count: 5, interval: 1 },
+            //         { id: "slime", count: 5, interval: 0.75 }
+            //     ],
+            //     reward: 100
+            // },
+            // {
+            //     spawns: [
+            //         { id: "armouredSkeleton", count: 3, interval: 1 },
+            //         { id: "skeleton", count: 6, interval: 1 },
+            //         { id: "fairy", count: 1, interval: 1 }
+            //     ],
+            //     reward: 200
+            // },
+            // {
+            //     spawns: [
+            //         { id: "armouredSkeleton", count: 5, interval: 1 },
+            //         { id: "fairy", count: 1, interval: 1 },
+            //         { id: "giantSlime", count: 1, interval: 1 },
+            //         { id: "skeleton", count: 10, interval: 1 },
+            //         { id: "fairy", count: 1, interval: 1 }
+            //     ],
+            //     reward: 300
+            // },
+            // {
+            //     spawns: [
+            //         { id: "armouredSkeleton", count: 8, interval: 1 },
+            //         { id: "fairy", count: 1, interval: 1 },
+            //         { id: "giantSlime", count: 1, interval: 1 },
+            //         { id: "skeleton", count: 10, interval: 1 },
+            //         { id: "giantSkeleton", count: 1, interval: 1 },
+            //         { id: "fairy", count: 1, interval: 1 },
+            //         { id: "armouredSkeleton", count: 8, interval: 1 },
+            //         { id: "giantSlime", count: 1, interval: 1 },
+            //         { id: "fairy", count: 1, interval: 1 },
+            //         { id: "giantSkeleton", count: 1, interval: 1},
+            //         { id: "fairy", count: 1, interval: 1 },
+            //     ],
+            //     reward: 0
+            // }
         ],
     },
 
     "level1-2": {
+        startingGold: 100,
         startDelay: 120,
         waves: [
             {
@@ -242,51 +244,52 @@ export const LEVEL_WAVES = {
                 ],
                 reward: 50
             },
-            {
-                spawns: [
-                    { id: "orc", count: 5, interval: 1.5 },
-                    { id: "bee", count: 5, interval: 0.75 }
-                ],
-                reward: 100
-            },
-            {
-                spawns: [
-                    { id: "armouredOrc", count: 1, interval: 1.5 },
-                    { id: "orc", count: 3, interval: 1.5 },
-                    { id: "fairy", count: 1, interval: 1 },
-                    { id: "bee", count: 10, interval: 1 },
-                ],
-                reward: 200
-            },
-            {
-                spawns: [
-                    { id: "armouredOrc", count: 3, interval: 2 },
-                    { id: "giantBee", count: 1, interval: 2 },
-                    { id: "bee", count: 5, interval: 1 },
-                    { id: "orc", count: 8, interval: 1.4 },
-                    { id: "fairy", count: 1, interval: 1 }
-                ],
-                reward: 300
-            },
-            {
-                spawns: [
-                    { id: "armouredOrc", count: 7, interval: 1.5 },
-                    { id: "fairy", count: 1, interval: 1 },
-                    { id: "giantBee", count: 1, interval: 1 },
-                    { id: "orc", count: 10, interval: 1 },
-                    { id: "giantOrc", count: 1, interval: 1.5 },
-                    { id: "armouredOrc", count: 7, interval: 1.5 },
-                    { id: "giantBee", count: 1, interval: 2 },
-                    { id: "bee", count: 10, interval: 1},
-                    { id: "giantOrc", count: 1, interval: 2},
-                    { id: "fairy", count: 1, interval: 1 },
-                ],
-                reward: 0
-            }
+            // {
+            //     spawns: [
+            //         { id: "orc", count: 5, interval: 1.5 },
+            //         { id: "bee", count: 5, interval: 0.75 }
+            //     ],
+            //     reward: 100
+            // },
+            // {
+            //     spawns: [
+            //         { id: "armouredOrc", count: 1, interval: 1.5 },
+            //         { id: "orc", count: 3, interval: 1.5 },
+            //         { id: "fairy", count: 1, interval: 1 },
+            //         { id: "bee", count: 10, interval: 1 },
+            //     ],
+            //     reward: 200
+            // },
+            // {
+            //     spawns: [
+            //         { id: "armouredOrc", count: 3, interval: 2 },
+            //         { id: "giantBee", count: 1, interval: 2 },
+            //         { id: "bee", count: 5, interval: 1 },
+            //         { id: "orc", count: 8, interval: 1.4 },
+            //         { id: "fairy", count: 1, interval: 1 }
+            //     ],
+            //     reward: 300
+            // },
+            // {
+            //     spawns: [
+            //         { id: "armouredOrc", count: 7, interval: 1.5 },
+            //         { id: "fairy", count: 1, interval: 1 },
+            //         { id: "giantBee", count: 1, interval: 1 },
+            //         { id: "orc", count: 10, interval: 1 },
+            //         { id: "giantOrc", count: 1, interval: 1.5 },
+            //         { id: "armouredOrc", count: 7, interval: 1.5 },
+            //         { id: "giantBee", count: 1, interval: 2 },
+            //         { id: "bee", count: 10, interval: 1},
+            //         { id: "giantOrc", count: 1, interval: 2},
+            //         { id: "fairy", count: 1, interval: 1 },
+            //     ],
+            //     reward: 0
+            // }
         ],
     },
 
     level2: {
+        startingGold: 100,
         startDelay: 30,
         waves: [
             {
@@ -298,6 +301,11 @@ export const LEVEL_WAVES = {
 } as const satisfies Record<string, LevelWaves>;
 
 export type LevelId = keyof typeof LEVEL_WAVES;
+
+export const SCENES: Scenes = [
+    ["level1", "level1-2"],
+    ["level1", "level1-2"]
+];
 
 export const ENEMIES = {
     slime: {
@@ -595,7 +603,7 @@ export const TOWERS = {
         baseSprite: "crow tower base",
         sprite: "crow-tower-sprite.png",
         description: "A shadowy crow follows and attacks enemies in range",
-        cost: 75,
+        cost: 80,
         stats: {
             damage: 6,
             range: 4,
@@ -745,7 +753,7 @@ export const TOWERS = {
         description: "Deals fire damage to all enemies in range. This tower receives half the amount from range upgrades",
         cost: 60,
         stats: {
-            damage: 6,
+            damage: 5,
             range: 2.5,
             fireInterval: 1.5,
             critChance: 5,
@@ -780,7 +788,7 @@ export const TOWERS = {
         cost: 60,
         stats: {
             damage: 5,
-            range: 4,
+            range: 5,
             fireInterval: 1,
             critChance: 5,
             critDamage: 200
@@ -1230,10 +1238,10 @@ export const TOWERS = {
         baseSprite: "balloon tower base",
         sprite: "balloon-tower-sprite.png",
         description: "Mechanical arms rub a giant balloon, zapping all enemies in range. This tower receives half the amount from range upgrades",
-        cost: 250,
+        cost: 300,
         stats: {
             damage: 8,
-            range: 3,
+            range: 2.5,
             fireInterval: 1.25,
             critChance: 5,
             critDamage: 200
@@ -1264,9 +1272,9 @@ export const TOWERS = {
         baseSprite: "beehive tower base",
         sprite: "beehive-tower-sprite.png",
         description: "Sends out a swarm of bees that follow the target dealing damage in a small area",
-        cost: 200,
+        cost: 250,
         stats: {
-            damage: 8,
+            damage: 10,
             range: 5,
             fireInterval: 0.75,
             critChance: 5,
@@ -1414,7 +1422,7 @@ export const TOWERS = {
         baseSprite: "time cannon tower base",
         sprite: "time-cannon-tower-sprite.png",
         description: "Fire rate decreases with time, but damage and splash radius increases",
-        cost: 200,
+        cost: 250,
         stats: {
             damage: 1,
             range: 5,
@@ -1693,9 +1701,9 @@ export const TOWERS = {
         description: "Pours lava onto the path. This tower receives half the amount from range upgrades",
         cost: 350,
         stats: {
-            damage: 3,
+            damage: 4,
             range: 2.5,
-            fireInterval: 1,
+            fireInterval: 900,
             critChance: 5,
             critDamage: 200
         },
@@ -1721,7 +1729,7 @@ export type TowerId = keyof typeof TOWERS;
 export const HEROES = {
     archer: {
         name: "Archer",
-        sprite: "archer-hero-sprite.png",
+        sprite: "archer-protrait.png",
         description: "A ranged hero that excels at taking down enemies from afar.",
         gunSprite: "archer",
         baseSprite: "archer base",
@@ -1783,7 +1791,7 @@ export const ELEMENTS: Record<ElementName, ElementDef> = {
     },
 
     Fire: {
-        description: "Fire attacks have a 20% chance to burn enemies, dealing 1% max HP damage per second",
+        description: "Fire attacks have a 20% chance to burn enemies, dealing 1% max HP damage per second (caps at 10 damage)",
         applyEffect: (k, { target }) => {
             const duration = 5;
             if (k.randi(100) < 20) {
@@ -1817,6 +1825,8 @@ export const ELEMENTS: Record<ElementName, ElementDef> = {
         description: `Electric attacks add charge stacks to enemies (up to ${MAX_CHARGE_STACKS}). ` +
             `Enemies have an electric damage % chance to be stunned for ${STUN_DURATION}s based on their charge stacks (${STUN_PERCENTAGES.join("%, ")}%)`,
         applyEffect: (k, { target, damage }) => {
+            if (target.state === "stunned") return;
+
             const charge = target.has("charge");
 
             if (charge) {

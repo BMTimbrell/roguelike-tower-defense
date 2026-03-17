@@ -2,9 +2,12 @@ import type { KAPLAYCtx } from "kaplay";
 import { gameStateAtom, rewardsAtom, store } from "../store";
 import initCam from "../utils/initCam";
 import type { HeroGameObj, Scene } from "../types";
+import { SCENES } from "../constants";
+import generateMap from "../utils/generateMap";
+import makeHero from "../entities/Hero";
 
 export default function levelTransition(k: KAPLAYCtx) {
-    k.scene("levelTransition" satisfies Scene, (hero: HeroGameObj) => {
+    k.scene("levelTransition" satisfies Scene, async (hero: HeroGameObj) => {
         initCam(k);
 
         k.onResize(() => {
@@ -17,7 +20,6 @@ export default function levelTransition(k: KAPLAYCtx) {
             selectedUI: null
         }));
 
-        hero.level++;
 
         const heroSprite = k.add([
             k.sprite(`${hero.heroId} celebrating`, { anim: "celebrate" }),
@@ -59,9 +61,47 @@ export default function levelTransition(k: KAPLAYCtx) {
             ]);
         });
 
-        heroSprite.onAnimEnd(() => {
+        heroSprite.onAnimEnd(async () => {
+            store.set(gameStateAtom, prev => ({
+                ...prev,
+                scene: "levelTransition",
+                sceneIndex: prev.sceneIndex + 1,
+                selectedUI: null
+            }));
+
+            hero.level++;
+
+            let rand = k.randi();
+            const sceneName = SCENES[store.get(gameStateAtom).sceneIndex][rand];
+
+            const { mapData, tileGrid, pathTiles } = await generateMap(k, `data/${sceneName}.json`);
+
             store.set(rewardsAtom, prev => ({
                 ...prev,
+                addSkill: (id) => {
+                    hero.skillIds.push(id);
+                    const updatedHero = makeHero(
+                        k,
+                        {
+                            heroId: hero.heroId,
+                            pos: k.toWorld(k.mousePos()),
+                            tileGrid,
+                            pathTiles
+                        }
+                    );
+
+                    updatedHero.skillIds = hero.skillIds;
+
+                    store.set(gameStateAtom, prev => ({
+                        ...prev,
+                        hero: updatedHero
+                    }));
+
+                    store.set(rewardsAtom, prev => ({
+                        ...prev,
+                        rewardIndex: prev.rewardIndex + 1
+                    }));
+                },
                 visible: true
             }));
         });
