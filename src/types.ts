@@ -1,7 +1,8 @@
 import { type MouseEventHandler } from "react";
 import { TILE_SIZE, type EnemyId, type HeroId, type ProjectileId, type SkillId, type TowerId } from "./constants";
-import type { Vec2, GameObj, KAPLAYCtx, HealthComp, SpriteComp, StateComp, TimerComp, RotateComp, PosComp, ZComp } from "kaplay";
+import type { Vec2, GameObj, KAPLAYCtx, HealthComp, SpriteComp, StateComp, TimerComp, RotateComp, PosComp, ZComp, OpacityComp } from "kaplay";
 import { frostAoeBurst } from "./utils/makeUnitCombat";
+import type { StatusEffectComp } from "./kaplayComponents/statusEffect";
 
 type LayerObj = {
     x: number;
@@ -223,7 +224,9 @@ export type EnemyGameObj = GameObj<
     TimerComp |
     RotateComp |
     PosComp |
-    ZComp
+    ZComp |
+    StatusEffectComp |
+    OpacityComp
 > & {
     path: Vec2[];
     pathIndex: number;
@@ -250,6 +253,8 @@ export type EnemyGameObj = GameObj<
         attackCooldown: number;
         canAttack: boolean;
     };
+    invincible: boolean;
+    invincibleDuration: number;
 };
 
 export type Upgrade = {
@@ -359,6 +364,7 @@ export type GameState = {
     };
     waveActive: boolean;
     sceneIndex: number;
+    level: number;
 };
 
 export type EnemySpawn = {
@@ -472,9 +478,8 @@ export type ProjectileBehavior = {
 
 export type Rewards = {
     skills: SkillId[];
-    upgrades: Upgrade[];
-    towers: TowerId[];
     addSkill: (id: SkillId) => void;
+    addTower: (id: TowerId) => void;
     visible: boolean;
     show: ["skills", "upgrades", "towers"],
     rewardIndex: number;

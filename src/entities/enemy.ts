@@ -18,6 +18,7 @@ export default function makeEnemy(k: KAPLAYCtx, enemyId: EnemyId, waypoints: Vec
         }),
         k.rotate(),
         k.timer(),
+        k.opacity(1),
         k.health(ENEMIES[enemyId].hp, ENEMIES[enemyId].hp),
         {
             path: waypoints,
@@ -38,7 +39,9 @@ export default function makeEnemy(k: KAPLAYCtx, enemyId: EnemyId, waypoints: Vec
                 attackCooldown: number;
                 canAttack: boolean;
              } } : {}),
-             debuffDurationMultiplier: 1
+             debuffDurationMultiplier: 1,
+             invincible: false,
+             invincibleDuration: 0
         },
         k.state("move", ["move", "stunned", "attack"]),
         statusEffect(),
@@ -94,6 +97,18 @@ export default function makeEnemy(k: KAPLAYCtx, enemyId: EnemyId, waypoints: Vec
 
     enemy.onStateUpdate("move", () => {
         if (enemy.isDying) return;
+
+        if (enemy.invincible) {
+            enemy.invincibleDuration -= k.dt();
+            if (enemy.invincibleDuration <= 0) {
+                enemy.invincible = false;
+            }
+
+            enemy.statuses.forEach(s => { 
+                if (enemy.has(s)) enemy.unuse(s);
+            });
+            enemy.opacity = enemy.invincible ? 0.5 : 1;
+        }
 
         enemy.z = enemy.pos.y;
 
@@ -215,7 +230,15 @@ export default function makeEnemy(k: KAPLAYCtx, enemyId: EnemyId, waypoints: Vec
                 const posOffsetX = Math.abs(dir.x) > 0.5 ? posOffset : 0;
                 const posOffsetY = Math.abs(dir.y) > 0.5 ? posOffset : 0;
 
-                makeEnemy(k, enemy.spawnOnDeath.id, enemy.path, enemy.pathIndex, k.vec2(enemy.pos).add(posOffsetX, posOffsetY));
+                const spawnedEnemy = makeEnemy(k, 
+                    enemy.spawnOnDeath.id, 
+                    enemy.path, 
+                    enemy.pathIndex, 
+                    k.vec2(enemy.pos).add(posOffsetX, posOffsetY)
+                );
+
+                spawnedEnemy.invincible = true;
+                spawnedEnemy.invincibleDuration = 0.1;
             }
         }
 

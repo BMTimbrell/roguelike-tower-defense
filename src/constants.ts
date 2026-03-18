@@ -288,7 +288,18 @@ export const LEVEL_WAVES = {
         ],
     },
 
-    level2: {
+    "level2-1": {
+        startingGold: 100,
+        startDelay: 30,
+        waves: [
+            {
+                spawns: [{ id: "slime", count: 5, interval: 0.4 }],
+                reward: 50
+            }
+        ],
+    },
+
+    "level2-2": {
         startingGold: 100,
         startDelay: 30,
         waves: [
@@ -480,7 +491,7 @@ export const TOWERS = {
             firstEffect(ctx) {
                 ctx.projectiles.forEach(projectile => {
                     projectile.behaviors ??= {};
-                    projectile.behaviors.bounces ??= 100;
+                    projectile.behaviors.bounces ??= 6;
                     projectile.behaviors.bounceChance ??= 0.5;
                     projectile.behaviors.bounceRange ??= 4 * TILE_SIZE;
                     projectile.behaviors.bounceDamageMultiplier ??= 1;
@@ -502,7 +513,7 @@ export const TOWERS = {
         baseSprite: "ice tower base",
         sprite: "ice-tower-sprite.png",
         description: "Emits a frost that damages all enemies in range. This tower receives half the amount from range upgrades",
-        cost: 90,
+        cost: 100,
         stats: {
             damage: 2,
             range: 2.5,
@@ -679,7 +690,7 @@ export const TOWERS = {
         baseSprite: "farm tower base",
         sprite: "farm-tower-sprite.png",
         description: "You reap what you sow!",
-        cost: 60,
+        cost: 90,
         stats: {
             damage: 999,
             range: 0,
@@ -712,9 +723,9 @@ export const TOWERS = {
         baseSprite: "nightshade tower base",
         sprite: "basic-tower-sprite.png",
         description: "Shoots shadowy blobs that absorb life, dealing bonus damage based on the enemy's missing health",
-        cost: 60,
+        cost: 90,
         stats: {
-            damage: 4,
+            damage: 6,
             range: 4,
             fireInterval: 0.75,
             critChance: 5,
@@ -751,7 +762,7 @@ export const TOWERS = {
         baseSprite: "plant tower base",
         sprite: "basic-tower-sprite.png",
         description: "Deals fire damage to all enemies in range. This tower receives half the amount from range upgrades",
-        cost: 60,
+        cost: 90,
         stats: {
             damage: 5,
             range: 2.5,
@@ -785,7 +796,7 @@ export const TOWERS = {
         baseSprite: "plant tower base",
         sprite: "basic-tower-sprite.png",
         description: "Shoots a volley of 3 stars",
-        cost: 60,
+        cost: 90,
         stats: {
             damage: 5,
             range: 5,
@@ -1063,7 +1074,7 @@ export const TOWERS = {
         description: "Shoots giant snowballs that deal splash damage",
         cost: 250,
         stats: {
-            damage: 20,
+            damage: 25,
             range: 5,
             fireInterval: 1.5,
             critChance: 5,
@@ -1099,7 +1110,7 @@ export const TOWERS = {
         description: "Shoots a dark, shadowy blob that deals splash damage and has a 50% chance to bounce between enemies",
         cost: 350,
         stats: {
-            damage: 12,
+            damage: 10,
             range: 5,
             fireInterval: 1.25,
             critChance: 5,
@@ -1121,7 +1132,7 @@ export const TOWERS = {
             firstEffect(ctx) {
                 ctx.projectiles.forEach(projectile => {
                     projectile.behaviors ??= {};
-                    projectile.behaviors.bounces ??= 100;
+                    projectile.behaviors.bounces ??= 6;
                     projectile.behaviors.bounceChance ??= 0.5;
                     projectile.behaviors.bounceRange ??= 4 * TILE_SIZE;
                     projectile.behaviors.bounceDamageMultiplier ??= 1;
@@ -1138,7 +1149,7 @@ export const TOWERS = {
         description: "Shoots a giant ball of sludge that deals splash damage",
         cost: 200,
         stats: {
-            damage: 20,
+            damage: 25,
             range: 5,
             fireInterval: 1.5,
             critChance: 5,
@@ -1174,7 +1185,7 @@ export const TOWERS = {
         description: "Deals devastating damage to targets at a great range",
         cost: 300,
         stats: {
-            damage: 70,
+            damage: 80,
             range: 9,
             fireInterval: 3,
             critChance: 5,
@@ -1207,8 +1218,8 @@ export const TOWERS = {
         description: "Shoots a giant laser beam that damages all enemies in its path",
         cost: 300,
         stats: {
-            damage: 30,
-            range: 4,
+            damage: 35,
+            range: 4.5,
             fireInterval: 2.5,
             critChance: 5,
             critDamage: 200
@@ -1241,7 +1252,7 @@ export const TOWERS = {
         cost: 300,
         stats: {
             damage: 8,
-            range: 2.5,
+            range: 3,
             fireInterval: 1.25,
             critChance: 5,
             critDamage: 200
@@ -1274,7 +1285,7 @@ export const TOWERS = {
         description: "Sends out a swarm of bees that follow the target dealing damage in a small area",
         cost: 250,
         stats: {
-            damage: 10,
+            damage: 12,
             range: 5,
             fireInterval: 0.75,
             critChance: 5,
@@ -1314,7 +1325,7 @@ export const TOWERS = {
         description: "Summons storm clouds that damage enemies in a small area",
         cost: 400,
         stats: {
-            damage: 80,
+            damage: 100,
             range: 7,
             fireInterval: 4,
             critChance: 5,
@@ -1345,7 +1356,7 @@ export const TOWERS = {
         baseSprite: "frost ballista tower base",
         sprite: "frost-ballista-tower-sprite.png",
         description: "Shoots a giant frozen arrow that deals increased damage depending on distance travelled (up to 100%)",
-        cost: 180,
+        cost: 150,
         stats: {
             damage: 15,
             range: 6,
@@ -1383,11 +1394,11 @@ export const TOWERS = {
         baseSprite: "skull tower base",
         sprite: "skull-tower-sprite.png",
         description: "Shoots ghostly skulls that have bonus crit chance when targeting low health enemies",
-        cost: 225,
+        cost: 200,
         stats: {
             damage: 15,
             range: 5,
-            fireInterval: 1.5,
+            fireInterval: 1,
             critChance: 5,
             critDamage: 200
         },
@@ -1522,9 +1533,9 @@ export const TOWERS = {
         description: "Shoots 8 angels at random targets",
         cost: 300,
         stats: {
-            damage: 6,
+            damage: 8,
             range: 6,
-            fireInterval: 1.5,
+            fireInterval: 2,
             critChance: 5,
             critDamage: 200
         },
@@ -1560,7 +1571,7 @@ export const TOWERS = {
         description: "Places mines on the path",
         cost: 200,
         stats: {
-            damage: 10,
+            damage: 20,
             range: 3,
             fireInterval: 2,
             critChance: 5,
@@ -1589,7 +1600,7 @@ export const TOWERS = {
         description: "Summons a blizzard that deals devastating damage to enemies in a large area",
         cost: 400,
         stats: {
-            damage: 40,
+            damage: 70,
             range: 7,
             fireInterval: 5,
             critChance: 5,
@@ -1656,7 +1667,7 @@ export const TOWERS = {
         description: "Gains charge as it shoots, increasing its fire rate",
         cost: 250,
         stats: {
-            damage: 8,
+            damage: 10,
             range: 5,
             fireInterval: 1,
             critChance: 5,
@@ -1681,7 +1692,7 @@ export const TOWERS = {
                     ctx.lightning = {
                         maxChains: 1,
                         range: 5
-                    }
+                    };
                 }
             }
         }],
@@ -1701,7 +1712,7 @@ export const TOWERS = {
         description: "Pours lava onto the path. This tower receives half the amount from range upgrades",
         cost: 350,
         stats: {
-            damage: 4,
+            damage: 3,
             range: 2.5,
             fireInterval: 900,
             critChance: 5,

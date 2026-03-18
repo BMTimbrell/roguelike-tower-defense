@@ -2,6 +2,7 @@
     display: flex;
     transition: transform 0.15s ease;
     flex: 0 0 auto;
+    perspective: 800px;
 }
 
 .card-wrap:not(:first-child) {
@@ -30,7 +31,6 @@
     transition: box-shadow 0.15s ease;
     animation: flipIn 0.5s ease-in-out;
     transform-style: preserve-3d;
-    perspective: 800px;
     animation-fill-mode: both;
 }
 

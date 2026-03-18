@@ -110,10 +110,7 @@ export default function Rewards() {
                         key={index}
                         animationDelay={setCardAnimationDelay(index)}
                         handleClick={() => {
-                            setRewards(prev => ({
-                                ...prev,
-                                rewardIndex: 0
-                            }));
+                            rewards.addTower(Object.keys(t)[0] as TowerId);
                          }}
                         scale={scale}
                     >

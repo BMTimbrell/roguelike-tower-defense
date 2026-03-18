@@ -11,6 +11,7 @@ export const gameStateAtom = atom<GameState>({
     maxTowerUpgrades: 5,
     upgrades: [],
     sceneIndex: 0,
+    level: 1,
     deck: {
         cards: [],
         drawCard: () => {},
@@ -49,7 +50,8 @@ export const rewardsAtom = atom<Rewards>({
     visible: false,
     show: ["skills", "upgrades", "towers"],
     rewardIndex: 0,
-    addSkill: () => {}
+    addSkill: () => {},
+    addTower: () => {}
 });
 
 export const startingOptionsAtom = atom<StartingOptions>({

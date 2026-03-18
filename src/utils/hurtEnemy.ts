@@ -14,6 +14,8 @@ export default function hurtEnemy(k: KAPLAYCtx, opts: {
 }) {
     const { target, damage, element, isCrit, attacker, statusDamage, ignoreArmour } = opts;
 
+    if (target.invincible) return;
+
     if (attacker?.killStacks !== undefined && target.hp() <= damage) {
         attacker.killStacks++;
         if (attacker.killStacks === 1) {

@@ -1,10 +1,5 @@
-import type { Comp, GameObj, HealthComp, KAPLAYCtx, RotateComp, SpriteComp } from "kaplay";
-import type { PoisonComp } from "./poisonEffect";
-import type { BurnComp } from "./burnEffect";
-import type { StatusEffectComp } from "./statusEffect";
-import type { ChillComp } from "./chillEffect";
-import type { ChargeComp } from "./chargeEffect";
-import type { CurseComp } from "./curseEffect";
+import type { Comp, GameObj, KAPLAYCtx } from "kaplay";
+import type { EnemyGameObj } from "../types";
 
 export default function healthBar(k: KAPLAYCtx, duration: number): Comp {
     let timer = duration;
@@ -14,17 +9,7 @@ export default function healthBar(k: KAPLAYCtx, duration: number): Comp {
 
         require: ["health", "sprite", "rotate"],
 
-        draw(this: GameObj<
-            HealthComp |
-            SpriteComp |
-            RotateComp |
-            PoisonComp |
-            BurnComp |
-            ChillComp |
-            ChargeComp |
-            CurseComp |
-            StatusEffectComp
-        > & { armour: number; maxArmour: number; }) {
+        draw(this: EnemyGameObj & { armour: number; maxArmour: number; }) {
             k.pushTransform();
             k.pushRotate(-this.angle);
 
@@ -32,7 +17,8 @@ export default function healthBar(k: KAPLAYCtx, duration: number): Comp {
 
             this.statuses.forEach((e, index) => {
                 if (this.has(e)) {
-                    const effect = this[e]?.();
+                    const comp = this as typeof this & Record<typeof e, () => any>;
+                    const effect = comp[e]();
                     if (!effect) return;
 
                     let effectPos = hbBarPos.sub(k.vec2(0 - index * 10, 11));

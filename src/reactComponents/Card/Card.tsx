@@ -1,7 +1,7 @@
 import { useState, type JSX, type MouseEventHandler } from "react";
 import styles from './Card.module.css';
 
-export default function card({ children, popup, setPopupPos, handleClick, scale, classNames, animationDelay }: {
+export default function Card({ children, popup, setPopupPos, handleClick, scale, classNames, animationDelay }: {
     children: React.ReactNode;
     animationDelay?: number;
     popup?: JSX.Element;
@@ -29,8 +29,8 @@ export default function card({ children, popup, setPopupPos, handleClick, scale,
                         setHovered(true);
                     }}
                     onMouseLeave={() => setHovered(false)}
-                    style={{ ...(animationDelay ? { animationDelay: `${animationDelay}ms` } : '' )}}
-                    className={`${styles.card} ${classNames?.map(c => c) || ''}`}
+                    style={{ ...(animationDelay ? { animationDelay: `${animationDelay}ms` } : "" )}}
+                    className={`${styles.card} ${classNames?.join(' ') || ''}`}
                 >
                     {children}
                 </div>

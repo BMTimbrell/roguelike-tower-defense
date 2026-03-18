@@ -7,16 +7,16 @@ export default async function generateMap(k: KAPLAYCtx, filePath: string) {
 
     const tileGrid: Tile[][] = [];
 
-    const groundLayer = mapData.layers.find(
-        layer => layer.name === "Ground"
+    const pathLayer = mapData.layers.find(
+        layer => layer.name === "Path"
     );
 
-    if (!groundLayer || !groundLayer.data) {
-        throw new Error("Ground layer not found");
+    if (!pathLayer || !pathLayer.data) {
+        throw new Error("Path layer not found");
     }
 
-    for (let index = 0; index < groundLayer.data.length; index++) {
-        const tileId = groundLayer.data[index];
+    for (let index = 0; index < pathLayer.data.length; index++) {
+        const tileId = pathLayer.data[index];
 
         const x = index % mapData.width;
         const y = Math.floor(index / mapData.width);
@@ -24,8 +24,8 @@ export default async function generateMap(k: KAPLAYCtx, filePath: string) {
         if (!tileGrid[y]) tileGrid[y] = [];
 
         tileGrid[y][x] = {
-            blocked: tileId === 2,
-            isPath: tileId === 2
+            blocked: tileId !== 0,
+            isPath: tileId !== 0
         };
     }
 
@@ -59,16 +59,7 @@ export default async function generateMap(k: KAPLAYCtx, filePath: string) {
             }
         }
     }
-
-    // Generate tile grid for placement logic
-
-    // mapData.layers.find(layer => layer.name === "Ground")?.data?.forEach((tile, index) => {
-    //     const x = index % mapData.width;
-    //     const y = Math.floor(index / mapData.width);
-    //     if (!tileGrid[y]) tileGrid[y] = [];
-    //     tileGrid[y][x] = tile !== 1;
-    // });
-
+    
     return {
         mapData,
         tileGrid,

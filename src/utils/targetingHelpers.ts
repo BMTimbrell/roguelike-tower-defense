@@ -25,6 +25,7 @@ export function selectTarget(
     let bestDist = 0;
 
     for (const e of enemies) {
+        if (e.invincible) continue;
 
         const dist = e.pos.dist(origin);
 
@@ -117,6 +118,7 @@ export function selectBounceTarget(
         .filter(e =>
             e !== from &&
             !e.isDying &&
+            !e.invincible &&
             !exclude.has(e) &&
             e.pos.dist(from.pos) <= bounceRange
         )
@@ -143,7 +145,7 @@ export function findNewTarget(
 ): EnemyGameObj | null {
     return (k
         .get("enemy") as EnemyGameObj[])
-        .filter(e => !e.isDying && (!maxRange || e.pos.dist(fromPos) <= maxRange))
+        .filter(e => !e.isDying && !e.invincible && (!maxRange || e.pos.dist(fromPos) <= maxRange))
         .sort((a, b) =>
             a.pos.dist(fromPos) - b.pos.dist(fromPos)
         )[0] ?? null;
