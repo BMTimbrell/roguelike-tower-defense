@@ -7,6 +7,7 @@ import { gameStateAtom, store } from "../store";
 export default function addTowers(k: KAPLAYCtx, towers: TowerId[], tileGrid: Tile[][], pathTiles: PathTile[]): TowerButton[] {
     return towers.map(t => ({
         ...TOWERS[t],
+        id: t,
         onClick: () => {
             if (k.get("hero")[0] && !k.get("hero")[0].placed) return;
             const unplacedTower = (k.get("tower") as TowerGameObj[]).find(t => !t.placed);

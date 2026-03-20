@@ -4,13 +4,14 @@ import { gameStateAtom } from '../../store';
 import { useAtom } from 'jotai';
 import type { TowerStats, ElementName } from '../../types';
 import CostText from '../CostText/CostText';
-import { ELEMENTS } from '../../constants';
+import { ELEMENTS, TOWERS, type TowerId } from '../../constants';
 import DescriptionPopup from '../DescriptionPopup/DescriptionPopup';
 import { useTowerPopup } from '../../reactHooks/useTowerPopup';
 import TowerPopup from '../TowerPopup/TowerPopup';
 
 export default function TowerButton(
     {
+        id,
         name,
         scale,
         stats,
@@ -20,6 +21,7 @@ export default function TowerButton(
         sprite,
         element
     }: {
+        id: TowerId;
         name: string;
         scale: number;
         onClick: MouseEventHandler<HTMLButtonElement>;
@@ -46,6 +48,8 @@ export default function TowerButton(
             >
                 <img width={`${32 * scale}`} src={`/sprites/${sprite}`} />
                 <CostText cost={cost} />
+
+                {TOWERS[id].footprint.w === 2 && <div className={styles.size}>2x2</div>}
             </button>
 
             {popup.showBase &&

@@ -183,7 +183,7 @@ export default function makeLevelScene(k: KAPLAYCtx, sceneName: Scene) {
                 const start = waypoints[0];
                 const next = waypoints[1];
 
-                const startAngle= next.sub(start).angle();
+                const startAngle = next.sub(start).angle();
 
                 const entranceArrow = k.add([
                     k.sprite("entrance arrow"),
@@ -220,6 +220,26 @@ export default function makeLevelScene(k: KAPLAYCtx, sceneName: Scene) {
                 ]);
             }
         } else throw new Error("Waypoints undefined");
+
+        if (mapData.layers.find(layer => layer.name === "Trees")) {
+            for (let y = 0; y < tileGrid.length; y++) {
+                for (let x = 0; x < tileGrid[y].length; x++) {
+                    const tile = tileGrid[y][x];
+
+                    if (tile.hasTree) {
+                        k.add([
+                            k.sprite("tree"),
+                            k.pos(x * TILE_SIZE, y * TILE_SIZE),
+                            "tree",
+                            {
+                                tileX: x,
+                                tileY: y
+                            }
+                        ]);
+                    }
+                }
+            }
+        }
 
     });
 

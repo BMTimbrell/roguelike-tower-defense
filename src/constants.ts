@@ -289,13 +289,81 @@ export const LEVEL_WAVES = {
     },
 
     "level2-1": {
-        startingGold: 100,
-        startDelay: 30,
+        startingGold: 150,
+        startDelay: 120,
         waves: [
             {
-                spawns: [{ id: "slime", count: 5, interval: 0.4 }],
+                spawns: [
+                    { id: "slime", count: 10, interval: 1 },
+                    { id: "skeleton", count: 3, interval: 1 }
+                ],
                 reward: 50
-            }
+            },
+            {
+                spawns: [
+                    { id: "slime", count: 20, interval: 0.5 },
+                    { id: "skeleton", count: 10, interval: 1 }
+                ],
+                reward: 100
+            },
+            {
+                spawns: [
+                    { id: "armouredSkeleton", count: 10, interval: 1 },
+                    { id: "fairy", count: 1, interval: 1 },
+                    { id: "skeleton", count: 12, interval: 1 },
+                    { id: "fairy", count: 1, interval: 1 }
+                ],
+                reward: 200
+            },
+            {
+                spawns: [
+                    { id: "giantSkeleton", count: 1, interval: 1 },
+                    { id: "armouredSkeleton", count: 10, interval: 1 },
+                    { id: "fairy", count: 1, interval: 1 },
+                    { id: "giantSlime", count: 1, interval: 1 },
+                    { id: "fairy", count: 1, interval: 1 },
+                    { id: "skeleton", count: 15, interval: 0.5 },
+                    { id: "fairy", count: 1, interval: 1 }
+                ],
+                reward: 300
+            },
+            {
+                spawns: [
+                    { id: "giantSkeleton", count: 1, interval: 1 },
+                    { id: "armouredSkeleton", count: 10, interval: 1 },
+                    { id: "fairy", count: 1, interval: 1 },
+                    { id: "giantSlime", count: 1, interval: 1 },
+                    { id: "skeleton", count: 10, interval: 0.75 },
+                    { id: "giantSlime", count: 1, interval: 1 },
+                    { id: "fairy", count: 1, interval: 1 },
+                    { id: "giantSkeleton", count: 1, interval: 1 },
+                    { id: "armouredSkeleton", count: 10, interval: 1 },
+                    { id: "giantSkeleton", count: 1, interval: 1 },
+                    { id: "skeleton", count: 5, interval: 0.75 },
+                    { id: "giantSlime", count: 1, interval: 1 },
+                    { id: "skeleton", count: 5, interval: 0.75 },
+                    { id: "fairy", count: 1, interval: 1 }
+                ],
+                reward: 300
+            },
+            // {
+            //     spawns: [
+            //         { id: "giantSkeleton", count: 1, interval: 1 },
+            //         { id: "armouredSkeleton", count: 10, interval: 1 },
+            //         { id: "fairy", count: 1, interval: 1 },
+            //         { id: "giantSlime", count: 1, interval: 1 },
+            //         { id: "skeleton", count: 10, interval: 1 },
+            //         { id: "giantSlime", count: 1, interval: 1 },
+            //         { id: "fairy", count: 1, interval: 1 },
+            //         { id: "giantSkeleton", count: 1, interval: 1 },
+            //         { id: "armouredSkeleton", count: 10, interval: 1 },
+            //         { id: "skeleton", count: 5, interval: 1 },
+            //         { id: "giantSlime", count: 1, interval: 1 },
+            //         { id: "skeleton", count: 5, interval: 1 },
+            //         { id: "fairy", count: 1, interval: 1 }
+            //     ],
+            //     reward: 400
+            // }
         ],
     },
 
@@ -315,7 +383,7 @@ export type LevelId = keyof typeof LEVEL_WAVES;
 
 export const SCENES: Scenes = [
     ["level1", "level1-2"],
-    ["level1", "level1-2"]
+    ["level2", "level2-2"]
 ];
 
 export const ENEMIES = {
@@ -335,7 +403,7 @@ export const ENEMIES = {
         hp: 40,
         armour: 30,
         damage: 1,
-        speed: 40,
+        speed: 50,
         sprite: "armoured skeleton"
     },
     fairy: {
@@ -349,7 +417,7 @@ export const ENEMIES = {
         }
     },
     giantSlime: {
-        hp: 200,
+        hp: 300,
         damage: 5,
         speed: 25,
         spawnOnDeath: {
@@ -360,7 +428,7 @@ export const ENEMIES = {
             projectile: "slimeball",
             attackRange: 4,
             canAttack: false,
-            attackCooldown: 2
+            attackCooldown: 3
         },
         sprite: "giant slime"
     },
@@ -384,21 +452,21 @@ export const ENEMIES = {
     },
     armouredOrc: {
         hp: 60,
-        armour: 40,
+        armour: 50,
         damage: 1,
         speed: 40,
         sprite: "armoured orc"
     },
     giantBee: {
-        hp: 200,
-        damage: 1,
+        hp: 250,
+        damage: 5,
         speed: 35,
         sprite: "giant bee",
         attacker: {
             projectile: "stinger",
             attackRange: 4,
             canAttack: false,
-            attackCooldown: 2
+            attackCooldown: 2.5
         }
     },
     giantOrc: {
@@ -1076,7 +1144,7 @@ export const TOWERS = {
         stats: {
             damage: 25,
             range: 5,
-            fireInterval: 1.5,
+            fireInterval: 1.75,
             critChance: 5,
             critDamage: 200
         },
@@ -1151,7 +1219,7 @@ export const TOWERS = {
         stats: {
             damage: 25,
             range: 5,
-            fireInterval: 1.5,
+            fireInterval: 1.75,
             critChance: 5,
             critDamage: 200
         },
@@ -2002,7 +2070,7 @@ export const PROJECTILES = {
         sprite: "bees",
         homing: true,
         speed: 200,
-        splashRadius: 1.5
+        splashRadius: 1.4
     },
     frostArrow: {
         sprite: "frost arrow",

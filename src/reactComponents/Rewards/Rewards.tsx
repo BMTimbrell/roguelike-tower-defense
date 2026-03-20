@@ -40,8 +40,13 @@ export default function Rewards() {
         () => generateRandomRewards(3, [
             ...new Set(
                 Object.entries(TOWERS).
-                    filter(([, value]) => value.footprint.w === 2 && !gameState.towerButtons.
-                        some(tb => tb.name === value.name)
+                    filter(([, value]) => {
+                        const singleTileChance = Math.random();
+
+                        return value.footprint.w === (singleTileChance < 0.15 ? 1 : 2) && 
+                            value.source !== "farm" &&
+                            !gameState.towerButtons.some(tb => tb.name === value.name);
+                    }
                     ).map(([key, value]) => ({ [key]: value }))
             )
         ]),

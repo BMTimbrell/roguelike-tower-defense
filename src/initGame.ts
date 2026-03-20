@@ -5,6 +5,8 @@ import levelTransition from './scenes/levelTransition';
 import type { Scene } from './types';
 import mainMenu from './scenes/mainMenu';
 import level1_2 from './scenes/level1-2';
+import level2 from './scenes/level2';
+import level2_2 from './scenes/level2-2';
 
 export default function initGame() {
     // focus back on canvas when clicking on html elements
@@ -15,6 +17,10 @@ export default function initGame() {
     level1(k);
 
     level1_2(k);
+
+    level2(k);
+
+    level2_2(k);
 
     mainMenu(k);
 

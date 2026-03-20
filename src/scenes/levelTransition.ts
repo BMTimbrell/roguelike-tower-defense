@@ -21,7 +21,6 @@ export default function levelTransition(k: KAPLAYCtx) {
             selectedUI: null
         }));
 
-
         const heroSprite = k.add([
             k.sprite(`${hero.heroId} celebrating`, { anim: "celebrate" }),
             k.scale(4),
@@ -73,7 +72,7 @@ export default function levelTransition(k: KAPLAYCtx) {
                     ...prev.heroCharge,
                     damageDealt: 0,
                     charge: 0,
-                    damageRequired: prev.heroCharge.damageRequired * 1.5
+                    damageRequired: prev.heroCharge.damageRequired * 1.75
                 }
             }));
 
@@ -106,7 +105,20 @@ export default function levelTransition(k: KAPLAYCtx) {
 
                     store.set(gameStateAtom, prev => ({
                         ...prev,
-                        hero: updatedHero
+                        hero: updatedHero,
+                        heroButton: {
+                            ...prev.heroButton,
+                            onClick: () => {
+                                k.add(updatedHero);
+                                store.set(gameStateAtom, prev => ({
+                                    ...prev,
+                                    heroButton: {
+                                        ...prev.heroButton,
+                                        visible: false
+                                    }
+                                }))
+                            }
+                        },
                     }));
 
                     store.set(rewardsAtom, prev => ({
@@ -123,7 +135,9 @@ export default function levelTransition(k: KAPLAYCtx) {
 
                     store.set(gameStateAtom, prev => ({
                         ...prev,
-                        towerButtons: [...prev.towerButtons, addTowers(k, [id], tileGrid, pathTiles)[0]]
+                        towerButtons: [
+                            ...addTowers(k, [...prev.towerButtons.map(tb => tb.id), id], tileGrid, pathTiles)
+                        ]
                     }));
 
                     k.go(sceneName, { mapData, tileGrid, pathTiles, wave });

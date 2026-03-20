@@ -1,4 +1,5 @@
 .button {
+    position: relative;
     padding: 0.25em;
     cursor: pointer;
     pointer-events: auto;
@@ -43,4 +44,15 @@
 .element-description {
     font-size: 0.75em;
     width: 20ch;
+}
+
+.size {
+    position: absolute;
+    top: -0.25em;
+    left: -0.25em;
+    padding: 0.125em;
+    font-size: 0.75em;
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    background-color: rgb(61, 61, 61);
+    border-radius: 0.25em;
 }

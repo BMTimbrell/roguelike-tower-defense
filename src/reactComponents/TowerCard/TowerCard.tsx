@@ -21,6 +21,7 @@ export default function TowerCard({ id, scale }: { id: TowerId; scale: number; }
                 <div>
                     <img width={`${scale * 32}px`} src={`sprites/${sprite}`} />
                 </div>
+                {TOWERS[id].footprint.w === 2 && <div className={styles.size}>2x2</div>}
             </div>
 
             {popup.showBase && createPortal(

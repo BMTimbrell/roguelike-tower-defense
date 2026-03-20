@@ -4,6 +4,9 @@ import { TIME_TOWER_BASE_ANIM_SPEED } from "./constants";
 export default function loadAssets(k: KAPLAYCtx) {
     k.loadSprite("level1", "/sprites/level1.png");
     k.loadSprite("level1-2", "/sprites/level1-2.png");
+    k.loadSprite("level2", "/sprites/level2.png");
+    k.loadSprite("level2-2", "/sprites/level2-2.png");
+    k.loadSprite("tree", "/sprites/tree.png");
     k.loadSprite("gold", "/sprites/coin.png");
     k.loadSprite("heart", "/sprites/heart.png");
     k.loadSprite("basic tower", "/sprites/basic-tower.png", {

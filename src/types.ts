@@ -9,6 +9,7 @@ type LayerObj = {
     y: number;
     height: number;
     width: number;
+    name?: string;
 };
 
 type Layer = {
@@ -29,6 +30,7 @@ export type Tile = {
     blocked: boolean;
     isPath: boolean;
     pathIndex?: number;
+    hasTree?: boolean;
 };
 
 export type PathTile = {
@@ -277,6 +279,7 @@ export type USlot = {
 };
 
 export type TowerButton = Pick<TowerDef, 'name' | 'cost' | 'stats' | 'element' | 'sprite' | 'description'> & {
+    id: TowerId;
     onClick: MouseEventHandler<HTMLButtonElement>;
 };
 
