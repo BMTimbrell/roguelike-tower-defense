@@ -35,9 +35,9 @@ export default function TowerPopup({
 
                 <Stats stats={stats} element={element} scale={scale} />
 
-                <div className={styles.cost}>
+                {cost > 0 && <div className={styles.cost}>
                     Cost: <img style={{ width: `${8 * scale}px`, marginRight: "0.125em" }} src="sprites/coin.png" />{cost}
-                </div>
+                </div>}
             </div>
         </Popup>
     );

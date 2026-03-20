@@ -40,8 +40,10 @@ export default function makeEnemy(k: KAPLAYCtx, enemyId: EnemyId, waypoints: Vec
                 canAttack: boolean;
              } } : {}),
              debuffDurationMultiplier: 1,
+             invincibleCooldown: "invincibleCooldown" in ENEMIES[enemyId] ? ENEMIES[enemyId].invincibleCooldown as number : 0,
+             invincibleTimer: "invincibleCooldown" in ENEMIES[enemyId] ? ENEMIES[enemyId].invincibleCooldown as number : 0,
              invincible: false,
-             invincibleDuration: 0
+             invincibleDuration: "invincibleDuration" in ENEMIES[enemyId] ? ENEMIES[enemyId].invincibleDuration as number : 2
         },
         k.state("move", ["move", "stunned", "attack"]),
         statusEffect(),
@@ -98,10 +100,17 @@ export default function makeEnemy(k: KAPLAYCtx, enemyId: EnemyId, waypoints: Vec
     enemy.onStateUpdate("move", () => {
         if (enemy.isDying) return;
 
+        if (enemy.invincibleCooldown && enemy.invincibleTimer > 0) {
+            enemy.invincibleTimer -= k.dt();
+            if (enemy.invincibleTimer <= 0) enemy.invincible = true;
+        }
+
         if (enemy.invincible) {
             enemy.invincibleDuration -= k.dt();
             if (enemy.invincibleDuration <= 0) {
                 enemy.invincible = false;
+                enemy.invincibleTimer += enemy.invincibleCooldown;
+                enemy.invincibleDuration = 2;
             }
 
             enemy.statuses.forEach(s => { 

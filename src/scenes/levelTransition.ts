@@ -78,7 +78,7 @@ export default function levelTransition(k: KAPLAYCtx) {
 
             hero.level++;
 
-            let rand = k.randi();
+            let rand = k.randi(SCENES[store.get(gameStateAtom).sceneIndex].length);
             const sceneName = SCENES[store.get(gameStateAtom).sceneIndex][rand];
 
             const { mapData, tileGrid, pathTiles } = await generateMap(k, `data/${sceneName}.json`);

@@ -257,6 +257,8 @@ export type EnemyGameObj = GameObj<
     };
     invincible: boolean;
     invincibleDuration: number;
+    invincibleTimer: number;
+    invincibleCooldown: number;
 };
 
 export type Upgrade = {
@@ -398,7 +400,7 @@ export type EnemyConfig = {
         range: number;
     };
     spawnOnDeath?: {
-        id: "slime";
+        id: "slime" | "spiderling";
         amount: number;
     };
     attacker?: {
@@ -407,6 +409,8 @@ export type EnemyConfig = {
         attackCooldown: number;
         canAttack: boolean;
     };
+    invincibleDuration?: number;
+    invincibleCooldown?: number;
 };
 
 export type AttackContext = {

@@ -291,14 +291,6 @@ export default function makeUnitCombat(
     }
 
     function update() {
-
-        if (opts.owner.charge && opts.owner.lastShotTime > opts.owner.charge.decayDelay) {
-            opts.owner.charge.currentCharge = Math.max(
-                0,
-                opts.owner.charge.currentCharge - 0.5 * k.dt()
-            )
-        }
-
         const interval =
             opts.owner.stats.fireInterval *
             (opts.owner.timeData?.timeMultiplier ?? 1)

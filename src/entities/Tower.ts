@@ -187,6 +187,13 @@ export default function makeTower(
 
         tower.lastShotTime += k.dt();
 
+        if (tower.charge && tower.lastShotTime > tower.charge.decayDelay) {
+            tower.charge.currentCharge = Math.max(
+                0,
+                tower.charge.currentCharge - 0.5 * k.dt()
+            );
+        }
+
         if (tower.state === "disabled") return;
 
         if (tower.timeData) {

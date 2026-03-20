@@ -39,7 +39,7 @@ export default function Seed({ s, plantSeed }: { s: SeedId, plantSeed: (id: Seed
                     element={element}
                     description={description}
                     stats={stats}
-                    cost={cost}
+                    cost={0}
                     pos={popup.basePos}
                     scale={scale}
                 />

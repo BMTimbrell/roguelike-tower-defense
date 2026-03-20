@@ -499,6 +499,46 @@ export default function loadAssets(k: KAPLAYCtx) {
         }
     });
 
+    k.loadSprite("ghost", "/sprites/ghost.png", {
+        sliceX: 8,
+        sliceY: 2,
+        anims: {
+            idle: 0,
+            move: { from: 0, to: 7, loop: true, speed: 10 },
+            die: { from: 8, to: 14, loop: false }
+        }
+    });
+
+    k.loadSprite("red fairy", "/sprites/red-fairy.png", {
+        sliceX: 4,
+        sliceY: 2,
+        anims: {
+            idle: 0,
+            move: { from: 0, to: 3, loop: true, speed: 4 },
+            die: { from: 4, to: 7, loop: false, speed: 7 }
+        }
+    });
+
+    k.loadSprite("spider", "/sprites/spider.png", {
+        sliceX: 5,
+        sliceY: 2,
+        anims: {
+            idle: 0,
+            move: { from: 0, to: 3, loop: true, speed: 4 },
+            die: { from: 5, to: 9, loop: false, speed: 7 }
+        }
+    });
+
+    k.loadSprite("spiderling", "/sprites/spiderling.png", {
+        sliceX: 4,
+        sliceY: 2,
+        anims: {
+            idle: 0,
+            move: { from: 0, to: 3, loop: true, speed: 15 },
+            die: { from: 4, to: 7, loop: false, speed: 7 }
+        }
+    });
+
     k.loadSprite("poison", "/sprites/poison-icon.png");
     k.loadSprite("burn", "/sprites/burn-icon.png");
     k.loadSprite("chill", "/sprites/chill-icon.png");
