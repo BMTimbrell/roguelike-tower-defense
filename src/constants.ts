@@ -31,7 +31,16 @@ export const STUN_DURATION = 0.75;
 export const CURSE_CRIT = 10;
 export const TIME_TOWER_BASE_ANIM_SPEED = 30;
 export const SCYTHE_MAX_KILL_STACKS = 60;
-export const REDUCED_RANGE_TOWERS = ["Chili Pepper Tower", "Ice Tower", "Balloon Tower", "Lava Tower", "Hammer Tower", "Scythe Tower"];
+export const REDUCED_RANGE_TOWERS = [
+    "Chili Pepper Tower", 
+    "Ice Tower", 
+    "Balloon Tower", 
+    "Lava Tower", 
+    "Hammer Tower", 
+    "Scythe Tower",
+    "Laser Cannon Tower",
+    "Flamethrower Tower"
+];
 export const BASE_REROLL_COST = 5;
 export const BASE_DRAW_COST = 10;
 export const UPGRADES: Upgrade[] = [{
@@ -1350,7 +1359,7 @@ export const TOWERS = {
         gunSprite: "laser cannon tower",
         baseSprite: "laser cannon tower base",
         sprite: "laser-cannon-tower-sprite.png",
-        description: "Shoots a giant laser beam that damages all enemies in its path",
+        description: "Shoots a giant laser beam that damages all enemies in its path. This tower receives half the amount from range upgrades",
         cost: 300,
         stats: {
             damage: 35,
@@ -1765,7 +1774,7 @@ export const TOWERS = {
         gunSprite: "flamethrower tower",
         baseSprite: "flamethrower tower base",
         sprite: "flamethrower-tower-sprite.png",
-        description: "Shoots a cone of flames, dealing devastating damage to nearby enemies",
+        description: "Shoots a cone of flames, dealing devastating damage to nearby enemies. This tower receives half the amount from range upgrades",
         cost: 300,
         stats: {
             damage: 4,

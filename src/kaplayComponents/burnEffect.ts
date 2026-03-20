@@ -45,7 +45,7 @@ export default function burnEffect(k: KAPLAYCtx, duration: number): BurnComp {
             if (tickTimer >= tickRate) {
                 tickTimer -= tickRate;
 
-                const damage = Math.min(Math.max(1, Math.round((this.maxHP() ?? 0) * 0.01), 10));
+                const damage = Math.min(Math.max(1, Math.round((this.maxHP() ?? 0) * 0.01)), 10);
                 hurtEnemy(k, { target: this as EnemyGameObj, element: "Fire", damage, isCrit: false, statusDamage: true, ignoreArmour: true });
             }
 

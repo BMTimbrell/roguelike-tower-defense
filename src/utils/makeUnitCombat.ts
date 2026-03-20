@@ -624,7 +624,7 @@ function piercingLaserAttack(
     drawLaser(k, ctx.origin, ctx.target.pos, 106, 0.24);
 
     (k.get("enemy") as EnemyGameObj[]).forEach(e => {
-        if (isEnemyOnRay(e, ctx.origin, dir, range, 48)) {
+        if (isEnemyOnRay(e, ctx.origin, dir, range, 10)) {
             hurtEnemy(k, { target: e, damage, isCrit, element: ctx.element });
         }
     });
