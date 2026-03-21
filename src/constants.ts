@@ -25,7 +25,10 @@ export const CHARGE_DAMAGE_REQUIRED = 80;
 export const CHILL_PERCENT = 6;
 export const MAX_CHILL_STACKS = 5;
 export const ICE_DAMAGE_PER_STACK = 10;
+export const CHARGE_DAMAGE_PER_STACK = 10;
+export const POISON_DAMAGE_PER_STACK = 10;
 export const MAX_CHARGE_STACKS = 5;
+export const MAX_POISON_STACKS = 5;
 export const STUN_PERCENTAGES = [5, 10, 20, 40, 60];
 export const STUN_DURATION = 0.75;
 export const CURSE_CRIT = 10;
@@ -195,7 +198,7 @@ export const LEVEL_WAVES = {
         waves: [
             {
                 spawns: [
-                    { id: "slime", count: 5, interval: 1 }
+                    { id: "giantSkeleton", count: 1, interval: 1 }
                 ],
                 reward: 50
             },
@@ -255,7 +258,7 @@ export const LEVEL_WAVES = {
             },
             // {
             //     spawns: [
-            //         { id: "orc", count: 3, interval: 1.5 },
+            //         { id: "orc", count: 1, interval: 1.5 },
             //         { id: "bee", count: 5, interval: 1 }
             //     ],
             //     reward: 100
@@ -1429,7 +1432,7 @@ export const TOWERS = {
         description: "Sends out a swarm of bees that follow the target dealing damage in a small area",
         cost: 250,
         stats: {
-            damage: 12,
+            damage: 8,
             range: 5,
             fireInterval: 0.75,
             critChance: 5,
@@ -1962,7 +1965,7 @@ export const ELEMENTS: Record<ElementName, ElementDef> = {
     },
 
     Ice: {
-        description: `Ice attacks apply a stack of chill (up to ${MAX_CHILL_STACKS}) + 1 bonus stack for every ${ICE_DAMAGE_PER_STACK} damage dealt. Each stack reduces enemy speed by ${CHILL_PERCENT}%`,
+        description: `Ice attacks apply 1 (+ 1 for every ${ICE_DAMAGE_PER_STACK} damage dealt) stack of chill to enemies, capping at ${MAX_CHILL_STACKS} stacks. Each stack reduces enemy speed by ${CHILL_PERCENT}%`,
         applyEffect: (k, { target, damage }) => {
             const chill = target.has("chill");
             const stacks = 1 + Math.floor(damage / ICE_DAMAGE_PER_STACK);
@@ -1977,15 +1980,16 @@ export const ELEMENTS: Record<ElementName, ElementDef> = {
     },
 
     Electric: {
-        description: `Electric attacks add charge stacks to enemies (up to ${MAX_CHARGE_STACKS}). ` +
+        description: `Electric attacks apply 1 (+ 1 for every ${CHARGE_DAMAGE_PER_STACK} damage dealt) stack of charge to enemies, capping at ${MAX_CHARGE_STACKS} stacks. ` +
             `Enemies have an electric damage % chance to be stunned for ${STUN_DURATION}s based on their charge stacks (${STUN_PERCENTAGES.join("%, ")}%)`,
         applyEffect: (k, { target, damage }) => {
             if (target.state === "stunned") return;
 
             const charge = target.has("charge");
+            const numStacks = 1 + Math.floor(damage / CHARGE_DAMAGE_PER_STACK);
 
             if (charge) {
-                target.addChargeStack()
+                target.addChargeStack(numStacks);
 
                 const stacks = target.getChargeStacks();
                 const baseChance = STUN_PERCENTAGES[stacks - 1] ?? 0;
@@ -2000,7 +2004,7 @@ export const ELEMENTS: Record<ElementName, ElementDef> = {
             }
 
             const duration = 2;
-            target.use(chargeEffect(k, duration));
+            target.use(chargeEffect(k, duration, numStacks));
         },
         color: "#FFFF00"
     },
@@ -2037,14 +2041,15 @@ export const ELEMENTS: Record<ElementName, ElementDef> = {
     },
 
     Poison: {
-        description: "Poison attacks add poison stacks (up to 5) to enemies dealing damage equal to number of stacks every 5 seconds. Poison keeps ticking until the enemy dies or is healed",
-        applyEffect: (k, { target }) => {
+        description: `Poison attacks apply 1 (+ 1 for every ${POISON_DAMAGE_PER_STACK} damage dealt) stack of poison to enemies, capping at ${MAX_POISON_STACKS} stacks. Enemies take damage equal to the number of stacks every 5 seconds. Poison keeps ticking until the enemy dies or is healed`,
+        applyEffect: (k, { target, damage }) => {
             const poison = target.has("poison");
+            const stacks = 1 + Math.floor(damage / POISON_DAMAGE_PER_STACK);
             if (poison) {
-                target.addPoisonStack();
+                target.addPoisonStack(stacks);
                 return;
             }
-            target.use(poisonEffect(k));
+            target.use(poisonEffect(k, stacks));
         },
         color: "#00FF00"
     }
