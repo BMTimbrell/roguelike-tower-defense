@@ -1,5 +1,5 @@
 import type { KAPLAYCtx, Vec2 } from 'kaplay';
-import { TILE_SIZE, type TowerId } from '../constants';
+import { ELEMENTS, TILE_SIZE, type TowerId } from '../constants';
 import type { TowerGameObj, UnitEffects, TowerDef, SeedId, Tile, PathTile, RandomProjectiles, TimeData, ContinuousEffect, Charge } from '../types';
 import { store, gameStateAtom } from '../store';
 import { calcUpgradeCost } from '../utils/calcUpgradeCost';
@@ -100,7 +100,6 @@ export default function makeTower(
         owner: tower,
         stats: tower.stats,
         projectile,
-        element,
         gunSprite,
         gunOffset: k.vec2(gunOffset.x, gunOffset.y),
         shootOffset: k.vec2(shootOffset.x, shootOffset.y),
@@ -163,6 +162,16 @@ export default function makeTower(
                 tower.lavaTiles ??= getLavaTiles(k, tower.pos, tower.stats.range * TILE_SIZE, tower.tileGrid);
                 tower.lavaTiles.forEach(pos => makeLavaTile(k, pos, tower));
                 combat.gun.play("pouring");
+            }
+
+            if (k.get("hero").some(hero => hero.changeNormalElement)) {
+                k.get("tower").forEach(tower => {
+                    if (tower.element === "Normal") {
+                        const elements = Object.keys(ELEMENTS).filter(e => e !== "Normal");
+                        const rand = k.randi(elements.length);
+                        tower.element = elements[rand];
+                    }
+                });
             }
         },
     });

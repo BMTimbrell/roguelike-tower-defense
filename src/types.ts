@@ -207,7 +207,9 @@ export type HeroSkillDef = Omit<HeroSkillDefBase, "requires"> & {
     requires?: SkillId[];
 };
 
-export type HeroDef = Omit<TowerDef, 'cost' | "farmData" | "source">;
+export type HeroDef = Omit<TowerDef, 'cost' | "farmData" | "source"> & {
+    levelUpOffset: { x: number; y: number; };
+};
 export type HeroInstance = UnitInstance & {
     heroId: HeroId;
     skillIds: SkillId[];
@@ -215,6 +217,7 @@ export type HeroInstance = UnitInstance & {
     canReposition: boolean;
     tileGrid: Tile[][];
     pathTiles: PathTile[];
+    levelUpOffset: { x: number; y: number; };
 };
 
 export type HeroGameObj = GameObj & HeroInstance;
@@ -457,6 +460,7 @@ export type AttackContext = {
 
     visualEffect: typeof frostAoeBurst | null;
     lightning?: {
+        damageMult?: number;
         maxChains: number;
         range: number;
     };

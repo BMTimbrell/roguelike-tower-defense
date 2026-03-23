@@ -395,6 +395,22 @@ export default function loadAssets(k: KAPLAYCtx) {
             celebrate: { from: 0, to: 29, loop: false }
         }
     });
+    k.loadSprite("wizard base", "/sprites/wizard-base.png");
+    k.loadSprite("wizard", "/sprites/wizard.png", {
+        sliceX: 4,
+        sliceY: 1,
+        anims: {
+            idle: 0,
+            shoot: { from: 1, to: 3, loop: false, speed: 10 }
+        }
+    });
+    k.loadSprite("wizard celebrating", "/sprites/wizard-celebrating.png", {
+        sliceX: 19,
+        sliceY: 1,
+        anims: {
+            celebrate: { from: 0, to: 18, loop: false, speed: 13 }
+        }
+    });
     k.loadSprite("slime", "/sprites/slime.png", {
         sliceX: 7,
         sliceY: 2,
@@ -557,6 +573,7 @@ export default function loadAssets(k: KAPLAYCtx) {
     k.loadSprite("blind", "/sprites/blind-icon.png");
     k.loadSprite("frost particle", "/sprites/frost-particle.png");
     k.loadSprite("flame particle", "/sprites/flame-particle.png");
+    k.loadSprite("ice blast", "/sprites/ice-blast.png");
     k.loadSprite("electric particle", "/sprites/electric-particle.png");
     k.loadSprite("smash effect", "/sprites/hammer-smash-effect.png", {
         sliceX: 4,

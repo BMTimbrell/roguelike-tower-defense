@@ -1,5 +1,5 @@
 import type { KAPLAYCtx, Vec2 } from "kaplay";
-import { HEROES, TILE_SIZE, type HeroId, type SkillId } from "../constants";
+import { ELEMENTS, HEROES, TILE_SIZE, type HeroId, type SkillId } from "../constants";
 import { gameStateAtom, store } from "../store";
 import type { HeroGameObj, PathTile, SelectedHeroUI, TargetPriority, Tile } from "../types";
 import makeUnitCombat from "../utils/makeUnitCombat";
@@ -29,7 +29,8 @@ export default function makeHero(k: KAPLAYCtx,
         shootOffset,
         projectile,
         canRotate,
-        targetType
+        targetType,
+        levelUpOffset
     } = HEROES[heroId];
 
     const priority: TargetPriority = "Most Progress";
@@ -61,7 +62,9 @@ export default function makeHero(k: KAPLAYCtx,
             element,
             effects: [],
             canRotate,
-            disabledUntil: 0
+            disabledUntil: 0,
+            levelUpOffset,
+            changeNormalElement: false
         },
         "tower",
         "hero",
@@ -83,11 +86,20 @@ export default function makeHero(k: KAPLAYCtx,
 
         hero.skillIds.forEach(sId => SKILLS.find(s => s.id === sId)?.apply(hero));
 
+        if (hero.changeNormalElement) {
+            k.get("tower").forEach(tower => {
+                if (tower.element === "Normal") {
+                    const elements = Object.keys(ELEMENTS).filter(e => e !== "Normal");
+                    const rand = k.randi(elements.length);
+                    tower.element = elements[rand];
+                }
+            });
+        }
+
         const combat = makeUnitCombat(k, {
             owner: hero,
             stats: hero.stats,
             projectile,
-            element,
             gunSprite,
             gunOffset: k.vec2(gunOffset.x, gunOffset.y),
             shootOffset: k.vec2(shootOffset.x, shootOffset.y),

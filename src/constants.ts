@@ -36,11 +36,11 @@ export const CURSE_CRIT = 10;
 export const TIME_TOWER_BASE_ANIM_SPEED = 30;
 export const SCYTHE_MAX_KILL_STACKS = 60;
 export const REDUCED_RANGE_TOWERS = [
-    "Chili Pepper Tower", 
-    "Ice Tower", 
-    "Balloon Tower", 
-    "Lava Tower", 
-    "Hammer Tower", 
+    "Chili Pepper Tower",
+    "Ice Tower",
+    "Balloon Tower",
+    "Lava Tower",
+    "Hammer Tower",
     "Scythe Tower",
     "Laser Cannon Tower",
     "Flamethrower Tower"
@@ -388,7 +388,7 @@ export const LEVEL_WAVES = {
         startingGold: 100,
         startDelay: 30,
         waves: [
-             {
+            {
                 spawns: [
                     { id: "orc", count: 2, interval: 1 },
                     { id: "bee", count: 5, interval: 0.5 },
@@ -1900,7 +1900,7 @@ export const HEROES = {
     archer: {
         name: "Archer",
         sprite: "archer-protrait.png",
-        description: "A ranged hero that excels at taking down enemies from afar.",
+        description: "A ranged hero that excels at taking down enemies from afar",
         gunSprite: "archer",
         baseSprite: "archer base",
         stats: {
@@ -1921,32 +1921,34 @@ export const HEROES = {
             w: 1,
             h: 1
         },
+        levelUpOffset: { x: 0, y: 0 },
         priority: "Most Progress"
     },
     wizard: {
         name: "Wizard",
-        sprite: "archer-hero-sprite.png",
-        description: "A ranged hero that excels at taking down enemies from afar.",
-        gunSprite: "archer",
-        baseSprite: "archer base",
+        sprite: "wizard-portrait.png",
+        description: "A hero who devastates enemies with powerful spells",
+        gunSprite: "wizard",
+        baseSprite: "wizard base",
         stats: {
-            damage: 8,
-            range: 5,
-            fireInterval: 1,
+            damage: 15,
+            range: 4,
+            fireInterval: 1.5,
             critChance: 10,
             critDamage: 200
         },
-        element: "Normal",
+        element: "Fire",
         gunOffset: { x: 0, y: 0 },
-        anchorOffset: { x: 0, y: 0 },
-        shootOffset: { x: 0, y: 0 },
-        projectile: "arrow",
+        anchorOffset: { x: 20 / 32, y: -18 / 32 },
+        shootOffset: { x: -20, y: 10 },
+        projectile: "fireball",
         canRotate: true,
         targetType: "enemy",
         footprint: {
             w: 1,
             h: 1
         },
+        levelUpOffset: { x: 180, y: 100 },
         priority: "Most Progress"
     }
 } as const satisfies Record<string, HeroDef>;
@@ -2198,6 +2200,12 @@ export const PROJECTILES = {
         homing: true,
         speed: 200,
         splashRadius: 0
+    },
+    iceBlast: {
+        sprite: "ice blast",
+        homing: true,
+        speed: 200,
+        splashRadius: 1
     }
 } as const satisfies Record<string, ProjectileDef>;
 
@@ -2376,6 +2384,126 @@ export const SKILLS = [
             });
         },
         icon: "sprites/range-damage-skill-icon.png"
+    },
+    {
+        id: "wizard-ice-blast",
+        heroIds: ["wizard"],
+        name: "Ice Blast",
+        description: "50% chance to fire an ice blast that deals damage in a small area",
+        apply(hero) {
+            let rand: boolean;
+
+            hero.effects?.push({
+                firstEffect(ctx) {
+                    if (ctx.projectiles.length === 0) return;
+                    rand = Math.random() < 0.5;
+                    if (rand) return;
+
+                    ctx.volley ??= {};
+                    ctx.volley.volleyChance ??= 100;
+                    ctx.volley.volleyCount ??= 1;
+                    ctx.volley.volleyCount++;
+                    ctx.volley.homingDelay ??= 0.2;
+                }
+            });
+
+            hero.effects?.push({
+                secondEffect(ctx) {
+                    if (rand) return;
+
+                    ctx.projectiles[ctx.projectiles.length - 1].element = "Ice";
+                    ctx.projectiles[ctx.projectiles.length - 1].id = "iceBlast";
+                }
+            });
+        },
+        icon: "sprites/ice-blast-icon.png"
+    },
+    {
+        id: "wizard-lightning-strike",
+        heroIds: ["wizard"],
+        name: "Lightning Strike",
+        description: "25% chance to strike up to 3 targets with lightning for 50% damage",
+        apply(hero) {
+            hero.effects?.push({
+                firstEffect(ctx) {
+                    if (Math.random() < 0.75) return;
+
+                    ctx.attackType = "lightning";
+                    if (!ctx.lightning) {
+                        ctx.lightning = {
+                            maxChains: 3,
+                            range: 5,
+                            damageMult: 0.5
+                        }
+                    }
+                }
+            });
+        },
+        icon: "sprites/lightning-strike-icon2.png"
+    },
+    {
+        id: "fireball-bounce",
+        heroIds: ["wizard"],
+        name: "Fireball Bounce",
+        description: "Fireballs have a 25% chance to bounce to nearby enemies",
+        apply(hero) {
+            hero.effects?.push({
+                secondEffect(ctx) {
+                    const fireball = ctx.projectiles[0];
+                    fireball.behaviors ??= {};
+                    fireball.behaviors.bounces ??= 6;
+                    fireball.behaviors.bounceRange ??= 4 * TILE_SIZE;
+                    fireball.behaviors.bounceChance ??= 0.25;
+                }
+            });
+        },
+        icon: "sprites/bounce-fireball-icon.png"
+    },
+    {
+        id: "wizard-elements",
+        heroIds: ["wizard"],
+        name: "Master of the Elements",
+        description: "Normal towers gain a random element while the wizard is on the field",
+        apply(hero) {
+            hero.changeNormalElement = true;
+        },
+        icon: "sprites/elements-skill-icon.png"
+    },
+    {
+        id: "wizard-lightning-strike-plus",
+        heroIds: ["wizard"],
+        requires: ["wizard-lightning-strike"],
+        name: "Lightning Strike Plus",
+        description: "Increase lightning strike targets by 3",
+        apply(hero) {
+            hero.effects?.push({
+                firstEffect(ctx) {
+                    if (!ctx.lightning) return;
+
+                    ctx.lightning.maxChains += 3;
+                }
+            });
+        },
+        icon: "sprites/lightning-strike-icon2.png"
+    },
+    {
+        id: "wizard-ice-blast-plus",
+        heroIds: ["wizard"],
+        requires: ["wizard-ice-blast"],
+        name: "Ice Blast Plus",
+        description: "Increase ice blast damage by 100%",
+        apply(hero) {
+            hero.effects?.push({
+                secondEffect(ctx) {
+                    if (ctx.projectiles.length === 0) return;
+
+                    ctx.projectiles.forEach(p => {
+                        if (p.id === "iceBlast") p.bonusDamage = ctx.damage;
+                    });
+                }
+            });
+        },
+        icon: "sprites/ice-blast-icon.png"
     }
 ] as const satisfies HeroSkillDefBase[];
 

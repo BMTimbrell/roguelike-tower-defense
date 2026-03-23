@@ -37,7 +37,7 @@ export default function levelTransition(k: KAPLAYCtx) {
             let zoom = k.getCamScale().x;
             let time = 0;
             const levelUpText = k.add([
-                k.pos(k.getCamPos().sub(k.vec2(0, (k.height() / zoom) / 4))),
+                k.pos(k.getCamPos().sub(k.vec2(0, (k.height() / zoom) / 4)).add(k.vec2(hero.levelUpOffset.x, hero.levelUpOffset.y))),
                 k.text("Level Up!", {
                     size: 16,
                     font: "free pixel"
@@ -46,7 +46,9 @@ export default function levelTransition(k: KAPLAYCtx) {
                     update() {
                         time += k.dt();
                         zoom = k.getCamScale().x;
-                        levelUpText.pos = k.getCamPos().sub(k.vec2(0, (k.height() / zoom) / 4)).sub(k.vec2(0, time * 10));
+                        levelUpText.pos = k.getCamPos().sub(k.vec2(0, (k.height() / zoom) / 4)).
+                            add(k.vec2(hero.levelUpOffset.x, hero.levelUpOffset.y)).
+                                sub(k.vec2(0, time * 10));
                         levelUpText.wait(0.5, () => {
                             levelUpText.opacity -= k.dt() * 2;
                         });

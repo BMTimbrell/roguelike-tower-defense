@@ -24,7 +24,6 @@ export default function makeUnitCombat(
             critDamage: number;
         };
         projectile: ProjectileId | null;
-        element: ElementName;
         gunSprite: string;
         gunOffset: Vec2;
         shootOffset: Vec2;
@@ -128,7 +127,7 @@ export default function makeUnitCombat(
                 bonusCrit: 0
             };
 
-            let element = opts.element;
+            let element = opts.owner.element;
             let volley = false;
 
             if (opts.owner.randomProjectiles) {
@@ -199,8 +198,6 @@ export default function makeUnitCombat(
                 damage: ctx.damage
             });
 
-            opts.owner.effects?.forEach(e => e.secondEffect?.(ctx));
-
             const rotatedOffset = rotateVector(
                 k,
                 k.vec2(opts.shootOffset.x, opts.shootOffset.y),
@@ -233,6 +230,8 @@ export default function makeUnitCombat(
                     ...projectiles
                 ];
             }
+
+            opts.owner.effects?.forEach(e => e.secondEffect?.(ctx));
 
             for (const p of ctx.projectiles) {
                 const bonusDamage = p?.bonusDamage ?? 0;
@@ -283,7 +282,7 @@ export default function makeUnitCombat(
                 damage: opts.stats.damage,
                 critChance: opts.stats.critChance,
                 critDamage: opts.stats.critDamage,
-                element: opts.element,
+                element: opts.owner.element,
                 projectileId: opts.projectile ?? "basic"
             });
         }
@@ -520,9 +519,9 @@ function lightningAttack(k: KAPLAYCtx, ctx: AttackContext, dmg: DamageResult) {
     const chain = resolveChain(k, {
         startPos: ctx.origin,
         target: ctx.target,
-        damage,
+        damage: Math.round(damage * (ctx.lightning?.damageMult ?? 1)),
         isCrit,
-        element: ctx.element,
+        element: "Electric",
         maxChains,
         range,
     });

@@ -73,7 +73,10 @@ export default function makeProjectile(k: KAPLAYCtx, opts: {
         if (homing && (!target || !isValidTarget(target) || persistentAndEnemyOutOfRange)) {
             const origin = behaviors?.persistent ? behaviors.persistent.origin : projectile.pos;
 
-            target = behaviors?.persistent ? selectTarget(k.get("enemy") as EnemyGameObj[], behaviors.persistent.owner, origin) : findNewTarget(k, origin);
+            target = behaviors?.persistent ? 
+                selectTarget(k.get("enemy") as EnemyGameObj[], behaviors.persistent.owner, origin) : 
+                    findNewTarget(k, origin, 5 * TILE_SIZE);
+                    
             if (behaviors?.persistent) behaviors.persistent.state = "flying";
 
             if (!target) {
