@@ -1,7 +1,8 @@
 import type { KAPLAYCtx, Comp, GameObj } from "kaplay";
-import type { StatusEffectResult } from "../types";
+import type { EnemyGameObj, StatusEffectResult } from "../types";
 import type { StatusEffect, StatusEffectComp } from "./statusEffect";
 import { CHILL_PERCENT, MAX_CHILL_STACKS } from "../constants";
+import { updateSpeed } from "../entities/Enemy";
 
 export type ChillComp = Comp & {
     id: StatusEffect;
@@ -18,10 +19,12 @@ export default function chillEffect(k: KAPLAYCtx, duration: number, stacks: numb
 
         require: ["statusEffect"],
 
-        addChillStack(this: GameObj<{ speed: number; baseSpeed: number; debuffDurationMultiplier: number; }>, num) {
+        addChillStack(this: EnemyGameObj, num) {
             timer = duration * this.debuffDurationMultiplier;
             if (stacks < MAX_CHILL_STACKS) stacks += Math.min(num, MAX_CHILL_STACKS - stacks);
-            this.speed = this.baseSpeed * (1 - ((stacks * CHILL_PERCENT) / 100));
+            const chillMultiplier = 1 - ((stacks * CHILL_PERCENT) / 100);
+            this.speedMultipliers.chill = chillMultiplier;
+            updateSpeed.call(this);
         },
 
         chill() {
@@ -31,23 +34,28 @@ export default function chillEffect(k: KAPLAYCtx, duration: number, stacks: numb
             };
         },
 
-        add(this: GameObj<StatusEffectComp | { speed: number; baseSpeed: number; debuffDurationMultiplier: number; }>) {
+        add(this: EnemyGameObj) {
             timer *= this.debuffDurationMultiplier;
             this.addStatus("chill");
-            this.speed = this.baseSpeed * (1 - ((stacks * CHILL_PERCENT) / 100));
+            const chillMultiplier = 1 - ((stacks * CHILL_PERCENT) / 100);
+            this.speedMultipliers.chill = chillMultiplier;
+            updateSpeed.call(this);
         },
 
-        destroy(this: GameObj<StatusEffectComp | { speed: number; baseSpeed: number; }>) {
-            this.speed = this.baseSpeed;
+        destroy(this: EnemyGameObj) {
+            this.speedMultipliers.chill = 1;
+            updateSpeed.call(this);
             this.removeStatus("chill");
         },
 
-        update(this: GameObj<{ isDying: boolean; speed: number; baseSpeed: number; }>) {
+        update(this: EnemyGameObj) {
             timer -= k.dt();
 
             if (timer <= 0) {
                 stacks--;
-                this.speed = this.baseSpeed * (1 - ((stacks * CHILL_PERCENT) / 100));
+                const chillMultiplier = 1 - ((stacks * CHILL_PERCENT) / 100);
+                this.speedMultipliers.chill = chillMultiplier;
+                updateSpeed.call(this);
                 timer += duration;
             }
 

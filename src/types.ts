@@ -246,7 +246,7 @@ export type EnemyGameObj = GameObj<
     };
     healTickRate?: number;
     spawnOnDeath?: {
-        id: "slime",
+        id: "slime" | "spiderling",
         amount: number;
     };
     attacker?: {
@@ -259,6 +259,19 @@ export type EnemyGameObj = GameObj<
     invincibleDuration: number;
     invincibleTimer: number;
     invincibleCooldown: number;
+    stunResistance: boolean;
+    stunResistanceDuration: number;
+    stunResistanceTimer: number;
+    speedBooster?: {
+        amount: number;
+        range: number;
+    };
+    speedMultipliers: {
+        chill: number;
+        boost: number;
+        wind: number;
+    };
+    debuffDurationMultiplier: number;
 };
 
 export type Upgrade = {
@@ -411,6 +424,10 @@ export type EnemyConfig = {
     };
     invincibleDuration?: number;
     invincibleCooldown?: number;
+    speedBooster?: {
+        amount: number;
+        range: number;
+    };
 };
 
 export type AttackContext = {

@@ -33,17 +33,28 @@ export default function makeEnemy(k: KAPLAYCtx, enemyId: EnemyId, waypoints: Vec
             maxArmour: (ENEMIES[enemyId] as Record<"armour", number>).armour ?? 0,
             ...("healer" in ENEMIES[enemyId] ? { healer: ENEMIES[enemyId].healer as { amount: number; range: number; }, healTickRate: 2 } : {}),
             ...("spawnOnDeath" in ENEMIES[enemyId] ? { spawnOnDeath: ENEMIES[enemyId].spawnOnDeath as { id: "slime"; amount: number; } } : {}),
-            ...("attacker" in ENEMIES[enemyId] ? { attacker: ENEMIES[enemyId].attacker as { 
-                projectile: ProjectileId;
-                attackRange: number;
-                attackCooldown: number;
-                canAttack: boolean;
-             } } : {}),
-             debuffDurationMultiplier: 1,
-             invincibleCooldown: "invincibleCooldown" in ENEMIES[enemyId] ? ENEMIES[enemyId].invincibleCooldown as number : 0,
-             invincibleTimer: "invincibleCooldown" in ENEMIES[enemyId] ? ENEMIES[enemyId].invincibleCooldown as number : 0,
-             invincible: false,
-             invincibleDuration: "invincibleDuration" in ENEMIES[enemyId] ? ENEMIES[enemyId].invincibleDuration as number : 2
+            ...("attacker" in ENEMIES[enemyId] ? {
+                attacker: ENEMIES[enemyId].attacker as {
+                    projectile: ProjectileId;
+                    attackRange: number;
+                    attackCooldown: number;
+                    canAttack: boolean;
+                }
+            } : {}),
+            ...("speedBooster" in ENEMIES[enemyId] ? { speedBooster: ENEMIES[enemyId].speedBooster as { amount: number; range: number; } } : {}),
+            debuffDurationMultiplier: 1,
+            invincibleCooldown: "invincibleCooldown" in ENEMIES[enemyId] ? ENEMIES[enemyId].invincibleCooldown as number : 0,
+            invincibleTimer: "invincibleCooldown" in ENEMIES[enemyId] ? ENEMIES[enemyId].invincibleCooldown as number : 0,
+            invincible: false,
+            invincibleDuration: "invincibleDuration" in ENEMIES[enemyId] ? ENEMIES[enemyId].invincibleDuration as number : 2,
+            stunResistance: false,
+            stunResistanceDuration: 3,
+            stunResistanceTimer: 0,
+            speedMultipliers: {
+                chill: 1,
+                boost: 1,
+                wind: 1
+            }
         },
         k.state("move", ["move", "stunned", "attack"]),
         statusEffect(),
@@ -84,9 +95,11 @@ export default function makeEnemy(k: KAPLAYCtx, enemyId: EnemyId, waypoints: Vec
 
     enemy.onStateEnter("move", () => {
         enemy.play("move");
-    }); 
+    });
 
     enemy.onStateEnter("stunned", () => {
+        enemy.stunResistanceTimer = enemy.stunResistanceDuration;
+        enemy.stunResistance = true;
         enemy.play("idle");
         enemy.wait(STUN_DURATION, () => {
             enemy.enterState("move");
@@ -113,11 +126,15 @@ export default function makeEnemy(k: KAPLAYCtx, enemyId: EnemyId, waypoints: Vec
                 enemy.invincibleDuration = 2;
             }
 
-            enemy.statuses.forEach(s => { 
+            enemy.statuses.forEach(s => {
                 if (enemy.has(s)) enemy.unuse(s);
             });
             enemy.opacity = enemy.invincible ? 0.5 : 1;
         }
+
+        if (enemy.stunResistanceTimer > 0) {
+            enemy.stunResistanceTimer -= k.dt();
+        } else enemy.stunResistance = false;
 
         enemy.z = enemy.pos.y;
 
@@ -152,26 +169,38 @@ export default function makeEnemy(k: KAPLAYCtx, enemyId: EnemyId, waypoints: Vec
 
         // attacker
         if (enemy.attacker) {
-            attackTimer -= k.dt();
-    
+            if (attackTimer > 0) attackTimer -= k.dt();
+
             while (attackTimer <= 0) {
                 const towers = (k.get("tower") as TowerGameObj[]).filter(
                     t => t.placed && enemy.pos.dist(t.pos) <= enemy.attacker!.attackRange * TILE_SIZE
                 );
                 if (!towers.length) break;
-    
+
                 const index = k.randi(towers.length);
-                makeEnemyProjectile(k, { 
-                    id: enemy.attacker.projectile as ProjectileId, 
-                    pos: enemy.pos, 
-                    target: towers[index], 
+                makeEnemyProjectile(k, {
+                    id: enemy.attacker.projectile as ProjectileId,
+                    pos: enemy.pos,
+                    target: towers[index],
                     hitChance: enemy.has("blind") ? 0.5 : 1
                 });
-    
+
                 attackTimer += enemy.attacker.attackCooldown;
             }
         }
 
+        // speed booster
+        if (enemy.speedBooster) {
+            (k.get("enemy") as EnemyGameObj[]).forEach(e => {
+                let speedBoost = 1;
+                if (e.pos.dist(enemy.pos) <= enemy.speedBooster!.range * TILE_SIZE && !e.speedBooster) {
+                    speedBoost = enemy.speedBooster!.amount;
+                }
+
+                e.speedMultipliers.boost = speedBoost;
+                updateSpeed.call(e);
+            });
+        }
 
         // healing enemies if healer
         if (!enemy.healer && !enemy.healTickRate) return;
@@ -218,7 +247,6 @@ export default function makeEnemy(k: KAPLAYCtx, enemyId: EnemyId, waypoints: Vec
 
             healTimer += enemy.healTickRate!;
         }
-
     });
 
     enemy.onHeal(() => {
@@ -226,6 +254,24 @@ export default function makeEnemy(k: KAPLAYCtx, enemyId: EnemyId, waypoints: Vec
             enemy.unuse("poison");
         }
     });
+
+    if (enemy.speedBooster) {
+        const boostRing = k.add([
+            k.circle(enemy.speedBooster.range * TILE_SIZE, { fill: false }),
+            k.color(),
+            k.outline(1, k.rgb(177, 237, 255)),
+            k.anchor("center"),
+            k.pos(enemy.pos),
+            k.opacity(1),
+            k.scale(1),
+            {
+                update() {
+                    boostRing.pos = enemy.pos;
+                    boostRing.opacity = 1 + Math.sin(k.time() * 3) * 0.1;
+                }
+            }
+        ]);
+    }
 
     enemy.onDeath(() => {
         if (enemy.isDying) return;
@@ -239,10 +285,10 @@ export default function makeEnemy(k: KAPLAYCtx, enemyId: EnemyId, waypoints: Vec
                 const posOffsetX = Math.abs(dir.x) > 0.5 ? posOffset : 0;
                 const posOffsetY = Math.abs(dir.y) > 0.5 ? posOffset : 0;
 
-                const spawnedEnemy = makeEnemy(k, 
-                    enemy.spawnOnDeath.id, 
-                    enemy.path, 
-                    enemy.pathIndex, 
+                const spawnedEnemy = makeEnemy(k,
+                    enemy.spawnOnDeath.id,
+                    enemy.path,
+                    enemy.pathIndex,
                     k.vec2(enemy.pos).add(posOffsetX, posOffsetY)
                 );
 
@@ -272,4 +318,14 @@ function dirToRotation(dir: Vec2) {
         // vertical
         return dir.y > 0 ? 0 : 180;
     }
+}
+
+export function updateSpeed(this: EnemyGameObj) {
+    let multiplier = 1;
+
+    for (const key in this.speedMultipliers) {
+        multiplier *= (this.speedMultipliers as Record<string, number>)[key];
+    }
+
+    this.speed = this.baseSpeed * multiplier;
 }

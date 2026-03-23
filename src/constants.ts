@@ -27,10 +27,11 @@ export const MAX_CHILL_STACKS = 5;
 export const ICE_DAMAGE_PER_STACK = 10;
 export const CHARGE_DAMAGE_PER_STACK = 10;
 export const POISON_DAMAGE_PER_STACK = 10;
-export const MAX_CHARGE_STACKS = 5;
+export const MAX_CHARGE_STACKS = 8;
 export const MAX_POISON_STACKS = 5;
 export const STUN_PERCENTAGES = [5, 10, 20, 40, 60];
-export const STUN_DURATION = 0.75;
+export const STUN_PERCENT = 3;
+export const STUN_DURATION = 1;
 export const CURSE_CRIT = 10;
 export const TIME_TOWER_BASE_ANIM_SPEED = 30;
 export const SCYTHE_MAX_KILL_STACKS = 60;
@@ -198,7 +199,7 @@ export const LEVEL_WAVES = {
         waves: [
             {
                 spawns: [
-                    { id: "giantSkeleton", count: 1, interval: 1 }
+                    { id: "slime", count: 5, interval: 1 }
                 ],
                 reward: 50
             },
@@ -428,6 +429,7 @@ export type LevelId = keyof typeof LEVEL_WAVES;
 
 export const SCENES: Scenes = [
     ["level1", "level1-2"],
+    ["level2", "level2-2"],
     ["level2", "level2-2"]
 ];
 
@@ -553,7 +555,17 @@ export const ENEMIES = {
         damage: 1,
         speed: 75,
         sprite: "spiderling"
-    }
+    },
+    wolf: {
+        hp: 60,
+        damage: 1,
+        speed: 90,
+        sprite: "wolf",
+        speedBooster: {
+            amount: 1.5,
+            range: 2
+        }
+    },
 } as const satisfies Record<string, EnemyConfig>;
 
 export type EnemyId = keyof typeof ENEMIES;
@@ -1682,7 +1694,7 @@ export const TOWERS = {
         stats: {
             damage: 8,
             range: 6,
-            fireInterval: 2,
+            fireInterval: 1.75,
             critChance: 5,
             critDamage: 200
         },
@@ -1859,7 +1871,7 @@ export const TOWERS = {
         description: "Pours lava onto the path. This tower receives half the amount from range upgrades",
         cost: 350,
         stats: {
-            damage: 3,
+            damage: 4,
             range: 2.5,
             fireInterval: 900,
             critChance: 5,
@@ -1981,7 +1993,7 @@ export const ELEMENTS: Record<ElementName, ElementDef> = {
 
     Electric: {
         description: `Electric attacks apply 1 (+ 1 for every ${CHARGE_DAMAGE_PER_STACK} damage dealt) stack of charge to enemies, capping at ${MAX_CHARGE_STACKS} stacks. ` +
-            `Enemies have an electric damage % chance to be stunned for ${STUN_DURATION}s based on their charge stacks (${STUN_PERCENTAGES.join("%, ")}%)`,
+            `Each stack gives enemies a 3% chance to be stunned for ${STUN_DURATION}s whenever they receive electric damage`,
         applyEffect: (k, { target, damage }) => {
             if (target.state === "stunned") return;
 
@@ -1989,14 +2001,12 @@ export const ELEMENTS: Record<ElementName, ElementDef> = {
             const numStacks = 1 + Math.floor(damage / CHARGE_DAMAGE_PER_STACK);
 
             if (charge) {
+                const stacks = target.getChargeStacks();
+                const stunChance = STUN_PERCENT * stacks / 100;
+
                 target.addChargeStack(numStacks);
 
-                const stacks = target.getChargeStacks();
-                const baseChance = STUN_PERCENTAGES[stacks - 1] ?? 0;
-
-                const stunChance = (baseChance / 100 * damage) / 100;
-
-                if (Math.random() < stunChance) {
+                if (Math.random() < stunChance && !target.stunResistance) {
                     target.enterState("stunned");
                     target.unuse("charge");
                 }
