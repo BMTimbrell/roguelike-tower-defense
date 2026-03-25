@@ -340,6 +340,8 @@ export default function loadAssets(k: KAPLAYCtx) {
         }
     });
     k.loadSprite("arrow", "/sprites/arrow.png");
+    k.loadSprite("knife", "/sprites/knife.png");
+    k.loadSprite("poison knife", "/sprites/poison-knife.png");
     k.loadSprite("flaming arrow", "/sprites/flaming-arrow.png");
     k.loadSprite("bomb", "/sprites/bomb.png", {
         sliceX: 7,
@@ -427,6 +429,22 @@ export default function loadAssets(k: KAPLAYCtx) {
         }
     });
     k.loadSprite("knight base", "/sprites/knight-base.png");
+    k.loadSprite("assassin", "/sprites/assassin.png", {
+        sliceX: 4,
+        sliceY: 1,
+        anims: {
+            idle: 0,
+            shoot: { from: 1, to: 3, loop: false, speed: 20 }
+        }
+    });
+    k.loadSprite("assassin base", "/sprites/assassin-base.png");
+    k.loadSprite("assassin celebrating", "/sprites/assassin-celebrating.png", {
+        sliceX: 15,
+        sliceY: 1,
+        anims: {
+            celebrate: { from: 0, to: 14, loop: false, speed: 7 }
+        }
+    });
     k.loadSprite("sword handle", "/sprites/sword-handle.png");
     k.loadSprite("sword head", "/sprites/sword-head.png");
     k.loadSprite("slime", "/sprites/slime.png", {

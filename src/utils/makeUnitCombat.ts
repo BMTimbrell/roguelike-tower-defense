@@ -248,6 +248,10 @@ export default function makeUnitCombat(
                     damage: ctx.damage
                 });
 
+                if (isCrit && (opts.owner.fireIntervalBoost ?? 1) < 1) {
+                    opts.owner.fireIntervalBoostTimer = 1;
+                }
+
                 const projectile = makeProjectile(k, {
                     id: p.id,
                     pos: ctx.origin,
@@ -294,7 +298,10 @@ export default function makeUnitCombat(
         const interval =
             opts.owner.stats.fireInterval *
             (opts.owner.timeData?.timeMultiplier ?? 1)
-            * (1 - (opts.owner.charge?.currentCharge ?? 0));
+            * (1 - (opts.owner.charge?.currentCharge ?? 0))
+            * (opts.owner.fireIntervalBoostTimer > 0 ? opts.owner.fireIntervalBoost ?? 1 : 1);
+
+        if (shootTimer > interval) shootTimer = interval;
 
         const anim = gun.getCurAnim();
 

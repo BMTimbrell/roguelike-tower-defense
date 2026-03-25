@@ -2025,7 +2025,34 @@ export const HEROES = {
         }],
         levelUpOffset: { x: 0, y: 0 },
         priority: "Most Progress"
-    }
+    },
+    assassin: {
+        name: "Assassin",
+        sprite: "assassin-portrait.png",
+        description: "A hero who excels at taking out key targets",
+        gunSprite: "assassin",
+        baseSprite: "assassin base",
+        stats: {
+            damage: 10,
+            range: 3,
+            fireInterval: 0.75,
+            critChance: 10,
+            critDamage: 250
+        },
+        element: "Normal",
+        gunOffset: { x: 0, y: 0 },
+        anchorOffset: { x: 9 / 32, y: 12 / 32 },
+        shootOffset: { x: 0, y: -5 },
+        projectile: "knife",
+        canRotate: true,
+        targetType: "enemy",
+        footprint: {
+            w: 1,
+            h: 1
+        },
+        levelUpOffset: { x: 0, y: 0 },
+        priority: "Most Progress"
+    },
 } as const satisfies Record<string, HeroDef>;
 
 export type HeroId = keyof typeof HEROES;
@@ -2174,6 +2201,18 @@ export const PROJECTILES = {
         speed: 300,
         splashRadius: 0
     },
+    knife: {
+        sprite: "knife",
+        homing: true,
+        speed: 300,
+        splashRadius: 0
+    },
+    poisonKnife: {
+        sprite: "poison knife",
+        homing: true,
+        speed: 300,
+        splashRadius: 0
+    },
     flamingArrow: {
         sprite: "flaming arrow",
         homing: true,
@@ -2289,7 +2328,7 @@ export type ProjectileId = keyof typeof PROJECTILES;
 export const SKILLS = [
     {
         id: "range+1",
-        heroIds: ["wizard", "knight"],
+        heroIds: ["wizard", "knight", "assassin"],
         name: "Range +1",
         description: "Increase range by 1 tile",
         apply: hero => {
@@ -2299,7 +2338,7 @@ export const SKILLS = [
     },
     {
         id: "damage+20%",
-        heroIds: ["archer", "wizard"],
+        heroIds: ["archer", "wizard", "assassin"],
         name: "Damage +20%",
         description: "Increase damage by 20%",
         apply: hero => {
@@ -2309,7 +2348,7 @@ export const SKILLS = [
     },
     {
         id: "crit-chance+10%",
-        heroIds: ["archer", "wizard", "knight"],
+        heroIds: ["archer", "wizard", "knight", "assassin"],
         name: "Crit Chance 10%",
         description: "Increase crit chance by 10%",
         apply: hero => {
@@ -2329,7 +2368,7 @@ export const SKILLS = [
     },
     {
         id: "fire-rate+20%",
-        heroIds: ["archer", "wizard", "knight"],
+        heroIds: ["archer", "wizard", "knight", "assassin"],
         name: "Fire Rate +20%",
         description: "Increase fire rate by 20%",
         apply: hero => {
@@ -2707,6 +2746,136 @@ export const SKILLS = [
             });
         },
         icon: "sprites/knight-dark-skill-icon.png"
+    },
+    {
+        id: "assassin-poison-dagger",
+        heroIds: ["assassin"],
+        name: "Poison Dagger",
+        description: "50% chance to throw a poison dagger that deals 50% bonus damage",
+        apply(hero) {
+            hero.effects?.push({
+                firstEffect(ctx) {
+                    ctx.projectiles.forEach(projectile => {
+                        if (Math.random() < 0.5) return;
+
+                        projectile.bonusDamage = ctx.damage * 0.5;
+                        projectile.element = "Poison";
+                        projectile.id = "poisonKnife";
+                    });
+                }
+            });
+        },
+        icon: "sprites/poison-shot-skill-icon.png"
+    },
+    {
+        id: "assassin-killer-rythmn",
+        heroIds: ["assassin"],
+        name: "Deadly Rythmn",
+        description: "Every third attack against the same target is guarenteed to be a critical hit",
+        apply(hero) {
+            hero.critTracker = {
+                targetId: null,
+                count: 0
+            };
+
+            hero.effects?.push({
+                firstEffect(ctx) {
+                    if (!ctx.target) return;
+
+                    const tracker = hero.critTracker;
+                    const targetId = ctx.target.id;
+
+                    if (tracker.targetId !== targetId) {
+                        tracker.targetId = targetId;
+                        tracker.count = 0;
+                    }
+
+                    tracker.count++;
+
+                    if (tracker.count === 3) {
+                        tracker.count = 0;
+                        ctx.projectiles[0].bonusCrit = 100;
+                    }
+                }
+            });
+        },
+        icon: "sprites/killer-rythmn-skill-icon.png"
+    },
+    {
+        id: "assassin-killer-instinct",
+        heroIds: ["assassin"],
+        name: "Killer Instinct",
+        description: "Gain 100% crit chance when striking enemies below 25% health",
+        apply(hero) {
+            hero.effects?.push({
+                firstEffect(ctx) {
+                    if (!ctx.target) return;
+
+                    if (ctx.target.hp() / (ctx.target.maxHP() ?? 1) < 0.25) {
+                        ctx.projectiles[0].bonusCrit = 100;
+                    }
+                }
+            });
+        },
+        icon: "sprites/killer-instinct-skill-icon.png"
+    },
+    {
+        id: "crit-damage+100%",
+        heroIds: ["assassin"],
+        name: "Crit Damage +100%",
+        description: "Increase crit damage by 100%",
+        apply: hero => {
+            hero.stats.critDamage *= 2;
+        },
+        icon: "sprites/critdamage-icon.png"
+    },
+    {
+        id: "assassin-blood-rush",
+        heroIds: ["assassin"],
+        name: "Blood Rush",
+        description: "The assassin gains a short burst of attack speed each time he lands a critical hit",
+        apply: hero => {
+            hero.fireIntervalBoost = 0.5;
+        },
+        icon: "sprites/critdamage-icon.png"
+    },
+    {
+        id: "assassin-poison-dagger-plus",
+        heroIds: ["assassin"],
+        requires: ["assassin-poison-dagger"],
+        name: "Poison Dagger Plus",
+        description: "Poison dagger deals 100% bonus damage",
+        apply(hero) {
+            hero.effects?.push({
+                firstEffect(ctx) {
+                    ctx.projectiles.forEach(projectile => {
+                        if (projectile.element === "Poison") {
+                            projectile.bonusDamage = ctx.damage;
+                        }
+                    });
+                }
+            });
+        },
+        icon: "sprites/poison-shot-skill-icon.png"
+    },
+    {
+        id: "assassin-killer-instinct-plus",
+        heroIds: ["assassin"],
+        requires: ["assassin-killer-instinct"],
+        name: "Killer Instinct Plus",
+        description: "Gain 100% crit chance when striking enemies below 35% health",
+        apply(hero) {
+            hero.effects?.push({
+                firstEffect(ctx) {
+                    if (!ctx.target) return;
+
+                    if (ctx.target.hp() / (ctx.target.maxHP() ?? 1) < 0.35) {
+                        ctx.projectiles[0].bonusCrit = 100;
+                    }
+                }
+            });
+        },
+        icon: "sprites/killer-instinct-skill-icon.png"
     }
 ] as const satisfies HeroSkillDefBase[];
 

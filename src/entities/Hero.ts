@@ -67,6 +67,8 @@ export default function makeHero(k: KAPLAYCtx,
             changeNormalElement: false,
             hasRangeBoost: false,
             hasBlock: false,
+            fireIntervalBoost: 1,
+            fireIntervalBoostTimer: 0,
             ...("melee" in HEROES[heroId] ? { melee: HEROES[heroId]?.melee } : {}),
             ...("effects" in HEROES[heroId] ? { effects: HEROES[heroId].effects as UnitEffects } : {})
         },
@@ -236,6 +238,10 @@ export default function makeHero(k: KAPLAYCtx,
                 if (hero.state === "disabled" && k.time() >= hero.disabledUntil) {
                     hero.enterState("active");
                 }
+
+                if (hero.fireIntervalBoostTimer > 0) {
+                    hero.fireIntervalBoostTimer -= k.dt();
+                } else hero.fireIntervalBoostTimer = 0;
 
                 if (hero.state === "disabled") return;
 
