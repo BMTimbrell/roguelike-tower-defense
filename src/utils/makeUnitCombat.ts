@@ -165,6 +165,7 @@ export default function makeUnitCombat(
             }
 
             const ctx: AttackContext = {
+                context: k,
                 attacker: opts.owner,
                 target: enemy,
                 origin: gun.pos,

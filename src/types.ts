@@ -434,6 +434,7 @@ export type EnemyConfig = {
 };
 
 export type AttackContext = {
+    context: KAPLAYCtx;
     attacker: TowerGameObj | HeroGameObj;
     gun: GameObj;
     target?: EnemyGameObj;

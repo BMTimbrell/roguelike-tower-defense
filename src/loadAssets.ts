@@ -320,8 +320,8 @@ export default function loadAssets(k: KAPLAYCtx) {
         anims: {
             idle: 0,
             pouring: {
-                from: 1, 
-                to: 4, 
+                from: 1,
+                to: 4,
                 loop: true,
                 speed: 7
             }
@@ -411,6 +411,24 @@ export default function loadAssets(k: KAPLAYCtx) {
             celebrate: { from: 0, to: 18, loop: false, speed: 13 }
         }
     });
+    k.loadSprite("knight", "/sprites/knight.png", {
+        sliceX: 6,
+        sliceY: 1,
+        anims: {
+            idle: 0,
+            shoot: { from: 0, to: 5, loop: false, speed: 20 }
+        }
+    });
+    k.loadSprite("knight celebrating", "/sprites/knight-celebrating.png", {
+        sliceX: 14,
+        sliceY: 1,
+        anims: {
+            celebrate: { from: 0, to: 13, loop: false, speed: 8 }
+        }
+    });
+    k.loadSprite("knight base", "/sprites/knight-base.png");
+    k.loadSprite("sword handle", "/sprites/sword-handle.png");
+    k.loadSprite("sword head", "/sprites/sword-head.png");
     k.loadSprite("slime", "/sprites/slime.png", {
         sliceX: 7,
         sliceY: 2,
@@ -595,7 +613,7 @@ export default function loadAssets(k: KAPLAYCtx) {
         sliceX: 7,
         sliceY: 1,
         anims: {
-           heal: { from: 0, to: 6, loop: false, speed: 20 }
+            heal: { from: 0, to: 6, loop: false, speed: 20 }
         }
     });
     k.loadSprite("entrance arrow", "/sprites/green-arrow.png");
@@ -603,4 +621,25 @@ export default function loadAssets(k: KAPLAYCtx) {
     k.loadSprite("snow", "/sprites/snow.png");
     k.loadSprite("lava tile", "/sprites/lava-tile.png");
     k.loadSprite("stinger", "/sprites/bee-stinger.png");
+    k.loadShader(
+        "glow",
+        null,
+        `
+    
+            uniform float u_flash;
+            uniform float u_opacity;
+            uniform float u_r;
+            uniform float u_g;
+            uniform float u_b;
+    
+            vec4 frag(vec2 pos, vec2 uv, vec4 color, sampler2D tex) {
+                vec4 texColor = texture2D(tex, uv);
+                // blend texture with white based on flash, then apply opacity
+                vec4 blended = mix(texColor, vec4(u_r, u_g, u_b, texColor.a), u_flash);
+                blended.a *= u_opacity;
+                return blended;
+            }
+        
+    `
+    );
 }

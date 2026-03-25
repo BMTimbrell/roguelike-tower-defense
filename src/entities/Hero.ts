@@ -1,7 +1,7 @@
 import type { KAPLAYCtx, Vec2 } from "kaplay";
-import { ELEMENTS, HEROES, TILE_SIZE, type HeroId, type SkillId } from "../constants";
+import { ELEMENTS, HEROES, REDUCED_RANGE_TOWERS, TILE_SIZE, type HeroId, type SkillId } from "../constants";
 import { gameStateAtom, store } from "../store";
-import type { HeroGameObj, PathTile, SelectedHeroUI, TargetPriority, Tile } from "../types";
+import type { HeroGameObj, PathTile, SelectedHeroUI, TargetPriority, Tile, UnitEffects } from "../types";
 import makeUnitCombat from "../utils/makeUnitCombat";
 import makePlaceableOnGrid, { setBlockedTiles } from "../utils/makePlacementOnGrid";
 import { SKILLS } from "../constants";
@@ -64,7 +64,11 @@ export default function makeHero(k: KAPLAYCtx,
             canRotate,
             disabledUntil: 0,
             levelUpOffset,
-            changeNormalElement: false
+            changeNormalElement: false,
+            hasRangeBoost: false,
+            hasBlock: false,
+            ...("melee" in HEROES[heroId] ? { melee: HEROES[heroId]?.melee } : {}),
+            ...("effects" in HEROES[heroId] ? { effects: HEROES[heroId].effects as UnitEffects } : {})
         },
         "tower",
         "hero",
@@ -85,16 +89,6 @@ export default function makeHero(k: KAPLAYCtx,
         hero.height = sprite.height;
 
         hero.skillIds.forEach(sId => SKILLS.find(s => s.id === sId)?.apply(hero));
-
-        if (hero.changeNormalElement) {
-            k.get("tower").forEach(tower => {
-                if (tower.element === "Normal") {
-                    const elements = Object.keys(ELEMENTS).filter(e => e !== "Normal");
-                    const rand = k.randi(elements.length);
-                    tower.element = elements[rand];
-                }
-            });
-        }
 
         const combat = makeUnitCombat(k, {
             owner: hero,
@@ -155,7 +149,7 @@ export default function makeHero(k: KAPLAYCtx,
             if (combat.gun.getCurAnim()?.speed) combat.gun.getCurAnim()!.speed = 0;
         });
 
-        const placement = makePlaceableOnGrid(k, {
+        makePlaceableOnGrid(k, {
             obj: hero,
             heroSprite: sprite,
             tileGrid,
@@ -168,6 +162,39 @@ export default function makeHero(k: KAPLAYCtx,
                     ...prev,
                     selectedUI: null
                 }));
+
+                if (hero.changeNormalElement) {
+                    k.get("tower").forEach(tower => {
+                        if (tower.element === "Normal") {
+                            const elements = Object.keys(ELEMENTS).filter(e => e !== "Normal");
+                            const rand = k.randi(elements.length);
+                            tower.element = elements[rand];
+                        }
+                    });
+                }
+
+                if (hero.hasRangeBoost) {
+                    k.get("tower").forEach(tower => {
+                        const towerCenter = tower.pos.add(k.vec2((tower.footprint.w * TILE_SIZE) / 2));
+                        const heroCenter = hero.pos.add(k.vec2(TILE_SIZE / 2));
+ 
+                        if (towerCenter.dist(heroCenter) <= TILE_SIZE * tower.footprint.w) {
+                            const amount = REDUCED_RANGE_TOWERS.some(name => name === tower.name) ? 0.5 : 1;
+                            tower.stats.range += amount;
+                        }
+                    });
+                }
+
+                if (hero.hasBlock) {
+                    k.get("tower").forEach(tower => {
+                        const towerCenter = tower.pos.add(k.vec2((tower.footprint.w * TILE_SIZE) / 2));
+                        const heroCenter = hero.pos.add(k.vec2(TILE_SIZE / 2));
+ 
+                        if (towerCenter.dist(heroCenter) <= TILE_SIZE * tower.footprint.w) {
+                            tower.hasBlock = true;
+                        }
+                    });
+                }
             },
         });
 

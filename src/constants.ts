@@ -21,7 +21,7 @@ export const SMALL_DAMAGE_NUMBER_SIZE = 11;
 export const CRIT_DAMAGE_NUMBER_SIZE = 22;
 export const DAMAGE_NUMBER_COLOR = "#fffb00";
 export const CRIT_DAMAGE_NUMBER_COLOR = "#ff0000";
-export const CHARGE_DAMAGE_REQUIRED = 80;
+export const CHARGE_DAMAGE_REQUIRED = 0;
 export const CHILL_PERCENT = 6;
 export const MAX_CHILL_STACKS = 5;
 export const ICE_DAMAGE_PER_STACK = 10;
@@ -29,7 +29,6 @@ export const CHARGE_DAMAGE_PER_STACK = 10;
 export const POISON_DAMAGE_PER_STACK = 10;
 export const MAX_CHARGE_STACKS = 8;
 export const MAX_POISON_STACKS = 5;
-export const STUN_PERCENTAGES = [5, 10, 20, 40, 60];
 export const STUN_PERCENT = 3;
 export const STUN_DURATION = 1;
 export const CURSE_CRIT = 10;
@@ -41,9 +40,7 @@ export const REDUCED_RANGE_TOWERS = [
     "Balloon Tower",
     "Lava Tower",
     "Hammer Tower",
-    "Scythe Tower",
-    "Laser Cannon Tower",
-    "Flamethrower Tower"
+    "Scythe Tower"
 ];
 export const BASE_REROLL_COST = 5;
 export const BASE_DRAW_COST = 10;
@@ -671,7 +668,7 @@ export const TOWERS = {
         gunSprite: "ice tower",
         baseSprite: "ice tower base",
         sprite: "ice-tower-sprite.png",
-        description: "Emits a frost that damages all enemies in range. This tower receives half the amount from range upgrades",
+        description: "Emits a frost that damages all enemies in range. This tower receives half the amount from range upgrades and buffs",
         cost: 100,
         stats: {
             damage: 2,
@@ -920,7 +917,7 @@ export const TOWERS = {
         gunSprite: "chili tower",
         baseSprite: "plant tower base",
         sprite: "basic-tower-sprite.png",
-        description: "Deals fire damage to all enemies in range. This tower receives half the amount from range upgrades",
+        description: "Deals fire damage to all enemies in range. This tower receives half the amount from range upgrades and buffs",
         cost: 90,
         stats: {
             damage: 5,
@@ -1143,7 +1140,7 @@ export const TOWERS = {
         gunSprite: "hammer tower",
         baseSprite: "hammer tower base",
         sprite: "hammer-tower-sprite.png",
-        description: "Smash enemies with a hammer, dealing damage in a small area. This tower receives half the amount from range upgrades",
+        description: "Smash enemies with a hammer, dealing damage in a small area. This tower receives half the amount from range upgrades and buffs",
         cost: 70,
         stats: {
             damage: 30,
@@ -1181,6 +1178,7 @@ export const TOWERS = {
                         const smashEffect = k.add([
                             k.sprite("smash effect", { anim: "smash" }),
                             k.anchor("center"),
+                            k.z(999),
                             k.pos(impactPos)
                         ]);
 
@@ -1374,7 +1372,7 @@ export const TOWERS = {
         gunSprite: "laser cannon tower",
         baseSprite: "laser cannon tower base",
         sprite: "laser-cannon-tower-sprite.png",
-        description: "Shoots a giant laser beam that damages all enemies in its path. This tower receives half the amount from range upgrades",
+        description: "Shoots a giant laser beam that damages all enemies in its path",
         cost: 300,
         stats: {
             damage: 35,
@@ -1407,7 +1405,7 @@ export const TOWERS = {
         gunSprite: "balloon tower",
         baseSprite: "balloon tower base",
         sprite: "balloon-tower-sprite.png",
-        description: "Mechanical arms rub a giant balloon, zapping all enemies in range. This tower receives half the amount from range upgrades",
+        description: "Mechanical arms rub a giant balloon, zapping all enemies in range. This tower receives half the amount from range upgrades and buffs",
         cost: 300,
         stats: {
             damage: 8,
@@ -1628,7 +1626,7 @@ export const TOWERS = {
         gunSprite: "scythe tower",
         baseSprite: "scythe tower base",
         sprite: "scythe-tower-sprite.png",
-        description: `Reap enemies' souls, dealing +1 bonus damage per enemy killed (up to +${SCYTHE_MAX_KILL_STACKS}). This tower receives half the amount from range upgrades`,
+        description: `Reap enemies' souls, dealing +1 bonus damage per enemy killed (up to +${SCYTHE_MAX_KILL_STACKS}). This tower receives half the amount from range upgrades and buffs`,
         cost: 300,
         stats: {
             damage: 20,
@@ -1671,6 +1669,7 @@ export const TOWERS = {
                             k.rotate(ctx.gun.angle + 180),
                             k.opacity(1),
                             k.scale(2),
+                            k.z(999),
                             k.lifespan(0.25),
                             k.pos(impactPos)
                         ]);
@@ -1789,7 +1788,7 @@ export const TOWERS = {
         gunSprite: "flamethrower tower",
         baseSprite: "flamethrower tower base",
         sprite: "flamethrower-tower-sprite.png",
-        description: "Shoots a cone of flames, dealing devastating damage to nearby enemies. This tower receives half the amount from range upgrades",
+        description: "Shoots a cone of flames, dealing devastating damage to nearby enemies",
         cost: 300,
         stats: {
             damage: 4,
@@ -1868,7 +1867,7 @@ export const TOWERS = {
         gunSprite: "lava tower",
         baseSprite: "lava tower base",
         sprite: "lava-tower-sprite.png",
-        description: "Pours lava onto the path. This tower receives half the amount from range upgrades",
+        description: "Pours lava onto the path. This tower receives half the amount from range upgrades and buffs",
         cost: 350,
         stats: {
             damage: 4,
@@ -1900,7 +1899,7 @@ export const HEROES = {
     archer: {
         name: "Archer",
         sprite: "archer-protrait.png",
-        description: "A ranged hero that excels at taking down enemies from afar",
+        description: "A ranged hero who excels at taking down enemies from afar",
         gunSprite: "archer",
         baseSprite: "archer base",
         stats: {
@@ -1949,6 +1948,82 @@ export const HEROES = {
             h: 1
         },
         levelUpOffset: { x: 180, y: 100 },
+        priority: "Most Progress"
+    },
+    knight: {
+        name: "Knight",
+        sprite: "knight-portrait.png",
+        description: "A melee hero who deals devastating damage at close range",
+        gunSprite: "knight",
+        baseSprite: "knight base",
+        stats: {
+            damage: 20,
+            range: 1.5,
+            fireInterval: 1,
+            critChance: 10,
+            critDamage: 200
+        },
+        element: "Normal",
+        gunOffset: { x: 0, y: 0 },
+        anchorOffset: { x: 20 / 32, y: -18 / 32 },
+        shootOffset: { x: 0, y: 0 },
+        projectile: null,
+        canRotate: true,
+        targetType: "enemy",
+        footprint: {
+            w: 1,
+            h: 1
+        },
+        melee: {
+            meleeHandleSprite: "hammer tower",
+            meleeHeadSprite: "hammer tower",
+            handleLength: 1,
+            startAngle: 90,
+            swingAngle: 130
+        },
+        effects: [{
+            firstEffect(ctx) {
+                if (!ctx.meleeAttack) return;
+
+                ctx.attackType = "melee";
+
+                ctx.meleeAttack = {
+                    ...ctx.meleeAttack,
+                    splashRadius: 1,
+                    swingTime: 0.25,
+                    onImpact(k, impactPos) {
+                        const slash = k.add([
+                            k.sprite("slash effect", { width: 16, height: 32 }),
+                            k.anchor("center"),
+                            k.rotate(ctx.gun.angle + 180),
+                            k.opacity(1),
+                            k.scale(2),
+                            k.z(999),
+                            k.lifespan(0.25),
+                            k.pos(impactPos)
+                        ]);
+                        if (ctx.element === "Light") {
+                            slash.use(ctx.context.shader("glow", () => ({
+                                u_r: 1,
+                                u_g: 0.96,
+                                u_b: 0.64,
+                                u_flash: 1,
+                                u_opacity: 1
+                            })));
+                        } else if (ctx.element === "Dark") {
+                            slash.use(ctx.context.shader("glow", () => ({
+                                u_r: 0.2,
+                                u_g: 0.0,
+                                u_b: 0.2,
+                                u_flash: 1,
+                                u_opacity: 1
+                            })));
+                        }
+                    }
+                };
+            }
+        }],
+        levelUpOffset: { x: 0, y: 0 },
         priority: "Most Progress"
     }
 } as const satisfies Record<string, HeroDef>;
@@ -2214,7 +2289,7 @@ export type ProjectileId = keyof typeof PROJECTILES;
 export const SKILLS = [
     {
         id: "range+1",
-        heroIds: ["wizard"],
+        heroIds: ["wizard", "knight"],
         name: "Range +1",
         description: "Increase range by 1 tile",
         apply: hero => {
@@ -2233,8 +2308,8 @@ export const SKILLS = [
         icon: "sprites/damage-icon.png"
     },
     {
-        id: "crit-chance+20%",
-        heroIds: ["archer", "wizard"],
+        id: "crit-chance+10%",
+        heroIds: ["archer", "wizard", "knight"],
         name: "Crit Chance 10%",
         description: "Increase crit chance by 10%",
         apply: hero => {
@@ -2244,7 +2319,7 @@ export const SKILLS = [
     },
     {
         id: "crit-damage+50%",
-        heroIds: ["archer", "wizard"],
+        heroIds: ["archer", "wizard", "knight"],
         name: "Crit Damage +50%",
         description: "Increase crit damage by 50%",
         apply: hero => {
@@ -2254,7 +2329,7 @@ export const SKILLS = [
     },
     {
         id: "fire-rate+20%",
-        heroIds: ["archer", "wizard"],
+        heroIds: ["archer", "wizard", "knight"],
         name: "Fire Rate +20%",
         description: "Increase fire rate by 20%",
         apply: hero => {
@@ -2386,6 +2461,16 @@ export const SKILLS = [
         icon: "sprites/range-damage-skill-icon.png"
     },
     {
+        id: "archer-range-buff",
+        heroIds: ["archer"],
+        name: "Archer's Range",
+        description: "Gain +1 range and give all adjacent towers +1 range",
+        apply(hero) {
+            hero.hasRangeBoost = true;
+        },
+        icon: "sprites/range-boost-skill-icon.png"
+    },
+    {
         id: "wizard-ice-blast",
         heroIds: ["wizard"],
         name: "Ice Blast",
@@ -2504,6 +2589,124 @@ export const SKILLS = [
             });
         },
         icon: "sprites/ice-blast-icon.png"
+    },
+    {
+        id: "damage+40%",
+        heroIds: ["knight"],
+        name: "Damage +40%",
+        description: "Increase damage by 40%",
+        apply: hero => {
+            hero.stats.damage += Math.round(hero.stats.damage * 0.4);
+        },
+        icon: "sprites/damage-icon.png"
+    },
+    {
+        id: "knight-armour-buff",
+        heroIds: ["knight"],
+        name: "Knight's Armour",
+        description: "Attacks against the knight and all adjacent allies are blocked",
+        apply(hero) {
+            hero.hasBlock = true;
+        },
+        icon: "sprites/knight-armour-skill-icon.png"
+    },
+    {
+        id: "knight-holy-skill",
+        heroIds: ["knight"],
+        name: "Holy Knight",
+        description: "50% chance to do a light element attack that deals 50% bonus damage",
+        apply(hero) {
+            hero.effects?.push({
+                firstEffect(ctx) {
+                    if (Math.random() < 0.5) return;
+                    if (ctx.element === "Dark") return;
+
+                    ctx.damage += ctx.damage * 0.5;
+
+                    ctx.gun.use(ctx.context.shader("glow", () => ({
+                        u_r: 1,
+                        u_g: 0.96,
+                        u_b: 0.64,
+                        u_flash: 1,
+                        u_opacity: 1
+                    })));
+                    ctx.element = "Light";
+
+                    ctx.context.wait(0.5, () => {
+                        ctx.gun.use(ctx.context.shader("glow", () => ({
+                            u_flash: 0
+                        })))
+                    });
+                }
+            });
+        },
+        icon: "sprites/holy-knight-skill-icon.png"
+    },
+    {
+        id: "knight-dark-skill",
+        heroIds: ["knight"],
+        name: "Dark Knight",
+        description: "50% chance to do a dark element attack that deals 50% bonus damage",
+        apply(hero) {
+            hero.effects?.push({
+                firstEffect(ctx) {
+                    if (Math.random() < 0.5) return;
+                    if (ctx.element === "Light") return;
+
+                    ctx.damage += ctx.damage * 0.5;
+
+                    ctx.gun.use(ctx.context.shader("glow", () => ({
+                        u_r: 0.2,
+                        u_g: 0.0,
+                        u_b: 0.2,
+                        u_flash: 1,
+                        u_opacity: 1
+                    })));
+                    ctx.element = "Dark";
+
+                    ctx.context.wait(0.5, () => {
+                        ctx.gun.use(ctx.context.shader("glow", () => ({
+                            u_flash: 0
+                        })))
+                    })
+                }
+            });
+        },
+        icon: "sprites/knight-dark-skill-icon.png"
+    },
+    {
+        id: "knight-holy-skill-plus",
+        heroIds: ["knight"],
+        requires: ["knight-holy-skill"],
+        name: "Holy Knight Plus",
+        description: "Increase holy knight bonus damage to 100%",
+        apply(hero) {
+            hero.effects?.push({
+                firstEffect(ctx) {
+                    if (ctx.element === "Light") {
+                        ctx.damage = (ctx.damage / 1.5) * 2;
+                    }
+                }
+            });
+        },
+        icon: "sprites/holy-knight-skill-icon.png"
+    },
+    {
+        id: "knight-dark-skill-plus",
+        heroIds: ["knight"],
+        requires: ["knight-dark-skill"],
+        name: "Dark Knight Plus",
+        description: "Increase dark knight bonus damage to 100%",
+        apply(hero) {
+            hero.effects?.push({
+                firstEffect(ctx) {
+                    if (ctx.element === "Dark") {
+                        ctx.damage = (ctx.damage / 1.5) * 2;
+                    }
+                }
+            });
+        },
+        icon: "sprites/knight-dark-skill-icon.png"
     }
 ] as const satisfies HeroSkillDefBase[];
 

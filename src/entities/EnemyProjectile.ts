@@ -33,7 +33,14 @@ export default function makeEnemyProjectile(k: KAPLAYCtx, opts: {
 
         if (projectile.pos.dist(targetPos) < 4) {
 
-            if (Math.random() < hitChance) {
+            if (target.hasBlock) {
+                makeFloatingText(k, {
+                    text: "Block",
+                    color: "#FFFFFF",
+                    size: 12,
+                    pos: targetPos
+                });
+            } else if (Math.random() < hitChance) {
                 const duration = 2;
     
                 target.disabledUntil = Math.max(
