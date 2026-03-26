@@ -159,6 +159,10 @@ export default function makeLevelScene(k: KAPLAYCtx, sceneName: Scene) {
             reroll: {
                 ...prev.reroll,
                 roll: () => reroll(k),
+            },
+            heroButton: {
+                ...prev.heroButton,
+                visible: true
             }
         }));
 

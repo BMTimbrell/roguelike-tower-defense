@@ -103,10 +103,12 @@ export default function makeWaveSpawner(k: KAPLAYCtx, levelId: LevelId, waypoint
                 }
 
                 enemyDeadCheck = false;
+                const incomeMod = k.get("hero")[0]?.incomeMod ?? 1;
+
                 if (waveIndex >= 0) {
                     store.set(gameStateAtom, prev => ({
                         ...prev,
-                        gold: prev.gold + level.waves[waveIndex].reward,
+                        gold: prev.gold + (level.waves[waveIndex].reward * incomeMod),
                         deck: {
                             ...prev.deck,
                             drawCost: BASE_DRAW_COST

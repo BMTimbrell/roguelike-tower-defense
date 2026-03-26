@@ -149,12 +149,13 @@ export default function makeTower(
         obj: tower,
         tileGrid,
         tileSize: TILE_SIZE,
-        canConfirm: () => store.get(gameStateAtom).gold >= tower.cost,
+        canConfirm: () => store.get(gameStateAtom).gold >= (tower.cost * (k.get("hero")[0]?.discount ?? 1)),
         canCancel: () => true,
         onConfirm: () => {
+            const discount = k.get("hero")[0]?.discount ?? 1;
             store.set(gameStateAtom, prev => ({
                 ...prev,
-                gold: prev.gold - tower.cost,
+                gold: prev.gold - (tower.cost * discount),
                 selectedUI: null
             }));
 

@@ -1,7 +1,7 @@
 import type { KAPLAYCtx, Vec2, GameObj } from 'kaplay';
 import { store, gameStateAtom } from '../store';
 import type { EnemyId, ProjectileId } from '../constants';
-import { ENEMIES, STUN_DURATION, TILE_SIZE } from '../constants';
+import { ENEMIES, STUN_DURATION, TILE_SIZE, TOWER_RANGE_TOLERANCE } from '../constants';
 import healthBar from '../kaplayComponents/healthBar';
 import statusEffect from '../kaplayComponents/statusEffect';
 import type { EnemyGameObj, TowerGameObj } from '../types';
@@ -297,10 +297,13 @@ export default function makeEnemy(k: KAPLAYCtx, enemyId: EnemyId, waypoints: Vec
             }
         }
 
+        const hero = k.get("hero")[0];
+        const goldBonusMod = hero?.goldRush && hero?.pos.dist(enemy.pos) <= hero.stats.range * TILE_SIZE + TOWER_RANGE_TOLERANCE ? 
+            hero.goldRushBoost: 1;
         enemy.isDying = true;
         store.set(gameStateAtom, prev => ({
             ...prev,
-            gold: prev.gold + enemy.damage
+            gold: prev.gold + (enemy.damage * goldBonusMod)
         }));
         enemy.untag("enemy");
         enemy.unuse("area");

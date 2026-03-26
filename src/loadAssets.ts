@@ -341,6 +341,14 @@ export default function loadAssets(k: KAPLAYCtx) {
     });
     k.loadSprite("arrow", "/sprites/arrow.png");
     k.loadSprite("knife", "/sprites/knife.png");
+    k.loadSprite("money bag", "/sprites/money-bag.png", {
+        sliceX: 4,
+        sliceY: 1,
+        anims: {
+            idle: 0,
+            break: { from: 1, to: 3, loop: false, speed: 6 }
+        }
+    });
     k.loadSprite("poison knife", "/sprites/poison-knife.png");
     k.loadSprite("flaming arrow", "/sprites/flaming-arrow.png");
     k.loadSprite("bomb", "/sprites/bomb.png", {
@@ -445,8 +453,22 @@ export default function loadAssets(k: KAPLAYCtx) {
             celebrate: { from: 0, to: 14, loop: false, speed: 7 }
         }
     });
-    k.loadSprite("sword handle", "/sprites/sword-handle.png");
-    k.loadSprite("sword head", "/sprites/sword-head.png");
+    k.loadSprite("merchant base", "/sprites/merchant-base.png");
+    k.loadSprite("merchant", "/sprites/merchant.png", {
+        sliceX: 4,
+        sliceY: 1,
+        anims: {
+            idle: 0,
+            shoot: { from: 1, to: 3, loop: false, speed: 20 }
+        }
+    });
+    k.loadSprite("merchant celebrating", "/sprites/merchant-celebrating.png", {
+        sliceX: 10,
+        sliceY: 1,
+        anims: {
+            celebrate: { from: 0, to: 9, loop: false, speed: 7 }
+        }
+    });
     k.loadSprite("slime", "/sprites/slime.png", {
         sliceX: 7,
         sliceY: 2,

@@ -7,6 +7,7 @@ import chargeEffect from "./kaplayComponents/chargeEffect";
 import curseEffect from "./kaplayComponents/curseEffect";
 import { electricAoeBurst, flameAoeBurst, frostAoeBurst } from "./utils/makeUnitCombat";
 import blindEffect from "./kaplayComponents/blindEffect";
+import { gameStateAtom, store } from "./store";
 
 export const VIRTUAL_WIDTH = 800;
 export const VIRTUAL_HEIGHT = 600;
@@ -200,13 +201,13 @@ export const LEVEL_WAVES = {
                 ],
                 reward: 50
             },
-            // {
-            //     spawns: [
-            //         { id: "skeleton", count: 3, interval: 1 },
-            //         { id: "slime", count: 5, interval: 0.75 }
-            //     ],
-            //     reward: 100
-            // },
+            {
+                spawns: [
+                    { id: "skeleton", count: 3, interval: 1 },
+                    { id: "slime", count: 5, interval: 0.75 }
+                ],
+                reward: 100
+            },
             // {
             //     spawns: [
             //         { id: "armouredSkeleton", count: 3, interval: 1 },
@@ -254,13 +255,13 @@ export const LEVEL_WAVES = {
                 ],
                 reward: 50
             },
-            // {
-            //     spawns: [
-            //         { id: "orc", count: 1, interval: 1.5 },
-            //         { id: "bee", count: 5, interval: 1 }
-            //     ],
-            //     reward: 100
-            // },
+            {
+                spawns: [
+                    { id: "orc", count: 1, interval: 1.5 },
+                    { id: "bee", count: 5, interval: 1 }
+                ],
+                reward: 100
+            },
             // {
             //     spawns: [
             //         { id: "armouredOrc", count: 1, interval: 1.5 },
@@ -2053,6 +2054,41 @@ export const HEROES = {
         levelUpOffset: { x: 0, y: 0 },
         priority: "Most Progress"
     },
+    merchant: {
+        name: "Merchant",
+        sprite: "merchant-portrait.png",
+        description: "A hero who excels at making money",
+        gunSprite: "merchant",
+        baseSprite: "merchant base",
+        stats: {
+            damage: 8,
+            range: 3,
+            fireInterval: 0.75,
+            critChance: 5,
+            critDamage: 250
+        },
+        element: "Normal",
+        gunOffset: { x: 0, y: 0 },
+        anchorOffset: { x: 9 / 32, y: 12 / 32 },
+        shootOffset: { x: 0, y: -5 },
+        projectile: "moneyBag",
+        canRotate: true,
+        targetType: "enemy",
+        effects: [{
+            firstEffect(ctx) {
+                ctx.projectiles.forEach(projectile => {
+                    projectile.behaviors ??= {};
+                    projectile.behaviors.animOnDestroy = "break";
+                });
+            }
+        }],
+        footprint: {
+            w: 1,
+            h: 1
+        },
+        levelUpOffset: { x: 180, y: 100 },
+        priority: "Most Progress"
+    }
 } as const satisfies Record<string, HeroDef>;
 
 export type HeroId = keyof typeof HEROES;
@@ -2207,6 +2243,12 @@ export const PROJECTILES = {
         speed: 300,
         splashRadius: 0
     },
+    moneyBag: {
+        sprite: "money bag",
+        homing: true,
+        speed: 200,
+        splashRadius: 0
+    },
     poisonKnife: {
         sprite: "poison knife",
         homing: true,
@@ -2328,7 +2370,7 @@ export type ProjectileId = keyof typeof PROJECTILES;
 export const SKILLS = [
     {
         id: "range+1",
-        heroIds: ["wizard", "knight", "assassin"],
+        heroIds: ["wizard", "knight", "assassin", "merchant"],
         name: "Range +1",
         description: "Increase range by 1 tile",
         apply: hero => {
@@ -2338,7 +2380,7 @@ export const SKILLS = [
     },
     {
         id: "damage+20%",
-        heroIds: ["archer", "wizard", "assassin"],
+        heroIds: ["archer", "wizard", "assassin", "merchant"],
         name: "Damage +20%",
         description: "Increase damage by 20%",
         apply: hero => {
@@ -2348,7 +2390,7 @@ export const SKILLS = [
     },
     {
         id: "crit-chance+10%",
-        heroIds: ["archer", "wizard", "knight", "assassin"],
+        heroIds: ["archer", "wizard", "knight", "assassin", "merchant"],
         name: "Crit Chance 10%",
         description: "Increase crit chance by 10%",
         apply: hero => {
@@ -2358,7 +2400,7 @@ export const SKILLS = [
     },
     {
         id: "crit-damage+50%",
-        heroIds: ["archer", "wizard", "knight"],
+        heroIds: ["archer", "wizard", "knight", "merchant"],
         name: "Crit Damage +50%",
         description: "Increase crit damage by 50%",
         apply: hero => {
@@ -2368,7 +2410,7 @@ export const SKILLS = [
     },
     {
         id: "fire-rate+20%",
-        heroIds: ["archer", "wizard", "knight", "assassin"],
+        heroIds: ["archer", "wizard", "knight", "assassin", "merchant"],
         name: "Fire Rate +20%",
         description: "Increase fire rate by 20%",
         apply: hero => {
@@ -2837,7 +2879,7 @@ export const SKILLS = [
         apply: hero => {
             hero.fireIntervalBoost = 0.5;
         },
-        icon: "sprites/critdamage-icon.png"
+        icon: "sprites/blood-rush-skill-icon.png"
     },
     {
         id: "assassin-poison-dagger-plus",
@@ -2876,6 +2918,81 @@ export const SKILLS = [
             });
         },
         icon: "sprites/killer-instinct-skill-icon.png"
+    },
+    {
+        id: "merchant-midas-touch",
+        heroIds: ["merchant"],
+        name: "Midas Touch",
+        description: "Deal 3% of current gold as bonus damage",
+        apply(hero) {
+            hero.effects?.push({
+                firstEffect(ctx) {
+                    ctx.projectiles.forEach(projectile => {
+                        projectile.bonusDamage = Math.round(store.get(gameStateAtom).gold * 0.03);
+                    });
+                }
+            });
+        },
+        icon: "sprites/midas-touch-skill-icon.png"
+    },
+    {
+        id: "merchant-extra-income",
+        heroIds: ["merchant"],
+        name: "Extra Income",
+        description: "Gain 20% extra gold at the end of each wave while the merchant is on the field",
+        apply(hero) {
+            hero.incomeMod = 1.2;
+        },
+        icon: "sprites/extra-income-skill-icon.png"
+    },
+    {
+        id: "merchant-extra-income-plus",
+        heroIds: ["merchant"],
+        requires: ["merchant-extra-income"],
+        name: "Extra Income Plus",
+        description: "Gain 30% extra gold at the end of each wave while the merchant is on the field",
+        apply(hero) {
+            hero.incomeMod = 1.3;
+        },
+        icon: "sprites/extra-income-skill-icon.png"
+    },
+    {
+        id: "merchant-gold-rush",
+        heroIds: ["merchant"],
+        name: "Gold Rush",
+        description: "Gain twice the gold when enemies die in range of the merchant",
+        apply(hero) {
+            hero.goldRush = true;
+        },
+        icon: "sprites/gold-rush-skill-icon.png"
+    },
+    {
+        id: "merchant-gold-rush-plus",
+        heroIds: ["merchant"],
+        requires: ["merchant-gold-rush"],
+        name: "Gold Rush Plus",
+        description: "Gain thrice the gold when enemies die in range of the merchant",
+        apply(hero) {
+            hero.goldRushBoost = 3;
+        },
+        icon: "sprites/gold-rush-skill-icon.png"
+    },
+    {
+        id: "merchant-haggle",
+        heroIds: ["merchant"],
+        name: "Haggle",
+        description: "Towers get a 20% discount while the merchant is on the field",
+        apply(hero) {
+            hero.discount = 0.8;
+            store.set(gameStateAtom, prev => ({
+                ...prev,
+                towerButtons: prev.towerButtons.map(t => ({
+                    ...t,
+                    cost: t.cost * hero.discount
+                }))
+            }));
+        },
+        icon: "sprites/haggle-skill-icon.png"
     }
 ] as const satisfies HeroSkillDefBase[];
 
