@@ -58,7 +58,7 @@ export default function makeHero(k: KAPLAYCtx,
             canReposition: true,
             skillIds: heroId === "merchant" ? 
                 ["merchant-extra-income"] satisfies SkillId[] : 
-                    [] satisfies SkillId[],
+                    ["witch-deadly-toxins"] satisfies SkillId[],
             level: 1,
             footprint: { w: 1, h: 1 },
             element,
@@ -70,6 +70,11 @@ export default function makeHero(k: KAPLAYCtx,
             hasRangeBoost: false,
             hasBlock: false,
             goldRush: false,
+            festeringToxins: false,
+            volatileConcoction: false,
+            hasToxicAura: false,
+            hasDeadlyToxins: false,
+            volatileConcoctionChance: 50,
             goldRushBoost: 2,
             heroIncomeMod: 1,
             fireIntervalBoost: 1,
@@ -188,6 +193,17 @@ export default function makeHero(k: KAPLAYCtx,
                         if (towerCenter.dist(heroCenter) <= TILE_SIZE * tower.footprint.w) {
                             const amount = REDUCED_RANGE_TOWERS.some(name => name === tower.name) ? 0.5 : 1;
                             tower.stats.range += amount;
+                        }
+                    });
+                }
+
+                if (hero.hasToxicAura) {
+                    k.get("tower").forEach(tower => {
+                        const towerCenter = tower.pos.add(k.vec2((tower.footprint.w * TILE_SIZE) / 2));
+                        const heroCenter = hero.pos.add(k.vec2(TILE_SIZE / 2));
+ 
+                        if (towerCenter.dist(heroCenter) <= TILE_SIZE * tower.footprint.w) {
+                            tower.element = "Poison";
                         }
                     });
                 }

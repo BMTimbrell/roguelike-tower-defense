@@ -487,6 +487,7 @@ export type AttackContext = {
 export type EffectContext = {
     target: GameObj;
     damage: number;
+    chance?: number;
 };
 
 export type ProjectileBehavior = {

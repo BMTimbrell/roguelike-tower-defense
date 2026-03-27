@@ -251,7 +251,10 @@ export default function makeEnemy(k: KAPLAYCtx, enemyId: EnemyId, waypoints: Vec
 
     enemy.onHeal(() => {
         if (enemy.has("poison")) {
-            enemy.unuse("poison");
+            if (k.get("hero")[0]?.festeringToxins) {
+                const remainingStacks = (enemy as GameObj).removeStack();
+                if (remainingStacks < 1) enemy.unuse("poison");
+            } else enemy.unuse("poison");
         }
     });
 

@@ -15,36 +15,53 @@ export default function SelectHeroUI() {
         <div className={styles.container} style={{ fontSize: `${16 * scale}px` }}>
             <div className={styles.heading}>Pick a Hero</div>
 
-            <div className={styles.options}>
-                {selectHeroUI.options.map(id => (
-                    <div 
-                        key={id} 
-                        className={styles.option} 
-                        onClick={() => selectHeroUI.addHero(id)}
-                        onMouseEnter={() => setShowDetails(id)}
-                        onMouseLeave={() => setShowDetails(null)}
-                    >
-                        <div>
-                            {HEROES[id].name}
-                        </div>
-                        
-                        <img width={scale * 32} src={`sprites/${HEROES[id].sprite}`} />
+            <div className={styles["hero-container"]}>
 
-                        {showDetails === id && <>
+                <div className={styles.options}>
+                    {selectHeroUI.options.map(id => (
+                        <div
+                            key={id}
+                            className={styles.option}
+                            onClick={() => selectHeroUI.addHero(id)}
+                            onMouseEnter={() => setShowDetails(id)}
+                        >
+                            <div>
+                                {HEROES[id].name}
+                            </div>
+
+                            <img width={scale * 32} src={`sprites/${HEROES[id].sprite}`} />
+
+                        </div>
+                    ))}
+                </div>
+
+                {/* INFO PANEL */}
+                <div className={styles.panel}>
+                    {showDetails ? (
+                        <>
+                            <div className={styles.panelTitle}>
+                                {HEROES[showDetails].name}
+                            </div>
+
                             <div className={styles.description}>
-                                {HEROES[id].description}
+                                {HEROES[showDetails].description}
                             </div>
 
                             <Stats
-                                stats={HEROES[id].stats}
-                                element={HEROES[id].element}
+                                stats={HEROES[showDetails].stats}
+                                element={HEROES[showDetails].element}
                                 scale={scale}
                             />
-                        </>}
-
-                    </div>
-                ))}
+                        </>
+                    ) : (
+                        <div className={styles.placeholder}>
+                            Hover a hero to see details
+                        </div>
+                    )}
+                </div>
+                
             </div>
+
         </div>
     );
 }

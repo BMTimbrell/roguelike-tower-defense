@@ -190,6 +190,21 @@ export default function makeTower(
                 });
             }
 
+            if (k.get("hero").some(hero => hero.hasToxicAura)) {
+                const hero = k.get("hero")[0];
+
+                k.get("tower").forEach(tower => {
+                    if (tower === hero) return;
+
+                    const towerCenter = tower.pos.add(k.vec2((tower.footprint.w * TILE_SIZE) / 2));
+                    const heroCenter = hero.pos.add(k.vec2(TILE_SIZE / 2));
+
+                    if (towerCenter.dist(heroCenter) <= TILE_SIZE * tower.footprint.w) {
+                        tower.element = "Poison";
+                    }
+                });
+            }
+
             if (k.get("hero").some(hero => hero.hasBlock)) {
                 const hero = k.get("hero")[0];
 

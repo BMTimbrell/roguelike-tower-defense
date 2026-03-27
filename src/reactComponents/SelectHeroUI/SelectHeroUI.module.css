@@ -6,7 +6,13 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    row-gap: 5em;
+    gap: 3em;
+}
+
+.hero-container {
+    display: flex;
+    align-items: flex-start;
+    gap: 1em;
 }
 
 .heading {
@@ -19,7 +25,7 @@
     flex-wrap: wrap;
     justify-content: center;
     align-items: center;
-    gap: 5em;
+    gap: 1em;
     color: white;
 }
 
@@ -35,13 +41,39 @@
     background-color: var(--card-color);
     gap: 0.25em;
     max-width: 10em;
+    transition: transform 0.15s ease, background-color 0.15s ease;
 }
 
 .option:hover {
     cursor: pointer;
     background-color: rgb(122, 122, 122);
+    transform: scale(1.1);
 }
 
 .description {
     font-size: 0.75em;
+}
+
+/* INFO PANEL */
+.panel {
+    width: 12em;
+    min-height: 10em;
+    padding: 1.5em;
+    border-radius: 0.5em;
+    background-color: var(--card-color);
+    border: 1px solid rgba(255, 255, 255, 0.6);
+    color: white;
+    display: flex;
+    flex-direction: column;
+    gap: 1em;
+}
+
+/* PANEL CONTENT */
+.panelTitle {
+    font-size: 1.25em;
+}
+
+.placeholder {
+    opacity: 0.5;
+    font-size: 0.9em;
 }

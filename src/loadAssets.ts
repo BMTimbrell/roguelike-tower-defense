@@ -349,6 +349,7 @@ export default function loadAssets(k: KAPLAYCtx) {
             break: { from: 1, to: 3, loop: false, speed: 6 }
         }
     });
+    k.loadSprite("witch poison", "/sprites/witch-poison.png");
     k.loadSprite("poison knife", "/sprites/poison-knife.png");
     k.loadSprite("flaming arrow", "/sprites/flaming-arrow.png");
     k.loadSprite("bomb", "/sprites/bomb.png", {
@@ -467,6 +468,22 @@ export default function loadAssets(k: KAPLAYCtx) {
         sliceY: 1,
         anims: {
             celebrate: { from: 0, to: 9, loop: false, speed: 7 }
+        }
+    });
+    k.loadSprite("witch base", "/sprites/witch-base.png");
+    k.loadSprite("witch", "/sprites/witch.png", {
+        sliceX: 4,
+        sliceY: 1,
+        anims: {
+            idle: 0,
+            shoot: { from: 1, to: 3, loop: false, speed: 20 }
+        }
+    });
+    k.loadSprite("witch celebrating", "/sprites/witch-celebrating.png", {
+        sliceX: 25,
+        sliceY: 1,
+        anims: {
+            celebrate: { from: 0, to: 24, loop: false }
         }
     });
     k.loadSprite("slime", "/sprites/slime.png", {

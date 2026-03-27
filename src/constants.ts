@@ -2061,11 +2061,11 @@ export const HEROES = {
         gunSprite: "merchant",
         baseSprite: "merchant base",
         stats: {
-            damage: 8,
+            damage: 6,
             range: 3,
             fireInterval: 0.75,
             critChance: 5,
-            critDamage: 250
+            critDamage: 200
         },
         element: "Normal",
         gunOffset: { x: 0, y: 0 },
@@ -2088,6 +2088,33 @@ export const HEROES = {
         },
         levelUpOffset: { x: 180, y: 100 },
         priority: "Most Progress"
+    },
+    witch: {
+        name: "Witch",
+        sprite: "witch-portrait.png",
+        description: "A hero who withers enemies with deadly poisons",
+        gunSprite: "witch",
+        baseSprite: "witch base",
+        stats: {
+            damage: 10,
+            range: 4,
+            fireInterval: 1.25,
+            critChance: 10,
+            critDamage: 200
+        },
+        element: "Poison",
+        gunOffset: { x: 0, y: 0 },
+        anchorOffset: { x: 20 / 32, y: -18 / 32 },
+        shootOffset: { x: -20, y: 10 },
+        projectile: "witchPoison",
+        canRotate: true,
+        targetType: "enemy",
+        footprint: {
+            w: 1,
+            h: 1
+        },
+        levelUpOffset: { x: 180, y: 100 },
+        priority: "Most Progress"
     }
 } as const satisfies Record<string, HeroDef>;
 
@@ -2102,9 +2129,10 @@ export const ELEMENTS: Record<ElementName, ElementDef> = {
 
     Fire: {
         description: "Fire attacks have a 20% chance to burn enemies, dealing 1% max HP damage per second (caps at 10 damage)",
-        applyEffect: (k, { target }) => {
+        applyEffect: (k, { target, chance }) => {
             const duration = 5;
-            if (k.randi(100) < 20) {
+            console.log(chance)
+            if (k.randi(100) < (chance ?? 20)) {
                 const burn = target.has("burn");
                 if (burn) {
                     target.refreshBurn();
@@ -2200,6 +2228,10 @@ export const ELEMENTS: Record<ElementName, ElementDef> = {
                 return;
             }
             target.use(poisonEffect(k, stacks));
+
+            if (!k.get("hero")[0]?.volatileConcoction) return;
+
+            ELEMENTS["Fire"]?.applyEffect?.(k, { target, damage, chance: k.get("hero")[0]?.volatileConcoctionChance ?? 50 });
         },
         color: "#00FF00"
     }
@@ -2260,6 +2292,12 @@ export const PROJECTILES = {
         homing: true,
         speed: 300,
         splashRadius: 0
+    },
+    witchPoison: {
+        sprite: "witch poison",
+        homing: true,
+        speed: 200,
+        splashRadius: 1
     },
     slimeball: {
         sprite: "slimeball",
@@ -2370,7 +2408,7 @@ export type ProjectileId = keyof typeof PROJECTILES;
 export const SKILLS = [
     {
         id: "range+1",
-        heroIds: ["wizard", "knight", "assassin", "merchant"],
+        heroIds: ["wizard", "knight", "assassin", "merchant", "witch"],
         name: "Range +1",
         description: "Increase range by 1 tile",
         apply: hero => {
@@ -2380,7 +2418,7 @@ export const SKILLS = [
     },
     {
         id: "damage+20%",
-        heroIds: ["archer", "wizard", "assassin", "merchant"],
+        heroIds: ["archer", "wizard", "assassin", "merchant", "witch"],
         name: "Damage +20%",
         description: "Increase damage by 20%",
         apply: hero => {
@@ -2390,7 +2428,7 @@ export const SKILLS = [
     },
     {
         id: "crit-chance+10%",
-        heroIds: ["archer", "wizard", "knight", "assassin", "merchant"],
+        heroIds: ["archer", "wizard", "knight", "assassin", "merchant", "witch"],
         name: "Crit Chance 10%",
         description: "Increase crit chance by 10%",
         apply: hero => {
@@ -2400,7 +2438,7 @@ export const SKILLS = [
     },
     {
         id: "crit-damage+50%",
-        heroIds: ["archer", "wizard", "knight", "merchant"],
+        heroIds: ["archer", "wizard", "knight", "merchant", "witch"],
         name: "Crit Damage +50%",
         description: "Increase crit damage by 50%",
         apply: hero => {
@@ -2410,7 +2448,7 @@ export const SKILLS = [
     },
     {
         id: "fire-rate+20%",
-        heroIds: ["archer", "wizard", "knight", "assassin", "merchant"],
+        heroIds: ["archer", "wizard", "knight", "assassin", "merchant", "witch"],
         name: "Fire Rate +20%",
         description: "Increase fire rate by 20%",
         apply: hero => {
@@ -2611,15 +2649,15 @@ export const SKILLS = [
         id: "fireball-bounce",
         heroIds: ["wizard"],
         name: "Fireball Bounce",
-        description: "Fireballs have a 25% chance to bounce to nearby enemies",
+        description: "Fireballs have a 35% chance to bounce to nearby enemies",
         apply(hero) {
             hero.effects?.push({
                 secondEffect(ctx) {
                     const fireball = ctx.projectiles[0];
                     fireball.behaviors ??= {};
-                    fireball.behaviors.bounces ??= 6;
+                    fireball.behaviors.bounces ??= 8;
                     fireball.behaviors.bounceRange ??= 4 * TILE_SIZE;
-                    fireball.behaviors.bounceChance ??= 0.25;
+                    fireball.behaviors.bounceChance ??= 0.35;
                 }
             });
         },
@@ -2920,9 +2958,9 @@ export const SKILLS = [
         icon: "sprites/killer-instinct-skill-icon.png"
     },
     {
-        id: "merchant-midas-touch",
+        id: "merchant-capital-punishment",
         heroIds: ["merchant"],
-        name: "Midas Touch",
+        name: "Capital Punishment",
         description: "Deal 3% of current gold as bonus damage",
         apply(hero) {
             hero.effects?.push({
@@ -2933,7 +2971,24 @@ export const SKILLS = [
                 }
             });
         },
-        icon: "sprites/midas-touch-skill-icon.png"
+        icon: "sprites/capital-punishment-skill-icon.png"
+    },
+    {
+        id: "merchant-capital-punishment-plus",
+        heroIds: ["merchant"],
+        requires: ["merchant-capital-punishment"],
+        name: "Capital Punishment Plus",
+        description: "Deal 5% of current gold as bonus damage",
+        apply(hero) {
+            hero.effects?.push({
+                secondEffect(ctx) {
+                    ctx.projectiles.forEach(projectile => {
+                        projectile.bonusDamage = Math.round(store.get(gameStateAtom).gold * 0.05);
+                    });
+                }
+            });
+        },
+        icon: "sprites/capital-punishment-skill-icon.png"
     },
     {
         id: "merchant-extra-income",
@@ -2960,7 +3015,7 @@ export const SKILLS = [
         id: "merchant-gold-rush",
         heroIds: ["merchant"],
         name: "Gold Rush",
-        description: "Gain twice the gold when enemies die in range of the merchant",
+        description: "Gain twice the amount of gold when enemies die in range of the merchant",
         apply(hero) {
             hero.goldRush = true;
         },
@@ -2971,7 +3026,7 @@ export const SKILLS = [
         heroIds: ["merchant"],
         requires: ["merchant-gold-rush"],
         name: "Gold Rush Plus",
-        description: "Gain thrice the gold when enemies die in range of the merchant",
+        description: "Gain thrice the amount of gold when enemies die in range of the merchant",
         apply(hero) {
             hero.goldRushBoost = 3;
         },
@@ -2993,6 +3048,59 @@ export const SKILLS = [
             }));
         },
         icon: "sprites/haggle-skill-icon.png"
+    },
+    {
+        id: "witch-festering-toxins",
+        heroIds: ["witch"],
+        name: "Festering Toxins",
+        description: "Poison stacks go up to 10, and heals only remove 1 stack",
+        apply(hero) {
+            hero.festeringToxins = true;
+        },
+        icon: "sprites/festering-toxins-skill-icon.png"
+    },
+    {
+        id: "witch-volatile-concoction",
+        heroIds: ["witch"],
+        name: "Volatile Concoction",
+        description: "Poison attacks have a 50% chance to burn enemies",
+        apply(hero) {
+            hero.volatileConcoction = true;
+            hero.volatileConcoctionChance = 50;
+        },
+        icon: "sprites/volatile-concoction-skill-icon.png"
+    },
+    {
+        id: "witch-volatile-concoction-plus",
+        heroIds: ["witch"],
+        requires: ["witch-volatile-concoction"],
+        name: "Volatile Concoction Plus",
+        description: "Poison attacks have a 100% chance to burn enemies",
+        apply(hero) {
+            hero.volatileConcoction = true;
+            hero.volatileConcoctionChance = 100;
+        },
+        icon: "sprites/volatile-concoction-skill-icon.png"
+    },
+    {
+        id: "witch-toxic-aura",
+        heroIds: ["witch"],
+        name: "Toxic Aura",
+        description: "All adjacent towers become poison type",
+        apply(hero) {
+            hero.hasToxicAura = true;
+        },
+        icon: "sprites/toxic-aura-skill-icon.png"
+    },
+    {
+        id: "witch-deadly-toxins",
+        heroIds: ["witch"],
+        name: "Deadly Toxins",
+        description: "Poison has a 50% chance to deal double damage each tick",
+        apply(hero) {
+            hero.hasDeadlyToxins = true;
+        },
+        icon: "sprites/deadly-toxins-skill-icon.png"
     }
 ] as const satisfies HeroSkillDefBase[];
 
