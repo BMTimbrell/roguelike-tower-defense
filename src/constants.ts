@@ -3101,6 +3101,16 @@ export const SKILLS = [
             hero.hasDeadlyToxins = true;
         },
         icon: "sprites/deadly-toxins-skill-icon.png"
+    },
+    {
+        id: "witch-crippling-toxins",
+        heroIds: ["witch"],
+        name: "Crippling Toxins",
+        description: "Poison has a 50% chance to stun enemies each tick",
+        apply(hero) {
+            hero.hasCripplingToxins = true;
+        },
+        icon: "sprites/crippling-toxins-skill-icon.png"
     }
 ] as const satisfies HeroSkillDefBase[];
 

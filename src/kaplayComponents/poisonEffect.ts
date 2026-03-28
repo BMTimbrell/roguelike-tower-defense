@@ -1,6 +1,6 @@
-import type { KAPLAYCtx, Comp, HealthComp, GameObj, PosComp } from "kaplay";
+import type { KAPLAYCtx, Comp } from "kaplay";
 import type { EnemyGameObj, StatusEffectResult } from "../types";
-import type { StatusEffect, StatusEffectComp } from "./statusEffect";
+import type { StatusEffect } from "./statusEffect";
 import hurtEnemy from "../utils/hurtEnemy";
 import { MAX_POISON_STACKS } from "../constants";
 
@@ -33,11 +33,11 @@ export default function poisonEffect(k: KAPLAYCtx, stacks: number): PoisonComp {
             };
         },
 
-        add(this: GameObj<StatusEffectComp>) {
+        add(this: EnemyGameObj) {
             this.addStatus("poison");
         },
 
-        destroy(this: GameObj<StatusEffectComp>) {
+        destroy(this: EnemyGameObj) {
             this.removeStatus("poison");
         },
 
@@ -46,7 +46,7 @@ export default function poisonEffect(k: KAPLAYCtx, stacks: number): PoisonComp {
             return stacks;
         },
 
-        update(this: GameObj<HealthComp | PosComp | { isDying: boolean }>) {
+        update(this: EnemyGameObj) {
             tickTimer += k.dt();
 
             if (tickTimer >= tickRate) {
@@ -55,6 +55,10 @@ export default function poisonEffect(k: KAPLAYCtx, stacks: number): PoisonComp {
                 const damage = stacks + (k.get("hero")[0]?.hasDeadlyToxins && Math.random() < 0.5 ? stacks : 0);
 
                 hurtEnemy(k, { target: this as EnemyGameObj, element: "Poison", damage, isCrit: false, statusDamage: true, ignoreArmour: true });
+
+                if (k.get("hero")[0]?.hasCripplingToxins && Math.random() < 0.5) {
+                    this.enterState("stunned");
+                }
             }
 
             if (this.isDying) {
