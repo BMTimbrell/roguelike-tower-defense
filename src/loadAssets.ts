@@ -350,6 +350,7 @@ export default function loadAssets(k: KAPLAYCtx) {
         }
     });
     k.loadSprite("witch poison", "/sprites/witch-poison.png");
+    k.loadSprite("musical note", "/sprites/musical-note.png");
     k.loadSprite("poison knife", "/sprites/poison-knife.png");
     k.loadSprite("flaming arrow", "/sprites/flaming-arrow.png");
     k.loadSprite("bomb", "/sprites/bomb.png", {
@@ -484,6 +485,14 @@ export default function loadAssets(k: KAPLAYCtx) {
         sliceY: 1,
         anims: {
             celebrate: { from: 0, to: 24, loop: false }
+        }
+    });
+    k.loadSprite("songstress base", "/sprites/songstress-base.png");
+    k.loadSprite("songstress celebrating", "/sprites/songstress-celebrating.png", {
+        sliceX: 16,
+        sliceY: 1,
+        anims: {
+            celebrate: { from: 0, to: 15, loop: false, speed: 9 }
         }
     });
     k.loadSprite("slime", "/sprites/slime.png", {
@@ -699,4 +708,8 @@ export default function loadAssets(k: KAPLAYCtx) {
         
     `
     );
+    k.loadSprite("buff damage", "/sprites/damage-icon.png");
+    k.loadSprite("buff fire rate", "/sprites/firerate-icon.png");
+    k.loadSprite("buff crit", "/sprites/critchance-icon.png");
+    k.loadSprite("buff crit damage", "/sprites/critdamage-icon.png");
 }

@@ -1,7 +1,7 @@
 import type { KAPLAYCtx, Vec2 } from "kaplay";
 import { ELEMENTS, HEROES, REDUCED_RANGE_TOWERS, TILE_SIZE, type HeroId, type SkillId } from "../constants";
 import { gameStateAtom, store } from "../store";
-import type { HeroGameObj, PathTile, SelectedHeroUI, TargetPriority, Tile, UnitEffects } from "../types";
+import type { HeroGameObj, PathTile, SelectedHeroUI, Song, TargetPriority, Tile, UnitEffects } from "../types";
 import makeUnitCombat from "../utils/makeUnitCombat";
 import makePlaceableOnGrid, { setBlockedTiles } from "../utils/makePlacementOnGrid";
 import { SKILLS } from "../constants";
@@ -58,7 +58,8 @@ export default function makeHero(k: KAPLAYCtx,
             canReposition: true,
             skillIds: heroId === "merchant" ? 
                 ["merchant-extra-income"] satisfies SkillId[] : 
-                    [] satisfies SkillId[],
+                    heroId === "songstress" ? ["songstress-anthem-power"] satisfies SkillId[] :
+                        [] satisfies SkillId[],
             level: 1,
             footprint: { w: 1, h: 1 },
             element,
@@ -81,7 +82,8 @@ export default function makeHero(k: KAPLAYCtx,
             fireIntervalBoost: 1,
             fireIntervalBoostTimer: 0,
             ...("melee" in HEROES[heroId] ? { melee: HEROES[heroId]?.melee } : {}),
-            ...("effects" in HEROES[heroId] ? { effects: HEROES[heroId].effects as UnitEffects } : {})
+            ...("effects" in HEROES[heroId] ? { effects: HEROES[heroId].effects as UnitEffects } : {}),
+            ...("songs" in HEROES[heroId] ? { songs: HEROES[heroId].songs as Song[] } : {})
         },
         "tower",
         "hero",

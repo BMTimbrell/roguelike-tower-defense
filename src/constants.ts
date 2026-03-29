@@ -8,6 +8,7 @@ import curseEffect from "./kaplayComponents/curseEffect";
 import { electricAoeBurst, flameAoeBurst, frostAoeBurst } from "./utils/makeUnitCombat";
 import blindEffect from "./kaplayComponents/blindEffect";
 import { gameStateAtom, store } from "./store";
+import applySongBuff from "./utils/applySongBuff";
 
 export const VIRTUAL_WIDTH = 800;
 export const VIRTUAL_HEIGHT = 600;
@@ -2113,7 +2114,54 @@ export const HEROES = {
             w: 1,
             h: 1
         },
-        levelUpOffset: { x: 180, y: 100 },
+        levelUpOffset: { x: 0, y: 0 },
+        priority: "Most Progress"
+    },
+    songstress: {
+        name: "Songstress",
+        sprite: "songstress-portrait.png",
+        description: "A hero who strengthens towers with powerful songs",
+        gunSprite: "hammer tower",
+        baseSprite: "songstress base",
+        stats: {
+            damage: 5,
+            range: 4,
+            fireInterval: 1.5,
+            critChance: 5,
+            critDamage: 200
+        },
+        element: "Normal",
+        gunOffset: { x: 0, y: 0 },
+        anchorOffset: { x: 20 / 32, y: -18 / 32 },
+        shootOffset: { x: -20, y: 10 },
+        projectile: "musicalNote",
+        canRotate: true,
+        targetType: "enemy",
+        footprint: {
+            w: 1,
+            h: 1
+        },
+        songs: [],
+        effects: [{
+            firstEffect(ctx) {
+                const k = ctx.context;
+
+                const songIndex = ctx.context.randi(ctx.attacker.songs.length);
+                const song = ctx.attacker.songs[songIndex];
+
+                k.get("tower").forEach(tower => {
+                    const towerCenter = tower.pos.add(k.vec2((tower.footprint.w * TILE_SIZE) / 2));
+                    const heroCenter = ctx.attacker.pos.add(k.vec2(TILE_SIZE / 2));
+
+                    if (tower === ctx.attacker ||
+                        towerCenter.dist(heroCenter) > TILE_SIZE * tower.footprint.w + ((ctx.attacker.stats.range - 1) * TILE_SIZE)
+                    ) return;
+
+                    applySongBuff(tower as TowerGameObj, ctx, song);
+                });
+            }
+        }],
+        levelUpOffset: { x: 100, y: 0 },
         priority: "Most Progress"
     }
 } as const satisfies Record<string, HeroDef>;
@@ -2131,7 +2179,7 @@ export const ELEMENTS: Record<ElementName, ElementDef> = {
         description: "Fire attacks have a 20% chance to burn enemies, dealing 1% max HP damage per second (caps at 10 damage)",
         applyEffect: (k, { target, chance }) => {
             const duration = 5;
-            console.log(chance)
+
             if (k.randi(100) < (chance ?? 20)) {
                 const burn = target.has("burn");
                 if (burn) {
@@ -2299,6 +2347,13 @@ export const PROJECTILES = {
         speed: 200,
         splashRadius: 1
     },
+    musicalNote: {
+        sprite: "musical note",
+        homing: true,
+        speed: 200,
+        splashRadius: 0,
+        noRotate: true
+    },
     slimeball: {
         sprite: "slimeball",
         homing: true,
@@ -2408,7 +2463,7 @@ export type ProjectileId = keyof typeof PROJECTILES;
 export const SKILLS = [
     {
         id: "range+1",
-        heroIds: ["wizard", "knight", "assassin", "merchant", "witch"],
+        heroIds: ["wizard", "knight", "assassin", "merchant", "witch", "songstress"],
         name: "Range +1",
         description: "Increase range by 1 tile",
         apply: hero => {
@@ -2418,7 +2473,7 @@ export const SKILLS = [
     },
     {
         id: "damage+20%",
-        heroIds: ["archer", "wizard", "assassin", "merchant", "witch"],
+        heroIds: ["archer", "wizard", "assassin", "merchant", "witch", "songstress"],
         name: "Damage +20%",
         description: "Increase damage by 20%",
         apply: hero => {
@@ -2428,7 +2483,7 @@ export const SKILLS = [
     },
     {
         id: "crit-chance+10%",
-        heroIds: ["archer", "wizard", "knight", "assassin", "merchant", "witch"],
+        heroIds: ["archer", "wizard", "knight", "assassin", "merchant", "witch", "songstress"],
         name: "Crit Chance 10%",
         description: "Increase crit chance by 10%",
         apply: hero => {
@@ -2438,7 +2493,7 @@ export const SKILLS = [
     },
     {
         id: "crit-damage+50%",
-        heroIds: ["archer", "wizard", "knight", "merchant", "witch"],
+        heroIds: ["archer", "wizard", "knight", "merchant", "witch", "songstress"],
         name: "Crit Damage +50%",
         description: "Increase crit damage by 50%",
         apply: hero => {
@@ -2448,7 +2503,7 @@ export const SKILLS = [
     },
     {
         id: "fire-rate+20%",
-        heroIds: ["archer", "wizard", "knight", "assassin", "merchant", "witch"],
+        heroIds: ["archer", "wizard", "knight", "assassin", "merchant", "witch", "songstress"],
         name: "Fire Rate +20%",
         description: "Increase fire rate by 20%",
         apply: hero => {
@@ -3111,6 +3166,123 @@ export const SKILLS = [
             hero.hasCripplingToxins = true;
         },
         icon: "sprites/crippling-toxins-skill-icon.png"
+    },
+    {
+        id: "songstress-anthem-power",
+        heroIds: ["songstress"],
+        name: "Anthem of Power",
+        description: "Towers in range gain a 20% damage buff for 3 seconds",
+        apply(hero) {
+            hero.songs?.push({
+                type: "damage",
+                value: 0.2,
+                duration: 3
+            });
+        },
+        icon: "sprites/anthem-power-skill-icon.png"
+    },
+    {
+        id: "songstress-tempo-surge",
+        heroIds: ["songstress"],
+        name: "Tempo Surge",
+        description: "Towers in range gain a 20% fire rate buff for 3 seconds",
+        apply(hero) {
+            hero.songs?.push({
+                type: "fireRate",
+                value: 0.2,
+                duration: 3
+            });
+        },
+        icon: "sprites/tempo-surge-skill-icon.png"
+    },
+    {
+        id: "songstress-fortune-refrain",
+        heroIds: ["songstress"],
+        name: "Fortune's Refrain",
+        description: "Towers in range gain a 10% crit chance buff for 3 seconds",
+        apply(hero) {
+            hero.songs?.push({
+                type: "critChance",
+                value: 0.1,
+                duration: 3
+            });
+        },
+        icon: "sprites/fortune-refrain-skill-icon.png"
+    },
+    {
+        id: "songstress-crescendo-ruin",
+        heroIds: ["songstress"],
+        name: "Crescendo of Ruin",
+        description: "Towers in range gain a 50% crit damage buff for 3 seconds",
+        apply(hero) {
+            hero.songs?.push({
+                type: "critDamage",
+                value: 0.5,
+                duration: 3
+            });
+        },
+        icon: "sprites/crescendo-ruin-skill-icon.png"
+    },
+    {
+        id: "songstress-anthem-power-plus",
+        heroIds: ["songstress"],
+        requires: ["songstress-anthem-power"],
+        name: "Anthem of Power Plus",
+        description: "Towers in range gain a 30% damage buff for 4.5 seconds",
+        apply(hero) {
+            hero.songs?.push({
+                type: "damage",
+                value: 0.3,
+                duration: 4.5
+            });
+
+        },
+        icon: "sprites/anthem-power-skill-icon.png"
+    },
+    {
+        id: "songstress-tempo-surge-plus",
+        heroIds: ["songstress"],
+        requires: ["songstress-tempo-surge"],
+        name: "Tempo Surge Plus",
+        description: "Towers in range gain a 30% fire rate buff for 4.5 seconds",
+        apply(hero) {
+            hero.songs?.push({
+                type: "fireRate",
+                value: 0.3,
+                duration: 4.5
+            });
+        },
+        icon: "sprites/tempo-surge-skill-icon.png"
+    },
+    {
+        id: "songstress-fortune-refrain-plus",
+        heroIds: ["songstress"],
+        requires: ["songstress-fortune-refrain"],
+        name: "Fortune's Refrain Plus",
+        description: "Towers in range gain a 20% crit chance buff for 4.5 seconds",
+        apply(hero) {
+            hero.songs?.push({
+                type: "critChance",
+                value: 0.2,
+                duration: 4.5
+            });
+        },
+        icon: "sprites/fortune-refrain-skill-icon.png"
+    },
+    {
+        id: "songstress-crescendo-ruin-plus",
+        heroIds: ["songstress"],
+        requires: ["songstress-crescendo-ruin"],
+        name: "Crescendo of Ruin Plus",
+        description: "Towers in range gain a 80% crit damage buff for 4.5 seconds",
+        apply(hero) {
+            hero.songs?.push({
+                type: "critDamage",
+                value: 0.8,
+                duration: 4.5
+            });
+        },
+        icon: "sprites/crescendo-ruin-skill-icon.png"
     }
 ] as const satisfies HeroSkillDefBase[];
 

@@ -3,6 +3,7 @@ import type { EnemyGameObj, Tile, TowerGameObj } from "../types";
 import hurtEnemy from "./hurtEnemy";
 import { CURSE_CRIT, TILE_SIZE } from "../constants";
 import calcDamage from "./calcDamage";
+import getBuffValue from "./getBuffValue";
 
 export function makeLavaManager(k: KAPLAYCtx) {
     let tick = 0;
@@ -32,12 +33,15 @@ export function makeLavaManager(k: KAPLAYCtx) {
 
                     if (!tower) return;
 
+                    const damageMult = 1 + getBuffValue(k, tower, "damage");
+
                     const { damage, isCrit } = calcDamage({
                         damage: tower.stats.damage,
                         bonusDamage: 0,
                         bonusCritChance: e.has("curse") ? CURSE_CRIT : 0,
-                        critChance: tower.stats.critChance,
-                        critDamage: tower.stats.critDamage
+                        critChance: tower.stats.critChance + (getBuffValue(k, tower, "critChance") * 100),
+                        critDamage: tower.stats.critDamage * (1 + getBuffValue(k, tower, "critDamage")),
+                        damageMultiplier: damageMult
                     });
 
                     hurtEnemy(k, {

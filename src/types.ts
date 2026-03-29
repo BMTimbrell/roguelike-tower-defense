@@ -72,6 +72,7 @@ export type ProjectileDef = {
     speed: number;
     splashRadius: number;
     anim?: string;
+    noRotate?: boolean;
 };
 
 export type RandomProjectiles = {
@@ -168,6 +169,12 @@ export type TimeData = {
 };
 
 export type ContinuousEffect = "flame particle";
+export type BuffType = "damage" | "fireRate" | "critChance" | "critDamage";
+export type Buffs = Partial<Record<BuffType, {
+    value: number;
+    expiresAt: number;
+}>>;
+export type Song = { type: BuffType; value: number; duration: number; };
 
 export type TowerInstance = UnitInstance & {
     instanceId: string;
@@ -189,6 +196,7 @@ export type TowerInstance = UnitInstance & {
     randomProjectiles?: RandomProjectiles;
     killStacks?: number;
     lavaTiles?: Vec2[];
+    buffs?: Buffs;
 };
 
 export type TowerGameObj = GameObj & TowerInstance;
@@ -209,6 +217,7 @@ export type HeroSkillDef = Omit<HeroSkillDefBase, "requires"> & {
 
 export type HeroDef = Omit<TowerDef, 'cost' | "farmData" | "source"> & {
     levelUpOffset: { x: number; y: number; };
+    songs?: Song[];
 };
 export type HeroInstance = UnitInstance & {
     heroId: HeroId;
@@ -218,6 +227,7 @@ export type HeroInstance = UnitInstance & {
     tileGrid: Tile[][];
     pathTiles: PathTile[];
     levelUpOffset: { x: number; y: number; };
+    songs?: Song[];
 };
 
 export type HeroGameObj = GameObj & HeroInstance;

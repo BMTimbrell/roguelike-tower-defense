@@ -4,17 +4,19 @@ export default function calcDamage(opts: {
     bonusCritChance: number;
     critChance: number;
     critDamage: number;
-
-}): { isCrit: boolean; damage: number; } {
-    const { damage, bonusDamage, bonusCritChance, critChance, critDamage } = opts;
+    damageMultiplier?: number;
+}) {
+    const { damage, bonusDamage, bonusCritChance, critChance, critDamage, damageMultiplier } = opts;
     const roll = Math.random();
+
     const isCrit = roll < (critChance + bonusCritChance) / 100;
 
+    const baseDamage = (damage + bonusDamage) * (damageMultiplier ?? 1);
     const critDamageMod = isCrit ? critDamage / 100 : 1;
-    const finalDamage = Math.round((damage + bonusDamage) * critDamageMod);
+    const finalDamage = Math.round(baseDamage * critDamageMod);
 
     return {
         isCrit,
         damage: finalDamage
     };
-} 
+}

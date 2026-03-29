@@ -11,6 +11,7 @@ import { gameStateAtom, store } from "../store";
 import drawLaser from "./drawLaser";
 import isEnemyOnRay from "./isEnemyOnRay";
 import enemiesInCone from "./enemiesInCone";
+import getBuffValue from "./getBuffValue";
 
 export default function makeUnitCombat(
     k: KAPLAYCtx,
@@ -171,7 +172,7 @@ export default function makeUnitCombat(
                 origin: gun.pos,
                 gun: gun,
                 damage: opts.stats.damage + (
-                    opts.owner.timeData?.timeScaling?.damage ? 
+                    opts.owner.timeData?.timeScaling?.damage ?
                         opts.owner.timeData.timeMultiplier ** opts.owner.timeData.timeScaling.damagePow - 1 : 0
                 ) + killBonus,
                 element,
@@ -191,12 +192,15 @@ export default function makeUnitCombat(
 
             opts.owner.effects?.forEach(e => e.firstEffect?.(ctx));
 
+            const damageMult = 1 + getBuffValue(k, opts.owner as TowerGameObj, "damage");
+
             const { isCrit, damage } = calcDamage({
                 bonusDamage: 0,
                 bonusCritChance: enemy.has("curse") ? CURSE_CRIT : 0,
-                critChance: opts.stats.critChance,
-                critDamage: opts.stats.critDamage,
-                damage: ctx.damage
+                critChance: opts.stats.critChance + (getBuffValue(k, opts.owner as TowerGameObj, "critChance") * 100),
+                critDamage: opts.stats.critDamage * (1 + getBuffValue(k, opts.owner as TowerGameObj, "critDamage")),
+                damage: ctx.damage,
+                damageMultiplier: damageMult
             });
 
             const rotatedOffset = rotateVector(
@@ -243,9 +247,10 @@ export default function makeUnitCombat(
                 const { isCrit, damage } = calcDamage({
                     bonusDamage,
                     bonusCritChance: bonusCrit,
-                    critChance: opts.stats.critChance,
-                    critDamage: opts.stats.critDamage,
-                    damage: ctx.damage
+                    critChance: opts.stats.critChance + (getBuffValue(k, opts.owner as TowerGameObj, "critChance") * 100),
+                    critDamage: opts.stats.critDamage * (1 + getBuffValue(k, opts.owner as TowerGameObj, "critDamage")),
+                    damage: ctx.damage,
+                    damageMultiplier: damageMult
                 });
 
                 if (isCrit && (opts.owner.fireIntervalBoost ?? 1) < 1) {
@@ -274,19 +279,21 @@ export default function makeUnitCombat(
 
                 if (!ctx.attacker.priority) {
                     const resolveTarget = enemyTargetResolver(k, opts.owner);
-                    enemy = (resolveTarget() as { type: "enemy", enemy: EnemyGameObj}).enemy;
+                    enemy = (resolveTarget() as { type: "enemy", enemy: EnemyGameObj }).enemy;
                 }
             }
 
         } else if (target.type === "point") {
+            const damageMult = 1 + getBuffValue(k, opts.owner as TowerGameObj, "damage");
 
             makePathEntity(k, {
                 ownerId: opts.owner.instanceId,
                 from: opts.owner.pos.add((opts.owner.footprint.w * TILE_SIZE) / 2, (opts.owner.footprint.h * TILE_SIZE) / 2),
                 targetPos: target.pos,
                 damage: opts.stats.damage,
-                critChance: opts.stats.critChance,
-                critDamage: opts.stats.critDamage,
+                damageMultiplier: damageMult,
+                critChance: opts.stats.critChance + (getBuffValue(k, opts.owner as TowerGameObj, "critChance") * 100),
+                critDamage: opts.stats.critDamage * (1 + getBuffValue(k, opts.owner as TowerGameObj, "critDamage")),
                 element: opts.owner.element,
                 projectileId: opts.projectile ?? "basic"
             });
@@ -295,11 +302,13 @@ export default function makeUnitCombat(
     }
 
     function update() {
+        const fireRateBuff = getBuffValue(k, opts.owner as TowerGameObj, "fireRate");
         const interval =
             opts.owner.stats.fireInterval *
             (opts.owner.timeData?.timeMultiplier ?? 1)
             * (1 - (opts.owner.charge?.currentCharge ?? 0))
-            * (opts.owner.fireIntervalBoostTimer > 0 ? opts.owner.fireIntervalBoost ?? 1 : 1);
+            * (opts.owner.fireIntervalBoostTimer > 0 ? opts.owner.fireIntervalBoost ?? 1 : 1)
+            * (1 - fireRateBuff);
 
         if (shootTimer > interval) shootTimer = interval;
 

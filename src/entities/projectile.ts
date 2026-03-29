@@ -4,6 +4,7 @@ import type { ElementName, EnemyGameObj, ProjectileBehavior, ProjectileDef } fro
 import { findNewTarget, isValidTarget, selectBounceTarget, selectTarget, shortestAngleDiff } from '../utils/targetingHelpers';
 import calcDamage from '../utils/calcDamage';
 import hurtEnemy from '../utils/hurtEnemy';
+import getBuffValue from '../utils/getBuffValue';
 
 export default function makeProjectile(k: KAPLAYCtx, opts: {
     id: ProjectileId;
@@ -13,7 +14,7 @@ export default function makeProjectile(k: KAPLAYCtx, opts: {
     splashRadius: number;
     element: ElementName;
     crit?: boolean;
-    angle?: number;
+    angle: number;
     homing: boolean;
     homingDelay?: number;
     turnSpeed?: number;
@@ -24,13 +25,15 @@ export default function makeProjectile(k: KAPLAYCtx, opts: {
     let crit = opts.crit;
     let { damage, target } = opts;
     const { sprite, speed } = PROJECTILES[id];
+    const noRotate = (PROJECTILES[id] as Record<"noRotate", boolean>)?.noRotate ?? false;
+
     const anim = (PROJECTILES[id] as ProjectileDef).anim ? (PROJECTILES[id] as ProjectileDef).anim : null;
 
     const projectile = k.add([
         k.sprite(sprite, { ...(anim ? { anim } : {}) }),
         k.anchor("center"),
         k.pos(pos),
-        k.rotate(opts.angle ?? 0),
+        k.rotate(!noRotate ? opts.angle : 0),
         k.scale(scale),
         {
             splashRadius,
@@ -94,7 +97,7 @@ export default function makeProjectile(k: KAPLAYCtx, opts: {
                     const dir = towerPos.sub(projectile.pos);
                     const dist = dir.len();
 
-                    projectile.angle = projectile.pos.angle(towerPos);
+                    if (!noRotate) projectile.angle = projectile.pos.angle(towerPos);
                     projectile.pos = projectile.pos.add(
                         dir.unit().scale(projectile.speed * k.dt())
                     );
@@ -109,7 +112,7 @@ export default function makeProjectile(k: KAPLAYCtx, opts: {
             }
 
             // snap direction to new target immediately
-            projectile.angle = projectile.pos.angle(target.pos);
+            if (!noRotate) projectile.angle = projectile.pos.angle(target.pos);
             direction = target.pos.sub(projectile.pos).unit();
         }
 
@@ -128,7 +131,7 @@ export default function makeProjectile(k: KAPLAYCtx, opts: {
                 if (bestTarget && bestTarget !== target) {
                     target = bestTarget;
                     behaviors.persistent.state = "flying";
-                    projectile.angle = projectile.pos.angle(target.pos);
+                    if (!noRotate) projectile.angle = projectile.pos.angle(target.pos);
                     direction = target.pos.sub(projectile.pos).unit();
                 }
             }
@@ -165,12 +168,14 @@ export default function makeProjectile(k: KAPLAYCtx, opts: {
             if (!target.isDying && (behaviors?.persistent?.state !== "attached" || (attackTimer !== null && attackTimer <= 0))) {
                 if (behaviors?.persistent) {
                     const owner = behaviors.persistent.owner;
+                    const damageMult = 1 + getBuffValue(k, owner, "damage");
                     const { isCrit, damage: newDamage } = calcDamage({
                         bonusDamage: 0,
                         bonusCritChance: target.has("curse") ? CURSE_CRIT : 0,
-                        critChance: owner.stats.critChance,
-                        critDamage: owner.stats.critDamage,
-                        damage: owner.stats.damage
+                        critChance: owner.stats.critChance + (getBuffValue(k, owner, "critChance") * 100),
+                        critDamage: owner.stats.critDamage * (1 + getBuffValue(k, owner, "critDamage")),
+                        damage: owner.stats.damage,
+                        damageMultiplier: damageMult
                     });
                     crit = isCrit;
                     damage = newDamage;
@@ -194,7 +199,11 @@ export default function makeProjectile(k: KAPLAYCtx, opts: {
                     });
                 }
 
-                if (attackTimer !== null && behaviors?.persistent?.owner) attackTimer += behaviors.persistent.owner.stats.fireInterval;
+                if (attackTimer !== null && behaviors?.persistent?.owner) {
+                    const fireRateBuff = getBuffValue(k, behaviors.persistent.owner, "fireRate");
+                    attackTimer += behaviors.persistent.owner.stats.fireInterval * (1 - fireRateBuff);
+                }
+                    
             }
 
             if (remainingBounces > 0 && willBounce) {
@@ -206,7 +215,7 @@ export default function makeProjectile(k: KAPLAYCtx, opts: {
 
                 if (nextTarget) {
                     target = nextTarget;
-                    projectile.angle = projectile.pos.angle(target.pos);
+                    if (!noRotate) projectile.angle = projectile.pos.angle(target.pos);
 
                     // only change damage for first bounce
                     if (remainingBounces === (behaviors?.bounces ?? 0) - 1) {

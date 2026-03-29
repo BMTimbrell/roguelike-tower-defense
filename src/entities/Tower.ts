@@ -1,6 +1,6 @@
 import type { KAPLAYCtx, Vec2 } from 'kaplay';
 import { ELEMENTS, TILE_SIZE, type TowerId } from '../constants';
-import type { TowerGameObj, UnitEffects, TowerDef, SeedId, Tile, PathTile, RandomProjectiles, TimeData, ContinuousEffect, Charge } from '../types';
+import type { TowerGameObj, UnitEffects, TowerDef, SeedId, Tile, PathTile, RandomProjectiles, TimeData, ContinuousEffect, Charge, BuffType } from '../types';
 import { store, gameStateAtom } from '../store';
 import { calcUpgradeCost } from '../utils/calcUpgradeCost';
 import { TOWERS } from '../constants';
@@ -210,7 +210,7 @@ export default function makeTower(
 
                 k.get("tower").forEach(tower => {
                     if (tower === hero) return;
-                    
+
                     const towerCenter = tower.pos.add(k.vec2((tower.footprint.w * TILE_SIZE) / 2));
                     const heroCenter = hero.pos.add(k.vec2(TILE_SIZE / 2));
 
@@ -235,6 +235,46 @@ export default function makeTower(
 
     tower.onUpdate(() => {
         if (!tower.placed) return;
+
+        const buffs = tower.buffs ?? {};
+        tower.buffIcons ??= {};
+
+        let i = 0;
+
+        for (const type in buffs) {
+            const buff = buffs[type as BuffType];
+            if (!buff) continue;
+
+            let icon = tower.buffIcons[type as BuffType];
+
+            if (!icon) {
+                icon = k.add([
+                    k.sprite(getBuffIcon(type as BuffType)),
+                    k.pos(tower.pos),
+                    k.scale(1),
+                    k.opacity(1),
+                    k.anchor("center"),
+                ]);
+
+                tower.buffIcons[type as BuffType] = icon;
+            }
+
+            icon.pos = tower.pos.add(i * 20, 0);
+
+            if (buff.expiresAt < k.time()) delete buffs[type as BuffType];
+
+            const timeLeft = buff.expiresAt - k.time();
+            icon.opacity = Math.max(0.3, timeLeft / 3);
+
+            i++;
+        }
+
+        for (const type in tower.buffIcons) {
+            if (!buffs[type as BuffType]) {
+                k.destroy(tower.buffIcons[type as BuffType]);
+                delete tower.buffIcons[type as BuffType];
+            }
+        }
 
         if (tower.state === "disabled" && k.time() >= tower.disabledUntil) {
             tower.enterState("active");
@@ -314,5 +354,14 @@ export function addSelectTowerListener(k: KAPLAYCtx) {
             if (tower.selected && tower.placed && tower !== hoveredTower) tower.selected = false;
         });
     });
+}
+
+function getBuffIcon(type: BuffType) {
+    switch (type) {
+        case "damage": return "buff damage";
+        case "fireRate": return "buff fire rate";
+        case "critChance": return "buff crit";
+        case "critDamage": return "buff crit damage";
+    }
 }
 

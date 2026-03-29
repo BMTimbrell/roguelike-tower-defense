@@ -11,6 +11,7 @@ export default function makePathEntity(
         from: Vec2;
         targetPos: Vec2;
         damage: number;
+        damageMultiplier: number;
         critChance: number;
         critDamage: number;
         element: ElementName;
@@ -57,7 +58,8 @@ export default function makePathEntity(
                                                 bonusCritChance: enemy.has("curse") ? CURSE_CRIT : 0,
                                                 critChance: critChance,
                                                 critDamage: critDamage,
-                                                damage: opts.damage
+                                                damage: opts.damage,
+                                                damageMultiplier: opts.damageMultiplier
                                             });
 
                                             hurtEnemy(k, {
@@ -74,7 +76,8 @@ export default function makePathEntity(
                                         bonusCritChance: e.has("curse") ? CURSE_CRIT : 0,
                                         critChance: critChance,
                                         critDamage: critDamage,
-                                        damage: opts.damage
+                                        damage: opts.damage,
+                                        damageMultiplier: opts.damageMultiplier
                                     });
 
                                     hurtEnemy(k, {
