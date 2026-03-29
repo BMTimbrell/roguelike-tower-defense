@@ -1,6 +1,6 @@
 import type { GameObj, KAPLAYCtx, Vec2 } from "kaplay";
 import type { EnemyId, LevelId } from "../constants";
-import type { TowerGameObj, Wave } from "../types";
+import type { BuffType, TowerGameObj, Wave } from "../types";
 import { BASE_DRAW_COST, LEVEL_WAVES, MAX_HAND_SIZE, ROUND_DRAW_NUM, SEEDS } from "../constants";
 import makeEnemy from "./Enemy";
 import { store, gameStateAtom } from "../store";
@@ -129,6 +129,10 @@ export default function makeWaveSpawner(k: KAPLAYCtx, levelId: LevelId, waypoint
                         }));
                     }
                 }
+
+                k.get("tower").forEach(tower => {
+                    tower.buffs = null;
+                });
 
                 nextWaveTimer = level.startDelay;
                 waitingForNextWave = true;

@@ -143,6 +143,13 @@ export default function makeTower(
             }
         });
 
+        for (const type in tower.buffIcons) {
+            if (tower.buffs?.[type as BuffType]) {
+                k.destroy(tower.buffIcons[type as BuffType]);
+                delete tower.buffIcons[type as BuffType];
+            }
+        }
+
     });
 
     makePlaceableOnGrid(k, {
