@@ -113,7 +113,7 @@ export default function makeHero(k: KAPLAYCtx,
             gunOffset: k.vec2(gunOffset.x, gunOffset.y),
             shootOffset: k.vec2(shootOffset.x, shootOffset.y),
             anchorOffset: k.vec2(anchorOffset.x, anchorOffset.y),
-            resolveTarget: hero.targetType === "enemy" ? enemyTargetResolver(k, hero) : pathTargetResolver(k, hero.pathTiles, hero)
+            resolveTarget: hero.targetType === "enemy" ? enemyTargetResolver(k, hero) : pathTargetResolver(k, hero.pathTiles, hero, "nearest")
         });
 
         hero.onCollide("cursor", () => {

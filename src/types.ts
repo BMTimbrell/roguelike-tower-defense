@@ -175,6 +175,14 @@ export type Buffs = Partial<Record<BuffType, {
     expiresAt: number;
 }>>;
 export type Song = { type: BuffType; value: number; duration: number; };
+export type Summon = { 
+    name: string;
+    sprite: string;
+    damageMult: number;
+    attackSpeedMult: number;
+    speed: number;
+    maxAttacks: number;
+ };
 
 export type TowerInstance = UnitInstance & {
     instanceId: string;
@@ -447,7 +455,7 @@ export type AttackContext = {
     context: KAPLAYCtx;
     attacker: TowerGameObj | HeroGameObj;
     gun: GameObj;
-    target?: EnemyGameObj;
+    target?: AttackTarget;
     origin: Vec2;
 
     damage: number;
@@ -491,7 +499,9 @@ export type AttackContext = {
         headOffset?: number;
         swingAngle: number;
         startAngle: number;
-    }
+    },
+
+    isSummon?: boolean;
 };
 
 export type EffectContext = {

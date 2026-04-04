@@ -88,15 +88,26 @@ export default async function generateMap(k: KAPLAYCtx, filePath: string) {
         throw new Error("Waypoints not found");
     }
 
-    let index = 0
+    let index = 0;
 
-    for (const wp of waypoints) {
-        const tx = Math.floor(wp.x / TILE_SIZE)
-        const ty = Math.floor(wp.y / TILE_SIZE)
+    for (let i = 0; i < waypoints.length - 1; i++) {
+        const start = waypoints[i];
+        const end = waypoints[i + 1];
 
-        const tile = tileGrid[ty]?.[tx]
-        if (tile && tile.isPath) {
-            tile.pathIndex = index++
+        const dir = end.sub(start).unit();
+        const dist = start.dist(end);
+
+        for (let d = 0; d <= dist; d += TILE_SIZE) {
+            const pos = start.add(dir.scale(d));
+
+            const tx = Math.floor(pos.x / TILE_SIZE);
+            const ty = Math.floor(pos.y / TILE_SIZE);
+
+            const tile = tileGrid[ty]?.[tx];
+
+            if (tile && tile.isPath && tile.pathIndex === undefined) {
+                tile.pathIndex = index++;
+            }
         }
     }
 
@@ -111,9 +122,11 @@ export default async function generateMap(k: KAPLAYCtx, filePath: string) {
         }
     }
 
+    pathTiles.sort((a, b) => (a.tile.pathIndex ?? 0) - (b.tile.pathIndex ?? 0));
+
     return {
         mapData,
         tileGrid,
         pathTiles
-    }
+    };
 }

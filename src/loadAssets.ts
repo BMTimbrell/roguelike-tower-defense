@@ -489,10 +489,26 @@ export default function loadAssets(k: KAPLAYCtx) {
     });
     k.loadSprite("songstress base", "/sprites/songstress-base.png");
     k.loadSprite("songstress celebrating", "/sprites/songstress-celebrating.png", {
-        sliceX: 16,
+        sliceX: 17,
         sliceY: 1,
         anims: {
-            celebrate: { from: 0, to: 15, loop: false, speed: 9 }
+            celebrate: { from: 0, to: 16, loop: false, speed: 9 }
+        }
+    });
+    k.loadSprite("necromancer base", "/sprites/necromancer-base.png");
+    k.loadSprite("necromancer", "/sprites/necromancer.png", {
+        sliceX: 5,
+        sliceY: 1,
+        anims: {
+            idle: 0,
+            shoot: { from: 1, to: 4, loop: false, speed: 10 }
+        }
+    });
+    k.loadSprite("necromancer celebrating", "/sprites/necromancer-celebrating.png", {
+        sliceX: 14,
+        sliceY: 1,
+        anims: {
+            celebrate: { from: 0, to: 13, loop: false, speed: 8 }
         }
     });
     k.loadSprite("slime", "/sprites/slime.png", {
@@ -506,11 +522,12 @@ export default function loadAssets(k: KAPLAYCtx) {
     });
     k.loadSprite("skeleton", "/sprites/skeleton.png", {
         sliceX: 5,
-        sliceY: 2,
+        sliceY: 3,
         anims: {
             idle: 0,
             move: { from: 0, to: 3, loop: true, speed: 4 },
-            die: { from: 5, to: 9, loop: false }
+            die: { from: 5, to: 9, loop: false },
+            attack: { from: 10, to: 13, loop: false }
         }
     });
     k.loadSprite("armoured skeleton", "/sprites/armoured-skeleton.png", {

@@ -1,4 +1,4 @@
-import type { Upgrade, LevelWaves, EnemyConfig, TowerDef, ElementDef, ElementName, ProjectileDef, HeroDef, HeroSkillDefBase, TowerGameObj, Seed, Scenes } from "./types";
+import type { Upgrade, LevelWaves, EnemyConfig, TowerDef, ElementDef, ElementName, ProjectileDef, HeroDef, HeroSkillDefBase, TowerGameObj, Seed, Scenes, Summon } from "./types";
 import burnEffect from "./kaplayComponents/burnEffect";
 import calcFireInterval from "./utils/calcFireInterval";
 import poisonEffect from "./kaplayComponents/poisonEffect";
@@ -9,6 +9,7 @@ import { electricAoeBurst, flameAoeBurst, frostAoeBurst } from "./utils/makeUnit
 import blindEffect from "./kaplayComponents/blindEffect";
 import { gameStateAtom, store } from "./store";
 import applySongBuff from "./utils/applySongBuff";
+import spawnSummon from "./entities/Summon";
 
 export const VIRTUAL_WIDTH = 800;
 export const VIRTUAL_HEIGHT = 600;
@@ -898,8 +899,10 @@ export const TOWERS = {
         effects: [{
             secondEffect(ctx) {
                 ctx.projectiles.forEach(projectile => {
-                    const maxHp = ctx.target?.maxHP() ?? 1;
-                    const hp = ctx.target?.hp() ?? 0;
+                    if (ctx.target?.type !== "enemy") return;
+
+                    const maxHp = ctx.target?.enemy?.maxHP() ?? 1;
+                    const hp = ctx.target?.enemy?.hp() ?? 0;
                     const missingHealthPercent = 1 - hp / maxHp;
 
                     projectile.bonusDamage = ctx.damage * missingHealthPercent;
@@ -1576,8 +1579,10 @@ export const TOWERS = {
         effects: [{
             firstEffect(ctx) {
                 ctx.projectiles.forEach(projectile => {
-                    const maxHp = ctx.target?.maxHP() ?? 1;
-                    const hp = ctx.target?.hp() ?? 0;
+                    if (ctx.target?.type !== "enemy") return;
+
+                    const maxHp = ctx.target?.enemy?.maxHP() ?? 1;
+                    const hp = ctx.target?.enemy?.hp() ?? 0;
                     const missingHealthPercent = 1 - hp / maxHp;
 
                     projectile.bonusCrit = 100 * missingHealthPercent * 0.8;
@@ -2062,8 +2067,8 @@ export const HEROES = {
         gunSprite: "merchant",
         baseSprite: "merchant base",
         stats: {
-            damage: 6,
-            range: 3,
+            damage: 5,
+            range: 3.5,
             fireInterval: 0.75,
             critChance: 5,
             critDamage: 200
@@ -2125,7 +2130,7 @@ export const HEROES = {
         baseSprite: "songstress base",
         stats: {
             damage: 5,
-            range: 4,
+            range: 3.5,
             fireInterval: 1.5,
             critChance: 5,
             critDamage: 200
@@ -2159,6 +2164,42 @@ export const HEROES = {
 
                     applySongBuff(tower as TowerGameObj, ctx, song);
                 });
+            }
+        }],
+        levelUpOffset: { x: 100, y: 0 },
+        priority: "Most Progress"
+    },
+    necromancer: {
+        name: "Necromancer",
+        sprite: "necromancer-portrait.png",
+        description: "A hero who summons the undead to fight for him",
+        gunSprite: "necromancer",
+        baseSprite: "necromancer base",
+        stats: {
+            damage: 10,
+            range: 4,
+            fireInterval: 2,
+            critChance: 10,
+            critDamage: 200
+        },
+        element: "Dark",
+        gunOffset: { x: 0, y: 0 },
+        anchorOffset: { x: 20 / 32, y: -18 / 32 },
+        shootOffset: { x: -20, y: 10 },
+        projectile: null,
+        canRotate: true,
+        targetType: "point",
+        footprint: {
+            w: 1,
+            h: 1
+        },
+        effects: [{
+            firstEffect(ctx) {
+                if (ctx.target?.type !== "point") return;
+
+                ctx.isSummon = true;
+
+                spawnSummon(ctx.context, ctx, "skeleton", ctx.target.pos);
             }
         }],
         levelUpOffset: { x: 100, y: 0 },
@@ -2463,7 +2504,7 @@ export type ProjectileId = keyof typeof PROJECTILES;
 export const SKILLS = [
     {
         id: "range+1",
-        heroIds: ["wizard", "knight", "assassin", "merchant", "witch", "songstress"],
+        heroIds: ["wizard", "knight", "assassin", "merchant", "witch", "songstress", "necromancer"],
         name: "Range +1",
         description: "Increase range by 1 tile",
         apply: hero => {
@@ -2473,7 +2514,7 @@ export const SKILLS = [
     },
     {
         id: "damage+20%",
-        heroIds: ["archer", "wizard", "assassin", "merchant", "witch", "songstress"],
+        heroIds: ["archer", "wizard", "assassin", "merchant", "witch", "songstress", "necromancer"],
         name: "Damage +20%",
         description: "Increase damage by 20%",
         apply: hero => {
@@ -2483,7 +2524,7 @@ export const SKILLS = [
     },
     {
         id: "crit-chance+10%",
-        heroIds: ["archer", "wizard", "knight", "assassin", "merchant", "witch", "songstress"],
+        heroIds: ["archer", "wizard", "knight", "assassin", "merchant", "witch", "songstress", "necromancer"],
         name: "Crit Chance 10%",
         description: "Increase crit chance by 10%",
         apply: hero => {
@@ -2493,7 +2534,7 @@ export const SKILLS = [
     },
     {
         id: "crit-damage+50%",
-        heroIds: ["archer", "wizard", "knight", "merchant", "witch", "songstress"],
+        heroIds: ["archer", "wizard", "knight", "merchant", "witch", "songstress", "necromancer"],
         name: "Crit Damage +50%",
         description: "Increase crit damage by 50%",
         apply: hero => {
@@ -2503,7 +2544,7 @@ export const SKILLS = [
     },
     {
         id: "fire-rate+20%",
-        heroIds: ["archer", "wizard", "knight", "assassin", "merchant", "witch", "songstress"],
+        heroIds: ["archer", "wizard", "knight", "assassin", "merchant", "witch", "songstress", "necromancer"],
         name: "Fire Rate +20%",
         description: "Increase fire rate by 20%",
         apply: hero => {
@@ -2681,11 +2722,11 @@ export const SKILLS = [
         id: "wizard-lightning-strike",
         heroIds: ["wizard"],
         name: "Lightning Strike",
-        description: "25% chance to strike up to 3 targets with lightning for 50% damage",
+        description: "35% chance to strike up to 3 targets with lightning for 50% damage",
         apply(hero) {
             hero.effects?.push({
                 firstEffect(ctx) {
-                    if (Math.random() < 0.75) return;
+                    if (Math.random() < 0.65) return;
 
                     ctx.attackType = "lightning";
                     if (!ctx.lightning) {
@@ -2915,10 +2956,10 @@ export const SKILLS = [
 
             hero.effects?.push({
                 firstEffect(ctx) {
-                    if (!ctx.target) return;
+                    if (!ctx.target || ctx.target.type !== "enemy") return;
 
                     const tracker = hero.critTracker;
-                    const targetId = ctx.target.id;
+                    const targetId = ctx.target.enemy.id;
 
                     if (tracker.targetId !== targetId) {
                         tracker.targetId = targetId;
@@ -2944,9 +2985,11 @@ export const SKILLS = [
         apply(hero) {
             hero.effects?.push({
                 firstEffect(ctx) {
-                    if (!ctx.target) return;
+                    if (!ctx.target || ctx.target.type !== "enemy") return;
 
-                    if (ctx.target.hp() / (ctx.target.maxHP() ?? 1) < 0.25) {
+                    const enemy = ctx.target.enemy;
+
+                    if (enemy.hp() / (enemy.maxHP() ?? 1) < 0.25) {
                         ctx.projectiles[0].bonusCrit = 100;
                     }
                 }
@@ -3002,9 +3045,11 @@ export const SKILLS = [
         apply(hero) {
             hero.effects?.push({
                 firstEffect(ctx) {
-                    if (!ctx.target) return;
+                    if (!ctx.target || ctx.target.type !== "enemy") return;
 
-                    if (ctx.target.hp() / (ctx.target.maxHP() ?? 1) < 0.35) {
+                    const enemy = ctx.target.enemy;
+
+                    if (enemy.hp() / (enemy.maxHP() ?? 1) < 0.35) {
                         ctx.projectiles[0].bonusCrit = 100;
                     }
                 }
@@ -3228,12 +3273,12 @@ export const SKILLS = [
         heroIds: ["songstress"],
         requires: ["songstress-anthem-power"],
         name: "Anthem of Power Plus",
-        description: "Towers in range gain a 30% damage buff for 4.5 seconds",
+        description: "Towers in range gain a 30% damage buff for 5 seconds",
         apply(hero) {
             hero.songs?.push({
                 type: "damage",
                 value: 0.3,
-                duration: 4.5
+                duration: 5
             });
 
         },
@@ -3244,12 +3289,12 @@ export const SKILLS = [
         heroIds: ["songstress"],
         requires: ["songstress-tempo-surge"],
         name: "Tempo Surge Plus",
-        description: "Towers in range gain a 30% fire rate buff for 4.5 seconds",
+        description: "Towers in range gain a 30% fire rate buff for 5 seconds",
         apply(hero) {
             hero.songs?.push({
                 type: "fireRate",
                 value: 0.3,
-                duration: 4.5
+                duration: 5
             });
         },
         icon: "sprites/tempo-surge-skill-icon.png"
@@ -3259,12 +3304,12 @@ export const SKILLS = [
         heroIds: ["songstress"],
         requires: ["songstress-fortune-refrain"],
         name: "Fortune's Refrain Plus",
-        description: "Towers in range gain a 20% crit chance buff for 4.5 seconds",
+        description: "Towers in range gain a 20% crit chance buff for 5 seconds",
         apply(hero) {
             hero.songs?.push({
                 type: "critChance",
                 value: 0.2,
-                duration: 4.5
+                duration: 5
             });
         },
         icon: "sprites/fortune-refrain-skill-icon.png"
@@ -3274,12 +3319,12 @@ export const SKILLS = [
         heroIds: ["songstress"],
         requires: ["songstress-crescendo-ruin"],
         name: "Crescendo of Ruin Plus",
-        description: "Towers in range gain a 80% crit damage buff for 4.5 seconds",
+        description: "Towers in range gain a 80% crit damage buff for 5 seconds",
         apply(hero) {
             hero.songs?.push({
                 type: "critDamage",
                 value: 0.8,
-                duration: 4.5
+                duration: 5
             });
         },
         icon: "sprites/crescendo-ruin-skill-icon.png"
@@ -3305,3 +3350,24 @@ export const SEEDS: Seed = {
         turnsToGrow: 1
     }
 };
+
+export const SUMMONS = {
+    skeleton: {
+        name: "Skeleton",
+        sprite: "skeleton",
+        damageMult: 1,
+        attackSpeedMult: 1.5,
+        speed: 30,
+        maxAttacks: 5
+    },
+    zombie: {
+        name: "Zombie",
+        sprite: "skeleton",
+        damageMult: 2,
+        attackSpeedMult: 0.75,
+        speed: 20,
+        maxAttacks: 10
+    }
+} as const satisfies Record<string, Summon>;
+
+export type SummonId = keyof typeof SUMMONS;

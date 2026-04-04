@@ -316,7 +316,7 @@ export default function makeEnemy(k: KAPLAYCtx, enemyId: EnemyId, waypoints: Vec
     return enemy;
 }
 
-function dirToRotation(dir: Vec2) {
+export function dirToRotation(dir: Vec2) {
     if (Math.abs(dir.x) > Math.abs(dir.y)) {
         // horizontal
         return dir.x > 0 ? -90 : 90;

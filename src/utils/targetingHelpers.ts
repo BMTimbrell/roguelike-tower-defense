@@ -167,7 +167,8 @@ export function enemyTargetResolver(k: KAPLAYCtx, owner: TowerGameObj | HeroGame
 export function pathTargetResolver(
     k: KAPLAYCtx,
     pathTiles: PathTile[],
-    owner: TowerGameObj | HeroGameObj
+    owner: TowerGameObj | HeroGameObj,
+    mode: "random" | "nearest" = "random"
 ): TargetResolver {
     return () => {
         const origin = owner.pos.add((owner.footprint.w * TILE_SIZE) / 2, (owner.footprint.h * TILE_SIZE) / 2);
@@ -182,13 +183,31 @@ export function pathTargetResolver(
         //     (a.tile.pathIndex ?? 0) > (b.tile.pathIndex ?? 0) ? a : b
         // );
 
-        const pathIndex = k.randi(inRange.length);
-        const tile = inRange[pathIndex];
-        const randomOffset = k.vec2(k.randi(-5, 6), k.randi(-5, 6));
+        let tile: PathTile;
+
+        if (mode === "nearest") {
+            tile = inRange.reduce((closest, current) => {
+                const cPos = k.vec2(current.x * TILE_SIZE + TILE_SIZE / 2, current.y * TILE_SIZE + TILE_SIZE / 2);
+                const bestPos = k.vec2(closest.x * TILE_SIZE + TILE_SIZE / 2, closest.y * TILE_SIZE + TILE_SIZE / 2);
+
+                return cPos.dist(origin) < bestPos.dist(origin) ? current : closest;
+            });
+        } else {
+            tile = inRange[k.randi(inRange.length)];
+        }
+
+        const basePos = k.vec2(
+            tile.x * TILE_SIZE + TILE_SIZE / 2,
+            tile.y * TILE_SIZE + TILE_SIZE / 2
+        );
+
+        const pos = mode === "random"
+            ? basePos.add(k.vec2(k.randi(-5, 6), k.randi(-5, 6)))
+            : basePos;
 
         return {
             type: "point",
-            pos: k.vec2(tile.x * TILE_SIZE + TILE_SIZE / 2, tile.y * TILE_SIZE + TILE_SIZE / 2).add(randomOffset),
+            pos,
             pathIndex: tile.tile.pathIndex,
         };
     }

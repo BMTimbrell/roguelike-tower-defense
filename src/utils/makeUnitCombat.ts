@@ -1,5 +1,5 @@
 import type { GameObj, KAPLAYCtx, Vec2 } from "kaplay";
-import type { AttackContext, AttackTarget, DamageResult, ElementName, EnemyGameObj, HeroGameObj, RandomProjectiles, TargetResolver, TowerGameObj } from "../types";
+import type { AttackContext, AttackTarget, DamageResult, EnemyGameObj, HeroGameObj, RandomProjectiles, TargetResolver, TowerGameObj } from "../types";
 import { CURSE_CRIT, PROJECTILES, SCYTHE_MAX_KILL_STACKS, TILE_SIZE, TIME_TOWER_BASE_ANIM_SPEED, TOWER_RANGE_TOLERANCE, type ProjectileId } from "../constants";
 import makeProjectile from "../entities/Projectile";
 import { enemyTargetResolver, rotateVector, shortestAngleDiff } from "./targetingHelpers";
@@ -168,7 +168,7 @@ export default function makeUnitCombat(
             const ctx: AttackContext = {
                 context: k,
                 attacker: opts.owner,
-                target: enemy,
+                target,
                 origin: gun.pos,
                 gun: gun,
                 damage: opts.stats.damage + (
@@ -284,19 +284,36 @@ export default function makeUnitCombat(
             }
 
         } else if (target.type === "point") {
+            const ctx: AttackContext = {
+                context: k,
+                attacker: opts.owner,
+                target,
+                origin: gun.pos,
+                gun: gun,
+                damage: opts.stats.damage,
+                element: opts.owner.element,
+                visualEffect: null,
+                attackType: "projectile",
+                projectiles: []
+            };
+
+            opts.owner.effects?.forEach(e => e.firstEffect?.(ctx));
+            opts.owner.effects?.forEach(e => e.secondEffect?.(ctx));
             const damageMult = 1 + getBuffValue(k, opts.owner as TowerGameObj, "damage");
 
-            makePathEntity(k, {
-                ownerId: opts.owner.instanceId,
-                from: opts.owner.pos.add((opts.owner.footprint.w * TILE_SIZE) / 2, (opts.owner.footprint.h * TILE_SIZE) / 2),
-                targetPos: target.pos,
-                damage: opts.stats.damage,
-                damageMultiplier: damageMult,
-                critChance: opts.stats.critChance + (getBuffValue(k, opts.owner as TowerGameObj, "critChance") * 100),
-                critDamage: opts.stats.critDamage * (1 + getBuffValue(k, opts.owner as TowerGameObj, "critDamage")),
-                element: opts.owner.element,
-                projectileId: opts.projectile ?? "basic"
-            });
+            if (!ctx.isSummon) {
+                makePathEntity(k, {
+                    ownerId: opts.owner.instanceId,
+                    from: opts.owner.pos.add((opts.owner.footprint.w * TILE_SIZE) / 2, (opts.owner.footprint.h * TILE_SIZE) / 2),
+                    targetPos: target.pos,
+                    damage: opts.stats.damage,
+                    damageMultiplier: damageMult,
+                    critChance: opts.stats.critChance + (getBuffValue(k, opts.owner as TowerGameObj, "critChance") * 100),
+                    critDamage: opts.stats.critDamage * (1 + getBuffValue(k, opts.owner as TowerGameObj, "critDamage")),
+                    element: opts.owner.element,
+                    projectileId: opts.projectile ?? "basic"
+                });
+            } 
         }
 
     }
@@ -527,7 +544,7 @@ function executeAttack(k: KAPLAYCtx, ctx: AttackContext, dmg: DamageResult) {
 }
 
 function lightningAttack(k: KAPLAYCtx, ctx: AttackContext, dmg: DamageResult) {
-    if (!ctx.target) return;
+    if (!ctx.target || ctx.target.type !== "enemy") return;
     const { damage, isCrit } = dmg;
 
     const maxChains = ctx.lightning?.maxChains ?? 3;
@@ -535,7 +552,7 @@ function lightningAttack(k: KAPLAYCtx, ctx: AttackContext, dmg: DamageResult) {
 
     const chain = resolveChain(k, {
         startPos: ctx.origin,
-        target: ctx.target,
+        target: ctx.target.enemy,
         damage: Math.round(damage * (ctx.lightning?.damageMult ?? 1)),
         isCrit,
         element: "Electric",
@@ -567,7 +584,7 @@ function meleeAttack(
         isCrit: boolean;
     }
 ) {
-    if (!ctx.meleeAttack) return;
+    if (!ctx.meleeAttack || ctx.target?.type !== "enemy") return;
 
     const { damage, isCrit } = opts;
     const { meleeAttack, element, origin, target, gun } = ctx;
@@ -578,7 +595,7 @@ function meleeAttack(
 
     const { splashRadius, swingTime, onImpact } = meleeAttack;
 
-    const dir = target.pos.sub(origin);
+    const dir = target.enemy.pos.sub(origin);
     const dist = dir.len();
 
     gun.enterState("meleeSwing", {
@@ -593,7 +610,7 @@ function meleeAttack(
     k.wait(swingTime ?? 0.15, () => {
         if (splashRadius) {
             (k.get("enemy") as EnemyGameObj[]).forEach(e => {
-                if (e.pos.dist(target.pos) < splashRadius * TILE_SIZE) hurtEnemy(k, {
+                if (e.pos.dist(target.enemy.pos) < splashRadius * TILE_SIZE) hurtEnemy(k, {
                     target: e,
                     damage,
                     isCrit,
@@ -602,14 +619,14 @@ function meleeAttack(
                 });
             });
         } else {
-            hurtEnemy(k, { target, damage, isCrit, element, attacker: ctx.attacker as TowerGameObj });
+            hurtEnemy(k, { target: target.enemy, damage, isCrit, element, attacker: ctx.attacker as TowerGameObj });
         }
         if (meleeHandle && meleeHead) {
             meleeHandle.scale.x = 1;
             meleeHead.scale.x = 1;
         }
         gun.enterState("idle");
-        if (onImpact) onImpact(k, target.pos);
+        if (onImpact) onImpact(k, target.enemy.pos);
     });
 }
 
@@ -618,12 +635,12 @@ function sniperLaserAttack(
     ctx: AttackContext,
     dmg: DamageResult
 ) {
-    if (!ctx.target) return;
+    if (!ctx.target || ctx.target.type !== "enemy") return;
 
     const { damage, isCrit } = dmg;
 
-    drawLaser(k, ctx.origin, ctx.target.pos, 24, 0.04);
-    hurtEnemy(k, { target: ctx.target, damage, isCrit, element: ctx.element });
+    drawLaser(k, ctx.origin, ctx.target.enemy.pos, 24, 0.04);
+    hurtEnemy(k, { target: ctx.target.enemy, damage, isCrit, element: ctx.element });
 }
 
 function piercingLaserAttack(
@@ -631,13 +648,13 @@ function piercingLaserAttack(
     ctx: AttackContext,
     dmg: DamageResult
 ) {
-    if (!ctx.target) return;
+    if (!ctx.target || ctx.target.type !== "enemy") return;
 
     const { damage, isCrit } = dmg;
-    const dir = ctx.target.pos.sub(ctx.origin).unit();
-    const range = ctx.origin.dist(ctx.target.pos);
+    const dir = ctx.target.enemy.pos.sub(ctx.origin).unit();
+    const range = ctx.origin.dist(ctx.target.enemy.pos);
 
-    drawLaser(k, ctx.origin, ctx.target.pos, 106, 0.24);
+    drawLaser(k, ctx.origin, ctx.target.enemy.pos, 106, 0.24);
 
     (k.get("enemy") as EnemyGameObj[]).forEach(e => {
         if (isEnemyOnRay(e, ctx.origin, dir, range, 10)) {
@@ -651,13 +668,13 @@ function thunderAttack(
     ctx: AttackContext,
     dmg: DamageResult
 ) {
-    if (!ctx.target) return;
+    if (!ctx.target || ctx.target.type !== "enemy") return;
 
     const { damage, isCrit } = dmg;
 
     const stormCloud = k.add([
         k.sprite("thunder effect", { anim: "thunder" }),
-        k.pos(ctx.target.pos),
+        k.pos(ctx.target.enemy.pos),
         k.z(9999),
         k.anchor(k.vec2(0))
     ]);
@@ -677,13 +694,14 @@ function blizzardAttack(
     ctx: AttackContext,
     dmg: DamageResult
 ) {
-    if (!ctx.target) return;
+    if (!ctx.target || ctx.target.type !== "enemy") return;
 
     const { damage, isCrit } = dmg;
+    const enemy = ctx.target.enemy;
 
     for (let i = 0; i < 140; i++) {
         k.add([
-            k.pos(ctx.target.pos.add(k.rand(-40, 40), k.rand(-60, 60))),
+            k.pos(enemy.pos.add(k.rand(-40, 40), k.rand(-60, 60))),
             k.sprite("snow"),
             k.move(
                 k.vec2(k.rand(-80, -40), -10),
@@ -697,7 +715,7 @@ function blizzardAttack(
     }
 
     (k.get("enemy") as EnemyGameObj[]).forEach(e => {
-        if (e.pos.dist(ctx.target?.pos ?? k.vec2(0)) < 2.5 * TILE_SIZE) {
+        if (e.pos.dist(enemy.pos ?? k.vec2(0)) < 2.5 * TILE_SIZE) {
             hurtEnemy(k, { target: e, damage, isCrit, element: ctx.element });
         }
     });

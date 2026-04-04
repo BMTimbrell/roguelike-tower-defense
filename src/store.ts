@@ -62,7 +62,16 @@ export const startingOptionsAtom = atom<StartingOptions>({
 
 export const selectHeroUIAtom = atom<startingHeroUI>({
     visible: false,
-    options: ["archer", "wizard", "knight", "assassin", "merchant", "witch", "songstress"],
+    options: [
+        "archer", 
+        "wizard", 
+        "knight", 
+        "assassin", 
+        "merchant", 
+        "witch", 
+        "songstress",
+        "necromancer"
+    ],
     addHero: () => {}
 });
 
