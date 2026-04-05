@@ -196,7 +196,7 @@ export default function makeUnitCombat(
 
             const { isCrit, damage } = calcDamage({
                 bonusDamage: 0,
-                bonusCritChance: enemy.has("curse") ? CURSE_CRIT : 0,
+                bonusCritChance: enemy.has("curse") ? CURSE_CRIT + (k.get("hero")[0]?.hasCurseBuff ? 10 : 0) : 0,
                 critChance: opts.stats.critChance + (getBuffValue(k, opts.owner as TowerGameObj, "critChance") * 100),
                 critDamage: opts.stats.critDamage * (1 + getBuffValue(k, opts.owner as TowerGameObj, "critDamage")),
                 damage: ctx.damage,

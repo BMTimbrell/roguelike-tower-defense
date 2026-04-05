@@ -38,7 +38,7 @@ export function makeLavaManager(k: KAPLAYCtx) {
                     const { damage, isCrit } = calcDamage({
                         damage: tower.stats.damage,
                         bonusDamage: 0,
-                        bonusCritChance: e.has("curse") ? CURSE_CRIT : 0,
+                        bonusCritChance: e.has("curse") ? CURSE_CRIT + (k.get("hero")[0]?.hasCurseBuff ? 10 : 0) : 0,
                         critChance: tower.stats.critChance + (getBuffValue(k, tower, "critChance") * 100),
                         critDamage: tower.stats.critDamage * (1 + getBuffValue(k, tower, "critDamage")),
                         damageMultiplier: damageMult

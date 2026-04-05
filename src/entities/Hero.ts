@@ -29,11 +29,10 @@ export default function makeHero(k: KAPLAYCtx,
         shootOffset,
         projectile,
         canRotate,
+        priority,
         targetType,
         levelUpOffset
     } = HEROES[heroId];
-
-    const priority: TargetPriority = "Most Progress";
 
     const hero: HeroGameObj = k.make([
         k.pos(pos),
@@ -58,8 +57,9 @@ export default function makeHero(k: KAPLAYCtx,
             canReposition: true,
             skillIds: heroId === "merchant" ? 
                 ["merchant-extra-income"] satisfies SkillId[] : 
-                    heroId === "songstress" ? ["songstress-anthem-power"] satisfies SkillId[] :
-                        [] satisfies SkillId[],
+                heroId === "songstress" ? ["songstress-anthem-power"] satisfies SkillId[] :
+                heroId === "necromancer" ? ["summon-skeleton"] satisfies SkillId[] :
+                [] satisfies SkillId[],
             level: 1,
             footprint: { w: 1, h: 1 },
             element,
@@ -81,6 +81,10 @@ export default function makeHero(k: KAPLAYCtx,
             heroIncomeMod: 1,
             fireIntervalBoost: 1,
             fireIntervalBoostTimer: 0,
+            hasZombieSummon: false,
+            hasSkeletonBuff: false,
+            hasZombieBuff: false,
+            hasGhostBuff: false,
             ...("melee" in HEROES[heroId] ? { melee: HEROES[heroId]?.melee } : {}),
             ...("effects" in HEROES[heroId] ? { effects: HEROES[heroId].effects as UnitEffects } : {}),
             ...("songs" in HEROES[heroId] ? { songs: HEROES[heroId].songs as Song[] } : {})

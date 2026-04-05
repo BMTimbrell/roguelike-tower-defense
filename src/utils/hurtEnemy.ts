@@ -1,7 +1,8 @@
 import type { KAPLAYCtx } from "kaplay";
 import makeFloatingText from "../entities/FloatingText";
-import { CRIT_DAMAGE_NUMBER_SIZE, DAMAGE_NUMBER_SIZE, ELEMENTS, SMALL_DAMAGE_NUMBER_SIZE } from "../constants";
-import type { ElementName, EnemyGameObj, TowerGameObj } from "../types";
+import { CRIT_DAMAGE_NUMBER_SIZE, DAMAGE_NUMBER_SIZE, ELEMENTS, SMALL_DAMAGE_NUMBER_SIZE, TILE_SIZE, TOWER_RANGE_TOLERANCE } from "../constants";
+import type { AttackContext, ElementName, EnemyGameObj, TowerGameObj } from "../types";
+import spawnSummon from "../entities/Summon";
 
 export default function hurtEnemy(k: KAPLAYCtx, opts: {
     target: EnemyGameObj;
@@ -60,4 +61,24 @@ export default function hurtEnemy(k: KAPLAYCtx, opts: {
     });
 
     if (!statusDamage) ELEMENTS[element].applyEffect?.(k, { target, damage: effectiveDamage });
+
+    const hero = k.get("hero")[0];
+    if (hero?.hasGhostSummon && target.hp() <= 0 && hero.pos.add(TILE_SIZE / 2, TILE_SIZE / 2).dist(target.pos) <= hero.stats.range * TILE_SIZE + TOWER_RANGE_TOLERANCE) {
+        const ghostCtx = {
+            attacker: hero,
+            damage: hero.stats.damage,
+            element: hero.element,
+
+            target: {
+                type: "point",
+                pos: target.pos,
+                pathIndex: target.pathIndex + 1
+            },
+
+            context: k, 
+        } as AttackContext;
+
+        const summon = spawnSummon(k, ghostCtx, "ghost", target.pos);
+        summon.path = target.path;
+    }
 }

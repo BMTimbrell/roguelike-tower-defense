@@ -2178,7 +2178,7 @@ export const HEROES = {
         stats: {
             damage: 10,
             range: 4,
-            fireInterval: 2,
+            fireInterval: 4,
             critChance: 10,
             critDamage: 200
         },
@@ -2193,17 +2193,8 @@ export const HEROES = {
             w: 1,
             h: 1
         },
-        effects: [{
-            firstEffect(ctx) {
-                if (ctx.target?.type !== "point") return;
-
-                ctx.isSummon = true;
-
-                spawnSummon(ctx.context, ctx, "skeleton", ctx.target.pos);
-            }
-        }],
-        levelUpOffset: { x: 100, y: 0 },
-        priority: "Most Progress"
+        levelUpOffset: { x: 150, y: 0 },
+        priority: null
     }
 } as const satisfies Record<string, HeroDef>;
 
@@ -3328,6 +3319,93 @@ export const SKILLS = [
             });
         },
         icon: "sprites/crescendo-ruin-skill-icon.png"
+    },
+    {
+        id: "summon-skeleton",
+        heroIds: ["necromancer"],
+        name: "Summon Skeleton",
+        description: "Summon a skeleton that deals 100% of the necomancer's damage at 400% the fire rate. Lasts for 3 attacks",
+        apply(hero) {
+            hero.effects?.push({
+                firstEffect(ctx) {
+                    if (ctx.target?.type !== "point") return;
+
+                    ctx.isSummon = true;
+
+                    let summonType: SummonId = "skeleton";
+
+                    if (hero.hasZombieSummon) {
+                        summonType = Math.random() < 0.5 ? "zombie" : "skeleton";
+                    }
+
+                    spawnSummon(ctx.context, ctx, summonType, ctx.target.pos);
+                }
+            });
+        },
+        icon: "sprites/summon-skeleton-skill-icon.png"
+    },
+    {
+        id: "summon-zombie",
+        heroIds: ["necromancer"],
+        name: "Summon Zombie",
+        description: "Summon a zombie that deals 150% of the necomancer's damage at 200% the fire rate. Lasts for 4 attacks",
+        apply(hero) {
+            hero.hasZombieSummon = true;
+        },
+        icon: "sprites/summon-zombie-skill-icon.png"
+    },
+    {
+        id: "summon-ghost",
+        heroIds: ["necromancer"],
+        name: "Summon Ghost",
+        description: "Summon a ghost each time an enemy dies in range of the necromancer that deals 10% of the necomancer's damage at 800% the fire rate. Lasts for 5 attacks",
+        apply(hero) {
+            hero.hasGhostSummon = true;
+        },
+        icon: "sprites/summon-ghost-skill-icon.png"
+    },
+    {
+        id: "stronger-skeletons",
+        heroIds: ["necromancer"],
+        requires: ["summon-skeleton"],
+        name: "Stronger Skeletons",
+        description: "Skeletons deal 120% of the necromancer's damage at 800% the fire rate",
+        apply(hero) {
+            hero.hasSkeletonBuff = true;
+        },
+        icon: "sprites/summon-skeleton-skill-icon.png"
+    },
+    {
+        id: "stronger-zombies",
+        heroIds: ["necromancer"],
+        requires: ["summon-zombie"],
+        name: "Stronger Zombies",
+        description: "Zombies deal 200% of the necromancer's damage and have a 25% chance to stun enemies",
+        apply(hero) {
+            hero.hasZombieBuff = true;
+        },
+        icon: "sprites/summon-zombie-skill-icon.png"
+    },
+    {
+        id: "stronger-ghosts",
+        heroIds: ["necromancer"],
+        requires: ["summon-ghost"],
+        name: "Stronger Ghosts",
+        description: "Ghosts attack up to 10 times before disappearing",
+        apply(hero) {
+            hero.hasGhostBuff = true;
+        },
+        icon: "sprites/summon-ghost-skill-icon.png"
+    },
+    {
+        id: "stronger-curse",
+        heroIds: ["necromancer"],
+        name: "Stronger Curse",
+        description: "Cursed Enemies have an extra 10% chance to receive critical hits while the necromancer is on the field",
+        apply(hero) {
+            hero.hasCurseBuff = true;
+        },
+        icon: "sprites/stronger-curse-skill-icon.png"
     }
 ] as const satisfies HeroSkillDefBase[];
 
@@ -3356,17 +3434,25 @@ export const SUMMONS = {
         name: "Skeleton",
         sprite: "skeleton",
         damageMult: 1,
-        attackSpeedMult: 1.5,
+        attackSpeedMult: 4,
         speed: 30,
-        maxAttacks: 5
+        maxAttacks: 3
     },
     zombie: {
         name: "Zombie",
-        sprite: "skeleton",
-        damageMult: 2,
-        attackSpeedMult: 0.75,
+        sprite: "zombie",
+        damageMult: 1.5,
+        attackSpeedMult: 2,
         speed: 20,
-        maxAttacks: 10
+        maxAttacks: 4
+    },
+    ghost: {
+        name: "Ghost",
+        sprite: "ghost",
+        damageMult: 0.1,
+        attackSpeedMult: 8,
+        speed: 40,
+        maxAttacks: 5
     }
 } as const satisfies Record<string, Summon>;
 

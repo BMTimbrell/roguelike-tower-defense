@@ -622,6 +622,7 @@ export default function loadAssets(k: KAPLAYCtx) {
         anims: {
             idle: 0,
             move: { from: 0, to: 7, loop: true, speed: 10 },
+            attack: { from: 0, to: 0, loop: false, speed: 100 },
             die: { from: 8, to: 14, loop: false }
         }
     });
@@ -663,6 +664,17 @@ export default function loadAssets(k: KAPLAYCtx) {
             idle: 0,
             move: { from: 0, to: 3, loop: true, speed: 7 },
             die: { from: 4, to: 7, loop: false, speed: 7 }
+        }
+    });
+
+    k.loadSprite("zombie", "/sprites/zombie.png", {
+        sliceX: 5,
+        sliceY: 3,
+        anims: {
+            idle: 0,
+            move: { from: 0, to: 3, loop: true, speed: 4 },
+            die: { from: 5, to: 8, loop: false },
+            attack: { from: 10, to: 14, loop: false }
         }
     });
 

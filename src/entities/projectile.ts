@@ -171,7 +171,7 @@ export default function makeProjectile(k: KAPLAYCtx, opts: {
                     const damageMult = 1 + getBuffValue(k, owner, "damage");
                     const { isCrit, damage: newDamage } = calcDamage({
                         bonusDamage: 0,
-                        bonusCritChance: target.has("curse") ? CURSE_CRIT : 0,
+                        bonusCritChance: target.has("curse") ? CURSE_CRIT + (k.get("hero")[0]?.hasCurseBuff ? 10 : 0) : 0,
                         critChance: owner.stats.critChance + (getBuffValue(k, owner, "critChance") * 100),
                         critDamage: owner.stats.critDamage * (1 + getBuffValue(k, owner, "critDamage")),
                         damage: owner.stats.damage,

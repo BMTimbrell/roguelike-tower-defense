@@ -55,7 +55,7 @@ export default function makePathEntity(
                                         if (pathEntity?.pos.dist(enemy.pos) < splashRadius) {
                                             const { isCrit, damage } = calcDamage({
                                                 bonusDamage: 0,
-                                                bonusCritChance: enemy.has("curse") ? CURSE_CRIT : 0,
+                                                bonusCritChance: enemy.has("curse") ? CURSE_CRIT + (k.get("hero")[0]?.hasCurseBuff ? 10 : 0) : 0,
                                                 critChance: critChance,
                                                 critDamage: critDamage,
                                                 damage: opts.damage,
@@ -73,7 +73,7 @@ export default function makePathEntity(
                                 } else {
                                     const { isCrit, damage } = calcDamage({
                                         bonusDamage: 0,
-                                        bonusCritChance: e.has("curse") ? CURSE_CRIT : 0,
+                                        bonusCritChance: e.has("curse") ? CURSE_CRIT + (k.get("hero")[0]?.hasCurseBuff ? 10 : 0) : 0,
                                         critChance: critChance,
                                         critDamage: critDamage,
                                         damage: opts.damage,

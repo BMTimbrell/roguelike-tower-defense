@@ -6,7 +6,6 @@ import PriorityButton from "../PriorityButton/PriorityButton";
 import styles from "./SelectedHero.module.css";
 import Stats from "../Stats/Stats";
 import SkillIcon from "../SkillIcon/SkillIcon";
-import Button from "../Button/Button";
 import { SKILLS } from "../../constants";
 
 export default function SelectedHero({ hero }: { hero: SelectedHeroUI }) {
@@ -18,12 +17,9 @@ export default function SelectedHero({ hero }: { hero: SelectedHeroUI }) {
         element,
         level,
         skillIds,
-        setPriority,
-        reposition
+        setPriority
     } = hero;
 
-    const [gameState] = useAtom(gameStateAtom);
-    const canReposition = gameState.heroCanReposition;
     const [map] = useAtom(mapAtom);
     const scale = map.scale;
     const skills = [...new Set(SKILLS.filter(s => skillIds.includes(s.id)))];
@@ -40,11 +36,8 @@ export default function SelectedHero({ hero }: { hero: SelectedHeroUI }) {
                 ))}
             </div>
             <Stats stats={stats} element={element} scale={scale} /> <br />
-            <PriorityButton scale={scale} priority={priority} setPriority={setPriority} />
-            {canReposition && <>
-                <br /><Button onClick={reposition}>
-                    Move
-                </Button>
+            {priority && <>
+                <PriorityButton scale={scale} priority={priority} setPriority={setPriority} /><br />
             </>}
         </Popup>
     );

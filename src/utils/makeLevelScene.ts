@@ -16,7 +16,7 @@ import updateSkills from "./updateSkills";
 
 export default function makeLevelScene(k: KAPLAYCtx, sceneName: Scene) {
 
-    k.scene(sceneName, async ({ mapData, tileGrid, pathTiles, wave }: { mapData: MapData, tileGrid: Tile[][], pathTiles: PathTile[], wave: LevelId }) => {
+    k.scene(sceneName, async ({ mapData, tileGrid, wave }: { mapData: MapData, tileGrid: Tile[][], pathTiles: PathTile[], wave: LevelId }) => {
 
         k.add([
             k.sprite(sceneName),

@@ -24,11 +24,13 @@ export default function spawnSummon(k: KAPLAYCtx, ctx: AttackContext, id: Summon
         name,
         "summon",
         {
-            damage: ctx.damage * damageMult,
-            fireInterval: ctx.attacker.stats.fireInterval / attackSpeedMult,
+            damage: Math.round(ctx.damage * (
+                damageMult + (name === "Skeleton" && ctx.attacker.hasSkeletonBuff ? 0.2 : name === "Zombie" && ctx.attacker.hasZombieBuff ? 0.5 : 0)
+            )),
+            fireInterval: ctx.attacker.stats.fireInterval / (attackSpeedMult + (name === "Skeleton" && ctx.attacker.hasSkeletonBuff ? 4 : 0)),
             attackTimer: 0,
             speed,
-            maxAttacks,
+            maxAttacks: maxAttacks + (name === "Ghost" && ctx.attacker.hasGhostBuff ? 5 : 0),
             attacks: 0,
             pathIndex: (ctx.target as { type: "point"; pos: Vec2; pathIndex?: number })?.pathIndex ?? 0,
             path: ctx.attacker.pathTiles.map(pt => k.vec2(pt.x * TILE_SIZE + TILE_SIZE / 2, pt.y * TILE_SIZE + TILE_SIZE / 2))
@@ -41,6 +43,7 @@ export default function spawnSummon(k: KAPLAYCtx, ctx: AttackContext, id: Summon
     });
 
     summon.onStateEnter("attack", ({ enemy }) => {
+        summon.angle = dirToRotation(enemy.pos.sub(summon.pos));
         summon.play("attack");
 
         const { isCrit, damage } = calcDamage({
@@ -49,7 +52,7 @@ export default function spawnSummon(k: KAPLAYCtx, ctx: AttackContext, id: Summon
             critChance: ctx.attacker.stats.critChance + (getBuffValue(k, ctx.attacker as TowerGameObj, "critChance") * 100),
             critDamage: ctx.attacker.stats.critDamage * (1 + getBuffValue(k, ctx.attacker as TowerGameObj, "critDamage")),
             damage: summon.damage,
-            damageMultiplier: damageMult
+            damageMultiplier: 1 + getBuffValue(k, ctx.attacker as TowerGameObj, "damage")
         });
 
         hurtEnemy(k, {
@@ -58,6 +61,11 @@ export default function spawnSummon(k: KAPLAYCtx, ctx: AttackContext, id: Summon
             element: ctx.element,
             isCrit,
         });
+
+        summon.attacks++;
+
+        if (name === "Zombie" && ctx.attacker.hasZombieBuff && Math.random() < 0.25) 
+            enemy.enterState("stunned");
     });
 
     summon.onStateEnter("die", () => {
@@ -73,6 +81,10 @@ export default function spawnSummon(k: KAPLAYCtx, ctx: AttackContext, id: Summon
     });
 
     summon.onStateUpdate("move", () => {
+        if (summon.attacks >= summon.maxAttacks) {
+            summon.enterState("die");
+        }
+        
         if (summon.attackTimer > 0) {
             summon.attackTimer -= k.dt();
         }
@@ -89,18 +101,18 @@ export default function spawnSummon(k: KAPLAYCtx, ctx: AttackContext, id: Summon
             const enemy = (k.get("enemy") as EnemyGameObj[]).find(e => e.pos.dist(summon.pos) <= TILE_SIZE);
             if (enemy) {
                 summon.attackTimer += summon.fireInterval;
-                summon.attacks++;
                 summon.enterState("attack", { enemy });
             }
         }
 
-        if (summon.pos.dist(next) <= 2) {
+        if (summon.pos.dist(next) <= 1) {
             summon.pathIndex--;
 
-            if (summon.pathIndex <= 1 || summon.attacks >= summon.maxAttacks) {
+            if (summon.pathIndex <= 0) {
                 summon.enterState("die");
             }
         }
     });
 
+    return summon;
 }
