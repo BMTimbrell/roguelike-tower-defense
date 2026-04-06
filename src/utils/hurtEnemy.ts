@@ -63,7 +63,11 @@ export default function hurtEnemy(k: KAPLAYCtx, opts: {
     if (!statusDamage) ELEMENTS[element].applyEffect?.(k, { target, damage: effectiveDamage });
 
     const hero = k.get("hero")[0];
-    if (hero?.hasGhostSummon && target.hp() <= 0 && hero.pos.add(TILE_SIZE / 2, TILE_SIZE / 2).dist(target.pos) <= hero.stats.range * TILE_SIZE + TOWER_RANGE_TOLERANCE) {
+    if (
+        hero?.placed &&
+        hero.hasGhostSummon && target.hp() <= 0 && 
+        hero.pos.add(TILE_SIZE / 2, TILE_SIZE / 2).dist(target.pos) <= hero.stats.range * TILE_SIZE + TOWER_RANGE_TOLERANCE
+    ) {
         const ghostCtx = {
             attacker: hero,
             damage: hero.stats.damage,

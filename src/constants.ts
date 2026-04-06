@@ -385,7 +385,7 @@ export const LEVEL_WAVES = {
     },
 
     "level2-2": {
-        startingGold: 100,
+        startingGold: 150,
         startDelay: 30,
         waves: [
             {
@@ -1272,7 +1272,7 @@ export const TOWERS = {
         description: "Shoots a dark, shadowy blob that deals splash damage and has a 50% chance to bounce between enemies",
         cost: 350,
         stats: {
-            damage: 10,
+            damage: 12,
             range: 5,
             fireInterval: 1.25,
             critChance: 5,
@@ -1447,7 +1447,7 @@ export const TOWERS = {
         description: "Sends out a swarm of bees that follow the target dealing damage in a small area",
         cost: 250,
         stats: {
-            damage: 8,
+            damage: 10,
             range: 5,
             fireInterval: 0.75,
             critChance: 5,
@@ -3335,7 +3335,7 @@ export const SKILLS = [
                     let summonType: SummonId = "skeleton";
 
                     if (hero.hasZombieSummon) {
-                        summonType = Math.random() < 0.5 ? "zombie" : "skeleton";
+                        summonType = Math.random() < 0.3 ? "zombie" : "skeleton";
                     }
 
                     spawnSummon(ctx.context, ctx, summonType, ctx.target.pos);
@@ -3348,7 +3348,7 @@ export const SKILLS = [
         id: "summon-zombie",
         heroIds: ["necromancer"],
         name: "Summon Zombie",
-        description: "Summon a zombie that deals 150% of the necomancer's damage at 200% the fire rate. Lasts for 4 attacks",
+        description: "The necromancer has a 30% chance to summon a zombie that deals 200% of the necomancer's damage at 200% the fire rate. Lasts for 5 attacks",
         apply(hero) {
             hero.hasZombieSummon = true;
         },
@@ -3369,7 +3369,7 @@ export const SKILLS = [
         heroIds: ["necromancer"],
         requires: ["summon-skeleton"],
         name: "Stronger Skeletons",
-        description: "Skeletons deal 120% of the necromancer's damage at 800% the fire rate",
+        description: "Skeletons have a 30% chance to reanimate after dying",
         apply(hero) {
             hero.hasSkeletonBuff = true;
         },
@@ -3380,7 +3380,7 @@ export const SKILLS = [
         heroIds: ["necromancer"],
         requires: ["summon-zombie"],
         name: "Stronger Zombies",
-        description: "Zombies deal 200% of the necromancer's damage and have a 25% chance to stun enemies",
+        description: "Zombies deal 250% of the necromancer's damage and have a 25% chance to stun enemies",
         apply(hero) {
             hero.hasZombieBuff = true;
         },
@@ -3391,7 +3391,7 @@ export const SKILLS = [
         heroIds: ["necromancer"],
         requires: ["summon-ghost"],
         name: "Stronger Ghosts",
-        description: "Ghosts attack up to 10 times before disappearing",
+        description: "Ghosts have a 50% chance to persist after running out of attacks",
         apply(hero) {
             hero.hasGhostBuff = true;
         },
@@ -3441,10 +3441,10 @@ export const SUMMONS = {
     zombie: {
         name: "Zombie",
         sprite: "zombie",
-        damageMult: 1.5,
+        damageMult: 2,
         attackSpeedMult: 2,
         speed: 20,
-        maxAttacks: 4
+        maxAttacks: 5
     },
     ghost: {
         name: "Ghost",
