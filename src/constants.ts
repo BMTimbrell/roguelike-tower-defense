@@ -1,4 +1,4 @@
-import type { Upgrade, LevelWaves, EnemyConfig, TowerDef, ElementDef, ElementName, ProjectileDef, HeroDef, HeroSkillDefBase, TowerGameObj, Seed, Scenes, Summon } from "./types";
+import type { Upgrade, LevelWaves, EnemyConfig, TowerDef, ElementDef, ElementName, ProjectileDef, HeroDef, HeroSkillDefBase, TowerGameObj, Seed, Scenes, Summon, EnemyGameObj } from "./types";
 import burnEffect from "./kaplayComponents/burnEffect";
 import calcFireInterval from "./utils/calcFireInterval";
 import poisonEffect from "./kaplayComponents/poisonEffect";
@@ -10,6 +10,7 @@ import blindEffect from "./kaplayComponents/blindEffect";
 import { gameStateAtom, store } from "./store";
 import applySongBuff from "./utils/applySongBuff";
 import spawnSummon from "./entities/Summon";
+import hurtEnemy from "./utils/hurtEnemy";
 
 export const VIRTUAL_WIDTH = 800;
 export const VIRTUAL_HEIGHT = 600;
@@ -253,7 +254,7 @@ export const LEVEL_WAVES = {
         waves: [
             {
                 spawns: [
-                    { id: "ghost", count: 5, interval: 1 }
+                    { id: "bee", count: 5, interval: 1 }
                 ],
                 reward: 50
             },
@@ -1936,6 +1937,120 @@ export const TOWERS = {
         }],
         priority: "Most Progress"
     },
+    battery: {
+        name: "Battery Tower",
+        gunSprite: "battery tower",
+        baseSprite: "battery tower base",
+        sprite: "battery-tower-sprite.png",
+        description: "Dealing damage to enemies in range charges its battery. The number of targets this tower can hit and the damage dealt increases based on the battery charge",
+        cost: 300,
+        stats: {
+            damage: 1,
+            range: 5,
+            fireInterval: 5,
+            critChance: 5,
+            critDamage: 200
+        },
+        element: "Electric",
+        gunOffset: { x: 7, y: -1 },
+        anchorOffset: { x: 14 / 64, y: -2 / 64 },
+        shootOffset: { x: -40, y: 0 },
+        projectile: null,
+        canRotate: true,
+        source: "reward",
+        targetType: "enemy",
+        footprint: {
+            w: 2,
+            h: 2
+        },
+        effects: [{
+            firstEffect(ctx) {
+                ctx.attackType = "lightning";
+                if (!ctx.lightning) {
+                    ctx.lightning = {
+                        maxChains: 1,
+                        range: 5
+                    };
+                }
+            }
+        }],
+        battery: {
+            charge: 0,
+            maxCharge: 100,
+            storePct: 0.25
+        },
+        priority: "Most Progress"
+    },
+    potion: {
+        name: "Potion Tower",
+        gunSprite: "potion tower",
+        baseSprite: "sludge bomb tower base",
+        sprite: "potion-tower-sprite.png",
+        description: "Shoots a poisonous concoction that leaves a puddle on the ground, damaging all enemies that walk over it for 25% of the initial damage per tick",
+        cost: 5,
+        stats: {
+            damage: 25,
+            range: 5,
+            fireInterval: 1.5,
+            critChance: 5,
+            critDamage: 200
+        },
+        element: "Poison",
+        gunOffset: { x: 5, y: -1 },
+        anchorOffset: { x: 10 / 64, y: -2 / 64 },
+        shootOffset: { x: -40, y: 0 },
+        projectile: "potion",
+        canRotate: true,
+        source: "starting",
+        targetType: "enemy",
+        footprint: {
+            w: 2,
+            h: 2
+        },
+        effects: [{
+            firstEffect(ctx) {
+                ctx.projectiles.forEach(projectile => {
+                    projectile.behaviors ??= {};
+                    projectile.behaviors.animOnDestroy = "smash";
+                });
+
+                const k = ctx.context;
+                let timer = 0;
+                k.wait(0.5, () => {
+                    const puddle = k.add([
+                        k.sprite("poison puddle"),
+                        k.anchor("center"),
+                        k.opacity(1),
+                        k.lifespan(2),
+                        "puddle",
+                        k.pos((ctx.target as { enemy?: { pos: any } })?.enemy?.pos ?? 0),
+                        {
+                            tickRate: 0.25,
+                            update() {
+                                timer -= k.dt();
+
+                                while (timer <= 0) {
+                                    timer += puddle.tickRate;
+                                    (k.get("enemy") as EnemyGameObj[]).forEach(enemy => {
+                                        if (enemy.pos.dist(puddle.pos) < TILE_SIZE / 2 && !enemy.invincible) {
+
+                                            hurtEnemy(k, {
+                                                target: enemy,
+                                                damage: Math.round(ctx.damage * 0.25),
+                                                element: ctx.element,
+                                                isCrit: false,
+                                            });
+                                        }
+                                    });
+                                }
+                            }
+                        }
+                    ]);
+                });
+            }
+        }],
+        priority: "Most Progress"
+    }
 } as const satisfies Record<string, TowerDef>;
 
 export type TowerId = keyof typeof TOWERS;
@@ -2525,6 +2640,12 @@ export const PROJECTILES = {
         homing: true,
         speed: 200,
         splashRadius: 1
+    },
+    potion: {
+        sprite: "potion",
+        homing: true,
+        speed: 300,
+        splashRadius: 0
     }
 } as const satisfies Record<string, ProjectileDef>;
 

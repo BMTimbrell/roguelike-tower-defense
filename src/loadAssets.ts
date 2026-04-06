@@ -336,6 +336,22 @@ export default function loadAssets(k: KAPLAYCtx) {
             shoot: { from: 1, to: 5, loop: false, speed: 10 }
         }
     });
+    k.loadSprite("battery tower base", "/sprites/battery-tower-base.png");
+    k.loadSprite("battery tower", "/sprites/battery-tower.png", {
+        sliceX: 1,
+        sliceY: 1,
+        anims: {
+            idle: 0
+        }
+    });
+    k.loadSprite("potion tower", "/sprites/potion-tower.png", {
+        sliceX: 7,
+        sliceY: 1,
+        anims: {
+            idle: 0,
+            shoot: { from: 1, to: 6, loop: false, speed: 30 }
+        }
+    });
     k.loadSprite("fog", "/sprites/fog5.png");
     k.loadSprite("basic projectile", "/sprites/basic-projectile.png");
     k.loadSprite("slimeball", "/sprites/slimeball.png");
@@ -398,6 +414,13 @@ export default function loadAssets(k: KAPLAYCtx) {
         sliceY: 1,
         anims: {
             explode: { from: 1, to: 6, loop: false, speed: 10 }
+        }
+    });
+    k.loadSprite("potion", "/sprites/potion.png", {
+        sliceX: 4,
+        sliceY: 1,
+        anims: {
+            smash: { from: 1, to: 3, loop: false, speed: 10 }
         }
     });
     k.loadSprite("archer base", "/sprites/archer-base2.png");
@@ -760,4 +783,5 @@ export default function loadAssets(k: KAPLAYCtx) {
             attack: { from: 0, to: 0, loop: false, speed: 100 }
         }
     });
+    k.loadSprite("poison puddle", "/sprites/poison-puddle.png");
 }

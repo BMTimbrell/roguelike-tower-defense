@@ -101,6 +101,51 @@ export default function makeUnitCombat(
         }
     });
 
+    if (opts.owner.battery) {
+        const barWidth = opts.owner.width * 0.8;
+        let barPos = opts.owner.pos.add(opts.owner.width * 0.2, 0);
+
+        // background
+        const chargeBackground = k.add([
+            k.pos(barPos),
+            k.rect(barWidth, 4),
+            k.color(k.Color.fromHex("#707070")),
+            k.outline(1, k.Color.fromHex("#000000")),
+            k.opacity(0),
+            {
+                update() {
+                    barPos = opts.owner.pos.add(opts.owner.width * 0.2, 0);
+                    chargeBackground.pos = barPos;
+                    if (opts.owner.placed) chargeBackground.opacity = 1;
+                }
+            },
+            k.z(9999)
+        ]);
+
+        // charge bar
+        const chargeBar = k.add([
+            k.pos(barPos),
+            k.rect(0, 4),
+            k.color(k.Color.fromHex("#5ba6a6")),
+            k.z(99999999),
+            k.opacity(0),
+            {
+                update() {
+                    const chargeRatio = opts.owner.battery ? opts.owner.battery.charge / opts.owner.battery.maxCharge : 0;
+                    barPos = opts.owner.pos.add(opts.owner.width * 0.2, 0);
+                    chargeBar.pos = barPos;
+                    chargeBar.width = barWidth * chargeRatio;
+                    if (opts.owner.placed) chargeBar.opacity = 1;
+                }
+            }
+        ]);
+
+        opts.owner.onDestroy(() => {
+            k.destroy(chargeBackground);
+            k.destroy(chargeBar);
+        });
+    }
+
     gun.onUpdate(() => {
         gun.pos = opts.owner.pos.add(
             opts.owner.width / 2 + opts.gunOffset.x,
@@ -192,6 +237,10 @@ export default function makeUnitCombat(
 
             opts.owner.effects?.forEach(e => e.firstEffect?.(ctx));
 
+            if (ctx.attacker.battery && ctx.lightning) {
+                ctx.lightning.maxChains = Math.floor(ctx.attacker.battery.charge / 20) + 1;
+                ctx.damage += ctx.attacker.battery.charge * 0.5;
+            }
             const damageMult = 1 + getBuffValue(k, opts.owner as TowerGameObj, "damage");
 
             const { isCrit, damage } = calcDamage({
@@ -212,6 +261,10 @@ export default function makeUnitCombat(
             ctx.origin = ctx.origin.add(rotatedOffset);
 
             executeAttack(k, ctx, { damage, isCrit });
+
+            if (ctx.attacker.battery && ctx.lightning) {
+                ctx.attacker.battery.charge = 0;
+            }
 
             if (!ctx.projectiles) return;
 
@@ -313,7 +366,7 @@ export default function makeUnitCombat(
                     element: opts.owner.element,
                     projectileId: opts.projectile ?? "basic"
                 });
-            } 
+            }
         }
 
     }

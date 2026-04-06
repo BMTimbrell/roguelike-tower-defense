@@ -1,6 +1,6 @@
 import type { KAPLAYCtx, Vec2 } from 'kaplay';
 import { ELEMENTS, TILE_SIZE, type TowerId } from '../constants';
-import type { TowerGameObj, UnitEffects, TowerDef, SeedId, Tile, PathTile, RandomProjectiles, TimeData, ContinuousEffect, Charge, BuffType } from '../types';
+import type { TowerGameObj, UnitEffects, TowerDef, SeedId, Tile, PathTile, RandomProjectiles, TimeData, ContinuousEffect, Charge, BuffType, Battery } from '../types';
 import { store, gameStateAtom } from '../store';
 import { calcUpgradeCost } from '../utils/calcUpgradeCost';
 import { TOWERS } from '../constants';
@@ -88,7 +88,8 @@ export default function makeTower(
             ...("melee" in TOWERS[towerId] ? { melee: TOWERS[towerId]?.melee } : {}),
             ...("killStacks" in TOWERS[towerId] ? { killStacks: TOWERS[towerId].killStacks as number } : {}),
             ...("continuousEffect" in TOWERS[towerId] ? { continuousEffect: TOWERS[towerId].continuousEffect as ContinuousEffect } : {}),
-            ...("charge" in TOWERS[towerId] ? { charge: TOWERS[towerId].charge as Charge } : {}),
+            ...("charge" in TOWERS[towerId] ? { charge: { ...(TOWERS[towerId].charge as Charge) } } : {}),
+            ...("battery" in TOWERS[towerId] ? { battery: { ...(TOWERS[towerId].battery as Battery) } } : {}),
             disabledUntil: 0
         },
         k.state("active", ["active", "disabled"]),

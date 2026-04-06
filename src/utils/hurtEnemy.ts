@@ -62,10 +62,29 @@ export default function hurtEnemy(k: KAPLAYCtx, opts: {
 
     if (!statusDamage) ELEMENTS[element].applyEffect?.(k, { target, damage: effectiveDamage });
 
+    // battery charge for battery tower
+    const damageDealt = effectiveDamage;
+
+    const batteries = k.get("tower").filter(t => t.battery);
+
+    for (const b of batteries) {
+        const dist = b.pos.dist(target.pos);
+
+        if (dist <= b.stats.range * TILE_SIZE + TOWER_RANGE_TOLERANCE) {
+            const stored = Math.max(1, damageDealt * b.battery.storePct);
+
+            b.battery.charge = Math.min(
+                b.battery.charge + stored,
+                b.battery.maxCharge
+            );
+        }
+    }
+
+    // spawn ghost for necromancer
     const hero = k.get("hero")[0];
     if (
         hero?.placed &&
-        hero.hasGhostSummon && target.hp() <= 0 && 
+        hero.hasGhostSummon && target.hp() <= 0 &&
         hero.pos.add(TILE_SIZE / 2, TILE_SIZE / 2).dist(target.pos) <= hero.stats.range * TILE_SIZE + TOWER_RANGE_TOLERANCE
     ) {
         const ghostCtx = {
@@ -79,7 +98,7 @@ export default function hurtEnemy(k: KAPLAYCtx, opts: {
                 pathIndex: target.pathIndex + 1
             },
 
-            context: k, 
+            context: k,
         } as AttackContext;
 
         const summon = spawnSummon(k, ghostCtx, "ghost", target.pos);

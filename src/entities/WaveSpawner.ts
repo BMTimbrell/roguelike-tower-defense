@@ -139,6 +139,7 @@ export default function makeWaveSpawner(k: KAPLAYCtx, levelId: LevelId, waypoint
 
                 k.get("pathEntity").forEach(e => k.destroy(e));
                 k.get("summon").forEach(s => s.enterState("die"));
+                k.get("puddle").forEach(p => k.destroy(p));
 
                 (k.get("tower") as TowerGameObj[]).forEach(e => {
 

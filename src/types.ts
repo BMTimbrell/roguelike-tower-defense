@@ -132,6 +132,7 @@ export type TowerDef = {
     footprint: Footprint;
     lavaTiles?: Vec2[];
     priority: TargetPriority;
+    battery?: Battery;
 };
 
 export type Charge = {
@@ -139,6 +140,12 @@ export type Charge = {
     maxCharge: number;
     chargePerShot: number;
     decayDelay: number;
+};
+
+export type Battery = {
+    charge: number;
+    storePct: number;
+    maxCharge: number;
 };
 
 export type UnitInstance = {
