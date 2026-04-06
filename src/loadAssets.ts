@@ -327,6 +327,15 @@ export default function loadAssets(k: KAPLAYCtx) {
             }
         }
     });
+    k.loadSprite("chomper tower base", "/sprites/chomper-tower-base.png");
+    k.loadSprite("chomper tower", "/sprites/chomper-tower.png", {
+        sliceX: 6,
+        sliceY: 1,
+        anims: {
+            idle: 0,
+            shoot: { from: 1, to: 5, loop: false, speed: 10 }
+        }
+    });
     k.loadSprite("fog", "/sprites/fog5.png");
     k.loadSprite("basic projectile", "/sprites/basic-projectile.png");
     k.loadSprite("slimeball", "/sprites/slimeball.png");
@@ -741,4 +750,14 @@ export default function loadAssets(k: KAPLAYCtx) {
     k.loadSprite("buff fire rate", "/sprites/firerate-icon.png");
     k.loadSprite("buff crit", "/sprites/critchance-icon.png");
     k.loadSprite("buff crit damage", "/sprites/critdamage-icon.png");
+    k.loadSprite("chomper", "/sprites/chomper.png", {
+        sliceX: 5,
+        sliceY: 2,
+        anims: {
+            idle: 0,
+            move: { from: 0, to: 3, loop: true, speed: 10 },
+            die: { from: 5, to: 9, loop: false },
+            attack: { from: 0, to: 0, loop: false, speed: 100 }
+        }
+    });
 }

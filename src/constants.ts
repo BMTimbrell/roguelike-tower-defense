@@ -17,14 +17,14 @@ export const TILE_SIZE = 32;
 export const TOWER_RANGE_TOLERANCE = 5;
 export const MAX_TOWER_UPGRADES = 5;
 export const FOG_Z = 900;
-export const MAX_HAND_SIZE = 12;
+export const MAX_HAND_SIZE = 10;
 export const ROUND_DRAW_NUM = 3;
 export const DAMAGE_NUMBER_SIZE = 14;
 export const SMALL_DAMAGE_NUMBER_SIZE = 11;
 export const CRIT_DAMAGE_NUMBER_SIZE = 22;
 export const DAMAGE_NUMBER_COLOR = "#fffb00";
 export const CRIT_DAMAGE_NUMBER_COLOR = "#ff0000";
-export const CHARGE_DAMAGE_REQUIRED = 0;
+export const CHARGE_DAMAGE_REQUIRED = 80;
 export const CHILL_PERCENT = 6;
 export const MAX_CHILL_STACKS = 5;
 export const ICE_DAMAGE_PER_STACK = 10;
@@ -253,7 +253,7 @@ export const LEVEL_WAVES = {
         waves: [
             {
                 spawns: [
-                    { id: "bee", count: 5, interval: 1 }
+                    { id: "ghost", count: 5, interval: 1 }
                 ],
                 reward: 50
             },
@@ -523,7 +523,7 @@ export const ENEMIES = {
         sprite: "giant orc"
     },
     ghost: {
-        hp: 150,
+        hp: 120,
         damage: 1,
         speed: 50,
         sprite: "ghost",
@@ -541,7 +541,7 @@ export const ENEMIES = {
         }
     },
     spider: {
-        hp: 150,
+        hp: 120,
         damage: 1,
         speed: 50,
         sprite: "spider",
@@ -551,7 +551,7 @@ export const ENEMIES = {
         },
     },
     spiderling: {
-        hp: 25,
+        hp: 20,
         damage: 1,
         speed: 75,
         sprite: "spiderling"
@@ -1897,7 +1897,45 @@ export const TOWERS = {
         },
         lavaTiles: [],
         priority: null
-    }
+    },
+    chomper: {
+        name: "Chomper Tower",
+        gunSprite: "chomper tower",
+        baseSprite: "chomper tower base",
+        sprite: "chomper-tower-sprite.png",
+        description: "Spawns a chomper that follows the path to eat enemies, dealing the enemy's remaining health percentage as bonus damage. If the chomper kills the enemy, it persists",
+        cost: 200,
+        stats: {
+            damage: 15,
+            range: 3,
+            fireInterval: 2.5,
+            critChance: 5,
+            critDamage: 200
+        },
+        element: "Normal",
+        gunOffset: { x: 5, y: 0 },
+        anchorOffset: { x: 10 / 64, y: 0 },
+        shootOffset: { x: 0, y: 0 },
+        projectile: null,
+        canRotate: true,
+        source: "reward",
+        pathEntityLimit: 50,
+        targetType: "point",
+        footprint: {
+            w: 2,
+            h: 2
+        },
+        effects: [{
+            firstEffect(ctx) {
+                if (ctx.target?.type !== "point") return;
+
+                ctx.isSummon = true;
+
+                spawnSummon(ctx.context, ctx, "chomper", ctx.target.pos);
+            }
+        }],
+        priority: "Most Progress"
+    },
 } as const satisfies Record<string, TowerDef>;
 
 export type TowerId = keyof typeof TOWERS;
@@ -3348,7 +3386,7 @@ export const SKILLS = [
         id: "summon-zombie",
         heroIds: ["necromancer"],
         name: "Summon Zombie",
-        description: "The necromancer has a 30% chance to summon a zombie that deals 200% of the necomancer's damage at 200% the fire rate. Lasts for 5 attacks",
+        description: "The necromancer has a 30% chance to summon a zombie that deals 200% of the necomancer's damage at 200% the fire rate. Lasts for 4 attacks",
         apply(hero) {
             hero.hasZombieSummon = true;
         },
@@ -3369,7 +3407,7 @@ export const SKILLS = [
         heroIds: ["necromancer"],
         requires: ["summon-skeleton"],
         name: "Stronger Skeletons",
-        description: "Skeletons have a 30% chance to reanimate after dying",
+        description: "Skeletons have a 35% chance to reanimate after dying",
         apply(hero) {
             hero.hasSkeletonBuff = true;
         },
@@ -3380,7 +3418,7 @@ export const SKILLS = [
         heroIds: ["necromancer"],
         requires: ["summon-zombie"],
         name: "Stronger Zombies",
-        description: "Zombies deal 250% of the necromancer's damage and have a 25% chance to stun enemies",
+        description: "Zombies deal 400% of the necromancer's damage and have a 25% chance to stun enemies for 1 second on hit",
         apply(hero) {
             hero.hasZombieBuff = true;
         },
@@ -3391,7 +3429,7 @@ export const SKILLS = [
         heroIds: ["necromancer"],
         requires: ["summon-ghost"],
         name: "Stronger Ghosts",
-        description: "Ghosts have a 50% chance to persist after running out of attacks",
+        description: "Ghosts have a 75% chance to persist after running out of attacks",
         apply(hero) {
             hero.hasGhostBuff = true;
         },
@@ -3444,7 +3482,7 @@ export const SUMMONS = {
         damageMult: 2,
         attackSpeedMult: 2,
         speed: 20,
-        maxAttacks: 5
+        maxAttacks: 4
     },
     ghost: {
         name: "Ghost",
@@ -3453,6 +3491,14 @@ export const SUMMONS = {
         attackSpeedMult: 8,
         speed: 40,
         maxAttacks: 5
+    },
+    chomper: {
+        name: "Chomper",
+        sprite: "chomper",
+        damageMult: 1,
+        attackSpeedMult: 8,
+        speed: 40,
+        maxAttacks: 1
     }
 } as const satisfies Record<string, Summon>;
 

@@ -25,7 +25,7 @@ export default function spawnSummon(k: KAPLAYCtx, ctx: AttackContext, id: Summon
         "summon",
         {
             damage: Math.round(ctx.damage * (
-                damageMult + (name === "Zombie" && ctx.attacker.hasZombieBuff ? 0.5 : 0)
+                damageMult + (name === "Zombie" && ctx.attacker.hasZombieBuff ? 2 : 0)
             )),
             fireInterval: ctx.attacker.stats.fireInterval / attackSpeedMult,
             attackTimer: 0,
@@ -46,8 +46,18 @@ export default function spawnSummon(k: KAPLAYCtx, ctx: AttackContext, id: Summon
         summon.angle = dirToRotation(enemy.pos.sub(summon.pos));
         summon.play("attack");
 
+        let bonusDamage = 0;
+
+        if (name === "Chomper") {
+            const maxHp = enemy?.maxHP() ?? 1;
+            const hp = enemy?.hp() ?? 0;
+            const remainingHealthPercent = hp / maxHp;
+
+            bonusDamage = ctx.damage * remainingHealthPercent;
+        }
+
         const { isCrit, damage } = calcDamage({
-            bonusDamage: 0,
+            bonusDamage,
             bonusCritChance: enemy.has("curse") ? CURSE_CRIT + (k.get("hero")[0]?.hasCurseBuff ? 10 : 0) : 0,
             critChance: ctx.attacker.stats.critChance + (getBuffValue(k, ctx.attacker as TowerGameObj, "critChance") * 100),
             critDamage: ctx.attacker.stats.critDamage * (1 + getBuffValue(k, ctx.attacker as TowerGameObj, "critDamage")),
@@ -61,6 +71,10 @@ export default function spawnSummon(k: KAPLAYCtx, ctx: AttackContext, id: Summon
             element: ctx.element,
             isCrit,
         });
+
+        if (name === "Chomper" && enemy.hp() <= 0) {
+            summon.attacks--;
+        }
 
         summon.attacks++;
 
@@ -76,7 +90,7 @@ export default function spawnSummon(k: KAPLAYCtx, ctx: AttackContext, id: Summon
         if (anim === "attack") {
             summon.enterState("move");
         } else if (anim === "die") {
-            if (name === "Skeleton" && ctx.attacker.hasSkeletonBuff && summon.attacks >= summon.maxAttacks && Math.random() < 0.3) {
+            if (name === "Skeleton" && ctx.attacker.hasSkeletonBuff && summon.attacks >= summon.maxAttacks && Math.random() < 0.35) {
                 ctx = {
                     ...ctx,
                     target: {
@@ -93,8 +107,10 @@ export default function spawnSummon(k: KAPLAYCtx, ctx: AttackContext, id: Summon
 
     summon.onStateUpdate("move", () => {
         if (summon.attacks >= summon.maxAttacks) {
-            // 50% chance to persist with ghost buff
-            if (!(name === "Ghost" && ctx.attacker.hasGhostBuff) || Math.random() < 0.5) {
+            // 75% chance to persist with ghost buff
+            if (name === "Ghost" && ctx.attacker.hasGhostBuff && Math.random() < 0.75) {
+                summon.attacks = summon.maxAttacks - 1;
+            } else {
                 summon.enterState("die");
             }
         }
@@ -112,7 +128,7 @@ export default function spawnSummon(k: KAPLAYCtx, ctx: AttackContext, id: Summon
         summon.angle = dirToRotation(dir);
 
         if (summon.attackTimer <= 0) {
-            const enemy = (k.get("enemy") as EnemyGameObj[]).find(e => e.pos.dist(summon.pos) <= TILE_SIZE);
+            const enemy = (k.get("enemy") as EnemyGameObj[]).find(e => e.pos.dist(summon.pos) <= TILE_SIZE && !e.invincible);
             if (enemy) {
                 summon.attackTimer += summon.fireInterval;
                 summon.enterState("attack", { enemy });

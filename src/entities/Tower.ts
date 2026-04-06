@@ -104,7 +104,7 @@ export default function makeTower(
         gunOffset: k.vec2(gunOffset.x, gunOffset.y),
         shootOffset: k.vec2(shootOffset.x, shootOffset.y),
         anchorOffset: k.vec2(anchorOffset.x, anchorOffset.y),
-        resolveTarget: tower.targetType === "enemy" ? enemyTargetResolver(k, tower) : pathTargetResolver(k, tower.pathTiles, tower)
+        resolveTarget: tower.targetType === "enemy" ? enemyTargetResolver(k, tower) : pathTargetResolver(k, tower.pathTiles, tower, name === "Chomper Tower" ? "nearest" : "random")
     });
 
     tower.gun ??= combat.gun;
