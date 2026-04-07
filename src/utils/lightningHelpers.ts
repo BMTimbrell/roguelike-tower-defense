@@ -1,9 +1,6 @@
-import type { GameObj, KAPLAYCtx, Vec2 } from "kaplay";
+import type { KAPLAYCtx, Vec2 } from "kaplay";
 import { selectBounceTarget } from "./targetingHelpers";
-import calcCrit from "./calcDamage";
 import type { ElementName, EnemyGameObj } from "../types";
-import makeFloatingText from "../entities/FloatingText";
-import { CRIT_DAMAGE_NUMBER_SIZE, DAMAGE_NUMBER_SIZE, ELEMENTS } from "../constants";
 import hurtEnemy from "./hurtEnemy";
 
 export function resolveChain(k: KAPLAYCtx, {
@@ -86,12 +83,12 @@ export function generateLightning(k: KAPLAYCtx, a: Vec2, b: Vec2) {
     return points;
 }
 
-export function drawLightning(k: KAPLAYCtx, points: Vec2[]) {
+export function drawLightning(k: KAPLAYCtx, points: Vec2[], width: number) {
     for (let i = 0; i < points.length - 1; i++) {
         k.drawLine({
             p1: points[i],
             p2: points[i + 1],
-            width: 2,
+            width,
             color: k.rgb(255, 238, 84),
         });
     }

@@ -613,6 +613,9 @@ function lightningAttack(k: KAPLAYCtx, ctx: AttackContext, dmg: DamageResult) {
         range,
     });
 
+    const attacker = ctx.attacker;
+    const chargeRatio = attacker.battery ? attacker.battery.charge / attacker.battery.maxCharge : 0;
+
     const lightning = k.add([
         k.pos(0, 0),
         k.lifespan(0.2),
@@ -623,7 +626,7 @@ function lightningAttack(k: KAPLAYCtx, ctx: AttackContext, dmg: DamageResult) {
                 lightning.segments = buildLightningSegments(k, chain);
             },
             draw() {
-                lightning.segments.forEach(points => drawLightning(k, points));
+                lightning.segments.forEach(points => drawLightning(k, points, !attacker.battery ? 2 : 1 + chargeRatio * 6));
             }
         }
     ]);

@@ -1348,7 +1348,7 @@ export const TOWERS = {
         description: "Deals devastating damage to targets at a great range",
         cost: 300,
         stats: {
-            damage: 80,
+            damage: 90,
             range: 9,
             fireInterval: 3,
             critChance: 5,
@@ -1488,7 +1488,7 @@ export const TOWERS = {
         description: "Summons storm clouds that damage enemies in a small area",
         cost: 400,
         stats: {
-            damage: 100,
+            damage: 120,
             range: 7,
             fireInterval: 4,
             critChance: 5,
@@ -1699,7 +1699,7 @@ export const TOWERS = {
         description: "Shoots 8 angels at random targets",
         cost: 300,
         stats: {
-            damage: 8,
+            damage: 10,
             range: 6,
             fireInterval: 1.75,
             critChance: 5,
@@ -1766,7 +1766,7 @@ export const TOWERS = {
         description: "Summons a blizzard that deals devastating damage to enemies in a large area",
         cost: 400,
         stats: {
-            damage: 70,
+            damage: 80,
             range: 7,
             fireInterval: 5,
             critChance: 5,
@@ -1987,7 +1987,7 @@ export const TOWERS = {
         baseSprite: "sludge bomb tower base",
         sprite: "potion-tower-sprite.png",
         description: "Shoots a poisonous concoction that leaves a puddle on the ground, damaging all enemies that walk over it for 25% of the initial damage per tick",
-        cost: 5,
+        cost: 300,
         stats: {
             damage: 25,
             range: 5,
@@ -2001,7 +2001,7 @@ export const TOWERS = {
         shootOffset: { x: -40, y: 0 },
         projectile: "potion",
         canRotate: true,
-        source: "starting",
+        source: "reward",
         targetType: "enemy",
         footprint: {
             w: 2,
@@ -2021,7 +2021,7 @@ export const TOWERS = {
                         k.sprite("poison puddle"),
                         k.anchor("center"),
                         k.opacity(1),
-                        k.lifespan(2),
+                        k.lifespan(2.25),
                         "puddle",
                         k.pos((ctx.target as { enemy?: { pos: any } })?.enemy?.pos ?? 0),
                         {
@@ -2050,6 +2050,34 @@ export const TOWERS = {
             }
         }],
         priority: "Most Progress"
+    },
+    orbit: {
+        name: "Orbit Tower",
+        gunSprite: "orbit tower",
+        baseSprite: "orbit tower base",
+        sprite: "orbit-tower-sprite.png",
+        description: "A planet orbits the outer range of the tower, damaging all enemies in its path. The speed at which it orbits increases with the tower's fire rate",
+        cost: 300,
+        stats: {
+            damage: 30,
+            range: 3,
+            fireInterval: 1,
+            critChance: 5,
+            critDamage: 200
+        },
+        element: "Normal",
+        gunOffset: { x: 0, y: 0 },
+        anchorOffset: { x: 0, y: 0 },
+        shootOffset: { x: 0, y: 0 },
+        projectile: null,
+        canRotate: false,
+        source: "reward",
+        targetType: "enemy",
+        footprint: {
+            w: 2,
+            h: 2
+        },
+        priority: null
     }
 } as const satisfies Record<string, TowerDef>;
 

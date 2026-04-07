@@ -1,6 +1,6 @@
 import type { KAPLAYCtx, Vec2 } from 'kaplay';
-import { ELEMENTS, TILE_SIZE, type TowerId } from '../constants';
-import type { TowerGameObj, UnitEffects, TowerDef, SeedId, Tile, PathTile, RandomProjectiles, TimeData, ContinuousEffect, Charge, BuffType, Battery } from '../types';
+import { CURSE_CRIT, ELEMENTS, TILE_SIZE, type TowerId } from '../constants';
+import type { TowerGameObj, UnitEffects, TowerDef, SeedId, Tile, PathTile, RandomProjectiles, TimeData, ContinuousEffect, Charge, BuffType, Battery, EnemyGameObj } from '../types';
 import { store, gameStateAtom } from '../store';
 import { calcUpgradeCost } from '../utils/calcUpgradeCost';
 import { TOWERS } from '../constants';
@@ -9,6 +9,9 @@ import makeUnitCombat from '../utils/makeUnitCombat';
 import setTowerUI from '../utils/setTowerUI';
 import { enemyTargetResolver, pathTargetResolver } from '../utils/targetingHelpers';
 import { getLavaTiles, makeLavaTile, rebuildLava } from '../utils/lavaHelpers';
+import hurtEnemy from '../utils/hurtEnemy';
+import calcDamage from '../utils/calcDamage';
+import getBuffValue from '../utils/getBuffValue';
 
 export default function makeTower(
     k: KAPLAYCtx,
@@ -167,10 +170,76 @@ export default function makeTower(
                 selectedUI: null
             }));
 
+            // lava
             if ((TOWERS[towerId] as Record<"lavaTiles", []>).lavaTiles) {
                 tower.lavaTiles ??= getLavaTiles(k, tower.pos, tower.stats.range * TILE_SIZE, tower.tileGrid);
                 tower.lavaTiles.forEach(pos => makeLavaTile(k, pos, tower));
                 combat.gun.play("pouring");
+            }
+
+            if (towerId === "orbit") {
+                const orbiter = k.add([
+                    k.pos(tower.pos.x, tower.pos.y),
+                    k.sprite("planet"),
+                    k.anchor("center"),
+                    {
+                        angle: 0,
+                        r: 80,
+                        hitEnemies: new Set<EnemyGameObj>(),
+                        speed: 2, // radians per second
+                        towerId: tower.instanceId
+                    },
+                    "orbiter"
+                ]);
+
+                orbiter.onUpdate(() => {
+                    orbiter.r = tower.stats.range * TILE_SIZE;
+                    const fireRateBuff = getBuffValue(k, tower, "fireRate");
+
+                    if (tower.state === "disabled") {
+                        orbiter.speed = 0;
+                        return;
+                    }
+                    
+                    orbiter.speed = 2 / ((1 - fireRateBuff) * tower.stats.fireInterval);
+                    orbiter.angle += orbiter.speed * k.dt();
+
+                    const cx = tower.pos.x + (tower.footprint.w * TILE_SIZE) / 2;
+                    const cy = tower.pos.y + (tower.footprint.h * TILE_SIZE) / 2;
+
+                    orbiter.pos.x = cx + Math.cos(orbiter.angle) * orbiter.r;
+                    orbiter.pos.y = cy + Math.sin(orbiter.angle) * orbiter.r;
+
+                    (k.get("enemy") as EnemyGameObj[]).forEach(enemy => {
+                        if (orbiter.hitEnemies.has(enemy)) return;
+
+                        if (enemy.pos.dist(orbiter.pos) < TILE_SIZE / 2) {
+                            const damageMult = 1 + getBuffValue(k, tower, "damage");
+
+                            const { isCrit, damage } = calcDamage({
+                                bonusDamage: 0,
+                                bonusCritChance: enemy.has("curse") ? CURSE_CRIT + (k.get("hero")[0]?.hasCurseBuff ? 10 : 0) : 0,
+                                critChance: tower.stats.critChance + (getBuffValue(k, tower, "critChance") * 100),
+                                critDamage: tower.stats.critDamage * (1 + getBuffValue(k, tower, "critDamage")),
+                                damage: tower.stats.damage,
+                                damageMultiplier: damageMult
+                            });
+                            orbiter.hitEnemies.add(enemy);
+                            k.wait(1, () => orbiter.hitEnemies.delete(enemy));
+                            hurtEnemy(k, { 
+                                target: enemy, 
+                                damage,
+                                isCrit,
+                                element: tower.element
+                            });
+                        }
+                    });
+
+                });
+
+                tower.onDestroy(() => {
+                    k.destroy(orbiter);
+                });
             }
 
             if (k.get("hero").some(hero => hero.changeNormalElement)) {
