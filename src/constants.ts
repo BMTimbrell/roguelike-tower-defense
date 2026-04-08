@@ -204,43 +204,40 @@ export const LEVEL_WAVES = {
                 ],
                 reward: 50
             },
-            {
-                spawns: [
-                    { id: "skeleton", count: 3, interval: 1 },
-                    { id: "slime", count: 5, interval: 0.75 }
-                ],
-                reward: 100
-            },
             // {
             //     spawns: [
-            //         { id: "armouredSkeleton", count: 3, interval: 1 },
-            //         { id: "skeleton", count: 6, interval: 1 },
+            //         { id: "skeleton", count: 3, interval: 1 },
+            //         { id: "slime", count: 5, interval: 0.75 }
+            //     ],
+            //     reward: 100
+            // },
+            // {
+            //     spawns: [
+            //         { id: "armouredSkeleton", count: 1, interval: 1 },
+            //         { id: "skeleton", count: 5, interval: 1 },
             //         { id: "fairy", count: 1, interval: 1 }
             //     ],
             //     reward: 200
             // },
             // {
             //     spawns: [
-            //         { id: "armouredSkeleton", count: 5, interval: 1 },
-            //         { id: "fairy", count: 1, interval: 1 },
+            //         { id: "armouredSkeleton", count: 3, interval: 1 },
             //         { id: "giantSlime", count: 1, interval: 1 },
-            //         { id: "skeleton", count: 10, interval: 1 },
+            //         { id: "skeleton", count: 8, interval: 1 },
             //         { id: "fairy", count: 1, interval: 1 }
             //     ],
             //     reward: 300
             // },
             // {
             //     spawns: [
-            //         { id: "armouredSkeleton", count: 8, interval: 1 },
-            //         { id: "fairy", count: 1, interval: 1 },
+            //         { id: "armouredSkeleton", count: 5, interval: 1 },
             //         { id: "giantSlime", count: 1, interval: 1 },
-            //         { id: "skeleton", count: 10, interval: 1 },
+            //         { id: "skeleton", count: 5, interval: 0.5 },
             //         { id: "giantSkeleton", count: 1, interval: 1 },
             //         { id: "fairy", count: 1, interval: 1 },
-            //         { id: "armouredSkeleton", count: 8, interval: 1 },
+            //         { id: "skeleton", count: 5, interval: 0.5 },
             //         { id: "giantSlime", count: 1, interval: 1 },
-            //         { id: "fairy", count: 1, interval: 1 },
-            //         { id: "giantSkeleton", count: 1, interval: 1},
+            //         { id: "armouredSkeleton", count: 5, interval: 1 },
             //         { id: "fairy", count: 1, interval: 1 },
             //     ],
             //     reward: 0
@@ -258,25 +255,24 @@ export const LEVEL_WAVES = {
                 ],
                 reward: 50
             },
-            {
-                spawns: [
-                    { id: "orc", count: 1, interval: 1.5 },
-                    { id: "bee", count: 5, interval: 1 }
-                ],
-                reward: 100
-            },
+            // {
+            //     spawns: [
+            //         { id: "orc", count: 1, interval: 1.5 },
+            //         { id: "bee", count: 5, interval: 1 }
+            //     ],
+            //     reward: 100
+            // },
             // {
             //     spawns: [
             //         { id: "armouredOrc", count: 1, interval: 1.5 },
-            //         { id: "orc", count: 3, interval: 1.5 },
-            //         { id: "fairy", count: 1, interval: 1 },
-            //         { id: "bee", count: 10, interval: 1 },
+            //         { id: "orc", count: 2, interval: 1.5 },
+            //         { id: "bee", count: 8, interval: 1 },
             //     ],
             //     reward: 200
             // },
             // {
             //     spawns: [
-            //         { id: "armouredOrc", count: 3, interval: 2 },
+            //         { id: "armouredOrc", count: 2, interval: 2 },
             //         { id: "giantBee", count: 1, interval: 2 },
             //         { id: "bee", count: 5, interval: 1 },
             //         { id: "orc", count: 8, interval: 1.4 },
@@ -286,16 +282,14 @@ export const LEVEL_WAVES = {
             // },
             // {
             //     spawns: [
-            //         { id: "armouredOrc", count: 7, interval: 1.5 },
-            //         { id: "fairy", count: 1, interval: 1 },
+            //         { id: "armouredOrc", count: 5, interval: 1.5 },
             //         { id: "giantBee", count: 1, interval: 1 },
-            //         { id: "orc", count: 10, interval: 1 },
+            //         { id: "orc", count: 8, interval: 1 },
             //         { id: "giantOrc", count: 1, interval: 1.5 },
-            //         { id: "armouredOrc", count: 7, interval: 1.5 },
-            //         { id: "giantBee", count: 1, interval: 2 },
-            //         { id: "bee", count: 10, interval: 1},
-            //         { id: "giantOrc", count: 1, interval: 2},
+            //         { id: "armouredOrc", count: 5, interval: 1.5 },
             //         { id: "fairy", count: 1, interval: 1 },
+            //         { id: "giantBee", count: 1, interval: 2 },
+            //         { id: "bee", count: 10, interval: 0.5},
             //     ],
             //     reward: 0
             // }
@@ -316,15 +310,16 @@ export const LEVEL_WAVES = {
             {
                 spawns: [
                     { id: "slime", count: 20, interval: 0.5 },
-                    { id: "skeleton", count: 10, interval: 1 }
+                    { id: "skeleton", count: 5, interval: 1 }
                 ],
                 reward: 100
             },
             {
                 spawns: [
-                    { id: "armouredSkeleton", count: 10, interval: 1 },
+                    { id: "armouredSkeleton", count: 3, interval: 1.5 },
+                    { id: "skeleton", count: 3, interval: 1 },
                     { id: "fairy", count: 1, interval: 1 },
-                    { id: "skeleton", count: 12, interval: 1 },
+                    { id: "skeleton", count: 9, interval: 1 },
                     { id: "fairy", count: 1, interval: 1 }
                 ],
                 reward: 200
@@ -332,7 +327,7 @@ export const LEVEL_WAVES = {
             {
                 spawns: [
                     { id: "ghost", count: 3, interval: 2 },
-                    { id: "armouredSkeleton", count: 8, interval: 1.5 },
+                    { id: "armouredSkeleton", count: 5, interval: 1.5 },
                     { id: "fairy", count: 1, interval: 3 },
                     { id: "giantSlime", count: 1, interval: 1 },
                     { id: "skeleton", count: 15, interval: 0.5 },
@@ -343,39 +338,35 @@ export const LEVEL_WAVES = {
             {
                 spawns: [
                     { id: "giantSkeleton", count: 1, interval: 1 },
-                    { id: "armouredSkeleton", count: 10, interval: 1 },
+                    { id: "armouredSkeleton", count: 5, interval: 1 },
                     { id: "fairy", count: 1, interval: 1 },
                     { id: "giantSlime", count: 1, interval: 1 },
-                    { id: "skeleton", count: 10, interval: 0.75 },
-                    { id: "ghost", count: 2, interval: 2 },
-                    { id: "redFairy", count: 1, interval: 1 },
-                    { id: "giantSkeleton", count: 1, interval: 1 },
-                    { id: "armouredSkeleton", count: 5, interval: 1 },
-                    { id: "ghost", count: 3, interval: 2 },
+                    { id: "skeleton", count: 5, interval: 0.75 },
+                    { id: "ghost", count: 3, interval: 1.5 },
+                    { id: "armouredSkeleton", count: 3, interval: 1 },
+                    { id: "ghost", count: 3, interval: 1.5 },
+                    { id: "fairy", count: 1, interval: 1 },
                     { id: "skeleton", count: 5, interval: 0.75 },
                     { id: "giantSlime", count: 1, interval: 1 },
                     { id: "skeleton", count: 5, interval: 0.75 },
-                    { id: "fairy", count: 1, interval: 1 }
+                    { id: "redFairy", count: 1, interval: 1 }
                 ],
                 reward: 400
             },
             {
                 spawns: [
                     { id: "giantSkeleton", count: 1, interval: 1 },
-                    { id: "armouredSkeleton", count: 10, interval: 1 },
-                    { id: "redFairy", count: 1, interval: 1 },
+                    { id: "armouredSkeleton", count: 5, interval: 1 },
+                    { id: "fairy", count: 1, interval: 1 },
                     { id: "giantSlime", count: 1, interval: 1 },
-                    { id: "ghost", count: 10, interval: 1 },
+                    { id: "ghost", count: 5, interval: 1.5 },
                     { id: "giantSlime", count: 1, interval: 1 },
                     { id: "redFairy", count: 1, interval: 1 },
-                    { id: "giantSkeleton", count: 1, interval: 1 },
-                    { id: "armouredSkeleton", count: 3, interval: 1 },
-                    { id: "giantSkeleton", count: 1, interval: 1 },
-                    { id: "armouredSkeleton", count: 3, interval: 1 },
-                    { id: "giantSkeleton", count: 1, interval: 1 },
                     { id: "skeleton", count: 5, interval: 0.5 },
                     { id: "giantSkeleton", count: 1, interval: 1 },
                     { id: "skeleton", count: 5, interval: 0.5 },
+                    { id: "giantSkeleton", count: 1, interval: 1 },
+                    { id: "ghost", count: 5, interval: 1.5 },
                     { id: "giantSlime", count: 1, interval: 1 },
                     { id: "skeleton", count: 5, interval: 0.5 },
                     { id: "redFairy", count: 1, interval: 1 }
@@ -391,22 +382,21 @@ export const LEVEL_WAVES = {
         waves: [
             {
                 spawns: [
-                    { id: "orc", count: 2, interval: 1 },
+                    { id: "orc", count: 2, interval: 2 },
                     { id: "bee", count: 5, interval: 0.5 },
                 ],
                 reward: 50
             },
             {
                 spawns: [
-                    { id: "orc", count: 8, interval: 1.5 },
+                    { id: "orc", count: 5, interval: 1.5 },
                     { id: "bee", count: 20, interval: 0.5 },
                 ],
                 reward: 100
             },
             {
                 spawns: [
-                    { id: "armouredOrc", count: 8, interval: 1.5 },
-                    { id: "fairy", count: 1, interval: 1 },
+                    { id: "armouredOrc", count: 2, interval: 1.75 },
                     { id: "orc", count: 10, interval: 1.5 },
                     { id: "fairy", count: 1, interval: 1 }
                 ],
@@ -414,13 +404,48 @@ export const LEVEL_WAVES = {
             },
             {
                 spawns: [
-                    { id: "spider", count: 3, interval: 2 },
-                    { id: "armouredOrc", count: 8, interval: 2 },
+                    { id: "spider", count: 2, interval: 2 },
+                    { id: "armouredOrc", count: 5, interval: 2 },
                     { id: "giantBee", count: 1, interval: 2 },
-                    { id: "orc", count: 10, interval: 0.75 },
+                    { id: "orc", count: 8, interval: 1.5 },
                     { id: "fairy", count: 1, interval: 1 }
                 ],
                 reward: 300
+            },
+            {
+                spawns: [
+                    { id: "giantOrc", count: 1, interval: 2 },
+                    { id: "orc", count: 8, interval: 1 },
+                    { id: "fairy", count: 1, interval: 1 },
+                    { id: "armouredOrc", count: 3, interval: 1.5 },
+                    { id: "giantBee", count: 1, interval: 2 },
+                    { id: "spider", count: 2, interval: 2 },
+                    { id: "armouredOrc", count: 3, interval: 1.5 },
+                    { id: "fairy", count: 1, interval: 1 },
+                    { id: "spider", count: 2, interval: 2 },
+                    { id: "orc", count: 5, interval: 1 },
+                    { id: "redFairy", count: 1, interval: 1 }
+                ],
+                reward: 400
+            },
+            {
+                spawns: [
+                    { id: "armouredOrc", count: 6, interval: 1.5 },
+                    { id: "giantOrc", count: 1, interval: 2 },
+                    { id: "orc", count: 6, interval: 1 },
+                    { id: "redFairy", count: 1, interval: 1 },
+                    { id: "armouredOrc", count: 5, interval: 1 },
+                    { id: "spider", count: 3, interval: 1.2 },
+                    { id: "giantBee", count: 1, interval: 1.5 },
+                    { id: "spider", count: 3, interval: 1.2 },
+                    { id: "armouredOrc", count: 3, interval: 1.5 },
+                    { id: "giantBee", count: 1, interval: 1 },
+                    { id: "spider", count: 2, interval: 1.2 },
+                    { id: "giantOrc", count: 1, interval: 2 },
+                    { id: "orc", count: 10, interval: 1 },
+                    { id: "redFairy", count: 1, interval: 1 }
+                ],
+                reward: 500
             },
         ],
     },
@@ -502,7 +527,7 @@ export const ENEMIES = {
         hp: 60,
         armour: 50,
         damage: 1,
-        speed: 40,
+        speed: 50,
         sprite: "armoured orc"
     },
     giantBee: {
@@ -567,6 +592,17 @@ export const ENEMIES = {
             range: 2
         }
     },
+    armouredSlime: {
+        hp: 10,
+        armour: 100,
+        damage: 1,
+        speed: 40,
+        sprite: "armoured slime",
+        spawnArmourOnDeath: {
+            amount: 25,
+            range: 1.2
+        }
+    }
 } as const satisfies Record<string, EnemyConfig>;
 
 export type EnemyId = keyof typeof ENEMIES;
@@ -1909,7 +1945,7 @@ export const TOWERS = {
         stats: {
             damage: 15,
             range: 3,
-            fireInterval: 2.5,
+            fireInterval: 3,
             critChance: 5,
             critDamage: 200
         },
@@ -2057,7 +2093,7 @@ export const TOWERS = {
         baseSprite: "orbit tower base",
         sprite: "orbit-tower-sprite.png",
         description: "A planet orbits the outer range of the tower, damaging all enemies in its path. The speed at which it orbits increases with the tower's fire rate",
-        cost: 300,
+        cost: 250,
         stats: {
             damage: 30,
             range: 3,

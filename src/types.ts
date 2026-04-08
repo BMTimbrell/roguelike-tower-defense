@@ -300,6 +300,10 @@ export type EnemyGameObj = GameObj<
         wind: number;
     };
     debuffDurationMultiplier: number;
+    spawnArmourOnDeath?: {
+        amount: number;
+        range: number;
+    };
 };
 
 export type Upgrade = {
@@ -453,6 +457,10 @@ export type EnemyConfig = {
     invincibleDuration?: number;
     invincibleCooldown?: number;
     speedBooster?: {
+        amount: number;
+        range: number;
+    };
+    spawnArmourOnDeath?: {
         amount: number;
         range: number;
     };

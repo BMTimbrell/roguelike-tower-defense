@@ -708,6 +708,16 @@ export default function loadAssets(k: KAPLAYCtx) {
         }
     });
 
+    k.loadSprite("armoured slime", "/sprites/armoured-slime.png", {
+        sliceX: 7,
+        sliceY: 2,
+        anims: {
+            idle: 0,
+            move: { from: 0, to: 5, loop: true },
+            die: { from: 7, to: 12, loop: false }
+        }
+    });
+
     k.loadSprite("zombie", "/sprites/zombie.png", {
         sliceX: 5,
         sliceY: 3,
@@ -793,4 +803,5 @@ export default function loadAssets(k: KAPLAYCtx) {
         }
     });
     k.loadSprite("poison puddle", "/sprites/poison-puddle.png");
+    k.loadSprite("shield", "/sprites/shield.png");
 }

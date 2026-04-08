@@ -6,6 +6,7 @@ import healthBar from '../kaplayComponents/healthBar';
 import statusEffect from '../kaplayComponents/statusEffect';
 import type { EnemyGameObj, TowerGameObj } from '../types';
 import makeEnemyProjectile from './EnemyProjectile';
+import { aoeBurst } from '../utils/makeUnitCombat';
 
 export default function makeEnemy(k: KAPLAYCtx, enemyId: EnemyId, waypoints: Vec2[], pathIndex: number = 0, pos?: Vec2): GameObj {
 
@@ -33,6 +34,7 @@ export default function makeEnemy(k: KAPLAYCtx, enemyId: EnemyId, waypoints: Vec
             maxArmour: (ENEMIES[enemyId] as Record<"armour", number>).armour ?? 0,
             ...("healer" in ENEMIES[enemyId] ? { healer: ENEMIES[enemyId].healer as { amount: number; range: number; }, healTickRate: 2 } : {}),
             ...("spawnOnDeath" in ENEMIES[enemyId] ? { spawnOnDeath: ENEMIES[enemyId].spawnOnDeath as { id: "slime"; amount: number; } } : {}),
+            ...("spawnArmourOnDeath" in ENEMIES[enemyId] ? { spawnArmourOnDeath: ENEMIES[enemyId].spawnArmourOnDeath as { amount: number; range: number; } } : {}),
             ...("attacker" in ENEMIES[enemyId] ? {
                 attacker: ENEMIES[enemyId].attacker as {
                     projectile: ProjectileId;
@@ -298,6 +300,17 @@ export default function makeEnemy(k: KAPLAYCtx, enemyId: EnemyId, waypoints: Vec
                 spawnedEnemy.invincible = true;
                 spawnedEnemy.invincibleDuration = 0.1;
             }
+        }
+
+        if (enemy.spawnArmourOnDeath) {
+            (k.get("enemy") as EnemyGameObj[]).forEach(e => {
+                if (e.pos.dist(enemy.pos) <= enemy.spawnArmourOnDeath!.range * TILE_SIZE) {
+                    e.armour = e.armour + enemy.spawnArmourOnDeath!.amount;
+                    e.maxArmour = e.maxArmour + enemy.spawnArmourOnDeath!.amount;
+                }
+            });
+
+            aoeBurst(k, enemy.pos, 2, "shield", 1.5);
         }
 
         const hero = k.get("hero")[0];

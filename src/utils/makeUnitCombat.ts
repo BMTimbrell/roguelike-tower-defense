@@ -516,7 +516,7 @@ export function electricAoeBurst(k: KAPLAYCtx, pos: Vec2, radius: number) {
     aoeBurst(k, pos, radius, "electric particle");
 }
 
-function aoeBurst(k: KAPLAYCtx, pos: Vec2, radius: number, particle: string) {
+export function aoeBurst(k: KAPLAYCtx, pos: Vec2, radius: number, particle: string, duration: number = 0.5) {
     const baseCount = 8;
     const count = Math.min(
         baseCount + Math.floor(radius * 0.4),
@@ -532,7 +532,7 @@ function aoeBurst(k: KAPLAYCtx, pos: Vec2, radius: number, particle: string) {
             Math.sin(angle)
         ).scale(dist);
 
-        const life = k.rand(0.25, 0.45);
+        const life = k.rand(duration / 2, duration);
         const startScale = k.rand(1, 2);
 
         const p = k.add([
