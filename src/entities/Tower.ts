@@ -186,7 +186,7 @@ export default function makeTower(
                         angle: 0,
                         r: 80,
                         hitEnemies: new Set<EnemyGameObj>(),
-                        speed: 2, // radians per second
+                        speed: 2 * Math.PI,
                         towerId: tower.instanceId
                     },
                     "orbiter"
@@ -201,7 +201,7 @@ export default function makeTower(
                         return;
                     }
                     
-                    orbiter.speed = 2 / ((1 - fireRateBuff) * tower.stats.fireInterval);
+                    orbiter.speed = 2 * Math.PI / ((1 - fireRateBuff) * tower.stats.fireInterval);
                     orbiter.angle += orbiter.speed * k.dt();
 
                     const cx = tower.pos.x + (tower.footprint.w * TILE_SIZE) / 2;

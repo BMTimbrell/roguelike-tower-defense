@@ -7,7 +7,7 @@ import getBuffValue from "./getBuffValue";
 
 export function makeLavaManager(k: KAPLAYCtx) {
     let tick = 0;
-    const tickRate = 0.5;
+    const tickRate = 0.4;
 
     k.onUpdate(() => {
         tick += k.dt();

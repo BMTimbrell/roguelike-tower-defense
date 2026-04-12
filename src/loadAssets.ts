@@ -6,6 +6,7 @@ export default function loadAssets(k: KAPLAYCtx) {
     k.loadSprite("level1-2", "/sprites/level1-2.png");
     k.loadSprite("level2", "/sprites/level2.png");
     k.loadSprite("level2-2", "/sprites/level2-2.png");
+    k.loadSprite("level3", "/sprites/level3.png");
     k.loadSprite("tree", "/sprites/tree.png");
     k.loadSprite("gold", "/sprites/coin.png");
     k.loadSprite("heart", "/sprites/heart.png");
@@ -208,13 +209,13 @@ export default function loadAssets(k: KAPLAYCtx) {
             shoot: { from: 1, to: 3, loop: false, speed: 20 }
         }
     });
-    k.loadSprite("balloon tower base", "/sprites/balloon-tower-base.png");
-    k.loadSprite("balloon tower", "/sprites/balloon-tower.png", {
-        sliceX: 4,
+    k.loadSprite("discharge tower base", "/sprites/discharge-tower-base.png");
+    k.loadSprite("discharge tower", "/sprites/discharge-tower.png", {
+        sliceX: 5,
         sliceY: 1,
         anims: {
             idle: 0,
-            shoot: { from: 1, to: 3, loop: false, speed: 20 }
+            shoot: { from: 1, to: 4, loop: false, speed: 20 }
         }
     });
     k.loadSprite("beehive tower base", "/sprites/beehive-tower-base.png");
@@ -683,7 +684,7 @@ export default function loadAssets(k: KAPLAYCtx) {
         sliceY: 2,
         anims: {
             idle: 0,
-            move: { from: 0, to: 3, loop: true, speed: 4 },
+            move: { from: 0, to: 3, loop: true, speed: 6 },
             die: { from: 5, to: 9, loop: false, speed: 7 }
         }
     });
@@ -726,6 +727,67 @@ export default function loadAssets(k: KAPLAYCtx) {
             move: { from: 0, to: 3, loop: true, speed: 4 },
             die: { from: 5, to: 8, loop: false },
             attack: { from: 10, to: 14, loop: false }
+        }
+    });
+
+    k.loadSprite("giant armoured skeleton", "/sprites/giant-armoured-skeleton.png", {
+        sliceX: 7,
+        sliceY: 2,
+        anims: {
+            idle: 0,
+            move: { from: 0, to: 3, loop: true, speed: 4 },
+            die: { from: 8, to: 13, loop: false }
+        }
+    });
+
+    k.loadSprite("giant armoured orc", "/sprites/giant-armoured-orc.png", {
+        sliceX: 7,
+        sliceY: 2,
+        anims: {
+            idle: 0,
+            move: { from: 0, to: 3, loop: true, speed: 4 },
+            die: { from: 8, to: 11, loop: false }
+        }
+    });
+
+    k.loadSprite("giant ghost", "/sprites/giant-ghost.png", {
+        sliceX: 8,
+        sliceY: 2,
+        anims: {
+            idle: 0,
+            move: { from: 0, to: 7, loop: true, speed: 10 },
+            attack: { from: 0, to: 0, loop: false, speed: 100 },
+            die: { from: 8, to: 14, loop: false }
+        }
+    });
+
+    k.loadSprite("giant spider", "/sprites/giant-spider.png", {
+        sliceX: 5,
+        sliceY: 2,
+        anims: {
+            idle: 0,
+            move: { from: 0, to: 3, loop: true, speed: 5 },
+            die: { from: 5, to: 9, loop: false, speed: 7 }
+        }
+    });
+
+    k.loadSprite("giant armoured slime", "/sprites/giant-armoured-slime.png", {
+        sliceX: 7,
+        sliceY: 2,
+        anims: {
+            idle: 0,
+            move: { from: 0, to: 5, loop: true },
+            die: { from: 7, to: 10, loop: false }
+        }
+    });
+
+    k.loadSprite("giant wolf", "/sprites/giant-wolf.png", {
+        sliceX: 4,
+        sliceY: 2,
+        anims: {
+            idle: 0,
+            move: { from: 0, to: 3, loop: true, speed: 7 },
+            die: { from: 4, to: 7, loop: false, speed: 7 }
         }
     });
 
@@ -804,4 +866,11 @@ export default function loadAssets(k: KAPLAYCtx) {
     });
     k.loadSprite("poison puddle", "/sprites/poison-puddle.png");
     k.loadSprite("shield", "/sprites/shield.png");
+    k.loadSprite("dizzy", "/sprites/dizzy.png", {
+        sliceX: 3,
+        sliceY: 1,
+        anims: {
+            dizzy: { from: 0, to: 2, loop: true }
+        }
+    });
 }

@@ -1,5 +1,4 @@
 import kaplay from "kaplay";
-import { VIRTUAL_HEIGHT, VIRTUAL_WIDTH } from "./constants";
 
 export default function makeKaplayCtx() {
     return kaplay({

@@ -381,7 +381,13 @@ export type Deck = {
     drawCost: number;
 };
 
-export type Scene = "level1" | "level1-2" | "levelTransition" | "mainMenu" | "level2" | "level2-2";
+export type Scene = "level1" | 
+    "level1-2" | 
+    "levelTransition" | 
+    "mainMenu" | 
+    "level2" | 
+    "level2-2" |
+    "level3";
 
 export type Scenes = Scene[][];
 
@@ -445,7 +451,7 @@ export type EnemyConfig = {
         range: number;
     };
     spawnOnDeath?: {
-        id: "slime" | "spiderling";
+        id: "slime" | "spiderling" | "spider" | "armouredSlime";
         amount: number;
     };
     attacker?: {

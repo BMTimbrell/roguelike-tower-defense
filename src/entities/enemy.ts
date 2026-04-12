@@ -103,7 +103,15 @@ export default function makeEnemy(k: KAPLAYCtx, enemyId: EnemyId, waypoints: Vec
         enemy.stunResistanceTimer = enemy.stunResistanceDuration;
         enemy.stunResistance = true;
         enemy.play("idle");
+        const dizzyEffect = k.add([
+            k.sprite("dizzy", { anim: "dizzy" }),
+            k.anchor("center"),
+            k.pos(enemy.pos),
+            k.z(999),
+            `dizzy ${enemy.id}`
+        ]);
         enemy.wait(STUN_DURATION, () => {
+            k.destroy(dizzyEffect);
             enemy.enterState("move");
         });
     });
@@ -280,6 +288,9 @@ export default function makeEnemy(k: KAPLAYCtx, enemyId: EnemyId, waypoints: Vec
 
     enemy.onDeath(() => {
         if (enemy.isDying) return;
+
+        const dizzyEffect = k.get(`dizzy ${enemy.id}`)[0];
+        if (dizzyEffect) k.destroy(dizzyEffect);
 
         if (enemy.spawnOnDeath) {
 
