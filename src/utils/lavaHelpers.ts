@@ -4,57 +4,61 @@ import hurtEnemy from "./hurtEnemy";
 import { CURSE_CRIT, TILE_SIZE } from "../constants";
 import calcDamage from "./calcDamage";
 import getBuffValue from "./getBuffValue";
+import { gameStateAtom, store } from "../store";
 
 export function makeLavaManager(k: KAPLAYCtx) {
     let tick = 0;
     const tickRate = 0.4;
 
     k.onUpdate(() => {
+        if (!store.get(gameStateAtom).waveActive) return;
+
         tick += k.dt();
 
-        if (tick < tickRate) return;
-        tick -= tickRate;
-
-        const enemies = k.get("enemy") as EnemyGameObj[];
-        const lavaTiles = k.get("lava tile");
-
-        const damaged = new Set<number>();
-
-        enemies.forEach(e => {
-            for (const lava of lavaTiles) {
-
-                if (e.pos.dist(lava.pos) < TILE_SIZE / 2 + e.width / 2) {
-
-                    if (damaged.has(e.id ?? 0)) break;
-
-                    damaged.add(e.id ?? 0);
-
-                    const tower = (k.get("tower") as TowerGameObj[]).find(t => t.instanceId === lava.towerId);
-
-                    if (!tower) return;
-
-                    const damageMult = 1 + getBuffValue(k, tower, "damage");
-
-                    const { damage, isCrit } = calcDamage({
-                        damage: tower.stats.damage,
-                        bonusDamage: 0,
-                        bonusCritChance: e.has("curse") ? CURSE_CRIT + (k.get("hero")[0]?.hasCurseBuff ? 10 : 0) : 0,
-                        critChance: tower.stats.critChance + (getBuffValue(k, tower, "critChance") * 100),
-                        critDamage: tower.stats.critDamage * (1 + getBuffValue(k, tower, "critDamage")),
-                        damageMultiplier: damageMult
-                    });
-
-                    hurtEnemy(k, {
-                        target: e,
-                        damage,
-                        isCrit,
-                        element: "Fire"
-                    });
-
-                    break;
+        while (tick >= tickRate) {
+            tick -= tickRate;
+    
+            const enemies = k.get("enemy") as EnemyGameObj[];
+            const lavaTiles = k.get("lava tile");
+    
+            const damaged = new Set<number>();
+    
+            enemies.forEach(e => {
+                for (const lava of lavaTiles) {
+    
+                    if (e.pos.dist(lava.pos) < TILE_SIZE / 2) {
+    
+                        if (damaged.has(e.id ?? 0)) break;
+    
+                        damaged.add(e.id ?? 0);
+    
+                        const tower = (k.get("tower") as TowerGameObj[]).find(t => t.instanceId === lava.towerId);
+    
+                        if (!tower) return;
+    
+                        const damageMult = 1 + getBuffValue(k, tower, "damage");
+    
+                        const { damage, isCrit } = calcDamage({
+                            damage: tower.stats.damage,
+                            bonusDamage: 0,
+                            bonusCritChance: e.has("curse") ? CURSE_CRIT + (k.get("hero")[0]?.hasCurseBuff ? 10 : 0) : 0,
+                            critChance: tower.stats.critChance + (getBuffValue(k, tower, "critChance") * 100),
+                            critDamage: tower.stats.critDamage * (1 + getBuffValue(k, tower, "critDamage")),
+                            damageMultiplier: damageMult
+                        });
+    
+                        hurtEnemy(k, {
+                            target: e,
+                            damage,
+                            isCrit,
+                            element: "Fire"
+                        });
+    
+                        break;
+                    }
                 }
-            }
-        });
+            });
+        }
     });
 }
 

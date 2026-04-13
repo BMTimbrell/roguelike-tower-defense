@@ -182,14 +182,14 @@ export type Buffs = Partial<Record<BuffType, {
     expiresAt: number;
 }>>;
 export type Song = { type: BuffType; value: number; duration: number; };
-export type Summon = { 
+export type Summon = {
     name: string;
     sprite: string;
     damageMult: number;
     attackSpeedMult: number;
     speed: number;
     maxAttacks: number;
- };
+};
 
 export type TowerInstance = UnitInstance & {
     instanceId: string;
@@ -304,6 +304,11 @@ export type EnemyGameObj = GameObj<
         amount: number;
         range: number;
     };
+    boss?: {
+        stopIndexes: number[];
+        currentStopIndex: number;
+        reachedStopIndex: boolean;
+    };
 };
 
 export type Upgrade = {
@@ -381,11 +386,11 @@ export type Deck = {
     drawCost: number;
 };
 
-export type Scene = "level1" | 
-    "level1-2" | 
-    "levelTransition" | 
-    "mainMenu" | 
-    "level2" | 
+export type Scene = "level1" |
+    "level1-2" |
+    "levelTransition" |
+    "mainMenu" |
+    "level2" |
     "level2-2" |
     "level3";
 
@@ -438,6 +443,10 @@ export type LevelWaves = {
     startingGold: number;
     startDelay: number;
     waves: Wave[];
+    boss?: {
+        id: EnemyId;
+        bossStops: number[];
+    };
 };
 
 export type EnemyConfig = {
@@ -451,7 +460,7 @@ export type EnemyConfig = {
         range: number;
     };
     spawnOnDeath?: {
-        id: "slime" | "spiderling" | "spider" | "armouredSlime";
+        id: "slime" | "spiderling" | "spider" | "armouredSlime" | "giantSlime";
         amount: number;
     };
     attacker?: {
@@ -470,6 +479,7 @@ export type EnemyConfig = {
         amount: number;
         range: number;
     };
+    isBoss?: boolean;
 };
 
 export type AttackContext = {

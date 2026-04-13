@@ -1,6 +1,6 @@
 import type { GameObj, KAPLAYCtx, Vec2 } from "kaplay";
 import type { EnemyId, LevelId } from "../constants";
-import type { BuffType, TowerGameObj, Wave } from "../types";
+import type { TowerGameObj, Wave } from "../types";
 import { BASE_DRAW_COST, LEVEL_WAVES, MAX_HAND_SIZE, ROUND_DRAW_NUM, SEEDS } from "../constants";
 import makeEnemy from "./Enemy";
 import { store, gameStateAtom } from "../store";
@@ -38,6 +38,17 @@ export default function makeWaveSpawner(k: KAPLAYCtx, levelId: LevelId, waypoint
         "waveSpawner",
         k.timer(),
         {
+            add() {
+                if ("boss" in level && level.boss) {
+                    const boss = level.boss as {
+                        id: EnemyId;
+                        bossStops: number[];
+                    };
+
+                    const bossInstance = makeEnemy(k, boss.id, waypoints, 0, undefined, boss.bossStops);
+                    bossInstance.enterState("idle");
+                }
+            },
             startNextWave() {
                 if (waveIndex < 0) {
                     k.get("arrow").forEach(a => k.destroy(a));
@@ -58,6 +69,14 @@ export default function makeWaveSpawner(k: KAPLAYCtx, levelId: LevelId, waypoint
                     if (t.timeData) t.timeData.timeMultiplier = 1;
                     if (t.charge) t.charge.currentCharge = 0;
                 });
+
+                const bossInstance = k.get("boss")[0];
+
+                if (bossInstance) {
+                    bossInstance.boss.currentStopIndex++;
+                    bossInstance.boss.reachedStop = false;
+                    bossInstance.enterState("move");
+                }
             }
         }
     ]);
@@ -66,14 +85,23 @@ export default function makeWaveSpawner(k: KAPLAYCtx, levelId: LevelId, waypoint
 
         if (!spawning) {
             // wave complete
-            if (enemyDeadCheck && !k.get("enemy").length && !levelComplete) {
+            const enemies = k.get("enemy");
+            const normalEnemiesAlive = enemies.some(e => !e.boss);
+            const boss = k.get("boss")[0];
+
+            if (
+                enemyDeadCheck && 
+                !normalEnemiesAlive && 
+                (!boss || boss?.boss.reachedStopIndex) &&
+                !levelComplete
+            ) {
 
                 store.set(gameStateAtom, prev => ({
                     ...prev,
                     waveActive: false
                 }));
 
-                if (waveIndex === level.waves.length - 1) {
+                if (waveIndex === level.waves.length - 1 || ("boss" in level && !boss && !normalEnemiesAlive)) {
                     levelComplete = true;
                     const complete = k.add([
                         k.pos(k.getCamPos()),

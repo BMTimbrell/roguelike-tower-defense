@@ -1,4 +1,4 @@
-import type { KAPLAYCtx, Vec2, GameObj } from 'kaplay';
+import { type KAPLAYCtx, type Vec2, type GameObj } from 'kaplay';
 import { store, gameStateAtom } from '../store';
 import type { EnemyId, ProjectileId } from '../constants';
 import { ENEMIES, STUN_DURATION, TILE_SIZE, TOWER_RANGE_TOLERANCE } from '../constants';
@@ -8,7 +8,14 @@ import type { EnemyGameObj, TowerGameObj } from '../types';
 import makeEnemyProjectile from './EnemyProjectile';
 import { aoeBurst } from '../utils/makeUnitCombat';
 
-export default function makeEnemy(k: KAPLAYCtx, enemyId: EnemyId, waypoints: Vec2[], pathIndex: number = 0, pos?: Vec2): GameObj {
+export default function makeEnemy(
+    k: KAPLAYCtx,
+    enemyId: EnemyId,
+    waypoints: Vec2[],
+    pathIndex: number = 0,
+    pos?: Vec2,
+    stopIndexes?: number[]
+) {
 
     const enemy: EnemyGameObj = k.add([
         k.pos(pos ?? waypoints[pathIndex]),
@@ -44,6 +51,13 @@ export default function makeEnemy(k: KAPLAYCtx, enemyId: EnemyId, waypoints: Vec
                 }
             } : {}),
             ...("speedBooster" in ENEMIES[enemyId] ? { speedBooster: ENEMIES[enemyId].speedBooster as { amount: number; range: number; } } : {}),
+            ...("isBoss" in ENEMIES[enemyId] && ENEMIES[enemyId].isBoss ? {
+                boss: {
+                    currentStopIndex: 0,
+                    stopIndexes: stopIndexes ?? [],
+                    reachedStopIndex: false
+                }
+            } : {}),
             debuffDurationMultiplier: 1,
             invincibleCooldown: "invincibleCooldown" in ENEMIES[enemyId] ? ENEMIES[enemyId].invincibleCooldown as number : 0,
             invincibleTimer: "invincibleCooldown" in ENEMIES[enemyId] ? ENEMIES[enemyId].invincibleCooldown as number : 0,
@@ -58,10 +72,11 @@ export default function makeEnemy(k: KAPLAYCtx, enemyId: EnemyId, waypoints: Vec
                 wind: 1
             }
         },
-        k.state("move", ["move", "stunned", "attack"]),
+        k.state("move", ["move", "stunned", "attack", "idle"]),
         statusEffect(),
         k.z(1),
         "enemy",
+        "isBoss" in ENEMIES[enemyId] && ENEMIES[enemyId].isBoss ? "boss" : "",
         enemyId
     ]);
 
@@ -95,6 +110,10 @@ export default function makeEnemy(k: KAPLAYCtx, enemyId: EnemyId, waypoints: Vec
         }
     });
 
+    enemy.onStateEnter("idle", () => {
+        enemy.play("move");
+    });
+
     enemy.onStateEnter("move", () => {
         enemy.play("move");
     });
@@ -112,13 +131,47 @@ export default function makeEnemy(k: KAPLAYCtx, enemyId: EnemyId, waypoints: Vec
         ]);
         enemy.wait(STUN_DURATION, () => {
             k.destroy(dizzyEffect);
+            if (enemy?.boss?.reachedStopIndex) enemy.enterState("attack");
             enemy.enterState("move");
         });
     });
 
     let healTimer = enemy.healTickRate ?? 0;
-    let attackTimer = enemy.attacker?.attackCooldown ?? 0;
+    let attackTimer = 0;
     let dir = k.vec2(0);
+
+    // attack for boss
+    enemy.onStateUpdate("attack", () => {
+        if (enemy.stunResistanceTimer > 0) {
+            enemy.stunResistanceTimer -= k.dt();
+        } else enemy.stunResistance = false;
+
+        while (attackTimer <= 0 && store.get(gameStateAtom).waveActive) {
+            const towers = (k.get("tower") as TowerGameObj[]).filter(
+                t => t.placed && enemy.pos.dist(t.pos) <= enemy.attacker!.attackRange * TILE_SIZE
+            );
+            if (!towers.length) break;
+
+            const index = k.randi(towers.length);
+            makeEnemyProjectile(k, {
+                id: enemy.attacker!.projectile as ProjectileId,
+                pos: enemy.pos,
+                target: towers[index],
+                hitChance: enemy.has("blind") ? 0.5 : 1
+            });
+
+            attackTimer += enemy.attacker!.attackCooldown;
+        }
+        if (attackTimer > 0) {
+            attackTimer -= k.dt();
+        }
+
+        if (!store.get(gameStateAtom).waveActive) {
+            enemy.statuses.forEach(s => {
+                if (enemy.has(s)) enemy.unuse(s);
+            });
+        }
+    });
 
     enemy.onStateUpdate("move", () => {
         if (enemy.isDying) return;
@@ -146,7 +199,20 @@ export default function makeEnemy(k: KAPLAYCtx, enemyId: EnemyId, waypoints: Vec
             enemy.stunResistanceTimer -= k.dt();
         } else enemy.stunResistance = false;
 
+        if (enemy.attacker && attackTimer > 0) attackTimer -= k.dt();
+
         enemy.z = enemy.pos.y;
+
+        // boss
+        if (enemy.boss && enemy.boss.stopIndexes.length) {
+            const stopIndex = enemy.boss.stopIndexes[enemy.boss.currentStopIndex];
+
+            if (enemy.pathIndex >= stopIndex) {
+                enemy.boss.reachedStopIndex = true;
+                enemy.enterState("attack");
+                return;
+            }
+        }
 
         const next = enemy.path[enemy.pathIndex + 1];
         if (!next) return;
@@ -178,9 +244,7 @@ export default function makeEnemy(k: KAPLAYCtx, enemyId: EnemyId, waypoints: Vec
         }
 
         // attacker
-        if (enemy.attacker) {
-            if (attackTimer > 0) attackTimer -= k.dt();
-
+        if (enemy.attacker && !enemy.boss) {
             while (attackTimer <= 0) {
                 const towers = (k.get("tower") as TowerGameObj[]).filter(
                     t => t.placed && enemy.pos.dist(t.pos) <= enemy.attacker!.attackRange * TILE_SIZE
@@ -189,13 +253,13 @@ export default function makeEnemy(k: KAPLAYCtx, enemyId: EnemyId, waypoints: Vec
 
                 const index = k.randi(towers.length);
                 makeEnemyProjectile(k, {
-                    id: enemy.attacker.projectile as ProjectileId,
+                    id: enemy.attacker!.projectile as ProjectileId,
                     pos: enemy.pos,
                     target: towers[index],
                     hitChance: enemy.has("blind") ? 0.5 : 1
                 });
 
-                attackTimer += enemy.attacker.attackCooldown;
+                attackTimer += enemy.attacker!.attackCooldown;
             }
         }
 
@@ -325,8 +389,8 @@ export default function makeEnemy(k: KAPLAYCtx, enemyId: EnemyId, waypoints: Vec
         }
 
         const hero = k.get("hero")[0];
-        const goldBonusMod = hero?.goldRush && hero?.pos.dist(enemy.pos) <= hero.stats.range * TILE_SIZE + TOWER_RANGE_TOLERANCE ? 
-            hero.goldRushBoost: 1;
+        const goldBonusMod = hero?.goldRush && hero?.pos.dist(enemy.pos) <= hero.stats.range * TILE_SIZE + TOWER_RANGE_TOLERANCE ?
+            hero.goldRushBoost : 1;
         enemy.isDying = true;
         store.set(gameStateAtom, prev => ({
             ...prev,

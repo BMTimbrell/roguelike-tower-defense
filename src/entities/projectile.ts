@@ -5,6 +5,7 @@ import { findNewTarget, isValidTarget, selectBounceTarget, selectTarget, shortes
 import calcDamage from '../utils/calcDamage';
 import hurtEnemy from '../utils/hurtEnemy';
 import getBuffValue from '../utils/getBuffValue';
+import { gameStateAtom, store } from '../store';
 
 export default function makeProjectile(k: KAPLAYCtx, opts: {
     id: ProjectileId;
@@ -229,7 +230,7 @@ export default function makeProjectile(k: KAPLAYCtx, opts: {
                 }
             }
 
-            if (!behaviors?.persistent) {
+            if (!behaviors?.persistent || !store.get(gameStateAtom).waveActive) {
                 k.destroy(projectile);
             }
         }

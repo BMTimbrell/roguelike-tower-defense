@@ -213,7 +213,7 @@ export default function makeTower(
                     (k.get("enemy") as EnemyGameObj[]).forEach(enemy => {
                         if (orbiter.hitEnemies.has(enemy)) return;
 
-                        if (enemy.pos.dist(orbiter.pos) < TILE_SIZE / 2) {
+                        if (enemy.pos.dist(orbiter.pos) < TILE_SIZE * 0.75 && store.get(gameStateAtom).waveActive) {
                             const damageMult = 1 + getBuffValue(k, tower, "damage");
 
                             const { isCrit, damage } = calcDamage({
@@ -255,8 +255,8 @@ export default function makeTower(
             if (k.get("hero").some(hero => hero.hasRangeBoost)) {
                 const hero = k.get("hero")[0];
 
-                k.get("tower").forEach(tower => {
-                    if (tower === hero) return;
+                k.get("tower").forEach(t => {
+                    if (t !== tower) return;
 
                     const towerCenter = tower.pos.add(k.vec2((tower.footprint.w * TILE_SIZE) / 2));
                     const heroCenter = hero.pos.add(k.vec2(TILE_SIZE / 2));

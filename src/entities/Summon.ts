@@ -54,7 +54,7 @@ export default function spawnSummon(k: KAPLAYCtx, ctx: AttackContext, id: Summon
             const remainingHealthPercent = hp / maxHp;
 
             if (remainingHealthPercent >= 0.8) {
-                bonusDamage = ctx.damage * 2;
+                bonusDamage = ctx.damage;
             }
         }
 
