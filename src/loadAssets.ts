@@ -791,6 +791,26 @@ export default function loadAssets(k: KAPLAYCtx) {
         }
     });
 
+    k.loadSprite("king slime", "/sprites/slime-king.png", {
+        sliceX: 7,
+        sliceY: 2,
+        anims: {
+            idle: 0,
+            move: { from: 0, to: 5, loop: true },
+            die: { from: 7, to: 10, loop: false }
+        }
+    });
+
+    k.loadSprite("bee queen", "/sprites/bee-queen.png", {
+        sliceX: 5,
+        sliceY: 2,
+        anims: {
+            idle: 0,
+            move: { from: 0, to: 3, loop: true, speed: 10 },
+            die: { from: 5, to: 9, loop: false }
+        }
+    });
+
     k.loadSprite("poison", "/sprites/poison-icon.png");
     k.loadSprite("burn", "/sprites/burn-icon.png");
     k.loadSprite("chill", "/sprites/chill-icon.png");
@@ -829,6 +849,7 @@ export default function loadAssets(k: KAPLAYCtx) {
     k.loadSprite("snow", "/sprites/snow.png");
     k.loadSprite("lava tile", "/sprites/lava-tile.png");
     k.loadSprite("stinger", "/sprites/bee-stinger.png");
+    k.loadSprite("bee projectile", "/sprites/bee-projectile.png");
     k.loadShader(
         "glow",
         null,

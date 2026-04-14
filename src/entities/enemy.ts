@@ -148,7 +148,7 @@ export default function makeEnemy(
 
         while (attackTimer <= 0 && store.get(gameStateAtom).waveActive) {
             const towers = (k.get("tower") as TowerGameObj[]).filter(
-                t => t.placed && enemy.pos.dist(t.pos) <= enemy.attacker!.attackRange * TILE_SIZE
+                t => t.placed && enemy.pos.dist(t.pos.add((t.footprint.w * TILE_SIZE) / 2, (t.footprint.h * TILE_SIZE) / 2)) <= enemy.attacker!.attackRange * TILE_SIZE
             );
             if (!towers.length) break;
 
@@ -348,6 +348,10 @@ export default function makeEnemy(
                 }
             }
         ]);
+
+        enemy.onDeath(() => {
+            k.destroy(boostRing);
+        });
     }
 
     enemy.onDeath(() => {

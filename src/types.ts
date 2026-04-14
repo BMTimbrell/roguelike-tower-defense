@@ -460,7 +460,7 @@ export type EnemyConfig = {
         range: number;
     };
     spawnOnDeath?: {
-        id: "slime" | "spiderling" | "spider" | "armouredSlime" | "giantSlime";
+        id: "slime" | "spiderling" | "spider" | "armouredSlime" | "giantSlime" | "bee";
         amount: number;
     };
     attacker?: {

@@ -1,5 +1,5 @@
 import type { KAPLAYCtx, Vec2 } from "kaplay";
-import { TILE_SIZE, type ProjectileId } from "../constants";
+import { PROJECTILES, TILE_SIZE, type ProjectileId } from "../constants";
 import type { HeroGameObj, TowerGameObj } from "../types";
 import makeFloatingText from "./FloatingText";
 
@@ -12,7 +12,7 @@ export default function makeEnemyProjectile(k: KAPLAYCtx, opts: {
     const { id, pos, target, hitChance } = opts;
 
     const projectile = k.add([
-        k.sprite(id),
+        k.sprite(PROJECTILES[id].sprite),
         k.pos(pos),
         k.anchor("center"),
         k.rotate(0),
@@ -27,7 +27,7 @@ export default function makeEnemyProjectile(k: KAPLAYCtx, opts: {
 
     projectile.onUpdate(() => {
         const dir = targetPos.sub(projectile.pos).unit();
-        projectile.angle = targetPos.angle(projectile.pos);
+        projectile.angle = projectile.pos.angle(target.pos);
 
         projectile.pos = projectile.pos.add(dir.scale(projectile.speed * k.dt()));
 
