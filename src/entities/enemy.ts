@@ -265,19 +265,6 @@ export default function makeEnemy(
             }
         }
 
-        // speed booster
-        // if (enemy.speedBooster) {
-        //     (k.get("enemy") as EnemyGameObj[]).forEach(e => {
-        //         let speedBoost = 1;
-        //         if (e.pos.dist(enemy.pos) <= enemy.speedBooster!.range * TILE_SIZE && !e.speedBooster) {
-        //             speedBoost = enemy.speedBooster!.amount;
-        //         }
-
-        //         e.speedMultipliers.boost = speedBoost;
-        //         updateSpeed.call(e);
-        //     });
-        // }
-
         const enemies = k.get("enemy") as EnemyGameObj[];
 
         enemies.forEach(e => {

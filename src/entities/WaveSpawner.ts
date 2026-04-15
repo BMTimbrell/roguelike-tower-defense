@@ -1,7 +1,7 @@
 import type { GameObj, KAPLAYCtx, Vec2 } from "kaplay";
 import type { EnemyId, LevelId } from "../constants";
 import type { TowerGameObj, Wave } from "../types";
-import { BASE_DRAW_COST, LEVEL_WAVES, MAX_HAND_SIZE, ROUND_DRAW_NUM, SEEDS } from "../constants";
+import { BASE_DRAW_COST, LEVEL_WAVES, MAX_HAND_SIZE, REDUCED_RANGE_TOWERS, ROUND_DRAW_NUM, SEEDS, TILE_SIZE } from "../constants";
 import makeEnemy from "./Enemy";
 import { store, gameStateAtom } from "../store";
 import screenPos from "../utils/screenPos";
@@ -90,8 +90,8 @@ export default function makeWaveSpawner(k: KAPLAYCtx, levelId: LevelId, waypoint
             const boss = k.get("boss")[0];
 
             if (
-                enemyDeadCheck && 
-                !normalEnemiesAlive && 
+                enemyDeadCheck &&
+                !normalEnemiesAlive &&
                 (!boss || boss?.boss.reachedStopIndex) &&
                 !levelComplete
             ) {
@@ -187,6 +187,39 @@ export default function makeWaveSpawner(k: KAPLAYCtx, levelId: LevelId, waypoint
                             plant.opacity = 1;
                             plant.selected = false;
                             plant.hovered = false;
+
+                            if (k.get("hero").some(hero => hero.hasRangeBoost)) {
+                                const hero = k.get("hero")[0];
+
+                                const towerCenter = plant.pos.add(k.vec2((plant.footprint.w * TILE_SIZE) / 2));
+                                const heroCenter = hero.pos.add(k.vec2(TILE_SIZE / 2));
+
+                                if (towerCenter.dist(heroCenter) <= TILE_SIZE * plant.footprint.w) {
+                                    const amount = REDUCED_RANGE_TOWERS.some(name => name === plant.name) ? 0.5 : 1;
+                                    plant.stats.range += amount;
+                                }
+                            }
+
+                            if (k.get("hero").some(hero => hero.hasToxicAura)) {
+                                const hero = k.get("hero")[0];
+
+                                const towerCenter = plant.pos.add(k.vec2((plant.footprint.w * TILE_SIZE) / 2));
+                                const heroCenter = hero.pos.add(k.vec2(TILE_SIZE / 2));
+
+                                if (towerCenter.dist(heroCenter) <= TILE_SIZE * plant.footprint.w) {
+                                    plant.element = "Poison";
+                                }
+                            }
+
+                            if (k.get("hero").some(hero => hero.hasBlock)) {
+                                const hero = k.get("hero")[0];
+                                const towerCenter = plant.pos.add(k.vec2((plant.footprint.w * TILE_SIZE) / 2));
+                                const heroCenter = hero.pos.add(k.vec2(TILE_SIZE / 2));
+
+                                if (towerCenter.dist(heroCenter) <= TILE_SIZE * plant.footprint.w) {
+                                    plant.hasBlock = true;
+                                }
+                            }
                         } else {
                             e.gun.play(`grow${3 - e.farmData.turnsRemaining}`);
                         }

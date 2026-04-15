@@ -1,6 +1,6 @@
 import type { KAPLAYCtx, Vec2 } from 'kaplay';
 import { CURSE_CRIT, ELEMENTS, REDUCED_RANGE_TOWERS, TILE_SIZE, type TowerId } from '../constants';
-import type { TowerGameObj, UnitEffects, TowerDef, SeedId, Tile, PathTile, RandomProjectiles, TimeData, ContinuousEffect, Charge, BuffType, Battery, EnemyGameObj } from '../types';
+import type { TowerGameObj, UnitEffects, TowerDef, SeedId, Tile, PathTile, RandomProjectiles, TimeData, ContinuousEffect, Charge, BuffType, Battery, EnemyGameObj, ElementName } from '../types';
 import { store, gameStateAtom } from '../store';
 import { calcUpgradeCost } from '../utils/calcUpgradeCost';
 import { TOWERS } from '../constants';
@@ -243,21 +243,17 @@ export default function makeTower(
             }
 
             if (k.get("hero").some(hero => hero.changeNormalElement)) {
-                k.get("tower").forEach(tower => {
-                    if (tower.element === "Normal") {
-                        const elements = Object.keys(ELEMENTS).filter(e => e !== "Normal");
-                        const rand = k.randi(elements.length);
-                        tower.element = elements[rand];
-                    }
-                });
+                if (tower.element === "Normal") {
+                    const elements = Object.keys(ELEMENTS).filter(e => e !== "Normal") as ElementName[];
+                    const rand = k.randi(elements.length);
+                    tower.element = elements[rand];
+                }
             }
 
             if (k.get("hero").some(hero => hero.hasRangeBoost)) {
                 const hero = k.get("hero")[0];
 
-                k.get("tower").forEach(t => {
-                    if (t !== tower) return;
-
+                if (tower.name !== "Farm Tower") {
                     const towerCenter = tower.pos.add(k.vec2((tower.footprint.w * TILE_SIZE) / 2));
                     const heroCenter = hero.pos.add(k.vec2(TILE_SIZE / 2));
 
@@ -265,37 +261,28 @@ export default function makeTower(
                         const amount = REDUCED_RANGE_TOWERS.some(name => name === tower.name) ? 0.5 : 1;
                         tower.stats.range += amount;
                     }
-                });
+                }
             }
 
             if (k.get("hero").some(hero => hero.hasToxicAura)) {
                 const hero = k.get("hero")[0];
 
-                k.get("tower").forEach(tower => {
-                    if (tower === hero) return;
+                const towerCenter = tower.pos.add(k.vec2((tower.footprint.w * TILE_SIZE) / 2));
+                const heroCenter = hero.pos.add(k.vec2(TILE_SIZE / 2));
 
-                    const towerCenter = tower.pos.add(k.vec2((tower.footprint.w * TILE_SIZE) / 2));
-                    const heroCenter = hero.pos.add(k.vec2(TILE_SIZE / 2));
-
-                    if (towerCenter.dist(heroCenter) <= TILE_SIZE * tower.footprint.w) {
-                        tower.element = "Poison";
-                    }
-                });
+                if (towerCenter.dist(heroCenter) <= TILE_SIZE * tower.footprint.w) {
+                    tower.element = "Poison";
+                }
             }
 
             if (k.get("hero").some(hero => hero.hasBlock)) {
                 const hero = k.get("hero")[0];
+                const towerCenter = tower.pos.add(k.vec2((tower.footprint.w * TILE_SIZE) / 2));
+                const heroCenter = hero.pos.add(k.vec2(TILE_SIZE / 2));
 
-                k.get("tower").forEach(tower => {
-                    if (tower === hero) return;
-
-                    const towerCenter = tower.pos.add(k.vec2((tower.footprint.w * TILE_SIZE) / 2));
-                    const heroCenter = hero.pos.add(k.vec2(TILE_SIZE / 2));
-
-                    if (towerCenter.dist(heroCenter) <= TILE_SIZE * tower.footprint.w) {
-                        tower.hasBlock = true;
-                    }
-                });
+                if (towerCenter.dist(heroCenter) <= TILE_SIZE * tower.footprint.w) {
+                    tower.hasBlock = true;
+                }
             }
         },
     });

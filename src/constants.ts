@@ -879,7 +879,7 @@ export const ENEMIES = {
         hp: 6500,
         damage: 50,
         speed: 20,
-        sprite: "king slime",
+        sprite: "slime king",
         isBoss: true,
         attacker: {
             projectile: "slimeball",

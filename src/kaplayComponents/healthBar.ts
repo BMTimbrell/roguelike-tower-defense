@@ -114,6 +114,6 @@ export default function healthBar(k: KAPLAYCtx, duration: number, opts?: { isBos
             if ((timer <= 0 || this.isDying) && this.statuses.length < 1) {
                 this.unuse("healthBar");
             }
-        },
+        }
     };
 }

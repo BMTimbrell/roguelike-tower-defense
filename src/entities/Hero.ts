@@ -194,6 +194,8 @@ export default function makeHero(k: KAPLAYCtx,
 
                 if (hero.hasRangeBoost) {
                     k.get("tower").forEach(tower => {
+                        if (tower.name === "Farm Tower") return;
+
                         const towerCenter = tower.pos.add(k.vec2((tower.footprint.w * TILE_SIZE) / 2));
                         const heroCenter = hero.pos.add(k.vec2(TILE_SIZE / 2));
  

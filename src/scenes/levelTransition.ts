@@ -2,7 +2,7 @@ import type { KAPLAYCtx } from "kaplay";
 import { gameStateAtom, rewardsAtom, store } from "../store";
 import initCam from "../utils/initCam";
 import type { HeroGameObj, Scene } from "../types";
-import { SCENES } from "../constants";
+import { ENEMIES, LEVEL_WAVES, SCENES } from "../constants";
 import generateMap from "../utils/generateMap";
 import makeHero from "../entities/Hero";
 import addTowers from "../utils/addTowers";
@@ -48,7 +48,7 @@ export default function levelTransition(k: KAPLAYCtx) {
                         zoom = k.getCamScale().x;
                         levelUpText.pos = k.getCamPos().sub(k.vec2(0, (k.height() / zoom) / 4)).
                             add(k.vec2(hero.levelUpOffset.x, hero.levelUpOffset.y)).
-                                sub(k.vec2(0, time * 10));
+                            sub(k.vec2(0, time * 10));
                         levelUpText.wait(0.5, () => {
                             levelUpText.opacity -= k.dt() * 2;
                         });
@@ -142,7 +142,36 @@ export default function levelTransition(k: KAPLAYCtx) {
                         ]
                     }));
 
-                    k.go(sceneName, { mapData, tileGrid, pathTiles, wave });
+                    if (wave === "level3-1" || wave === "level3-2") {
+                        const bossId = LEVEL_WAVES[wave].boss.id;
+                        const sprite = ENEMIES[bossId].sprite;
+
+                        k.destroy(heroSprite);
+
+                        
+                        const bossSprite = k.add([
+                            k.sprite(sprite, { anim: "move" }),
+                            k.pos(k.center()),
+                            k.scale(4),
+                            k.anchor("center")
+                        ]);
+                        
+                        k.add([
+                            k.text(sprite.toUpperCase(), {
+                                size: 16,
+                                font: "free pixel"
+                            }),
+                            k.anchor("center"),
+                            k.scale(4),
+                            k.pos(k.center().sub(0, bossSprite.height / 2))
+                        ]);
+
+                        k.wait(1, () => {
+                            k.go(sceneName, { mapData, tileGrid, pathTiles, wave });
+                        });
+                    } else {
+                        k.go(sceneName, { mapData, tileGrid, pathTiles, wave });
+                    }
                 },
                 visible: true
             }));

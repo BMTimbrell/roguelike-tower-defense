@@ -791,7 +791,7 @@ export default function loadAssets(k: KAPLAYCtx) {
         }
     });
 
-    k.loadSprite("king slime", "/sprites/slime-king.png", {
+    k.loadSprite("slime king", "/sprites/slime-king.png", {
         sliceX: 7,
         sliceY: 2,
         anims: {
