@@ -453,7 +453,7 @@ export const LEVEL_WAVES = {
         startingGold: 200,
         startDelay: 120,
         boss: {
-            id: "beeQueen",
+            id: "slimeKing",
             bossStops: [0, 1, 3, 5, 7, 9, 11, 17]
         },
         waves: [
@@ -593,7 +593,7 @@ export const LEVEL_WAVES = {
                     { id: "spider", count: 3, interval: 1.5 },
                     { id: "giantBee", count: 1, interval: 1 },
                     { id: "wolf", count: 1, interval: 1.5 },
-                    { id: "armouredOrc", count: 3, interval: 1 },
+                    { id: "armouredOrc", count: 3, interval: 1.5 },
                     { id: "orc", count: 4, interval: 0.5 },
                     { id: "fairy", count: 1, interval: 1 },
                     { id: "orc", count: 4, interval: 0.5 },
@@ -607,15 +607,13 @@ export const LEVEL_WAVES = {
                     { id: "spider", count: 3, interval: 1.5 },
                     { id: "wolf", count: 1, interval: 1 },
                     { id: "fairy", count: 1, interval: 1 },
-                    { id: "wolf", count: 1, interval: 1 },
                     { id: "giantBee", count: 1, interval: 2 },
                     { id: "orc", count: 4, interval: 0.5 },
                     { id: "wolf", count: 1, interval: 1 },
                     { id: "armouredOrc", count: 3, interval: 1 },
                     { id: "fairy", count: 1, interval: 1 },
                     { id: "wolf", count: 1, interval: 1 },
-                    { id: "spider", count: 2, interval: 1 },
-                    { id: "giantBee", count: 1, interval: 2 },
+                    { id: "spider", count: 2, interval: 1.5 },
                     { id: "orc", count: 5, interval: 0.5 },
                     { id: "redFairy", count: 1, interval: 1 },
                     { id: "wolf", count: 1, interval: 1 }
@@ -632,7 +630,6 @@ export const LEVEL_WAVES = {
                     { id: "wolf", count: 1, interval: 1 },
                     { id: "armouredOrc", count: 5, interval: 1 },
                     { id: "spider", count: 2, interval: 1 },
-                    { id: "wolf", count: 1, interval: 2 },
                     { id: "giantBee", count: 1, interval: 1 },
                     { id: "spider", count: 3, interval: 1 },
                     { id: "wolf", count: 1, interval: 2 },
@@ -641,7 +638,6 @@ export const LEVEL_WAVES = {
                     { id: "wolf", count: 1, interval: 1 },
                     { id: "spider", count: 2, interval: 1 },
                     { id: "giantOrc", count: 1, interval: 2 },
-                    { id: "giantBee", count: 1, interval: 1 },
                     { id: "redFairy", count: 1, interval: 1 },
                     { id: "wolf", count: 1, interval: 1 },
                 ],
@@ -811,7 +807,7 @@ export const ENEMIES = {
         speed: 90,
         sprite: "wolf",
         speedBooster: {
-            amount: 1.5,
+            amount: 1.3,
             range: 2
         }
     },
@@ -880,9 +876,9 @@ export const ENEMIES = {
         }
     },
     slimeKing: {
-        hp: 7000,
+        hp: 6500,
         damage: 50,
-        speed: 25,
+        speed: 20,
         sprite: "king slime",
         isBoss: true,
         attacker: {
@@ -897,7 +893,7 @@ export const ENEMIES = {
         }
     },
     beeQueen: {
-        hp: 7000,
+        hp: 6000,
         damage: 50,
         speed: 25,
         sprite: "bee queen",
@@ -1492,7 +1488,7 @@ export const TOWERS = {
         gunSprite: "hammer tower",
         baseSprite: "hammer tower base",
         sprite: "hammer-tower-sprite.png",
-        description: "Smash enemies with a hammer, dealing damage in a small area. This tower receives half the amount from range upgrades and buffs",
+        description: "Smash enemies with a hammer, dealing damage in a small area. Enemies have a 20% of the damage received chance to be stunned. This tower receives half the amount from range upgrades and buffs",
         cost: 70,
         stats: {
             damage: 30,
@@ -1981,7 +1977,7 @@ export const TOWERS = {
         baseSprite: "scythe tower base",
         sprite: "scythe-tower-sprite.png",
         description: `Reap enemies' souls, dealing +1 bonus damage per enemy killed (up to +${SCYTHE_MAX_KILL_STACKS}). This tower receives half the amount from range upgrades and buffs`,
-        cost: 300,
+        cost: 250,
         stats: {
             damage: 20,
             range: 2.5,
@@ -2255,7 +2251,7 @@ export const TOWERS = {
         stats: {
             damage: 15,
             range: 3,
-            fireInterval: 3,
+            fireInterval: 2.5,
             critChance: 5,
             critDamage: 200
         },
@@ -3276,7 +3272,7 @@ export const SKILLS = [
         id: "fireball-bounce",
         heroIds: ["wizard"],
         name: "Fireball Bounce",
-        description: "Fireballs have a 35% chance to bounce to nearby enemies",
+        description: "Fireballs have a 40% chance to bounce to nearby enemies",
         apply(hero) {
             hero.effects?.push({
                 secondEffect(ctx) {
@@ -3284,7 +3280,7 @@ export const SKILLS = [
                     fireball.behaviors ??= {};
                     fireball.behaviors.bounces ??= 8;
                     fireball.behaviors.bounceRange ??= 4 * TILE_SIZE;
-                    fireball.behaviors.bounceChance ??= 0.35;
+                    fireball.behaviors.bounceChance ??= 0.40;
                 }
             });
         },

@@ -62,6 +62,11 @@ export default function hurtEnemy(k: KAPLAYCtx, opts: {
 
     if (!statusDamage) ELEMENTS[element].applyEffect?.(k, { target, damage: effectiveDamage });
 
+    if (attacker?.name === "Hammer Tower" && !target.isDying && Math.random() < effectiveDamage * 0.002) {
+        console.log(effectiveDamage * 0.002)
+        target.enterState("stunned");
+    }
+
     // battery charge for battery tower
     const damageDealt = effectiveDamage;
 

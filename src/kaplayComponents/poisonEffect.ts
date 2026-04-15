@@ -56,7 +56,7 @@ export default function poisonEffect(k: KAPLAYCtx, stacks: number): PoisonComp {
 
                 hurtEnemy(k, { target: this as EnemyGameObj, element: "Poison", damage, isCrit: false, statusDamage: true, ignoreArmour: true });
 
-                if (k.get("hero")[0]?.hasCripplingToxins && Math.random() < 0.5) {
+                if (k.get("hero")[0]?.hasCripplingToxins && Math.random() < 0.5 && !this.isDying) {
                     this.enterState("stunned");
                 }
             }

@@ -1,5 +1,5 @@
 import type { KAPLAYCtx, Vec2 } from 'kaplay';
-import { CURSE_CRIT, ELEMENTS, TILE_SIZE, type TowerId } from '../constants';
+import { CURSE_CRIT, ELEMENTS, REDUCED_RANGE_TOWERS, TILE_SIZE, type TowerId } from '../constants';
 import type { TowerGameObj, UnitEffects, TowerDef, SeedId, Tile, PathTile, RandomProjectiles, TimeData, ContinuousEffect, Charge, BuffType, Battery, EnemyGameObj } from '../types';
 import { store, gameStateAtom } from '../store';
 import { calcUpgradeCost } from '../utils/calcUpgradeCost';
@@ -200,7 +200,7 @@ export default function makeTower(
                         orbiter.speed = 0;
                         return;
                     }
-                    
+
                     orbiter.speed = 2 * Math.PI / ((1 - fireRateBuff) * tower.stats.fireInterval);
                     orbiter.angle += orbiter.speed * k.dt();
 
@@ -226,8 +226,8 @@ export default function makeTower(
                             });
                             orbiter.hitEnemies.add(enemy);
                             k.wait(1, () => orbiter.hitEnemies.delete(enemy));
-                            hurtEnemy(k, { 
-                                target: enemy, 
+                            hurtEnemy(k, {
+                                target: enemy,
                                 damage,
                                 isCrit,
                                 element: tower.element
@@ -262,7 +262,8 @@ export default function makeTower(
                     const heroCenter = hero.pos.add(k.vec2(TILE_SIZE / 2));
 
                     if (towerCenter.dist(heroCenter) <= TILE_SIZE * tower.footprint.w) {
-                        tower.stats.range++;
+                        const amount = REDUCED_RANGE_TOWERS.some(name => name === tower.name) ? 0.5 : 1;
+                        tower.stats.range += amount;
                     }
                 });
             }

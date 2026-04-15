@@ -80,6 +80,8 @@ export default function makeEnemy(
         enemyId
     ]);
 
+    if (enemy.boss) enemy.use(healthBar(k, 1, { isBoss: true }));
+
     enemy.onHurt(amount => {
         if (amount === undefined) {
             return;
@@ -148,7 +150,7 @@ export default function makeEnemy(
 
         while (attackTimer <= 0 && store.get(gameStateAtom).waveActive) {
             const towers = (k.get("tower") as TowerGameObj[]).filter(
-                t => t.placed && enemy.pos.dist(t.pos.add((t.footprint.w * TILE_SIZE) / 2, (t.footprint.h * TILE_SIZE) / 2)) <= enemy.attacker!.attackRange * TILE_SIZE
+                t => t.placed && t.name !== "Farm Tower" && enemy.pos.dist(t.pos.add((t.footprint.w * TILE_SIZE) / 2, (t.footprint.h * TILE_SIZE) / 2)) <= enemy.attacker!.attackRange * TILE_SIZE
             );
             if (!towers.length) break;
 
@@ -247,7 +249,7 @@ export default function makeEnemy(
         if (enemy.attacker && !enemy.boss) {
             while (attackTimer <= 0) {
                 const towers = (k.get("tower") as TowerGameObj[]).filter(
-                    t => t.placed && enemy.pos.dist(t.pos) <= enemy.attacker!.attackRange * TILE_SIZE
+                    t => t.placed && t.name !== "Farm Tower" && enemy.pos.dist(t.pos.add((t.footprint.w * TILE_SIZE) / 2, (t.footprint.h * TILE_SIZE) / 2)) <= enemy.attacker!.attackRange * TILE_SIZE
                 );
                 if (!towers.length) break;
 
@@ -264,17 +266,40 @@ export default function makeEnemy(
         }
 
         // speed booster
-        if (enemy.speedBooster) {
-            (k.get("enemy") as EnemyGameObj[]).forEach(e => {
-                let speedBoost = 1;
-                if (e.pos.dist(enemy.pos) <= enemy.speedBooster!.range * TILE_SIZE && !e.speedBooster) {
-                    speedBoost = enemy.speedBooster!.amount;
-                }
+        // if (enemy.speedBooster) {
+        //     (k.get("enemy") as EnemyGameObj[]).forEach(e => {
+        //         let speedBoost = 1;
+        //         if (e.pos.dist(enemy.pos) <= enemy.speedBooster!.range * TILE_SIZE && !e.speedBooster) {
+        //             speedBoost = enemy.speedBooster!.amount;
+        //         }
 
-                e.speedMultipliers.boost = speedBoost;
-                updateSpeed.call(e);
+        //         e.speedMultipliers.boost = speedBoost;
+        //         updateSpeed.call(e);
+        //     });
+        // }
+
+        const enemies = k.get("enemy") as EnemyGameObj[];
+
+        enemies.forEach(e => {
+            let bestBoost = 1;
+
+            enemies.forEach(source => {
+                if (!source.speedBooster) return;
+
+                if (
+                    e.pos.dist(source.pos) <=
+                    source.speedBooster.range * TILE_SIZE &&
+                    !e.speedBooster
+                ) {
+                    bestBoost = Math.max(bestBoost, source.speedBooster.amount);
+                }
             });
-        }
+
+            if (e.speedMultipliers.boost !== bestBoost) {
+                e.speedMultipliers.boost = bestBoost;
+                updateSpeed.call(e);
+            }
+        });
 
         // healing enemies if healer
         if (!enemy.healer && !enemy.healTickRate) return;
@@ -350,6 +375,10 @@ export default function makeEnemy(
         ]);
 
         enemy.onDeath(() => {
+            k.destroy(boostRing);
+        });
+
+        enemy.onDestroy(() => {
             k.destroy(boostRing);
         });
     }
