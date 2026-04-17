@@ -3,6 +3,7 @@
     border-radius: 0.25em;
     background-color: var(--card-color);
     padding: 1em;
+    padding-top: 0.5em;
 }
 
 .card-container {

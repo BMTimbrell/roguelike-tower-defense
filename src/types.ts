@@ -435,13 +435,13 @@ export type ShopChoiceButtons = {
     buttons: { name: "Shop" | "Altar"; text: "Go to Shop" | "Go to Altar", onClick: () => void; description: string }[];
 };
 
-export type shopAtom = {
+export type Shop = {
     visible: boolean;
     towers: TowerId[];
     upgrades: Upgrade[];
 };
 
-export type altarAtom = {
+export type Altar = {
     visible: boolean;
     heal: () => void;
     increaseHP: () => void;

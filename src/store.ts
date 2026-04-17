@@ -1,5 +1,5 @@
 import { atom, createStore } from "jotai";
-import { type startingHeroUI, type GameState, type Rewards, type StartingOptions, type ShopChoiceButtons } from "./types";
+import { type startingHeroUI, type GameState, type Rewards, type StartingOptions, type ShopChoiceButtons, type Shop, type Altar } from "./types";
 
 export const gameStateAtom = atom<GameState>({
     towerButtons: [],
@@ -89,10 +89,22 @@ export const shopChoiceUIAtom = atom<ShopChoiceButtons>({
         {
             name: "Altar",
             text: "Go to Altar",
-            description: "Make offerings to recover HP and increase max HP, and sacrifice cards to remove them from your deck.",
+            description: "Make offerings to recover HP, increase max HP, and cleanse your deck of unwanted cards.",
             onClick: () => {}
         }
     ]
+});
+
+export const shopAtom = atom<Shop>({
+    visible: false,
+    towers: [],
+    upgrades: []
+});
+
+export const altarAtom = atom<Altar>({
+    visible: false,
+    heal: () => {},
+    increaseHP: () => {}
 });
 
 export const store = createStore();

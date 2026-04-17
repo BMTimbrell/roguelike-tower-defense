@@ -13,6 +13,7 @@ import { addSelectTowerListener } from "../entities/Tower";
 import { makeLavaManager } from "./lavaHelpers";
 import makeWaveSpawner from "../entities/WaveSpawner";
 import updateSkills from "./updateSkills";
+import addTowers from "./addTowers";
 
 export default function makeLevelScene(k: KAPLAYCtx, sceneName: Scene) {
 
@@ -88,7 +89,7 @@ export default function makeLevelScene(k: KAPLAYCtx, sceneName: Scene) {
 
         let viewW = k.width() / zoom;
         let viewH = k.height() / zoom;
-        const scrollHeight = mapWorldHeight + 2 * TILE_SIZE;
+        const scrollHeight = mapWorldHeight + 4 * TILE_SIZE;
         let minX = viewW / 2;
         let minY = viewH / 2 - 2 * TILE_SIZE;
         let maxX = mapWorldWidth - viewW / 2;
@@ -130,7 +131,6 @@ export default function makeLevelScene(k: KAPLAYCtx, sceneName: Scene) {
             ...prev,
             scene: sceneName,
             gold: LEVEL_WAVES[wave].startingGold,
-            // towerButtons: addTowers(k, ["crow", "ice", "lux"], tileGrid),
             bottomBarVisible: true,
             upgrades,
             deck: {

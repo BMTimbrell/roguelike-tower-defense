@@ -26,14 +26,17 @@
 .tower-container {
     align-self: flex-end;
     display: flex;
-    column-gap: 0.25em;
+    gap: 0.25em;
+    flex-wrap: wrap;
+    max-width: calc(7 * 3em);
 }
 
 .right-container {
-    /* align-self: flex-end; */
+    align-self: center;
     display: flex;
     column-gap: 1em;
     justify-content: flex-end;
+    height: 4em;
 }
 
 .right-container * {
