@@ -3,7 +3,7 @@ import type { Upgrade } from '../../types';
 import UpgradePopup from '../UpgradePopup/UpgradePopup';
 import { useState } from 'react';
 
-export default function UpgradeCard({ upgrade, scale, showPopup }: { upgrade: Upgrade; scale: number; showPopup?: boolean; }) {
+export default function UpgradeCard({ upgrade, scale, showPopup, fontSize }: { upgrade: Upgrade; scale: number; showPopup?: boolean; fontSize?: number }) {
     const [popupPos, setPopupPos] = useState<{ x: number; y: number; } | null>(null);
     const [hovered, setHovered] = useState(false);
 
@@ -11,7 +11,7 @@ export default function UpgradeCard({ upgrade, scale, showPopup }: { upgrade: Up
         <>
             <div
                 className={styles.upgrade}
-                style={{ fontSize: `${12 * scale}px` }}
+                style={{ fontSize: `${(fontSize ? fontSize : 12) * scale}px` }}
                 {...(showPopup ? { onMouseEnter: e => {
                     const rect = (e.currentTarget as HTMLDivElement).getBoundingClientRect();
                     setPopupPos && setPopupPos({

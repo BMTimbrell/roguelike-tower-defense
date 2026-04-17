@@ -1,0 +1,89 @@
+.container {
+    position: absolute;
+    width: 100%;
+    height: 100dvh;
+    user-select: none;
+    color: white;
+    background-color: var(--card-color);
+    padding: 1em;
+    justify-content: center;
+    align-items: center;
+    overflow-y: auto;
+}
+
+.heading {
+    text-align: center;
+    font-size: 1.25em;
+    margin-bottom: 1em;
+}
+
+.tower-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 2em;
+    gap: 2em;
+    flex-wrap: wrap;
+}
+
+.tower {
+    /* border: 1px solid rgba(255, 255, 255, 0.6); */
+    margin-bottom: 1em;
+}
+
+.tower-contents {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    gap: 0.5em;
+    border: 1px solid rgba(255, 255, 255, 0.6);
+    border-radius: 0.25em;
+    padding: 1em;
+}
+
+.upgrades {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 0.25em;
+    flex-wrap: wrap;
+}
+
+.upgrades >* {
+    border: 1px solid rgba(255, 255, 255, 0.6);
+    border-radius: 0.25em;
+    padding: 0.25em;
+    flex: 0 0 6em;
+    white-space: nowrap;
+}
+
+.upgrade-contents {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    gap: 0.5em;
+}
+
+.next-button {
+    margin-top: 2em;
+    width: 6em;
+    margin-inline: auto;
+}
+
+.cost {
+    display: flex;
+    gap: 0.25em;
+}
+
+.cant-afford {
+    color: rgb(255, 136, 115);
+}
+
+.tower-coins {
+    display: flex;
+    gap: 0.5em;
+    width: 3em;
+    margin-inline: auto;
+}

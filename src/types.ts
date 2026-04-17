@@ -428,6 +428,7 @@ export type GameState = {
     level: number;
     difficulty: "normal" | "hard";
     shops: ("shop" | "altar")[];
+    towerCoins: number;
 };
 
 export type ShopChoiceButtons = {

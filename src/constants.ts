@@ -196,7 +196,7 @@ export const UPGRADES: Upgrade[] = [{
 
 export const LEVEL_WAVES = {
     "level1-1": {
-        startingGold: 1000,
+        startingGold: 100,
         startDelay: 120,
         waves: [
             {
@@ -205,13 +205,13 @@ export const LEVEL_WAVES = {
                 ],
                 reward: 50
             },
-            {
-                spawns: [
-                    { id: "skeleton", count: 3, interval: 1 },
-                    { id: "slime", count: 5, interval: 0.75 }
-                ],
-                reward: 100
-            },
+            // {
+            //     spawns: [
+            //         { id: "skeleton", count: 3, interval: 1 },
+            //         { id: "slime", count: 5, interval: 0.75 }
+            //     ],
+            //     reward: 100
+            // },
             // {
             //     spawns: [
             //         { id: "armouredSkeleton", count: 1, interval: 1 },
@@ -247,7 +247,7 @@ export const LEVEL_WAVES = {
     },
 
     "level1-2": {
-        startingGold: 1000,
+        startingGold: 100,
         startDelay: 120,
         waves: [
             {
@@ -256,13 +256,13 @@ export const LEVEL_WAVES = {
                 ],
                 reward: 50
             },
-            {
-                spawns: [
-                    { id: "orc", count: 1, interval: 1.5 },
-                    { id: "bee", count: 5, interval: 1 }
-                ],
-                reward: 100
-            },
+            // {
+            //     spawns: [
+            //         { id: "orc", count: 1, interval: 1.5 },
+            //         { id: "bee", count: 5, interval: 1 }
+            //     ],
+            //     reward: 100
+            // },
             // {
             //     spawns: [
             //         { id: "armouredOrc", count: 1, interval: 1.5 },

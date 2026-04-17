@@ -36,7 +36,8 @@ export const gameStateAtom = atom<GameState>({
         damageRequired: 0
     },
     difficulty: "normal",
-    shops: ["shop", "altar"]
+    shops: ["shop", "altar"],
+    towerCoins: 0
 });
 
 export const mapAtom = atom({
