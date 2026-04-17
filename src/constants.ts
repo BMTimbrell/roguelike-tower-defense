@@ -38,6 +38,7 @@ export const STUN_DURATION = 1;
 export const CURSE_CRIT = 10;
 export const TIME_TOWER_BASE_ANIM_SPEED = 30;
 export const SCYTHE_MAX_KILL_STACKS = 60;
+export const HARD_HEALTH_MULT = 1.2;
 export const REDUCED_RANGE_TOWERS = [
     "Chili Pepper Tower",
     "Ice Tower",
@@ -947,7 +948,7 @@ export const TOWERS = {
         gunSprite: "fire tower",
         baseSprite: "fire tower base",
         sprite: "fire-tower-sprite.png",
-        description: "A tower that shoots fireballs at enemies",
+        description: "Shoots fireballs at enemies",
         cost: 60,
         stats: {
             damage: 5,
@@ -1488,7 +1489,7 @@ export const TOWERS = {
         gunSprite: "hammer tower",
         baseSprite: "hammer tower base",
         sprite: "hammer-tower-sprite.png",
-        description: "Smash enemies with a hammer, dealing damage in a small area. Enemies have a 20% of the damage received chance to be stunned. This tower receives half the amount from range upgrades and buffs",
+        description: "Smash enemies with a hammer, dealing area damage. Damage dealt converts to stun chance (20%). This tower receives half the amount from range upgrades and buffs",
         cost: 70,
         stats: {
             damage: 30,
@@ -1787,7 +1788,7 @@ export const TOWERS = {
         gunSprite: "beehive tower",
         baseSprite: "beehive tower base",
         sprite: "beehive-tower-sprite.png",
-        description: "Sends out a swarm of bees that follow the target dealing damage in a small area",
+        description: "Sends out a swarm of bees that follow the target dealing area damage",
         cost: 250,
         stats: {
             damage: 10,
@@ -1827,7 +1828,7 @@ export const TOWERS = {
         gunSprite: "storm tower",
         baseSprite: "storm tower base",
         sprite: "storm-tower-sprite.png",
-        description: "Summons storm clouds that damage enemies in a small area",
+        description: "Summons storm clouds that deal area damage",
         cost: 400,
         stats: {
             damage: 120,
@@ -3216,7 +3217,7 @@ export const SKILLS = [
         id: "wizard-ice-blast",
         heroIds: ["wizard"],
         name: "Ice Blast",
-        description: "50% chance to fire an ice blast that deals damage in a small area",
+        description: "50% chance to fire an ice blast that deals area damage",
         apply(hero) {
             let rand: boolean;
 
@@ -3356,14 +3357,14 @@ export const SKILLS = [
         id: "knight-holy-skill",
         heroIds: ["knight"],
         name: "Holy Knight",
-        description: "50% chance to do a light element attack that deals 50% bonus damage",
+        description: "50% chance to do a light element attack that deals 100% bonus damage",
         apply(hero) {
             hero.effects?.push({
                 firstEffect(ctx) {
                     if (Math.random() < 0.5) return;
                     if (ctx.element === "Dark") return;
 
-                    ctx.damage += ctx.damage * 0.5;
+                    ctx.damage += ctx.damage;
 
                     ctx.gun.use(ctx.context.shader("glow", () => ({
                         u_r: 1,
@@ -3388,14 +3389,14 @@ export const SKILLS = [
         id: "knight-dark-skill",
         heroIds: ["knight"],
         name: "Dark Knight",
-        description: "50% chance to do a dark element attack that deals 50% bonus damage",
+        description: "50% chance to do a dark element attack that deals 100% bonus damage",
         apply(hero) {
             hero.effects?.push({
                 firstEffect(ctx) {
                     if (Math.random() < 0.5) return;
                     if (ctx.element === "Light") return;
 
-                    ctx.damage += ctx.damage * 0.5;
+                    ctx.damage += ctx.damage;
 
                     ctx.gun.use(ctx.context.shader("glow", () => ({
                         u_r: 0.2,
@@ -3421,12 +3422,12 @@ export const SKILLS = [
         heroIds: ["knight"],
         requires: ["knight-holy-skill"],
         name: "Holy Knight Plus",
-        description: "Increase holy knight bonus damage to 100%",
+        description: "Increase holy knight bonus damage to 200%",
         apply(hero) {
             hero.effects?.push({
                 firstEffect(ctx) {
                     if (ctx.element === "Light") {
-                        ctx.damage = (ctx.damage / 1.5) * 2;
+                        ctx.damage = (ctx.damage / 2) * 3;
                     }
                 }
             });
@@ -3438,12 +3439,12 @@ export const SKILLS = [
         heroIds: ["knight"],
         requires: ["knight-dark-skill"],
         name: "Dark Knight Plus",
-        description: "Increase dark knight bonus damage to 100%",
+        description: "Increase dark knight bonus damage to 200%",
         apply(hero) {
             hero.effects?.push({
                 firstEffect(ctx) {
                     if (ctx.element === "Dark") {
-                        ctx.damage = (ctx.damage / 1.5) * 2;
+                        ctx.damage = (ctx.damage / 2) * 3;
                     }
                 }
             });

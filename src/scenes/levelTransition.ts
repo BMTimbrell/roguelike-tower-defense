@@ -1,5 +1,5 @@
 import type { KAPLAYCtx } from "kaplay";
-import { gameStateAtom, rewardsAtom, store } from "../store";
+import { gameStateAtom, rewardsAtom, shopChoiceUIAtom, store } from "../store";
 import initCam from "../utils/initCam";
 import type { HeroGameObj, Scene } from "../types";
 import { ENEMIES, LEVEL_WAVES, SCENES } from "../constants";
@@ -142,20 +142,21 @@ export default function levelTransition(k: KAPLAYCtx) {
                         ]
                     }));
 
+                    k.destroy(heroSprite);
+
                     if (wave === "level3-1" || wave === "level3-2") {
                         const bossId = LEVEL_WAVES[wave].boss.id;
                         const sprite = ENEMIES[bossId].sprite;
 
-                        k.destroy(heroSprite);
-
-                        
                         const bossSprite = k.add([
                             k.sprite(sprite, { anim: "move" }),
                             k.pos(k.center()),
                             k.scale(4),
                             k.anchor("center")
                         ]);
-                        
+
+                        bossSprite.pos = bossSprite.pos.add(0, bossSprite.height / 2);
+
                         k.add([
                             k.text(sprite.toUpperCase(), {
                                 size: 16,
@@ -169,6 +170,11 @@ export default function levelTransition(k: KAPLAYCtx) {
                         k.wait(1, () => {
                             k.go(sceneName, { mapData, tileGrid, pathTiles, wave });
                         });
+                    } else if (wave === "level2-1" || wave === "level2-2") {
+                        store.set(shopChoiceUIAtom, prev => ({
+                            ...prev,
+                            visible: true
+                        }));
                     } else {
                         k.go(sceneName, { mapData, tileGrid, pathTiles, wave });
                     }

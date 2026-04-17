@@ -1,5 +1,5 @@
 import { useAtom } from 'jotai';
-import { gameStateAtom, rewardsAtom, selectHeroUIAtom, startingOptionsAtom } from './store';
+import { gameStateAtom, rewardsAtom, selectHeroUIAtom, shopChoiceUIAtom, startingOptionsAtom } from './store';
 import { BottomBar } from "./reactComponents/BottomBar/BottomBar";
 import SelectedTower from "./reactComponents/SelectedTower/SelectedTower";
 import SelectedHero from './reactComponents/SelectedHero/SelectedHero';
@@ -9,6 +9,7 @@ import StartingOptions from './reactComponents/StartingOptions/StartingOptions';
 import type { JSX } from 'react';
 import SelectedFarm from './reactComponents/SelectedFarm/SelectedFarm';
 import SelectHeroUI from './reactComponents/SelectHeroUI/SelectHeroUI';
+import ShopChoiceUI from './reactComponents/ShopChoiceUI/ShopChoiceUI';
 
 export default function ReactUI() {
     const [gameState] = useAtom(gameStateAtom);
@@ -17,6 +18,8 @@ export default function ReactUI() {
     const [selectHeroUI] = useAtom(selectHeroUIAtom);
     const selectedUI = gameState.selectedUI;
     let selectedTower: null | JSX.Element = null;
+
+    const [shopChoiceUI] = useAtom(shopChoiceUIAtom);
 
     if (selectedUI) {
         selectedTower = "plantedSeed" in selectedUI
@@ -48,6 +51,8 @@ export default function ReactUI() {
             {selectedTower}
 
             {rewards.visible && <Rewards />}
+
+            {shopChoiceUI.visible && <ShopChoiceUI />}
         </>
     );
 }

@@ -9,7 +9,7 @@ export default function Card({ children, popup, setPopupPos, handleClick, scale,
         x: number;
         y: number;
     } | null>>;
-    handleClick: MouseEventHandler<HTMLDivElement>;
+    handleClick?: MouseEventHandler<HTMLDivElement>;
     scale: number;
     classNames?: string[];
 }) {
@@ -29,7 +29,10 @@ export default function Card({ children, popup, setPopupPos, handleClick, scale,
                         setHovered(true);
                     }}
                     onMouseLeave={() => setHovered(false)}
-                    style={{ ...(animationDelay ? { animationDelay: `${animationDelay}ms` } : "" )}}
+                    style={{
+                         ...(animationDelay ? { animationDelay: `${animationDelay}ms` } : "" ),
+                         ...(handleClick ? { cursor: "pointer" } : "")
+                    }}
                     className={`${styles.card} ${classNames?.join(' ') || ''}`}
                 >
                     {children}

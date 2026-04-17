@@ -26,7 +26,6 @@
     padding-top: 0.125em;
     color: white;
     background-color: var(--card-color);
-    cursor: pointer;
     box-shadow: 0 0.125em 0.375em rgba(0, 0, 0, 0.4);
     transition: box-shadow 0.15s ease;
     animation: flipIn 0.5s ease-in-out;

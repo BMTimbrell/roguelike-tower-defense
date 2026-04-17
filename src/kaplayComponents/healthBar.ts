@@ -54,7 +54,7 @@ export default function healthBar(k: KAPLAYCtx, duration: number, opts?: { isBos
             const hpWidth = this.width * (hp / total);
             const armourWidth = this.width * (armour / total);
 
-            const barHeight = opts?.isBoss ? 9 : 4;
+            const barHeight = opts?.isBoss ? 12 : 4;
 
             // background
             k.drawRect({

@@ -9,6 +9,7 @@ import type { HeroSkillDef, TowerDef, Upgrade } from '../../types';
 import UpgradeCard from '../UpgradeCard/UpgradeCard';
 import UpgradePopup from '../UpgradePopup/UpgradePopup';
 import TowerCard from '../TowerCard/TowerCard';
+import DeckUI from '../DeckUI/DeckUI';
 
 export default function Rewards() {
     const [map] = useAtom(mapAtom);
@@ -65,7 +66,10 @@ export default function Rewards() {
     }
 
     return (
-        <div className={styles.container} style={{ fontSize: `${16 * scale}px` }}>
+        <div 
+            className={`${styles.container} ${rewards.show[rewards.rewardIndex] === "upgrades" ? styles["showing-deck"] : ''}`} 
+            style={{ fontSize: `${16 * scale}px` }}
+        >
             {heading}
             <div className={styles["card-container"]}>
                 {rewards.show[rewards.rewardIndex] === "skills" && rewardSkills.map((s, index) => (
@@ -125,7 +129,7 @@ export default function Rewards() {
                     </Card>
                 ))}
             </div>
-
+                {rewards.show[rewards.rewardIndex] === "upgrades" && <DeckUI />}
         </div>
     );
 }

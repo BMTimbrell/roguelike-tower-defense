@@ -1,7 +1,7 @@
 import { type KAPLAYCtx, type Vec2, type GameObj } from 'kaplay';
 import { store, gameStateAtom } from '../store';
 import type { EnemyId, ProjectileId } from '../constants';
-import { ENEMIES, STUN_DURATION, TILE_SIZE, TOWER_RANGE_TOLERANCE } from '../constants';
+import { ENEMIES, HARD_HEALTH_MULT, STUN_DURATION, TILE_SIZE, TOWER_RANGE_TOLERANCE } from '../constants';
 import healthBar from '../kaplayComponents/healthBar';
 import statusEffect from '../kaplayComponents/statusEffect';
 import type { EnemyGameObj, TowerGameObj } from '../types';
@@ -16,6 +16,8 @@ export default function makeEnemy(
     pos?: Vec2,
     stopIndexes?: number[]
 ) {
+    const difficulty = store.get(gameStateAtom).difficulty;
+    const health = ENEMIES[enemyId].hp * (difficulty === "hard" ? HARD_HEALTH_MULT : 1);
 
     const enemy: EnemyGameObj = k.add([
         k.pos(pos ?? waypoints[pathIndex]),
@@ -27,7 +29,7 @@ export default function makeEnemy(
         k.rotate(),
         k.timer(),
         k.opacity(1),
-        k.health(ENEMIES[enemyId].hp, ENEMIES[enemyId].hp),
+        k.health(health, health),
         {
             path: waypoints,
             pathIndex,
@@ -95,7 +97,7 @@ export default function makeEnemy(
             heroCharge: {
                 ...prev.heroCharge,
                 damageDealt,
-                charge: Math.min((damageDealt) / prev.heroCharge.damageRequired, 1)
+                charge: Math.min((damageDealt) / prev.heroCharge.damageRequired / (difficulty === "hard" ? HARD_HEALTH_MULT : 1), 1)
             }
         }));
 
@@ -204,6 +206,8 @@ export default function makeEnemy(
         if (enemy.attacker && attackTimer > 0) attackTimer -= k.dt();
 
         enemy.z = enemy.pos.y;
+
+        if (enemy.boss) console.log(enemy.z)
 
         // boss
         if (enemy.boss && enemy.boss.stopIndexes.length) {

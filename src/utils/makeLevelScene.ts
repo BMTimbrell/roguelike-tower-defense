@@ -22,6 +22,7 @@ export default function makeLevelScene(k: KAPLAYCtx, sceneName: Scene) {
             k.sprite(sceneName),
             k.pos(k.vec2(0)),
             sceneName,
+            k.z(-100)
         ]);
 
         showLevelStats(k);
@@ -89,7 +90,7 @@ export default function makeLevelScene(k: KAPLAYCtx, sceneName: Scene) {
         let viewH = k.height() / zoom;
         const scrollHeight = mapWorldHeight + 2 * TILE_SIZE;
         let minX = viewW / 2;
-        let minY = viewH / 2;
+        let minY = viewH / 2 - 2 * TILE_SIZE;
         let maxX = mapWorldWidth - viewW / 2;
         let maxY = scrollHeight - viewH / 2;
 
@@ -107,7 +108,7 @@ export default function makeLevelScene(k: KAPLAYCtx, sceneName: Scene) {
             viewW = k.width() / zoom;
             viewH = k.height() / zoom;
             minX = viewW / 2;
-            minY = viewH / 2;
+            minY = viewH / 2 - 2 * TILE_SIZE;
             maxX = mapWorldWidth - viewW / 2;
             maxY = scrollHeight - viewH / 2;
         });

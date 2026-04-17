@@ -264,14 +264,21 @@ export default function makeWaveSpawner(k: KAPLAYCtx, levelId: LevelId, waypoint
         k.z(999),
         {
             update() {
+                const displayWave =
+                    waveIndex < 0
+                        ? 1
+                        : (spawning ? waveIndex + 1 : waveIndex + 2);
+
+                const clampedWave = Math.min(displayWave, level.waves.length);
+
                 if (spawning) {
-                    waveText.use(k.text(`Wave: ${waveIndex + 1}/${level.waves.length}`, {
-                        size: 20,
-                        font: "free pixel"
-                    }));
+                    waveText.use(k.text(
+                        `Wave: ${clampedWave}/${level.waves.length}`,
+                        { size: 20, font: "free pixel" }
+                    ));
                 } else if (waitingForNextWave) {
                     waveText.use(k.text(
-                        `Wave: ${waveIndex + 1}/${level.waves.length}  Next Wave In: ${Math.ceil(nextWaveTimer)} (Enter to skip)`,
+                        `Wave: ${clampedWave}/${level.waves.length}  Next Wave In: ${Math.ceil(nextWaveTimer)} (Enter to skip)`,
                         { size: 20, font: "free pixel" }
                     ));
                 }

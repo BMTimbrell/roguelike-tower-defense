@@ -426,6 +426,25 @@ export type GameState = {
     waveActive: boolean;
     sceneIndex: number;
     level: number;
+    difficulty: "normal" | "hard";
+    shops: ("shop" | "altar")[];
+};
+
+export type ShopChoiceButtons = {
+    visible: boolean;
+    buttons: { name: "Shop" | "Altar"; text: "Go to Shop" | "Go to Altar", onClick: () => void; description: string }[];
+};
+
+export type shopAtom = {
+    visible: boolean;
+    towers: TowerId[];
+    upgrades: Upgrade[];
+};
+
+export type altarAtom = {
+    visible: boolean;
+    heal: () => void;
+    increaseHP: () => void;
 };
 
 export type EnemySpawn = {
