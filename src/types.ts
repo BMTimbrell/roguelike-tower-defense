@@ -440,6 +440,8 @@ export type Shop = {
     visible: boolean;
     towers: TowerId[];
     upgrades: Upgrade[];
+    nextLevel: () => void;
+    addTower: (id: TowerId) => void;
 };
 
 export type Altar = {

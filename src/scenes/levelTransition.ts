@@ -1,5 +1,5 @@
 import type { KAPLAYCtx } from "kaplay";
-import { gameStateAtom, rewardsAtom, shopChoiceUIAtom, store } from "../store";
+import { gameStateAtom, rewardsAtom, shopAtom, shopChoiceUIAtom, store } from "../store";
 import initCam from "../utils/initCam";
 import type { HeroGameObj, Scene } from "../types";
 import { ENEMIES, LEVEL_WAVES, SCENES } from "../constants";
@@ -75,7 +75,8 @@ export default function levelTransition(k: KAPLAYCtx) {
                     damageDealt: 0,
                     charge: 0,
                     damageRequired: prev.heroCharge.damageRequired * 1.75
-                }
+                },
+                towerCoins: prev.towerCoins + 25
             }));
 
             hero.level++;
@@ -128,7 +129,9 @@ export default function levelTransition(k: KAPLAYCtx) {
                         rewardIndex: prev.rewardIndex + 1
                     }));
                 },
-                addTower: (id) => {
+                addTower: async (id) => {
+                    k.destroy(heroSprite);
+
                     store.set(rewardsAtom, prev => ({
                         ...prev,
                         visible: false,
@@ -142,7 +145,38 @@ export default function levelTransition(k: KAPLAYCtx) {
                         ]
                     }));
 
-                    k.destroy(heroSprite);
+                    const coin = k.add([
+                        k.sprite("tower coin"),
+                        k.scale(2),
+                        k.lifespan(1),
+                        k.opacity(1),
+                        k.anchor("center"),
+                        {
+                            update() {
+                                coin.opacity -= k.dt() * 1.1;
+                            }
+                        },
+                        k.pos(k.center())
+                    ]);
+
+                    const text = k.add([
+                        k.text("+25", {
+                            size: 16,
+                            font: "free pixel"
+                        }),
+                        k.lifespan(1),
+                        k.opacity(1),
+                        k.scale(2),
+                        k.anchor("center"),
+                        {
+                            update() {
+                                text.opacity -= k.dt() * 1.1;
+                            }
+                        },
+                        k.pos(k.center().add(coin.width + 30, 0))
+                    ]);
+
+                    await k.wait(1);
 
                     if (wave === "level3-1" || wave === "level3-2") {
                         const bossId = LEVEL_WAVES[wave].boss.id;
@@ -174,6 +208,21 @@ export default function levelTransition(k: KAPLAYCtx) {
                         store.set(shopChoiceUIAtom, prev => ({
                             ...prev,
                             visible: true
+                        }));
+
+                        store.set(shopAtom, prev => ({
+                            ...prev,
+                            nextLevel: () => {
+                                k.go(sceneName, { mapData, tileGrid, pathTiles, wave });
+                            },
+                            addTower: (id) => {
+                                store.set(gameStateAtom, prev => ({
+                                    ...prev,
+                                    towerButtons: [
+                                        ...addTowers(k, [...prev.towerButtons.map(tb => tb.id), id], tileGrid, pathTiles)
+                                    ]
+                                }));
+                            }
                         }));
                     } else {
                         k.go(sceneName, { mapData, tileGrid, pathTiles, wave });

@@ -151,6 +151,11 @@ export default function mainMenu(k: KAPLAYCtx) {
                                 largeUpgrades[[...randomLUIndexes][2]]
                             ]
                         }));
+
+                        store.set(shopChoiceUIAtom, prev => ({
+                            ...prev,
+                            visible: false
+                        }));
                     }
                 },
                 {

@@ -13,23 +13,20 @@ export default function DeckUI() {
     const [popupPos, setPopupPos] = useState<{ x: number; y: number; } | null>(null);
 
     return (
-        <div className={styles.container}>
-            <div className={styles.heading}>Your Deck</div>
-            <div className={styles["card-container"]}>
-                {cards.map((card, index) => (
-                    <Card
-                        key={index}
-                        popup={<UpgradePopup upgrade={card} pos={popupPos} />}
-                        setPopupPos={setPopupPos}
+        <div className={styles["card-container"]}>
+            {cards.map((card, index) => (
+                <Card
+                    key={index}
+                    // popup={<UpgradePopup upgrade={card} pos={popupPos} />}
+                    // setPopupPos={setPopupPos}
+                    scale={map.scale}
+                >
+                    <UpgradeCard
+                        upgrade={card}
                         scale={map.scale}
-                    >
-                        <UpgradeCard
-                            upgrade={card}
-                            scale={map.scale}
-                        />
-                    </Card>
-                ))}
-            </div>
+                    />
+                </Card>
+            ))}
         </div>
     );
 }

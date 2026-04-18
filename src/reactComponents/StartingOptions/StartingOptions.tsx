@@ -26,7 +26,7 @@ export default function StartingOptions() {
 
                         <div className={styles.upgrades}>
                             {o.upgrades.map((u, index) => (
-                                <UpgradeCard key={index} upgrade={u} scale={scale} showPopup={true} />
+                                <UpgradeCard key={index} upgrade={u} scale={scale} showPopup={true} popupOffset={{ x: 0, y: 25 }} />
                             ))}
                         </div>
                     </div>

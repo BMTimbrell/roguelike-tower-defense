@@ -894,4 +894,5 @@ export default function loadAssets(k: KAPLAYCtx) {
             dizzy: { from: 0, to: 2, loop: true }
         }
     });
+    k.loadSprite("tower coin", "/sprites/tower-coin.png");
 }

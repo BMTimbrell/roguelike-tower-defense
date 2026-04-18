@@ -10,6 +10,7 @@ import UpgradeCard from '../UpgradeCard/UpgradeCard';
 import UpgradePopup from '../UpgradePopup/UpgradePopup';
 import TowerCard from '../TowerCard/TowerCard';
 import DeckUI from '../DeckUI/DeckUI';
+import LoadoutPreviewPanel from '../LoadoutPreviewPanel/LoadoutPreviewPanel';
 
 export default function Rewards() {
     const [map] = useAtom(mapAtom);
@@ -129,7 +130,9 @@ export default function Rewards() {
                     </Card>
                 ))}
             </div>
-                {rewards.show[rewards.rewardIndex] === "upgrades" && <DeckUI />}
+
+            <LoadoutPreviewPanel />
+
         </div>
     );
 }

@@ -99,7 +99,9 @@ export const shopChoiceUIAtom = atom<ShopChoiceButtons>({
 export const shopAtom = atom<Shop>({
     visible: false,
     towers: [],
-    upgrades: []
+    upgrades: [],
+    addTower: () => {},
+    nextLevel: () => {}
 });
 
 export const altarAtom = atom<Altar>({
