@@ -6,11 +6,18 @@ import { useState } from 'react';
 import DeckUI from '../DeckUI/DeckUI';
 import Modal from '../Modal/Modal';
 import TowerUI from '../TowerUI/TowerUI';
+import UpgradePopup from '../UpgradePopup/UpgradePopup';
+import { UPGRADES } from '../../constants';
+import type { Upgrade } from '../../types';
 
 export default function LoadoutPreviewPanel() {
     const [map] = useAtom(mapAtom);
     const [showCardLoadout, setShowCardLoadout] = useState(false);
     const [showTowerLoadout, setShowTowerLoadout] = useState(false);
+    const [popupPos, setPopupPos] = useState<{ x: number; y: number; } | null>(null);
+    const [hovered, setHovered] = useState(false);
+    const [card, setCard] = useState<Upgrade>(UPGRADES[0]);
+    const upgradePopup = <UpgradePopup upgrade={card} pos={popupPos} />;
 
     return (
         <div className={styles.container}>
@@ -29,12 +36,14 @@ export default function LoadoutPreviewPanel() {
             </div>
 
             <Modal isOpen={showCardLoadout} onClose={() => setShowCardLoadout(false)}>
-                <DeckUI />
+                <DeckUI setHovered={setHovered} setPopupPos={setPopupPos} setCard={setCard} />
             </Modal>
 
             <Modal isOpen={showTowerLoadout} onClose={() => setShowTowerLoadout(false)}>
                 <TowerUI />
             </Modal>
+
+            {hovered && upgradePopup}
         </div>
     );
 }

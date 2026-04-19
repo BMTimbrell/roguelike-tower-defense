@@ -30,7 +30,7 @@ export default function showLevelStats(k: KAPLAYCtx) {
         k.z(999),
         {
             update() {
-                healthText.use(k.text('' + store.get(gameStateAtom).health, {
+                healthText.use(k.text('' + store.get(gameStateAtom).health + '/' + store.get(gameStateAtom).maxHealth, {
                     size: 20,
                     font: "free pixel"
                 }));

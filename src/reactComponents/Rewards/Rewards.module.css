@@ -12,10 +12,10 @@
 
 .heading {
     font-size: 1.25em;
-    margin-bottom: 3em;
 }
 
 .card-container {
+    margin-top: 2em;
     display: flex;
     flex-wrap: wrap;
     gap: 1em;
@@ -36,8 +36,4 @@
     display: flex;
     column-gap: 0.25em;
     align-items: center;
-}
-
-.showing-deck {
-    row-gap: 3em;
 }

@@ -11,8 +11,7 @@ export default function Modal({ isOpen, children, onClose }: { children: React.R
                 className={styles.modal}
                 onClick={(e) => e.stopPropagation()}
             >
-                {children}
-                <div className={styles["modal-close"]}></div>
+                {isOpen && children}
             </div>
         </div>
     );

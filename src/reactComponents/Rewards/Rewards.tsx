@@ -68,7 +68,7 @@ export default function Rewards() {
 
     return (
         <div 
-            className={`${styles.container} ${rewards.show[rewards.rewardIndex] === "upgrades" ? styles["showing-deck"] : ''}`} 
+            className={styles.container}
             style={{ fontSize: `${16 * scale}px` }}
         >
             {heading}

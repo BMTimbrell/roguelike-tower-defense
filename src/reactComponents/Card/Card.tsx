@@ -1,7 +1,7 @@
 import { useState, type JSX, type MouseEventHandler } from "react";
 import styles from './Card.module.css';
 
-export default function Card({ children, popup, setPopupPos, handleClick, scale, classNames, animationDelay }: {
+export default function Card({ children, popup, setPopupPos, handleClick, scale, classNames, animationDelay, setDeckHovered }: {
     children: React.ReactNode;
     animationDelay?: number;
     popup?: JSX.Element;
@@ -12,6 +12,7 @@ export default function Card({ children, popup, setPopupPos, handleClick, scale,
     handleClick?: MouseEventHandler<HTMLDivElement>;
     scale: number;
     classNames?: string[];
+    setDeckHovered?: React.Dispatch<React.SetStateAction<boolean>>;
 }) {
     const [hovered, setHovered] = useState(false);
 
@@ -27,8 +28,12 @@ export default function Card({ children, popup, setPopupPos, handleClick, scale,
                             y: rect.y - 35 * scale
                         });
                         setHovered(true);
+                        if (setDeckHovered) setDeckHovered(true);
                     }}
-                    onMouseLeave={() => setHovered(false)}
+                    onMouseLeave={() => {
+                        setHovered(false);
+                        if (setDeckHovered) setDeckHovered(false);
+                    }}
                     style={{
                          ...(animationDelay ? { animationDelay: `${animationDelay}ms` } : "" ),
                          ...(handleClick ? { cursor: "pointer" } : "")

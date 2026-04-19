@@ -402,6 +402,7 @@ export type GameState = {
     selectedUI: SelectedUI;
     gold: number;
     health: number;
+    maxHealth: number;
     maxTowerUpgrades: number;
     upgrades: Upgrade[];
     deck: Deck;

@@ -20,7 +20,6 @@
 
 .card {
     pointer-events: auto;
-    position: relative;
     border-radius: 0.375em;
     border: 1px solid rgba(255, 255, 255, 0.6);
     padding: 0.25em;

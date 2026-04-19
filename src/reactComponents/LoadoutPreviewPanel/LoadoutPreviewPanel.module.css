@@ -7,7 +7,6 @@
     cursor: pointer;
     position: relative;
     width: 2em;
-    pointer-events: auto;
 }
 
 .card1,

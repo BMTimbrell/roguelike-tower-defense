@@ -1,5 +1,5 @@
 import type { KAPLAYCtx } from "kaplay";
-import { gameStateAtom, store, startingOptionsAtom, selectHeroUIAtom, shopChoiceUIAtom, shopAtom } from "../store";
+import { gameStateAtom, store, startingOptionsAtom, selectHeroUIAtom, shopChoiceUIAtom, shopAtom, altarAtom } from "../store";
 import initCam from "../utils/initCam";
 import type { Scene, Upgrade } from "../types";
 import { CHARGE_DAMAGE_REQUIRED, TOWERS, UPGRADES, type HeroId, type TowerId } from "../constants";
@@ -162,7 +162,20 @@ export default function mainMenu(k: KAPLAYCtx) {
                     name: "Altar",
                     text: "Go to Altar",
                     description: "Make offerings to recover HP, increase max HP, and cleanse your deck of unwanted cards.",
-                    onClick: () => { }
+                    onClick: () => {
+                        store.set(gameStateAtom, prev => ({
+                            ...prev,
+                            shops: ["shop"]
+                        }));
+                        store.set(shopChoiceUIAtom, prev => ({
+                            ...prev,
+                            visible: false
+                        }));
+                        store.set(altarAtom, prev => ({
+                            ...prev,
+                            visible: true
+                        }));
+                    }
                 }
             ]
         }));
