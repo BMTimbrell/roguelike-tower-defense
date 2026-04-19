@@ -107,8 +107,8 @@ export const shopAtom = atom<Shop>({
 
 export const altarAtom = atom<Altar>({
     visible: false,
-    heal: () => {},
-    increaseHP: () => {}
+    maxHPCost: 20,
+    removeCardCost: 20
 });
 
 export const store = createStore();

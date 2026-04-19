@@ -14,5 +14,79 @@
 .heading {
     text-align: center;
     font-size: 1.25em;
-    margin-bottom: 1em;
+    margin-bottom: 2em;
+}
+
+.cant-afford {
+    color: rgb(255, 136, 115);
+}
+
+.stats {
+    display: flex;
+    gap: 1em;
+    width: 5em;
+    margin-inline: auto;
+    margin-bottom: 2em;
+}
+
+.tower-coins {
+    display: flex;
+    gap: 0.5em;
+}
+
+.health {
+    display: flex;
+    align-items: center;
+    gap: 0.5em;
+}
+
+.cost {
+    display: flex;
+    gap: 0.25em;
+}
+
+.choice {
+    padding: 1em;
+    border: 1px solid rgba(255, 255, 255, 0.6);
+    border-radius: 0.25em;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5em;
+    cursor: pointer;
+}
+
+.choice:hover {
+    background-color: rgb(114, 114, 114);
+}
+
+.choice-container {
+    display: flex;
+    gap: 2em;
+    flex: 1 1 0;
+    justify-content: center;
+}
+
+.button-container {
+    margin-top: 2em;
+    width: 100%;
+    display: flex;
+    justify-content: space-around;
+}
+
+.tower-coins {
+    display: flex;
+    gap: 0.5em;
+    width: 3em;
+    margin-inline: auto;
+}
+
+.rc-container {
+    display: flex;
+    gap: 1em;
+}
+
+.disabled, .disabled:hover {
+    background-color: var(--card-color);
+    opacity: 0.5;
+    cursor: default;
 }

@@ -447,8 +447,8 @@ export type Shop = {
 
 export type Altar = {
     visible: boolean;
-    heal: () => void;
-    increaseHP: () => void;
+    maxHPCost: number;
+    removeCardCost: number;
 };
 
 export type EnemySpawn = {
