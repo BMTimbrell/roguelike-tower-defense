@@ -298,6 +298,7 @@ export type EnemyGameObj = GameObj<
         chill: number;
         boost: number;
         wind: number;
+        ice: number;
     };
     debuffDurationMultiplier: number;
     spawnArmourOnDeath?: {
@@ -309,6 +310,7 @@ export type EnemyGameObj = GameObj<
         currentStopIndex: number;
         reachedStopIndex: boolean;
     };
+    spawnIce?: boolean;
 };
 
 export type Upgrade = {
@@ -504,6 +506,7 @@ export type EnemyConfig = {
         range: number;
     };
     isBoss?: boolean;
+    spawnIce?: boolean;
 };
 
 export type AttackContext = {

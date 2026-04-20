@@ -812,6 +812,16 @@ export default function loadAssets(k: KAPLAYCtx) {
         }
     });
 
+    k.loadSprite("ice slime", "/sprites/ice-slime.png", {
+        sliceX: 7,
+        sliceY: 2,
+        anims: {
+            idle: 0,
+            move: { from: 0, to: 5, loop: true },
+            die: { from: 7, to: 12, loop: false }
+        }
+    });
+
     k.loadSprite("poison", "/sprites/poison-icon.png");
     k.loadSprite("burn", "/sprites/burn-icon.png");
     k.loadSprite("chill", "/sprites/chill-icon.png");
@@ -905,4 +915,5 @@ export default function loadAssets(k: KAPLAYCtx) {
     k.loadSprite("ice tile 7", "/sprites/ice-tile-7.png");
     k.loadSprite("ice tile 8", "/sprites/ice-tile-8.png");
     k.loadSprite("ice tile 9", "/sprites/ice-tile-9.png");
+    k.loadSprite("ice puddle", "/sprites/ice-puddle.png");
 }

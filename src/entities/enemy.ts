@@ -68,10 +68,12 @@ export default function makeEnemy(
             stunResistance: false,
             stunResistanceDuration: 3,
             stunResistanceTimer: 0,
+            ...("spawnIce" in ENEMIES[enemyId] ? { spawnIce: ENEMIES[enemyId].spawnIce as boolean } : {}),
             speedMultipliers: {
                 chill: 1,
                 boost: 1,
-                wind: 1
+                wind: 1,
+                ice: 1
             }
         },
         k.state("move", ["move", "stunned", "attack", "idle"]),
@@ -290,6 +292,25 @@ export default function makeEnemy(
             }
         });
 
+        // speed on ice
+        const iceTiles = k.get("slime ice");
+
+        if (iceTiles.length) {
+            let boost = 1;
+            for (const ice of iceTiles) {
+                if (enemy.pos.dist(ice.pos) <= TILE_SIZE / 2) {
+                    boost = 3;
+                    break;
+                }
+            }
+    
+            if (enemy.speedMultipliers.ice !== boost) {
+                enemy.speedMultipliers.ice = boost;
+                updateSpeed.call(enemy);
+            }
+        }
+
+
         // healing enemies if healer
         if (!enemy.healer && !enemy.healTickRate) return;
 
@@ -408,6 +429,17 @@ export default function makeEnemy(
             });
 
             aoeBurst(k, enemy.pos, 2, "shield", 1.5);
+        }
+
+        if (enemy.spawnIce) {
+            k.add([
+                k.sprite("ice puddle"),
+                k.anchor("center"),
+                k.pos(enemy.pos),
+                k.lifespan(2),
+                k.opacity(1),
+                "slime ice"
+            ]);
         }
 
         const hero = k.get("hero")[0];

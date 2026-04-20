@@ -201,7 +201,7 @@ export const LEVEL_WAVES = {
         waves: [
             {
                 spawns: [
-                    { id: "slime", count: 5, interval: 1 }
+                    { id: "iceSlime", count: 5, interval: 1 }
                 ],
                 reward: 50
             },
@@ -252,7 +252,7 @@ export const LEVEL_WAVES = {
         waves: [
             {
                 spawns: [
-                    { id: "bee", count: 5, interval: 1 }
+                    { id: "iceSlime", count: 5, interval: 1 }
                 ],
                 reward: 50
             },
@@ -675,7 +675,7 @@ export const LEVEL_WAVES = {
         waves: [
             {
                 spawns: [
-                    { id: "slime", count: 10, interval: 0.5 },
+                    { id: "iceSlime", count: 6, interval: 1 },
                 ],
                 reward: 100
             },
@@ -730,7 +730,7 @@ export const LEVEL_WAVES = {
         waves: [
             {
                 spawns: [
-                    { id: "slime", count: 10, interval: 0.5 },
+                    { id: "iceSlime", count: 6, interval: 1 },
                 ],
                 reward: 100
             },
@@ -784,7 +784,7 @@ export const LEVEL_WAVES = {
 export type LevelId = keyof typeof LEVEL_WAVES;
 
 export const SCENES: Scenes = [
-    ["level1", "level1-2"],
+    ["level4", "level4"],
     ["level4", "level4"],
     ["level3", "level3"],
     ["level4", "level4"]
@@ -1020,7 +1020,14 @@ export const ENEMIES = {
             id: "bee",
             amount: 20
         }
-    }
+    },
+    iceSlime: {
+        hp: 15,
+        damage: 1,
+        speed: 50,
+        spawnIce: true,
+        sprite: "ice slime"
+    },
 } as const satisfies Record<string, EnemyConfig>;
 
 export type EnemyId = keyof typeof ENEMIES;
