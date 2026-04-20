@@ -201,7 +201,7 @@ export const LEVEL_WAVES = {
         waves: [
             {
                 spawns: [
-                    { id: "iceSlime", count: 5, interval: 1 }
+                    { id: "slime", count: 5, interval: 1 }
                 ],
                 reward: 50
             },
@@ -252,7 +252,7 @@ export const LEVEL_WAVES = {
         waves: [
             {
                 spawns: [
-                    { id: "iceSlime", count: 5, interval: 1 }
+                    { id: "bee", count: 5, interval: 1 }
                 ],
                 reward: 50
             },
@@ -467,7 +467,7 @@ export const LEVEL_WAVES = {
             },
             {
                 spawns: [
-                    {id: "armouredSkeleton", count: 1, interval: 1},
+                    { id: "armouredSkeleton", count: 1, interval: 1 },
                     { id: "skeleton", count: 3, interval: 1 },
                     { id: "slime", count: 20, interval: 1 },
                 ],
@@ -670,7 +670,7 @@ export const LEVEL_WAVES = {
         ],
     },
     "level4-1": {
-        startingGold: 200,
+        startingGold: 150,
         startDelay: 120,
         waves: [
             {
@@ -681,54 +681,62 @@ export const LEVEL_WAVES = {
             },
             {
                 spawns: [
-                    { id: "slime", count: 10, interval: 0.5 },
+                    { id: "iceSlime", count: 3, interval: 1 },
+                    { id: "snowman", count: 2, interval: 1 },
+                    { id: "iceSlime", count: 3, interval: 1 },
+                    { id: "snowman", count: 2, interval: 1 }
                 ],
-                reward: 100
+                reward: 150
+            },
+            {
+                spawns: [
+                    { id: "skeleton", count: 5, interval: 1 },
+                    { id: "iceSlime", count: 2, interval: 1 },
+                    { id: "armouredSkeleton", count: 2, interval: 1 },
+                    { id: "iceSlime", count: 2, interval: 1 },
+                    { id: "fairy", count: 1, interval: 1 },
+                    { id: "snowman", count: 3, interval: 1 }
+                ],
+                reward: 200
             },
             {
                 spawns: [
                     { id: "slime", count: 10, interval: 0.5 },
                 ],
-                reward: 100
+                reward: 300
             },
             {
                 spawns: [
                     { id: "slime", count: 10, interval: 0.5 },
                 ],
-                reward: 100
+                reward: 400
             },
             {
                 spawns: [
                     { id: "slime", count: 10, interval: 0.5 },
                 ],
-                reward: 100
+                reward: 500
             },
             {
                 spawns: [
                     { id: "slime", count: 10, interval: 0.5 },
                 ],
-                reward: 100
+                reward: 600
             },
             {
                 spawns: [
                     { id: "slime", count: 10, interval: 0.5 },
                 ],
-                reward: 100
+                reward: 700
             },
-            {
-                spawns: [
-                    { id: "slime", count: 10, interval: 0.5 },
-                ],
-                reward: 100
-            },
-           
+
         ],
     },
     "level4-2": {
-        startingGold: 200,
+        startingGold: 150,
         startDelay: 120,
         waves: [
-            {
+           {
                 spawns: [
                     { id: "iceSlime", count: 6, interval: 1 },
                 ],
@@ -736,9 +744,23 @@ export const LEVEL_WAVES = {
             },
             {
                 spawns: [
-                    { id: "slime", count: 10, interval: 0.5 },
+                    { id: "iceSlime", count: 3, interval: 1 },
+                    { id: "snowman", count: 2, interval: 1 },
+                    { id: "iceSlime", count: 3, interval: 1 },
+                    { id: "snowman", count: 2, interval: 1 }
                 ],
-                reward: 100
+                reward: 150
+            },
+            {
+                spawns: [
+                    { id: "skeleton", count: 5, interval: 1 },
+                    { id: "iceSlime", count: 2, interval: 1 },
+                    { id: "armouredSkeleton", count: 2, interval: 1 },
+                    { id: "iceSlime", count: 2, interval: 1 },
+                    { id: "fairy", count: 1, interval: 1 },
+                    { id: "snowman", count: 3, interval: 1 }
+                ],
+                reward: 200
             },
             {
                 spawns: [
@@ -758,25 +780,7 @@ export const LEVEL_WAVES = {
                 ],
                 reward: 100
             },
-            {
-                spawns: [
-                    { id: "slime", count: 10, interval: 0.5 },
-                ],
-                reward: 100
-            },
-            {
-                spawns: [
-                    { id: "slime", count: 10, interval: 0.5 },
-                ],
-                reward: 100
-            },
-            {
-                spawns: [
-                    { id: "slime", count: 10, interval: 0.5 },
-                ],
-                reward: 100
-            },
-           
+
         ],
     },
 } as const satisfies Record<string, LevelWaves>;
@@ -1028,6 +1032,28 @@ export const ENEMIES = {
         spawnIce: true,
         sprite: "ice slime"
     },
+    snowman: {
+        hp: 30,
+        damage: 1,
+        speed: 50,
+        sprite: "snowman",
+        spawnOnDeath: {
+            id: "snowmanHead",
+            amount: 1
+        },
+    },
+    snowmanHead: {
+        hp: 10,
+        damage: 1,
+        speed: 50,
+        sprite: "snowman head"
+    },
+    penguin: {
+        hp: 20,
+        damage: 1,
+        speed: 50,
+        sprite: "penguin"
+    }
 } as const satisfies Record<string, EnemyConfig>;
 
 export type EnemyId = keyof typeof ENEMIES;

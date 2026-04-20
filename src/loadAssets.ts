@@ -822,6 +822,36 @@ export default function loadAssets(k: KAPLAYCtx) {
         }
     });
 
+    k.loadSprite("penguin", "/sprites/penguin.png", {
+        sliceX: 4,
+        sliceY: 2,
+        anims: {
+            idle: 0,
+            move: { from: 0, to: 3, loop: true },
+            die: { from: 4, to: 6, loop: false }
+        }
+    });
+
+    k.loadSprite("snowman", "/sprites/snowman.png", {
+        sliceX: 3,
+        sliceY: 2,
+        anims: {
+            idle: 0,
+            move: { from: 0, to: 2, loop: true, speed: 5 },
+            die: { from: 3, to: 5, loop: false }
+        }
+    });
+
+    k.loadSprite("snowman head", "/sprites/snowman-head.png", {
+        sliceX: 4,
+        sliceY: 2,
+        anims: {
+            idle: 0,
+            move: { from: 0, to: 3, loop: true },
+            die: { from: 4, to: 7, loop: false }
+        }
+    });
+
     k.loadSprite("poison", "/sprites/poison-icon.png");
     k.loadSprite("burn", "/sprites/burn-icon.png");
     k.loadSprite("chill", "/sprites/chill-icon.png");
