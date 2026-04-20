@@ -34,10 +34,10 @@ export default function Altar() {
 
             <div className={styles["choice-container"]}>
                 <div
-                    className={`${styles.choice} ${healCost > towerCoins ? styles.disabled : ''}`}
+                    className={`${styles.choice} ${healCost > towerCoins || healCost <= 0 ? styles.disabled : ''}`}
                     onClick={() => {
                         if (healCost > towerCoins) return;
-                        
+
                         setGameState(prev => ({
                             ...prev,
                             health: prev.maxHealth,
@@ -85,6 +85,7 @@ export default function Altar() {
             </div>
 
             <Modal isOpen={showRCModal} onClose={() => setShowRCModal(false)}>
+                <div className={styles["remove-card"]}>Remove a Card</div>
                 <div className={styles["rc-container"]}>
                     {gameState.deck.cards.map((card, index) => (
                         <Card
@@ -93,7 +94,7 @@ export default function Altar() {
                             handleClick={() => {
                                 setGameState(prev => ({
                                     ...prev,
-                                    towerCoins: Math.max(0, prev.gold - removeCardCost),
+                                    towerCoins: prev.towerCoins - removeCardCost,
                                     deck: {
                                         ...prev.deck,
                                         cards: prev.deck.cards.filter(c => c !== card)

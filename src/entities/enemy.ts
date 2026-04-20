@@ -207,8 +207,6 @@ export default function makeEnemy(
 
         enemy.z = enemy.pos.y;
 
-        if (enemy.boss) console.log(enemy.z)
-
         // boss
         if (enemy.boss && enemy.boss.stopIndexes.length) {
             const stopIndex = enemy.boss.stopIndexes[enemy.boss.currentStopIndex];

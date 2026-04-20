@@ -204,7 +204,7 @@ export default function levelTransition(k: KAPLAYCtx) {
                         k.wait(1, () => {
                             k.go(sceneName, { mapData, tileGrid, pathTiles, wave });
                         });
-                    } else if (wave === "level2-1" || wave === "level2-2") {
+                    } else if (wave === "level4-1" || wave === "level4-2") {
                         store.set(shopChoiceUIAtom, prev => ({
                             ...prev,
                             visible: true

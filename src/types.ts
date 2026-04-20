@@ -392,7 +392,8 @@ export type Scene = "level1" |
     "mainMenu" |
     "level2" |
     "level2-2" |
-    "level3";
+    "level3" |
+    "level4";
 
 export type Scenes = Scene[][];
 

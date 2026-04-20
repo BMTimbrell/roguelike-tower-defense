@@ -454,7 +454,7 @@ export const LEVEL_WAVES = {
         startingGold: 200,
         startDelay: 120,
         boss: {
-            id: "slimeKing",
+            id: "beeQueen",
             bossStops: [0, 1, 3, 5, 7, 9, 11, 17]
         },
         waves: [
@@ -668,15 +668,126 @@ export const LEVEL_WAVES = {
                 reward: 700
             }
         ],
-    }
+    },
+    "level4-1": {
+        startingGold: 200,
+        startDelay: 120,
+        waves: [
+            {
+                spawns: [
+                    { id: "slime", count: 10, interval: 0.5 },
+                ],
+                reward: 100
+            },
+            {
+                spawns: [
+                    { id: "slime", count: 10, interval: 0.5 },
+                ],
+                reward: 100
+            },
+            {
+                spawns: [
+                    { id: "slime", count: 10, interval: 0.5 },
+                ],
+                reward: 100
+            },
+            {
+                spawns: [
+                    { id: "slime", count: 10, interval: 0.5 },
+                ],
+                reward: 100
+            },
+            {
+                spawns: [
+                    { id: "slime", count: 10, interval: 0.5 },
+                ],
+                reward: 100
+            },
+            {
+                spawns: [
+                    { id: "slime", count: 10, interval: 0.5 },
+                ],
+                reward: 100
+            },
+            {
+                spawns: [
+                    { id: "slime", count: 10, interval: 0.5 },
+                ],
+                reward: 100
+            },
+            {
+                spawns: [
+                    { id: "slime", count: 10, interval: 0.5 },
+                ],
+                reward: 100
+            },
+           
+        ],
+    },
+    "level4-2": {
+        startingGold: 200,
+        startDelay: 120,
+        waves: [
+            {
+                spawns: [
+                    { id: "slime", count: 10, interval: 0.5 },
+                ],
+                reward: 100
+            },
+            {
+                spawns: [
+                    { id: "slime", count: 10, interval: 0.5 },
+                ],
+                reward: 100
+            },
+            {
+                spawns: [
+                    { id: "slime", count: 10, interval: 0.5 },
+                ],
+                reward: 100
+            },
+            {
+                spawns: [
+                    { id: "slime", count: 10, interval: 0.5 },
+                ],
+                reward: 100
+            },
+            {
+                spawns: [
+                    { id: "slime", count: 10, interval: 0.5 },
+                ],
+                reward: 100
+            },
+            {
+                spawns: [
+                    { id: "slime", count: 10, interval: 0.5 },
+                ],
+                reward: 100
+            },
+            {
+                spawns: [
+                    { id: "slime", count: 10, interval: 0.5 },
+                ],
+                reward: 100
+            },
+            {
+                spawns: [
+                    { id: "slime", count: 10, interval: 0.5 },
+                ],
+                reward: 100
+            },
+           
+        ],
+    },
 } as const satisfies Record<string, LevelWaves>;
 
 export type LevelId = keyof typeof LEVEL_WAVES;
 
 export const SCENES: Scenes = [
     ["level1", "level1-2"],
-    ["level2", "level2-2"],
-    ["level3", "level3"]
+    ["level4", "level4"],
+    ["level3", "level3"],
+    ["level4", "level4"]
 ];
 
 export const ENEMIES = {
@@ -894,7 +1005,7 @@ export const ENEMIES = {
         }
     },
     beeQueen: {
-        hp: 6000,
+        hp: 6,
         damage: 50,
         speed: 25,
         sprite: "bee queen",

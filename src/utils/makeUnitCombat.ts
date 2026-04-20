@@ -92,7 +92,8 @@ export default function makeUnitCombat(
     const rangeCircle = k.add([
         k.pos(),
         k.circle(opts.stats.range * TILE_SIZE),
-        k.opacity(0.2)
+        k.opacity(0.2),
+        k.z(1)
     ]);
 
     gun.onAnimEnd(anim => {

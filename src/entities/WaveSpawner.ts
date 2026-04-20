@@ -8,10 +8,9 @@ import screenPos from "../utils/screenPos";
 import drawCards from "../utils/drawCards";
 import makeTower from "./Tower";
 
-export default function makeWaveSpawner(k: KAPLAYCtx, levelId: LevelId, waypoints: Vec2[]): GameObj {
+export default function makeWaveSpawner(k: KAPLAYCtx, levelId: LevelId, waypoints: Vec2[], opts?: { onWaveEnd?: () => void }) {
     const level = LEVEL_WAVES[levelId];
 
-    let waveIndex = -1;
     let spawnQueue: { id: EnemyId; time: number }[] = [];
     let timer = 0;
     let spawning = false;
@@ -38,6 +37,7 @@ export default function makeWaveSpawner(k: KAPLAYCtx, levelId: LevelId, waypoint
         "waveSpawner",
         k.timer(),
         {
+            waveIndex: -1,
             add() {
                 if ("boss" in level && level.boss) {
                     const boss = level.boss as {
@@ -50,12 +50,12 @@ export default function makeWaveSpawner(k: KAPLAYCtx, levelId: LevelId, waypoint
                 }
             },
             startNextWave() {
-                if (waveIndex < 0) {
+                if (spawner.waveIndex < 0) {
                     k.get("arrow").forEach(a => k.destroy(a));
                 }
 
-                waveIndex++;
-                const wave = level.waves[waveIndex];
+                spawner.waveIndex++;
+                const wave = level.waves[spawner.waveIndex];
                 spawnQueue = buildQueue(wave);
                 timer = 0;
                 spawning = true;
@@ -101,7 +101,7 @@ export default function makeWaveSpawner(k: KAPLAYCtx, levelId: LevelId, waypoint
                     waveActive: false
                 }));
 
-                if (waveIndex === level.waves.length - 1 || ("boss" in level && !boss && !normalEnemiesAlive)) {
+                if (spawner.waveIndex === level.waves.length - 1 || ("boss" in level && !boss && !normalEnemiesAlive)) {
                     levelComplete = true;
                     const complete = k.add([
                         k.pos(k.getCamPos()),
@@ -133,10 +133,11 @@ export default function makeWaveSpawner(k: KAPLAYCtx, levelId: LevelId, waypoint
                 enemyDeadCheck = false;
                 const incomeMod = k.get("hero")[0]?.incomeMod ?? 1;
 
-                if (waveIndex >= 0) {
+                if (spawner.waveIndex >= 0) {
+                    opts?.onWaveEnd?.();
                     store.set(gameStateAtom, prev => ({
                         ...prev,
-                        gold: prev.gold + (level.waves[waveIndex].reward * incomeMod),
+                        gold: prev.gold + (level.waves[spawner.waveIndex].reward * incomeMod),
                         deck: {
                             ...prev.deck,
                             drawCost: BASE_DRAW_COST
@@ -265,9 +266,9 @@ export default function makeWaveSpawner(k: KAPLAYCtx, levelId: LevelId, waypoint
         {
             update() {
                 const displayWave =
-                    waveIndex < 0
+                    spawner.waveIndex < 0
                         ? 1
-                        : (spawning ? waveIndex + 1 : waveIndex + 2);
+                        : (spawning ? spawner.waveIndex + 1 : spawner.waveIndex + 2);
 
                 const clampedWave = Math.min(displayWave, level.waves.length);
 
@@ -296,5 +297,5 @@ export default function makeWaveSpawner(k: KAPLAYCtx, levelId: LevelId, waypoint
         }
     });
 
-    return spawner;
+    return spawner
 }

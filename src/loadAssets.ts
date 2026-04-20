@@ -7,6 +7,7 @@ export default function loadAssets(k: KAPLAYCtx) {
     k.loadSprite("level2", "/sprites/level2.png");
     k.loadSprite("level2-2", "/sprites/level2-2.png");
     k.loadSprite("level3", "/sprites/level3.png");
+    k.loadSprite("level4", "/sprites/level4.png");
     k.loadSprite("tree", "/sprites/tree.png");
     k.loadSprite("gold", "/sprites/coin.png");
     k.loadSprite("heart", "/sprites/heart.png");
@@ -895,4 +896,13 @@ export default function loadAssets(k: KAPLAYCtx) {
         }
     });
     k.loadSprite("tower coin", "/sprites/tower-coin.png");
+    k.loadSprite("ice tile 1", "/sprites/ice-tile-1.png");
+    k.loadSprite("ice tile 2", "/sprites/ice-tile-2.png");
+    k.loadSprite("ice tile 3", "/sprites/ice-tile-3.png");
+    k.loadSprite("ice tile 4", "/sprites/ice-tile-4.png");
+    k.loadSprite("ice tile 5", "/sprites/ice-tile-5.png");
+    k.loadSprite("ice tile 6", "/sprites/ice-tile-6.png");
+    k.loadSprite("ice tile 7", "/sprites/ice-tile-7.png");
+    k.loadSprite("ice tile 8", "/sprites/ice-tile-8.png");
+    k.loadSprite("ice tile 9", "/sprites/ice-tile-9.png");
 }
