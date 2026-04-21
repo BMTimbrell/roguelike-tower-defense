@@ -1,5 +1,5 @@
 import type { KAPLAYCtx } from "kaplay";
-import { gameStateAtom, rewardsAtom, shopAtom, shopChoiceUIAtom, store } from "../store";
+import { altarAtom, gameStateAtom, rewardsAtom, shopAtom, shopChoiceUIAtom, store } from "../store";
 import initCam from "../utils/initCam";
 import type { HeroGameObj, Scene } from "../types";
 import { ENEMIES, LEVEL_WAVES, SCENES } from "../constants";
@@ -100,7 +100,8 @@ export default function levelTransition(k: KAPLAYCtx) {
                             heroId: hero.heroId,
                             pos: k.toWorld(k.mousePos()),
                             tileGrid,
-                            pathTiles
+                            pathTiles,
+                            level: hero.level
                         }
                     );
 
@@ -204,10 +205,77 @@ export default function levelTransition(k: KAPLAYCtx) {
                         k.wait(1, () => {
                             k.go(sceneName, { mapData, tileGrid, pathTiles, wave });
                         });
-                    } else if (wave === "level4-1" || wave === "level4-2") {
+                    } else if (wave === "level3-1" || wave === "level3-2") {
                         store.set(shopChoiceUIAtom, prev => ({
                             ...prev,
                             visible: true
+                        }));
+
+                        const hero = store.get(gameStateAtom).hero;
+                        if (!hero) return;
+
+                        store.set(altarAtom, prev => ({
+                            ...prev,
+                            levelUp: () => {
+                                store.set(altarAtom, prev => ({
+                                    ...prev,
+                                    visible: false
+                                }));
+
+                                store.set(rewardsAtom, prev => ({
+                                    ...prev,
+                                    visible: true,
+                                    addSkill: (id) => {
+                                        hero.skillIds.push(id);
+                                        const updatedHero = makeHero(
+                                            k,
+                                            {
+                                                heroId: hero.heroId,
+                                                pos: k.toWorld(k.mousePos()),
+                                                tileGrid,
+                                                pathTiles,
+                                                level: hero.level + 1
+                                            }
+                                        );
+
+                                        updatedHero.skillIds = hero.skillIds;
+
+                                        store.set(gameStateAtom, prev => ({
+                                            ...prev,
+                                            hero: updatedHero,
+                                            heroButton: {
+                                                ...prev.heroButton,
+                                                onClick: () => {
+                                                    k.add(updatedHero);
+                                                    store.set(gameStateAtom, prev => ({
+                                                        ...prev,
+                                                        heroButton: {
+                                                            ...prev.heroButton,
+                                                            visible: false
+                                                        }
+                                                    }))
+                                                }
+                                            },
+                                            heroCharge: {
+                                                ...prev.heroCharge,
+                                                damageDealt: 0,
+                                                charge: 0,
+                                                damageRequired: prev.heroCharge.damageRequired * 1.75
+                                            }
+                                        }));
+
+                                        store.set(altarAtom, prev => ({
+                                            ...prev,
+                                            visible: true
+                                        }));
+
+                                        store.set(rewardsAtom, prev => ({
+                                            ...prev,
+                                            visible: false
+                                        }));
+                                    }
+                                }));
+                            }
                         }));
 
                         store.set(shopAtom, prev => ({

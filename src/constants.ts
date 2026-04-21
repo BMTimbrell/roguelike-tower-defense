@@ -49,6 +49,8 @@ export const REDUCED_RANGE_TOWERS = [
 ];
 export const BASE_REROLL_COST = 5;
 export const BASE_DRAW_COST = 10;
+export const LEVEL_REWARDS = [20, 20, 30, 25, 25];
+
 export const UPGRADES: Upgrade[] = [{
     stat: "damage",
     name: "Damage",
@@ -738,27 +740,27 @@ export const LEVEL_WAVES = {
         waves: [
            {
                 spawns: [
-                    { id: "iceSlime", count: 6, interval: 1 },
+                    { id: "penguin", count: 6, interval: 1 },
                 ],
                 reward: 100
             },
             {
                 spawns: [
-                    { id: "iceSlime", count: 3, interval: 1 },
+                    { id: "penguin", count: 3, interval: 1 },
                     { id: "snowman", count: 2, interval: 1 },
-                    { id: "iceSlime", count: 3, interval: 1 },
+                    { id: "penguin", count: 3, interval: 1 },
                     { id: "snowman", count: 2, interval: 1 }
                 ],
                 reward: 150
             },
             {
                 spawns: [
-                    { id: "skeleton", count: 5, interval: 1 },
-                    { id: "iceSlime", count: 2, interval: 1 },
-                    { id: "armouredSkeleton", count: 2, interval: 1 },
-                    { id: "iceSlime", count: 2, interval: 1 },
-                    { id: "fairy", count: 1, interval: 1 },
-                    { id: "snowman", count: 3, interval: 1 }
+                    { id: "orc", count: 4, interval: 1.5 },
+                    { id: "penguin", count: 2, interval: 1 },
+                    { id: "armouredOrc", count: 1, interval: 1 },
+                    { id: "penguin", count: 2, interval: 1 },
+                    { id: "snowman", count: 3, interval: 1 },
+                    { id: "fairy", count: 1, interval: 1 }
                 ],
                 reward: 200
             },
@@ -788,8 +790,8 @@ export const LEVEL_WAVES = {
 export type LevelId = keyof typeof LEVEL_WAVES;
 
 export const SCENES: Scenes = [
-    ["level4", "level4"],
-    ["level4", "level4"],
+    ["level1", "level1-2"],
+    ["level2", "level2-2"],
     ["level3", "level3"],
     ["level4", "level4"]
 ];

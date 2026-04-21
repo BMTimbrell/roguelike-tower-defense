@@ -450,8 +450,15 @@ export type Shop = {
 
 export type Altar = {
     visible: boolean;
-    maxHPCost: number;
-    removeCardCost: number;
+    maxHPCost: 20;
+    removeCardCost: 20;
+    levelUpCost: 20;
+    remainingUses: {
+        maxHP: number;
+        removeCard: number;
+        levelUp: number;
+    };
+    levelUp: () => void;
 };
 
 export type EnemySpawn = {

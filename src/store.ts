@@ -108,7 +108,14 @@ export const shopAtom = atom<Shop>({
 export const altarAtom = atom<Altar>({
     visible: false,
     maxHPCost: 20,
-    removeCardCost: 20
+    removeCardCost: 20,
+    levelUpCost: 20,
+    remainingUses: {
+        maxHP: 3,
+        removeCard: 3,
+        levelUp: 1
+    },
+    levelUp: () => {}
 });
 
 export const store = createStore();

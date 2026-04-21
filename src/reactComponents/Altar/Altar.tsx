@@ -18,6 +18,7 @@ export default function Altar() {
     const healCost = Math.round((gameState.maxHealth - gameState.health) * 2.5);
     const maxHPCost = altar.maxHPCost;
     const removeCardCost = altar.removeCardCost;
+    const levelUpCost = altar.levelUpCost;
     const [showRCModal, setShowRCModal] = useState(false);
 
     return (
@@ -45,15 +46,16 @@ export default function Altar() {
                         }));
                     }}
                 >
+                    <div className={styles["sub-heading"]}>Blessing of Restoration</div>
                     <div>Restore HP</div>
                     <div className={styles.cost}><img width={17 * scale} src={'/sprites/tower-coin.png'} />
                         <div className={`${healCost > towerCoins ? styles["cant-afford"] : ''}`}>{healCost}</div>
                     </div>
                 </div>
                 <div
-                    className={`${styles.choice} ${maxHPCost > towerCoins ? styles.disabled : ''}`}
+                    className={`${styles.choice} ${maxHPCost > towerCoins || altar.remainingUses.maxHP <= 0 ? styles.disabled : ''}`}
                     onClick={() => {
-                        if (maxHPCost > towerCoins) return;
+                        if (maxHPCost > towerCoins || altar.remainingUses.maxHP <= 0) return;
                         setGameState(prev => ({
                             ...prev,
                             health: prev.health + 5,
@@ -62,26 +64,70 @@ export default function Altar() {
                         }));
                         setAltar(prev => ({
                             ...prev,
-                            maxHPCost: prev.maxHPCost * 2
+                            remainingUses: {
+                                ...prev.remainingUses,
+                                maxHP: prev.remainingUses.maxHP - 1
+                            }
                         }));
                     }}
                 >
+                    <div className={styles["sub-heading"]}>Blessing of Vitality</div>
                     <div>+5 Max HP</div>
-                    <div className={styles.cost}><img width={17 * scale} src={'/sprites/tower-coin.png'} />
-                        <div className={`${maxHPCost > towerCoins ? styles["cant-afford"] : ''}`}>{maxHPCost}</div>
+
+                    <div className={styles["choice-footer"]}>
+                        <div className={styles.cost}><img width={17 * scale} src={'/sprites/tower-coin.png'} />
+                            <div className={`${maxHPCost > towerCoins ? styles["cant-afford"] : ''}`}>{maxHPCost}</div>
+                        </div>
+                        <div>Uses: {altar.remainingUses.maxHP}</div>
                     </div>
                 </div>
                 <div
-                    className={`${styles.choice} ${removeCardCost > towerCoins ? styles.disabled : ''}`}
+                    className={`${styles.choice} ${removeCardCost > towerCoins || altar.remainingUses.removeCard <= 0 ? styles.disabled : ''}`}
                     onClick={() => {
-                        if (removeCardCost <= towerCoins) setShowRCModal(true)
+                        if (removeCardCost <= towerCoins && altar.remainingUses.removeCard > 0) setShowRCModal(true)
                     }}
                 >
+                    <div className={styles["sub-heading"]}>Blessing of Purification</div>
                     <div>Remove Card</div>
-                    <div className={styles.cost}><img width={17 * scale} src={'/sprites/tower-coin.png'} />
-                        <div className={`${removeCardCost > towerCoins ? styles["cant-afford"] : ''}`}>{removeCardCost}</div>
+
+                    <div className={styles["choice-footer"]}>
+                        <div className={styles.cost}><img width={17 * scale} src={'/sprites/tower-coin.png'} />
+                            <div className={`${removeCardCost > towerCoins ? styles["cant-afford"] : ''}`}>{removeCardCost}</div>
+                        </div>
+                        <div>Uses: {altar.remainingUses.removeCard}</div>
                     </div>
                 </div>
+
+                <div
+                    className={`${styles.choice} ${maxHPCost > towerCoins || altar.remainingUses.maxHP <= 0 ? styles.disabled : ''}`}
+                    onClick={() => {
+                        if (levelUpCost > towerCoins || altar.remainingUses.levelUp <= 0) return;
+                        setGameState(prev => ({
+                            ...prev,
+                            towerCoins: prev.towerCoins - levelUpCost
+                        }));
+                        setAltar(prev => ({
+                            ...prev,
+                            remainingUses: {
+                                ...prev.remainingUses,
+                                levelUp: prev.remainingUses.levelUp - 1
+                            }
+                        }));
+
+                        altar.levelUp();
+                    }}
+                >
+                    <div className={styles["sub-heading"]}>Blessing of Growth</div>
+                    <div>Level Up</div>
+
+                    <div className={styles["choice-footer"]}>
+                        <div className={styles.cost}><img width={17 * scale} src={'/sprites/tower-coin.png'} />
+                            <div className={`${levelUpCost > towerCoins ? styles["cant-afford"] : ''}`}>{levelUpCost}</div>
+                        </div>
+                        <div>Uses: {altar.remainingUses.levelUp}</div>
+                    </div>
+                </div>
+
             </div>
 
             <Modal isOpen={showRCModal} onClose={() => setShowRCModal(false)}>
@@ -102,7 +148,10 @@ export default function Altar() {
                                 }));
                                 setAltar(prev => ({
                                     ...prev,
-                                    removeCardCost: prev.removeCardCost * 2
+                                    remainingUses: {
+                                        ...prev.remainingUses,
+                                        removeCard: prev.remainingUses.removeCard - 1
+                                    }
                                 }));
                                 setShowRCModal(false);
                             }}

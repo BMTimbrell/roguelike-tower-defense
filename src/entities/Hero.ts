@@ -12,12 +12,13 @@ export default function makeHero(k: KAPLAYCtx,
         heroId: HeroId
         pos: Vec2,
         tileGrid: Tile[][],
-        pathTiles: PathTile[]
+        pathTiles: PathTile[],
+        level: number;
     }
 ): HeroGameObj {
     k.get("tower").forEach(tower => tower.selected = false);
 
-    const { heroId, pos, tileGrid, pathTiles } = opts;
+    const { heroId, pos, tileGrid, pathTiles, level } = opts;
     const {
         name,
         stats,
@@ -60,7 +61,7 @@ export default function makeHero(k: KAPLAYCtx,
                 heroId === "songstress" ? ["songstress-anthem-power"] satisfies SkillId[] :
                 heroId === "necromancer" ? ["summon-skeleton"] satisfies SkillId[] :
                 [] satisfies SkillId[],
-            level: 1,
+            level,
             footprint: { w: 1, h: 1 },
             element,
             effects: [],

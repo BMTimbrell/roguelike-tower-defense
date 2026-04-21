@@ -51,8 +51,9 @@
     border-radius: 0.25em;
     display: flex;
     flex-direction: column;
-    gap: 0.5em;
+    gap: 1em;
     cursor: pointer;
+    flex: 1 1 0;
 }
 
 .choice:hover {
@@ -70,7 +71,7 @@
     margin-top: 2em;
     width: 100%;
     display: flex;
-    justify-content: space-around;
+    justify-content: space-between;
 }
 
 .tower-coins {
@@ -94,4 +95,14 @@
 .remove-card {
     text-align: center;
     margin-bottom: 1em;
+}
+
+.sub-heading {
+    font-size: 1.1em;
+}
+
+.choice-footer {
+    display: flex;
+    justify-content: space-between;
+    margin-top: auto;
 }

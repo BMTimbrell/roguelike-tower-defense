@@ -30,7 +30,8 @@ export default function mainMenu(k: KAPLAYCtx) {
                         heroId: id,
                         pos: k.toWorld(k.mousePos()),
                         tileGrid,
-                        pathTiles
+                        pathTiles,
+                        level: 1
                     }
                 );
 

@@ -9,7 +9,6 @@ import type { HeroSkillDef, TowerDef, Upgrade } from '../../types';
 import UpgradeCard from '../UpgradeCard/UpgradeCard';
 import UpgradePopup from '../UpgradePopup/UpgradePopup';
 import TowerCard from '../TowerCard/TowerCard';
-import DeckUI from '../DeckUI/DeckUI';
 import LoadoutPreviewPanel from '../LoadoutPreviewPanel/LoadoutPreviewPanel';
 
 export default function Rewards() {
