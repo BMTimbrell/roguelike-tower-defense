@@ -282,7 +282,7 @@ export default function makeLevelScene(k: KAPLAYCtx, sceneName: Scene) {
                     k.rect(TILE_SIZE, TILE_SIZE),
                     k.pos(point.x * TILE_SIZE, point.y * TILE_SIZE),
                     k.opacity(0.5),
-                    k.color(100, 200, 255),
+                    k.color(200, 200, 255),
                     k.scale(1),
                     k.z(-1),
                     {

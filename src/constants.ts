@@ -684,20 +684,21 @@ export const LEVEL_WAVES = {
             {
                 spawns: [
                     { id: "iceSlime", count: 3, interval: 1 },
-                    { id: "snowman", count: 2, interval: 1 },
+                    { id: "skeleton", count: 2, interval: 1 },
                     { id: "iceSlime", count: 3, interval: 1 },
-                    { id: "snowman", count: 2, interval: 1 }
+                    { id: "skeleton", count: 2, interval: 1 }
                 ],
                 reward: 150
             },
             {
                 spawns: [
-                    { id: "skeleton", count: 5, interval: 1 },
+                    { id: "skeleton", count: 2, interval: 1 },
+                    { id: "polarBear", count: 2, interval: 1 },
                     { id: "iceSlime", count: 2, interval: 1 },
                     { id: "armouredSkeleton", count: 2, interval: 1 },
                     { id: "iceSlime", count: 2, interval: 1 },
                     { id: "fairy", count: 1, interval: 1 },
-                    { id: "snowman", count: 3, interval: 1 }
+                    { id: "polarBear", count: 2, interval: 1 }
                 ],
                 reward: 200
             },
@@ -764,24 +765,36 @@ export const LEVEL_WAVES = {
                 ],
                 reward: 200
             },
-            {
+           {
                 spawns: [
                     { id: "slime", count: 10, interval: 0.5 },
                 ],
-                reward: 100
+                reward: 300
             },
             {
                 spawns: [
                     { id: "slime", count: 10, interval: 0.5 },
                 ],
-                reward: 100
+                reward: 400
             },
             {
                 spawns: [
                     { id: "slime", count: 10, interval: 0.5 },
                 ],
-                reward: 100
+                reward: 500
             },
+            {
+                spawns: [
+                    { id: "slime", count: 10, interval: 0.5 },
+                ],
+                reward: 600
+            },
+            {
+                spawns: [
+                    { id: "slime", count: 10, interval: 0.5 },
+                ],
+                reward: 700
+            }
 
         ],
     },
@@ -793,7 +806,7 @@ export const SCENES: Scenes = [
     ["level1", "level1-2"],
     ["level2", "level2-2"],
     ["level3", "level3"],
-    ["level4", "level4"]
+    ["level4", "level4-2"]
 ];
 
 export const ENEMIES = {
@@ -1055,6 +1068,12 @@ export const ENEMIES = {
         damage: 1,
         speed: 50,
         sprite: "penguin"
+    },
+    polarBear: {
+        hp: 50,
+        damage: 1,
+        speed: 60,
+        sprite: "polar bear"
     }
 } as const satisfies Record<string, EnemyConfig>;
 

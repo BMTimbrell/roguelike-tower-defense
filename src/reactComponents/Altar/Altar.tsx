@@ -99,7 +99,7 @@ export default function Altar() {
                 </div>
 
                 <div
-                    className={`${styles.choice} ${maxHPCost > towerCoins || altar.remainingUses.maxHP <= 0 ? styles.disabled : ''}`}
+                    className={`${styles.choice} ${levelUpCost > towerCoins || altar.remainingUses.levelUp <= 0 ? styles.disabled : ''}`}
                     onClick={() => {
                         if (levelUpCost > towerCoins || altar.remainingUses.levelUp <= 0) return;
                         setGameState(prev => ({

@@ -9,6 +9,7 @@ import level2 from './scenes/level2';
 import level2_2 from './scenes/level2-2';
 import level3 from './scenes/level3';
 import level4 from './scenes/level4';
+import level4_2 from './scenes/level4-2';
 
 export default function initGame() {
     // focus back on canvas when clicking on html elements
@@ -27,6 +28,8 @@ export default function initGame() {
     level3(k);
 
     level4(k);
+
+    level4_2(k);
 
     mainMenu(k);
 

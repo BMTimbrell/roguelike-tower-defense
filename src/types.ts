@@ -395,7 +395,8 @@ export type Scene = "level1" |
     "level2" |
     "level2-2" |
     "level3" |
-    "level4";
+    "level4" |
+    "level4-2";
 
 export type Scenes = Scene[][];
 

@@ -6,6 +6,7 @@ import { ENEMIES, LEVEL_WAVES, SCENES } from "../constants";
 import generateMap from "../utils/generateMap";
 import makeHero from "../entities/Hero";
 import addTowers from "../utils/addTowers";
+import updateSkills from "../utils/updateSkills";
 
 export default function levelTransition(k: KAPLAYCtx) {
     k.scene("levelTransition" satisfies Scene, async (hero: HeroGameObj) => {
@@ -125,6 +126,10 @@ export default function levelTransition(k: KAPLAYCtx) {
                         },
                     }));
 
+
+                    updateSkills(updatedHero);
+                
+
                     store.set(rewardsAtom, prev => ({
                         ...prev,
                         rewardIndex: prev.rewardIndex + 1
@@ -205,7 +210,7 @@ export default function levelTransition(k: KAPLAYCtx) {
                         k.wait(1, () => {
                             k.go(sceneName, { mapData, tileGrid, pathTiles, wave });
                         });
-                    } else if (wave === "level3-1" || wave === "level3-2") {
+                    } else if (wave === "level4-1" || wave === "level4-2") {
                         store.set(shopChoiceUIAtom, prev => ({
                             ...prev,
                             visible: true
@@ -263,6 +268,8 @@ export default function levelTransition(k: KAPLAYCtx) {
                                                 damageRequired: prev.heroCharge.damageRequired * 1.75
                                             }
                                         }));
+
+                                        updateSkills(updatedHero);
 
                                         store.set(altarAtom, prev => ({
                                             ...prev,
