@@ -295,19 +295,18 @@ export default function makeEnemy(
         // speed on ice
         const iceTiles = k.get("slime ice");
 
-        if (iceTiles.length) {
-            let boost = 1;
-            for (const ice of iceTiles) {
-                if (enemy.pos.dist(ice.pos) <= TILE_SIZE / 2) {
-                    boost = 3;
-                    break;
-                }
+
+        let boost = 1;
+        for (const ice of iceTiles) {
+            if (enemy.pos.dist(ice.pos) <= TILE_SIZE / 2) {
+                boost = 3;
+                break;
             }
-    
-            if (enemy.speedMultipliers.ice !== boost) {
-                enemy.speedMultipliers.ice = boost;
-                updateSpeed.call(enemy);
-            }
+        }
+
+        if (enemy.speedMultipliers.ice !== boost) {
+            enemy.speedMultipliers.ice = boost;
+            updateSpeed.call(enemy);
         }
 
 

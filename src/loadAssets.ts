@@ -434,6 +434,13 @@ export default function loadAssets(k: KAPLAYCtx) {
             smash: { from: 1, to: 3, loop: false, speed: 10 }
         }
     });
+    k.loadSprite("egg", "/sprites/egg.png", {
+        sliceX: 5,
+        sliceY: 1,
+        anims: {
+            crack: { from: 0, to: 4, loop: false }
+        }
+    });
     k.loadSprite("planet", "/sprites/planet.png");
     k.loadSprite("archer base", "/sprites/archer-base2.png");
     k.loadSprite("archer", "/sprites/archer2.png", {
@@ -860,6 +867,66 @@ export default function loadAssets(k: KAPLAYCtx) {
             idle: 0,
             move: { from: 0, to: 2, loop: true },
             die: { from: 3, to: 5, loop: false }
+        }
+    });
+
+    k.loadSprite("giant ice slime", "/sprites/giant-ice-slime.png", {
+        sliceX: 7,
+        sliceY: 2,
+        anims: {
+            idle: 0,
+            move: { from: 0, to: 5, loop: true },
+            die: { from: 7, to: 10, loop: false }
+        }
+    });
+
+    k.loadSprite("giant polar bear", "/sprites/giant-polar-bear.png", {
+        sliceX: 3,
+        sliceY: 2,
+        anims: {
+            idle: 0,
+            move: { from: 0, to: 2, loop: true },
+            die: { from: 3, to: 5, loop: false }
+        }
+    });
+
+    k.loadSprite("giant fairy", "/sprites/giant-fairy.png", {
+        sliceX: 4,
+        sliceY: 2,
+        anims: {
+            idle: 0,
+            move: { from: 0, to: 3, loop: true, speed: 4 },
+            die: { from: 4, to: 7, loop: false, speed: 7 }
+        }
+    });
+
+    k.loadSprite("giant penguin", "/sprites/giant-penguin.png", {
+        sliceX: 4,
+        sliceY: 2,
+        anims: {
+            idle: 0,
+            move: { from: 0, to: 3, loop: true },
+            die: { from: 4, to: 6, loop: false }
+        }
+    });
+
+    k.loadSprite("giant snowman", "/sprites/giant-snowman.png", {
+        sliceX: 3,
+        sliceY: 2,
+        anims: {
+            idle: 0,
+            move: { from: 0, to: 2, loop: true, speed: 5 },
+            die: { from: 3, to: 5, loop: false }
+        }
+    });
+
+    k.loadSprite("giant snowman head", "/sprites/giant-snowman-head.png", {
+        sliceX: 4,
+        sliceY: 2,
+        anims: {
+            idle: 0,
+            move: { from: 0, to: 3, loop: true },
+            die: { from: 4, to: 7, loop: false }
         }
     });
 

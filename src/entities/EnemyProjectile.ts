@@ -42,12 +42,12 @@ export default function makeEnemyProjectile(k: KAPLAYCtx, opts: {
                 });
             } else if (Math.random() < hitChance) {
                 const duration = 2;
-    
+
                 target.disabledUntil = Math.max(
                     target.disabledUntil,
                     k.time() + duration
                 );
-    
+
                 target.enterState("disabled");
 
             } else {
@@ -60,6 +60,18 @@ export default function makeEnemyProjectile(k: KAPLAYCtx, opts: {
             }
 
             k.destroy(projectile);
+        }
+    });
+
+    projectile.onDestroy(() => {
+        const anim = (PROJECTILES[opts.id] as { anim: string })?.anim;
+        if (anim) {
+            const animSprite = k.add([
+                k.sprite(PROJECTILES[opts.id].sprite, { anim }),
+                k.pos(projectile.pos),
+                k.anchor("center")
+            ]);
+            animSprite.onAnimEnd(() => k.destroy(animSprite));
         }
     });
 

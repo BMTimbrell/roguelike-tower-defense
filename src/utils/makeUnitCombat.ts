@@ -93,7 +93,7 @@ export default function makeUnitCombat(
         k.pos(),
         k.color(255, 255, 255),
         k.circle(opts.stats.range * TILE_SIZE),
-        k.outline(2),
+        k.outline(1),
         k.opacity(0.2),
         k.z(1)
     ]);

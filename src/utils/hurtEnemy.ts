@@ -1,6 +1,6 @@
 import type { KAPLAYCtx } from "kaplay";
 import makeFloatingText from "../entities/FloatingText";
-import { CRIT_DAMAGE_NUMBER_SIZE, DAMAGE_NUMBER_SIZE, ELEMENTS, SMALL_DAMAGE_NUMBER_SIZE, TILE_SIZE, TOWER_RANGE_TOLERANCE } from "../constants";
+import { CRIT_DAMAGE_NUMBER_SIZE, DAMAGE_NUMBER_SIZE, ELEMENTS, SCYTHE_MAX_KILL_STACKS, SMALL_DAMAGE_NUMBER_SIZE, TILE_SIZE, TOWER_RANGE_TOLERANCE } from "../constants";
 import type { AttackContext, ElementName, EnemyGameObj, TowerGameObj } from "../types";
 import spawnSummon from "../entities/Summon";
 
@@ -17,7 +17,7 @@ export default function hurtEnemy(k: KAPLAYCtx, opts: {
 
     if (target.invincible) return;
 
-    if (attacker?.killStacks !== undefined && target.hp() <= damage) {
+    if (attacker?.killStacks !== undefined && attacker.killStacks < SCYTHE_MAX_KILL_STACKS && target.hp() <= damage) {
         attacker.killStacks++;
         if (attacker.killStacks === 1) {
             k.add([
@@ -63,7 +63,6 @@ export default function hurtEnemy(k: KAPLAYCtx, opts: {
     if (!statusDamage) ELEMENTS[element].applyEffect?.(k, { target, damage: effectiveDamage });
 
     if (attacker?.name === "Hammer Tower" && !target.isDying && Math.random() < effectiveDamage * 0.002) {
-        console.log(effectiveDamage * 0.002)
         target.enterState("stunned");
     }
 

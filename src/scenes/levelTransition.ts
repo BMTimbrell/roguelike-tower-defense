@@ -2,7 +2,7 @@ import type { KAPLAYCtx } from "kaplay";
 import { altarAtom, gameStateAtom, rewardsAtom, shopAtom, shopChoiceUIAtom, store } from "../store";
 import initCam from "../utils/initCam";
 import type { HeroGameObj, Scene } from "../types";
-import { ENEMIES, LEVEL_WAVES, SCENES } from "../constants";
+import { ENEMIES, LEVEL_REWARDS, LEVEL_WAVES, SCENES } from "../constants";
 import generateMap from "../utils/generateMap";
 import makeHero from "../entities/Hero";
 import addTowers from "../utils/addTowers";
@@ -77,7 +77,7 @@ export default function levelTransition(k: KAPLAYCtx) {
                     charge: 0,
                     damageRequired: prev.heroCharge.damageRequired * 1.75
                 },
-                towerCoins: prev.towerCoins + 25
+                towerCoins: prev.towerCoins + LEVEL_REWARDS[store.get(gameStateAtom).sceneIndex]
             }));
 
             hero.level++;
@@ -87,7 +87,8 @@ export default function levelTransition(k: KAPLAYCtx) {
 
             const { mapData, tileGrid, pathTiles } = await generateMap(k, `data/${sceneName}.json`);
 
-            rand = k.randi();
+            // rand = k.randi();
+            rand = 1;
 
             const wave = `level${store.get(gameStateAtom).level}-${rand + 1}`;
 
@@ -166,7 +167,7 @@ export default function levelTransition(k: KAPLAYCtx) {
                     ]);
 
                     const text = k.add([
-                        k.text("+25", {
+                        k.text(`+${LEVEL_REWARDS[store.get(gameStateAtom).sceneIndex - 1]}`, {
                             size: 16,
                             font: "free pixel"
                         }),
