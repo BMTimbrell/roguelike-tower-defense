@@ -69,6 +69,7 @@ export default function makeEnemyProjectile(k: KAPLAYCtx, opts: {
             const animSprite = k.add([
                 k.sprite(PROJECTILES[opts.id].sprite, { anim }),
                 k.pos(projectile.pos),
+                k.z(999),
                 k.anchor("center")
             ]);
             animSprite.onAnimEnd(() => k.destroy(animSprite));

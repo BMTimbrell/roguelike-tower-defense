@@ -9,6 +9,8 @@ export default function loadAssets(k: KAPLAYCtx) {
     k.loadSprite("level3", "/sprites/level3.png");
     k.loadSprite("level4", "/sprites/level4.png");
     k.loadSprite("level4-2", "/sprites/level4-2.png");
+    k.loadSprite("level5", "/sprites/level5.png");
+    k.loadSprite("level5-2", "/sprites/level5-2.png");
     k.loadSprite("tree", "/sprites/tree.png");
     k.loadSprite("gold", "/sprites/coin.png");
     k.loadSprite("heart", "/sprites/heart.png");
@@ -927,6 +929,16 @@ export default function loadAssets(k: KAPLAYCtx) {
             idle: 0,
             move: { from: 0, to: 3, loop: true },
             die: { from: 4, to: 7, loop: false }
+        }
+    });
+
+    k.loadSprite("giant red fairy", "/sprites/giant-red-fairy.png", {
+        sliceX: 4,
+        sliceY: 2,
+        anims: {
+            idle: 0,
+            move: { from: 0, to: 3, loop: true, speed: 4 },
+            die: { from: 4, to: 7, loop: false, speed: 7 }
         }
     });
 

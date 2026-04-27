@@ -179,12 +179,95 @@ export default function makeLevelScene(k: KAPLAYCtx, sceneName: Scene) {
             .find(layer => layer.name === "Waypoints")
             ?.objects?.map(obj => k.vec2(obj.x + TILE_SIZE / 2, obj.y + TILE_SIZE / 2));
 
+        const icePoints = mapData.layers
+            .find(layer => layer.name === "Ice Tiles")
+            ?.objects
+            ?.map(obj => {
+                const x = Math.floor(obj.x / TILE_SIZE);
+                const y = Math.floor(obj.y / TILE_SIZE);
+                tileGrid[y][x].blocked = true;
+                return {
+                    x,
+                    y,
+                    used: false,
+                    pending: false,
+                    id: obj.name,
+                    glowObj: null as null | GameObj
+                };
+            }) ?? [];
+
+        function previewIce(count: number) {
+            const available = icePoints.filter(p => !p.used && !p.pending);
+
+            for (let i = 0; i < count && available.length > 0; i++) {
+                const index = Math.floor(Math.random() * available.length);
+                const point = available.splice(index, 1)[0];
+
+                point.pending = true;
+
+                const glow = k.add([
+                    k.rect(TILE_SIZE, TILE_SIZE),
+                    k.pos(point.x * TILE_SIZE, point.y * TILE_SIZE),
+                    k.opacity(0.5),
+                    k.color(200, 200, 255),
+                    k.scale(1),
+                    k.z(-1),
+                    {
+                        t: 5,
+                        update() {
+                            glow.t += k.dt() * 3;
+
+                            // pulsing glow
+                            glow.opacity = 0.3 + Math.sin(glow.t) * 0.2;
+                            glow.scale = k.vec2(1 + Math.sin(glow.t) * 0.1);
+                        }
+                    },
+                    "icePreview"
+                ]);
+
+                point.glowObj = glow;
+            }
+        }
+
+        function spawnIce() {
+            const pending = icePoints.filter(p => (p.pending) && !p.used);
+
+
+            for (const point of pending) {
+                point.used = true;
+                point.pending = false;
+
+                if (point.glowObj) k.destroy(point.glowObj);
+
+                const ice = k.add([
+                    k.sprite(`ice tile ${point.id}`),
+                    k.pos(point.x * TILE_SIZE + TILE_SIZE / 2, point.y * TILE_SIZE + TILE_SIZE / 2),
+                    k.z(-1),
+                    k.anchor("center"),
+                    k.opacity(0),
+                    "iceTile",
+                    {
+                        add() {
+                            k.tween(0, 1, 2, v => ice.opacity = v, k.easings.easeOutBounce);
+                        }
+                    }
+                ]);
+
+                tileGrid[point.y][point.x].blocked = false;
+            }
+        }
+
         let spawner: GameObj | null = null;
         if (waypoints) {
             spawner = makeWaveSpawner(k, wave, waypoints, {
+                onWaveStart: () => {
+                    previewIce((LEVEL_WAVES[wave] as { startingFreezeAmount?: number; }).startingFreezeAmount ?? 4);
+                },
                 onWaveEnd: () => {
-                    spawnIce(spawner?.waveIndex === 0);
-                    previewIce((spawner?.waveIndex ?? 0) + 5);
+                    spawnIce();
+                    previewIce(((spawner?.waveIndex ?? 0) + 1) + ((LEVEL_WAVES[wave] as { startingFreezeAmount?: number; }).startingFreezeAmount ?? 4));
+
+                    updateWindDirections((spawner?.waveIndex ?? 0) + 1);
                 }
 
             });
@@ -252,107 +335,80 @@ export default function makeLevelScene(k: KAPLAYCtx, sceneName: Scene) {
             }
         }
 
-        const icePoints = mapData.layers
-            .find(layer => layer.name === "Ice Tiles")
+        const windZones: GameObj[] = mapData.layers
+            .find(layer => layer.name === "Wind")
             ?.objects
             ?.map(obj => {
-                const x = Math.floor(obj.x / TILE_SIZE);
-                const y = Math.floor(obj.y / TILE_SIZE);
-                tileGrid[y][x].blocked = true;
-                return {
-                    x,
-                    y,
-                    used: false,
-                    pending: false,
-                    id: obj.name,
-                    glowObj: null as null | GameObj
-                };
-            }) ?? [];
+                const baseDir = obj.properties?.find((p: any) => p.name === "direction")?.value;
 
-        function previewIce(count: number) {
-            const available = icePoints.filter(p => !p.used && !p.pending);
-
-            for (let i = 0; i < count && available.length > 0; i++) {
-                const index = Math.floor(Math.random() * available.length);
-                const point = available.splice(index, 1)[0];
-
-                point.pending = true;
-
-                const glow = k.add([
-                    k.rect(TILE_SIZE, TILE_SIZE),
-                    k.pos(point.x * TILE_SIZE, point.y * TILE_SIZE),
-                    k.opacity(0.5),
-                    k.color(200, 200, 255),
-                    k.scale(1),
-                    k.z(-1),
+                const wind = k.add([
+                    k.rect(obj.width, obj.height),
+                    k.pos(obj.x, obj.y),
+                    k.area(),
+                    k.opacity(0),
+                    "wind",
                     {
-                        t: 5,
-                        update() {
-                            glow.t += k.dt() * 3;
-
-                            // pulsing glow
-                            glow.opacity = 0.3 + Math.sin(glow.t) * 0.2;
-                            glow.scale = k.vec2(1 + Math.sin(glow.t) * 0.1);
-                        }
-                    },
-                    "icePreview"
+                        baseDirection: baseDir,
+                        direction: baseDir
+                    }
                 ]);
 
-                point.glowObj = glow;
+                makeWindVisual(k, wind);
+
+                return wind;
+            }) ?? [];
+
+        function updateWindDirections(waveIndex: number) {
+            for (const wind of windZones) {
+
+                if (waveIndex % 2 === 0) {
+                    wind.direction = wind.baseDirection;
+                } else {
+                    wind.direction = wind.baseDirection === "east" ? "west" : "east";
+                }
             }
         }
 
-        function spawnIce(firstWave: boolean) {
-            const pending = icePoints.filter(p => (p.pending || firstWave) && !p.used);
+        function makeWindVisual(k: KAPLAYCtx, wind: GameObj) {
+            const tint = wind.direction === "east"
+                ? k.color(120, 160, 200)
+                : k.color(200, 230, 255);
 
-            if (!firstWave) {
-                for (const point of pending) {
-                    point.used = true;
-                    point.pending = false;
+            k.add([
+                k.rect(wind.width, wind.height),
+                k.pos(wind.pos),
+                tint,
+                k.opacity(0.15),
+                k.z(9999)
+            ]);
 
-                    if (point.glowObj) k.destroy(point.glowObj);
+            k.loop(0.03, () => {
+                const length = 12;
+                const speed = 100;
 
-                    const ice = k.add([
-                        k.sprite(`ice tile ${point.id}`),
-                        k.pos(point.x * TILE_SIZE + TILE_SIZE / 2, point.y * TILE_SIZE + TILE_SIZE / 2),
-                        k.z(-1),
-                        k.anchor("center"),
-                        k.opacity(0),
-                        "iceTile",
-                        {
-                            add() {
-                                k.tween(0, 1, 2, v => ice.opacity = v, k.easings.easeOutBounce);
-                            }
+                const isEast = wind.direction === "east";
+
+                const yDrift = wind.direction === "east" ? 5 : -5;
+
+                const particle = k.add([
+                    k.rect(length, 3),
+                    k.pos(
+                        wind.pos.x + Math.random() * wind.width,
+                        wind.pos.y + Math.random() * wind.height
+                    ),
+                    k.color(180, 220, 255),
+                    k.outline(1, k.rgb(120, 160, 200)),
+                    k.opacity(0.9),
+                    {
+                        update() {
+                            particle.move(isEast ? speed : -speed, yDrift);
+                            particle.opacity -= k.dt() * 1.5;
+
+                            if (particle.opacity <= 0) k.destroy(particle);
                         }
-                    ]);
-
-                    tileGrid[point.y][point.x].blocked = false;
-                }
-            } else {
-                for (let i = 0; i < 4 && pending.length > 0; i++) {
-                    const index = Math.floor(Math.random() * pending.length);
-                    const point = pending.splice(index, 1)[0];
-
-                    point.used = true;
-
-                    const ice = k.add([
-                        k.sprite(`ice tile ${point.id}`),
-                        k.pos(point.x * TILE_SIZE + TILE_SIZE / 2, point.y * TILE_SIZE + TILE_SIZE / 2),
-                        k.z(-1),
-                        k.anchor("center"),
-                        k.opacity(0),
-                        "iceTile",
-                        {
-                            add() {
-                                k.tween(0, 1, 2, v => ice.opacity = v, k.easings.easeOutBounce);
-                            }
-                        }
-                    ]);
-
-                    tileGrid[point.y][point.x].blocked = false;
-                }
-
-            }
+                    }
+                ]);
+            });
         }
 
     });

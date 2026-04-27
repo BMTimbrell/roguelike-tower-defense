@@ -36,7 +36,7 @@ export const gameStateAtom = atom<GameState>({
         damageDealt: 0,
         damageRequired: 0
     },
-    difficulty: "normal",
+    difficulty: "hard",
     shops: ["shop", "altar"],
     towerCoins: 0
 });

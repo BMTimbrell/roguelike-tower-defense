@@ -37,7 +37,7 @@ export function resolveChain(k: KAPLAYCtx, {
             element
         });
 
-        nextTarget = selectBounceTarget(k, target, { bounceRange: range, exclude: new Set(targets) });
+        nextTarget = selectBounceTarget(k, nextTarget, { bounceRange: range, exclude: new Set(targets) });
     }
 
     return [startPos, ...targets.map(t => t.pos)];

@@ -1,4 +1,4 @@
-import type { GameObj, KAPLAYCtx, Vec2 } from "kaplay";
+import type { KAPLAYCtx, Vec2 } from "kaplay";
 import type { EnemyId, LevelId } from "../constants";
 import type { TowerGameObj, Wave } from "../types";
 import { BASE_DRAW_COST, LEVEL_WAVES, MAX_HAND_SIZE, REDUCED_RANGE_TOWERS, ROUND_DRAW_NUM, SEEDS, TILE_SIZE } from "../constants";
@@ -8,7 +8,7 @@ import screenPos from "../utils/screenPos";
 import drawCards from "../utils/drawCards";
 import makeTower from "./Tower";
 
-export default function makeWaveSpawner(k: KAPLAYCtx, levelId: LevelId, waypoints: Vec2[], opts?: { onWaveEnd?: () => void }) {
+export default function makeWaveSpawner(k: KAPLAYCtx, levelId: LevelId, waypoints: Vec2[], opts?: { onWaveEnd?: () => void; onWaveStart?: () => void; }) {
     const level = LEVEL_WAVES[levelId];
 
     let spawnQueue: { id: EnemyId; time: number }[] = [];
@@ -48,6 +48,7 @@ export default function makeWaveSpawner(k: KAPLAYCtx, levelId: LevelId, waypoint
                     const bossInstance = makeEnemy(k, boss.id, waypoints, 0, undefined, boss.bossStops);
                     bossInstance.enterState("idle");
                 }
+                opts?.onWaveStart?.();
             },
             startNextWave() {
                 if (spawner.waveIndex < 0) {

@@ -22,6 +22,7 @@ export default function Rewards() {
             <div className={styles.heading}>Choose a Tower</div>;
 
     const scale = map.scale;
+    const cardValue = gameState.sceneIndex > 3 ? 3 : 2;
 
     const skills = useMemo(
         () => [...new Set(SKILLS.filter(s => rewards.skills.includes(s.id)))],
@@ -33,7 +34,7 @@ export default function Rewards() {
     );
 
     const upgrades = useMemo(
-        () => generateRandomRewards(3, [...new Set(UPGRADES.filter(u => u.cost === 2))]),
+        () => generateRandomRewards(3, [...new Set(UPGRADES.filter(u => u.cost === cardValue))]),
         []
     );
 

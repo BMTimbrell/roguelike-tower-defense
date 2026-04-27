@@ -196,7 +196,7 @@ export default function levelTransition(k: KAPLAYCtx) {
                             k.anchor("center")
                         ]);
 
-                        bossSprite.pos = bossSprite.pos.add(0, bossSprite.height / 2);
+                        // bossSprite.pos = bossSprite.pos.add(0, bossSprite.height / 4);
 
                         k.add([
                             k.text(sprite.toUpperCase(), {
@@ -205,7 +205,7 @@ export default function levelTransition(k: KAPLAYCtx) {
                             }),
                             k.anchor("center"),
                             k.scale(4),
-                            k.pos(k.center().sub(0, bossSprite.height / 2))
+                            k.pos(k.center().sub(0, bossSprite.height))
                         ]);
 
                         k.wait(1, () => {

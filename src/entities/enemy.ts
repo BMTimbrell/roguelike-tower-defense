@@ -163,7 +163,7 @@ export default function makeEnemy(
                 id: enemy.attacker!.projectile as ProjectileId,
                 pos: enemy.pos,
                 target: towers[index],
-                hitChance: enemy.has("blind") ? 0.5 : 1
+                hitChance: enemy.has("blind") ? 0.7 : 1
             });
 
             attackTimer += enemy.attacker!.attackCooldown;
@@ -295,7 +295,6 @@ export default function makeEnemy(
         // speed on ice
         const iceTiles = k.get("slime ice");
 
-
         let boost = 1;
         for (const ice of iceTiles) {
             if (enemy.pos.dist(ice.pos) <= TILE_SIZE / 2) {
@@ -306,6 +305,40 @@ export default function makeEnemy(
 
         if (enemy.speedMultipliers.ice !== boost) {
             enemy.speedMultipliers.ice = boost;
+            updateSpeed.call(enemy);
+        }
+
+        // speed in wind zone
+        const winds = k.get("wind");
+
+        let windMultiplier = 1;
+
+        for (const wind of winds) {
+            if (enemy.pos.x > wind.pos.x &&
+                enemy.pos.x < wind.pos.x + wind.width &&
+                enemy.pos.y > wind.pos.y &&
+                enemy.pos.y < wind.pos.y + wind.height) {
+
+                const isHorizontal = Math.abs(dir.x) > Math.abs(dir.y);
+
+                if (isHorizontal) {
+                    const movingRight = dir.x > 0;
+
+                    if (wind.direction === "east") {
+                        windMultiplier = movingRight ? 1.6 : 0.75;
+                    } else if (wind.direction === "west") {
+                        windMultiplier = !movingRight ? 1.6 : 0.75;
+                    }
+                } else {
+                    windMultiplier = 1;
+                }
+
+                break;
+            }
+        }
+
+        if (enemy.speedMultipliers.wind !== windMultiplier) {
+            enemy.speedMultipliers.wind = windMultiplier;
             updateSpeed.call(enemy);
         }
 

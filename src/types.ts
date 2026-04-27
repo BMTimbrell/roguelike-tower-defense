@@ -10,6 +10,10 @@ type LayerObj = {
     height: number;
     width: number;
     name?: string;
+    properties?: {
+        name: string;
+        value: string;
+    }[];
 };
 
 type Layer = {
@@ -396,7 +400,9 @@ export type Scene = "level1" |
     "level2-2" |
     "level3" |
     "level4" |
-    "level4-2";
+    "level4-2" |
+    "level5" |
+    "level5-2";
 
 export type Scenes = Scene[][];
 
@@ -481,6 +487,7 @@ export type LevelWaves = {
         id: EnemyId;
         bossStops: number[];
     };
+    startingFreezeAmount?: number;
 };
 
 export type EnemyConfig = {
@@ -494,15 +501,15 @@ export type EnemyConfig = {
         range: number;
     };
     spawnOnDeath?: {
-        id: "slime" | 
-            "spiderling" | 
-            "spider" | 
-            "armouredSlime" | 
-            "giantSlime" | 
-            "bee" | 
-            "snowmanHead" |
-            "iceSlime" |
-            "giantSnowmanHead";
+        id: "slime" |
+        "spiderling" |
+        "spider" |
+        "armouredSlime" |
+        "giantSlime" |
+        "bee" |
+        "snowmanHead" |
+        "iceSlime" |
+        "giantSnowmanHead";
         amount: number;
     };
     attacker?: {

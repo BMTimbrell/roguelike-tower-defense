@@ -66,6 +66,7 @@ export default function makeProjectile(k: KAPLAYCtx, opts: {
             const animSprite = k.add([
                 k.sprite(sprite, { anim: behaviors?.animOnDestroy }),
                 k.pos(projectile.pos),
+                k.z(999),
                 k.anchor("center")
             ]);
             animSprite.onAnimEnd(() => k.destroy(animSprite));

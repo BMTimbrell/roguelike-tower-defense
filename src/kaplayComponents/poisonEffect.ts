@@ -52,7 +52,7 @@ export default function poisonEffect(k: KAPLAYCtx, stacks: number): PoisonComp {
             if (tickTimer >= tickRate) {
                 tickTimer -= tickRate;
 
-                const damage = stacks + (k.get("hero")[0]?.hasDeadlyToxins && Math.random() < 0.5 ? stacks : 0);
+                const damage = stacks + (k.get("hero")[0]?.hasDeadlyToxins ? stacks : 0);
 
                 hurtEnemy(k, { target: this as EnemyGameObj, element: "Poison", damage, isCrit: false, statusDamage: true, ignoreArmour: true });
 
