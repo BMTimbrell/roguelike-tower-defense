@@ -75,7 +75,7 @@ export default function makeWaveSpawner(k: KAPLAYCtx, levelId: LevelId, waypoint
 
                 if (bossInstance) {
                     bossInstance.boss.currentStopIndex++;
-                    bossInstance.boss.reachedStop = false;
+                    bossInstance.boss.reachedStopIndex = false;
                     bossInstance.enterState("move");
                 }
             }

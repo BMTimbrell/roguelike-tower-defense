@@ -1,12 +1,13 @@
 import type { KAPLAYCtx } from "kaplay";
 import { altarAtom, gameStateAtom, rewardsAtom, shopAtom, shopChoiceUIAtom, store } from "../store";
 import initCam from "../utils/initCam";
-import type { HeroGameObj, Scene } from "../types";
-import { ENEMIES, LEVEL_REWARDS, LEVEL_WAVES, SCENES } from "../constants";
+import type { HeroGameObj, LevelWaves, Scene, Upgrade } from "../types";
+import { ENEMIES, LEVEL_REWARDS, LEVEL_WAVES, SCENES, TOWERS, UPGRADES, type LevelId, type TowerId } from "../constants";
 import generateMap from "../utils/generateMap";
 import makeHero from "../entities/Hero";
 import addTowers from "../utils/addTowers";
 import updateSkills from "../utils/updateSkills";
+import goToNextScene from "../utils/goToNextScene";
 
 export default function levelTransition(k: KAPLAYCtx) {
     k.scene("levelTransition" satisfies Scene, async (hero: HeroGameObj) => {
@@ -87,10 +88,9 @@ export default function levelTransition(k: KAPLAYCtx) {
 
             const { mapData, tileGrid, pathTiles } = await generateMap(k, `data/${sceneName}.json`);
 
-            // rand = k.randi();
-            rand = 1;
+            rand = k.randi();
 
-            const wave = `level${store.get(gameStateAtom).level}-${rand + 1}`;
+            const wave = `level${store.get(gameStateAtom).level}-${rand + 1}` as LevelId;
 
             store.set(rewardsAtom, prev => ({
                 ...prev,
@@ -185,36 +185,13 @@ export default function levelTransition(k: KAPLAYCtx) {
 
                     await k.wait(1);
 
-                    if (wave === "level3-1" || wave === "level3-2") {
-                        const bossId = LEVEL_WAVES[wave].boss.id;
-                        const sprite = ENEMIES[bossId].sprite;
+                    const level = LEVEL_WAVES[wave] as LevelWaves;
 
-                        const bossSprite = k.add([
-                            k.sprite(sprite, { anim: "move" }),
-                            k.pos(k.center()),
-                            k.scale(4),
-                            k.anchor("center")
-                        ]);
-
-                        // bossSprite.pos = bossSprite.pos.add(0, bossSprite.height / 4);
-
-                        k.add([
-                            k.text(sprite.toUpperCase(), {
-                                size: 16,
-                                font: "free pixel"
-                            }),
-                            k.anchor("center"),
-                            k.scale(4),
-                            k.pos(k.center().sub(0, bossSprite.height))
-                        ]);
-
-                        k.wait(1, () => {
-                            k.go(sceneName, { mapData, tileGrid, pathTiles, wave });
-                        });
-                    } else if (wave === "level4-1" || wave === "level4-2") {
+                    // shop
+                    if (level.shop) {
                         store.set(shopChoiceUIAtom, prev => ({
                             ...prev,
-                            visible: true
+                            visible: store.get(gameStateAtom).shops.length > 1
                         }));
 
                         const hero = store.get(gameStateAtom).hero;
@@ -222,6 +199,7 @@ export default function levelTransition(k: KAPLAYCtx) {
 
                         store.set(altarAtom, prev => ({
                             ...prev,
+                            visible: store.get(gameStateAtom).shops.length < 2 && store.get(gameStateAtom).shops[0] === "altar",
                             levelUp: () => {
                                 store.set(altarAtom, prev => ({
                                     ...prev,
@@ -286,10 +264,36 @@ export default function levelTransition(k: KAPLAYCtx) {
                             }
                         }));
 
+                        const ownedTowers = store.get(gameStateAtom).towerButtons.map(t => t.id);
+                        const towers = Object.keys(TOWERS).filter(t => !ownedTowers.some(id => id === t) && TOWERS[(t as TowerId)].source === "reward") as TowerId[];
+
+                        function generateRandomIndexes(indexes: Set<number>, arr: (TowerId | Upgrade)[]) {
+                            while (indexes.size < 3) {
+                                const index = k.randi(arr.length);
+                                indexes.add(index);
+                            }
+
+                            return indexes;
+                        }
+
+                        const towerIndexes = generateRandomIndexes(new Set, towers);
+
+                        const smallUpgrades = [...new Set(UPGRADES.filter(u => u.cost === 1))];
+                        const mediumUpgrades = [...new Set(UPGRADES.filter(u => u.cost === 2))];
+                        const largeUpgrades = [...new Set(UPGRADES.filter(u => u.cost === 3))];
+
+                        const randomSUIndexes = generateRandomIndexes(new Set, smallUpgrades);
+                        const randomMUIndexes = generateRandomIndexes(new Set, mediumUpgrades);
+                        const randomLUIndexes = generateRandomIndexes(new Set, largeUpgrades);
+
+
+                        
+
                         store.set(shopAtom, prev => ({
                             ...prev,
+                            visible: store.get(gameStateAtom).shops.length < 2 && store.get(gameStateAtom).shops[0] === "shop",
                             nextLevel: () => {
-                                k.go(sceneName, { mapData, tileGrid, pathTiles, wave });
+                                goToNextScene(k, { mapData, tileGrid, pathTiles, wave, level, sceneName });
                             },
                             addTower: (id) => {
                                 store.set(gameStateAtom, prev => ({
@@ -298,10 +302,26 @@ export default function levelTransition(k: KAPLAYCtx) {
                                         ...addTowers(k, [...prev.towerButtons.map(tb => tb.id), id], tileGrid, pathTiles)
                                     ]
                                 }));
-                            }
+                            },
+                            towers: [
+                                towers[[...towerIndexes][0]],
+                                towers[[...towerIndexes][1]],
+                                towers[[...towerIndexes][2]]
+                            ],
+                            upgrades: [
+                                smallUpgrades[[...randomSUIndexes][0]],
+                                smallUpgrades[[...randomSUIndexes][1]],
+                                smallUpgrades[[...randomSUIndexes][2]],
+                                mediumUpgrades[[...randomMUIndexes][0]],
+                                mediumUpgrades[[...randomMUIndexes][1]],
+                                mediumUpgrades[[...randomMUIndexes][2]],
+                                largeUpgrades[[...randomLUIndexes][0]],
+                                largeUpgrades[[...randomLUIndexes][1]],
+                                largeUpgrades[[...randomLUIndexes][2]]
+                            ]
                         }));
                     } else {
-                        k.go(sceneName, { mapData, tileGrid, pathTiles, wave });
+                        goToNextScene(k, { mapData, tileGrid, pathTiles, wave, level, sceneName });
                     }
                 },
                 visible: true

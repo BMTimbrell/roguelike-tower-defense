@@ -402,7 +402,8 @@ export type Scene = "level1" |
     "level4" |
     "level4-2" |
     "level5" |
-    "level5-2";
+    "level5-2" |
+    "level6";
 
 export type Scenes = Scene[][];
 
@@ -488,6 +489,7 @@ export type LevelWaves = {
         bossStops: number[];
     };
     startingFreezeAmount?: number;
+    shop?: boolean;
 };
 
 export type EnemyConfig = {
@@ -509,7 +511,9 @@ export type EnemyConfig = {
         "bee" |
         "snowmanHead" |
         "iceSlime" |
-        "giantSnowmanHead";
+        "giantSnowmanHead" |
+        "penguin" |
+        "giantPenguin";
         amount: number;
     };
     attacker?: {

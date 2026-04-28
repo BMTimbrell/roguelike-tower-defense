@@ -11,6 +11,7 @@ export default function loadAssets(k: KAPLAYCtx) {
     k.loadSprite("level4-2", "/sprites/level4-2.png");
     k.loadSprite("level5", "/sprites/level5.png");
     k.loadSprite("level5-2", "/sprites/level5-2.png");
+    k.loadSprite("level6", "/sprites/level6.png");
     k.loadSprite("tree", "/sprites/tree.png");
     k.loadSprite("gold", "/sprites/coin.png");
     k.loadSprite("heart", "/sprites/heart.png");
@@ -443,6 +444,13 @@ export default function loadAssets(k: KAPLAYCtx) {
             crack: { from: 0, to: 4, loop: false }
         }
     });
+    k.loadSprite("present projectile", "/sprites/present-projectile.png", {
+        sliceX: 7,
+        sliceY: 1,
+        anims: {
+            explode: { from: 0, to: 6, loop: false }
+        }
+    });
     k.loadSprite("planet", "/sprites/planet.png");
     k.loadSprite("archer base", "/sprites/archer-base2.png");
     k.loadSprite("archer", "/sprites/archer2.png", {
@@ -806,7 +814,7 @@ export default function loadAssets(k: KAPLAYCtx) {
         sliceX: 7,
         sliceY: 2,
         anims: {
-            idle: 0,
+            idle: { from: 0, to: 5, loop: true },
             move: { from: 0, to: 5, loop: true },
             die: { from: 7, to: 10, loop: false }
         }
@@ -816,7 +824,7 @@ export default function loadAssets(k: KAPLAYCtx) {
         sliceX: 5,
         sliceY: 2,
         anims: {
-            idle: 0,
+            idle: { from: 0, to: 3, loop: true, speed: 10 },
             move: { from: 0, to: 3, loop: true, speed: 10 },
             die: { from: 5, to: 9, loop: false }
         }
@@ -838,7 +846,7 @@ export default function loadAssets(k: KAPLAYCtx) {
         anims: {
             idle: 0,
             move: { from: 0, to: 3, loop: true },
-            die: { from: 4, to: 6, loop: false }
+            die: { from: 4, to: 7, loop: false }
         }
     });
 
@@ -908,7 +916,7 @@ export default function loadAssets(k: KAPLAYCtx) {
         anims: {
             idle: 0,
             move: { from: 0, to: 3, loop: true },
-            die: { from: 4, to: 6, loop: false }
+            die: { from: 4, to: 7, loop: false }
         }
     });
 
@@ -939,6 +947,36 @@ export default function loadAssets(k: KAPLAYCtx) {
             idle: 0,
             move: { from: 0, to: 3, loop: true, speed: 4 },
             die: { from: 4, to: 7, loop: false, speed: 7 }
+        }
+    });
+
+    k.loadSprite("evil santa", "/sprites/evil-santa.png", {
+        sliceX: 7,
+        sliceY: 3,
+        anims: {
+            idle: { from: 14, to: 15, loop: true, speed: 5 },
+            move: { from: 0, to: 3, loop: true, speed: 5 },
+            die: { from: 7, to: 13, loop: false }
+        }
+    });
+
+    k.loadSprite("polar bear jockey", "/sprites/polar-bear-jockey.png", {
+        sliceX: 3,
+        sliceY: 2,
+        anims: {
+            idle: 0,
+            move: { from: 0, to: 2, loop: true },
+            die: { from: 3, to: 5, loop: false }
+        }
+    });
+
+    k.loadSprite("giant polar bear jockey", "/sprites/giant-polar-bear-jockey.png", {
+        sliceX: 3,
+        sliceY: 2,
+        anims: {
+            idle: 0,
+            move: { from: 0, to: 2, loop: true },
+            die: { from: 3, to: 5, loop: false }
         }
     });
 
@@ -1035,5 +1073,8 @@ export default function loadAssets(k: KAPLAYCtx) {
     k.loadSprite("ice tile 7", "/sprites/ice-tile-7.png");
     k.loadSprite("ice tile 8", "/sprites/ice-tile-8.png");
     k.loadSprite("ice tile 9", "/sprites/ice-tile-9.png");
+    k.loadSprite("ice tile 10", "/sprites/ice-tile-10.png");
+    k.loadSprite("ice tile 11", "/sprites/ice-tile-11.png");
+    k.loadSprite("ice tile 12", "/sprites/ice-tile-12.png");
     k.loadSprite("ice puddle", "/sprites/ice-puddle.png");
 }

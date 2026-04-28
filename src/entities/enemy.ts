@@ -117,11 +117,15 @@ export default function makeEnemy(
     });
 
     enemy.onStateEnter("idle", () => {
-        enemy.play("move");
+        enemy.play("idle");
     });
 
     enemy.onStateEnter("move", () => {
         enemy.play("move");
+    });
+
+    enemy.onStateEnter("attack", () => {
+        enemy.play("idle");
     });
 
     enemy.onStateEnter("stunned", () => {
