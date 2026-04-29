@@ -4,7 +4,7 @@ import type { EnemyId, ProjectileId } from '../constants';
 import { ENEMIES, HARD_HEALTH_MULT, STUN_DURATION, TILE_SIZE, TOWER_RANGE_TOLERANCE } from '../constants';
 import healthBar from '../kaplayComponents/healthBar';
 import statusEffect from '../kaplayComponents/statusEffect';
-import type { EnemyGameObj, TowerGameObj } from '../types';
+import type { EnemyConfig, EnemyGameObj, presentSpawns, TowerGameObj } from '../types';
 import makeEnemyProjectile from './EnemyProjectile';
 import { aoeBurst } from '../utils/makeUnitCombat';
 
@@ -57,7 +57,9 @@ export default function makeEnemy(
                 boss: {
                     currentStopIndex: 0,
                     stopIndexes: stopIndexes ?? [],
-                    reachedStopIndex: false
+                    reachedStopIndex: false,
+
+                    presentDropIndex: 0
                 }
             } : {}),
             debuffDurationMultiplier: 1,
@@ -222,6 +224,26 @@ export default function makeEnemy(
                 enemy.enterState("attack");
                 return;
             }
+        }
+
+        const drops = (ENEMIES[enemyId] as EnemyConfig).presentDrops;
+
+        const drop = drops?.[(enemy?.boss?.presentDropIndex) ?? 0];
+
+        if (
+            drop &&
+            enemy.boss &&
+            enemy.pathIndex === drop.segment &&
+            enemy.segmentProgress >= drop.segmentProgress
+        ) {
+            const start = enemy.segmentStart;
+            const end = enemy.path[enemy.pathIndex + 1];
+
+            const pos = start.lerp(end, drop.segmentProgress);
+
+            spawnPresent(k, pos, drop.enemies, enemy);
+
+            enemy.boss.presentDropIndex++;
         }
 
         const next = enemy.path[enemy.pathIndex + 1];
@@ -432,6 +454,8 @@ export default function makeEnemy(
     enemy.onDeath(() => {
         if (enemy.isDying) return;
 
+        if (enemyId === "polarBearJockey" || enemyId === "giantPolarBearJockey") enemy.z = 0;
+
         const dizzyEffect = k.get(`dizzy ${enemy.id}`)[0];
         if (dizzyEffect) k.destroy(dizzyEffect);
 
@@ -452,7 +476,7 @@ export default function makeEnemy(
                 );
 
                 spawnedEnemy.invincible = true;
-                spawnedEnemy.invincibleDuration = 0.1;
+                spawnedEnemy.invincibleDuration = 0.05;
             }
         }
 
@@ -512,4 +536,33 @@ export function updateSpeed(this: EnemyGameObj) {
     }
 
     this.speed = this.baseSpeed * multiplier;
+}
+
+function spawnPresent(k: KAPLAYCtx, pos: Vec2, enemiesToSpawn: { id: presentSpawns; amount: number; }[], source: EnemyGameObj) {
+    const present = k.add([
+        k.pos(pos),
+        k.anchor("center"),
+        k.sprite("present", { anim: "idle" }),
+        k.timer()
+    ]);
+    
+    present.onAnimEnd(anim => {
+        if (anim === "open") k.destroy(present);
+    });
+
+    present.wait(5, () => {
+
+        present.play("open");
+
+        enemiesToSpawn.forEach(group => {
+            const mid = group.amount / 2;
+                
+            for (let i = 0; i < group.amount; i++) {
+                const posOffset = (i - mid) * 12;
+                const spawnedEnemy = makeEnemy(k, group.id, source.path, source.pathIndex, present.pos.add(posOffset));
+                spawnedEnemy.invincible = true;
+                spawnedEnemy.invincibleDuration = 0.1;
+            }
+        });
+    });
 }

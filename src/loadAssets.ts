@@ -956,7 +956,7 @@ export default function loadAssets(k: KAPLAYCtx) {
         anims: {
             idle: { from: 14, to: 15, loop: true, speed: 5 },
             move: { from: 0, to: 3, loop: true, speed: 5 },
-            die: { from: 7, to: 13, loop: false }
+            die: { from: 7, to: 13, loop: false, speed: 5 }
         }
     });
 
@@ -1077,4 +1077,12 @@ export default function loadAssets(k: KAPLAYCtx) {
     k.loadSprite("ice tile 11", "/sprites/ice-tile-11.png");
     k.loadSprite("ice tile 12", "/sprites/ice-tile-12.png");
     k.loadSprite("ice puddle", "/sprites/ice-puddle.png");
+    k.loadSprite("present", "/sprites/present.png", {
+        sliceX: 5,
+        sliceY: 1,
+        anims: {
+            idle: 0,
+            open: { from: 0, to: 4, loop: false }
+        }
+    });
 }

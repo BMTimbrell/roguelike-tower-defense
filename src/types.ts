@@ -313,8 +313,14 @@ export type EnemyGameObj = GameObj<
         stopIndexes: number[];
         currentStopIndex: number;
         reachedStopIndex: boolean;
+        presentDropIndex: number;
     };
     spawnIce?: boolean;
+    presentDrops?: { 
+        segment: number; 
+        segmentProgress: number; 
+        enemies: { id: presentSpawns; amount: number; }[];
+    }[];
 };
 
 export type Upgrade = {
@@ -534,7 +540,23 @@ export type EnemyConfig = {
     };
     isBoss?: boolean;
     spawnIce?: boolean;
+    presentDrops?: { 
+        segment: number; 
+        segmentProgress: number; 
+        enemies: { id: presentSpawns; amount: number; }[];
+    }[];
 };
+
+export type presentSpawns = 
+    "iceSlime" | 
+    "penguin" | 
+    "snowman" |
+    "polarBear" |
+    "giantIceSlime" |
+    "giantPenguin" |
+    "giantSnowman" |
+    "giantPolarBear" |
+    "giantPolarBearJockey";
 
 export type AttackContext = {
     context: KAPLAYCtx;
