@@ -4,7 +4,7 @@ import showLevelStats from "./showLevelStats";
 import initCam from "./initCam";
 import generateFog from "./generateFog";
 import drawCards from "./drawCards";
-import { gameStateAtom, store } from "../store";
+import { challengesAtom, gameStateAtom, store } from "../store";
 import makeFloatingText from "../entities/FloatingText";
 import getCamViewRect from "./getCamViewRect";
 import { LEVEL_WAVES, MAX_HAND_SIZE, ROUND_DRAW_NUM, TILE_SIZE, type LevelId } from "../constants";
@@ -13,6 +13,7 @@ import { addSelectTowerListener } from "../entities/Tower";
 import { makeLavaManager } from "./lavaHelpers";
 import makeWaveSpawner from "../entities/WaveSpawner";
 import updateSkills from "./updateSkills";
+import { generateChallenges } from "./challengeHelpers";
 
 export default function makeLevelScene(k: KAPLAYCtx, sceneName: Scene) {
 
@@ -154,6 +155,10 @@ export default function makeLevelScene(k: KAPLAYCtx, sceneName: Scene) {
                             drawCost: Math.min(40, prev.deck.drawCost + 10),
                         },
                     }));
+
+                    store.get(gameStateAtom).challengeManager.handleEvent({
+                        type: "DRAW_CARD"
+                    });
                 },
             },
             reroll: {
@@ -411,6 +416,13 @@ export default function makeLevelScene(k: KAPLAYCtx, sceneName: Scene) {
             });
         }
 
+        if ((LEVEL_WAVES[wave] as { challenge: boolean }).challenge) {
+            store.set(challengesAtom, prev => ({
+                ...prev,
+                visible: true,
+                challenges: generateChallenges()
+            }));
+        }
     });
 
 }

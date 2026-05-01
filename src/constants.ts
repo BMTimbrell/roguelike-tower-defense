@@ -1,4 +1,4 @@
-import type { Upgrade, LevelWaves, EnemyConfig, TowerDef, ElementDef, ElementName, ProjectileDef, HeroDef, HeroSkillDefBase, TowerGameObj, Seed, Scenes, Summon, EnemyGameObj } from "./types";
+import type { Upgrade, LevelWaves, EnemyConfig, TowerDef, ElementDef, ElementName, ProjectileDef, HeroDef, HeroSkillDefBase, TowerGameObj, Seed, Scenes, Summon, EnemyGameObj, ChallengeDef } from "./types";
 import burnEffect from "./kaplayComponents/burnEffect";
 import calcFireInterval from "./utils/calcFireInterval";
 import poisonEffect from "./kaplayComponents/poisonEffect";
@@ -676,6 +676,7 @@ export const LEVEL_WAVES = {
         startDelay: 120,
         startingFreezeAmount: 4,
         shop: true,
+        challenge: true,
         waves: [
             {
                 spawns: [
@@ -846,6 +847,7 @@ export const LEVEL_WAVES = {
         startDelay: 120,
         startingFreezeAmount: 4,
         shop: true,
+        challenge: true,
         waves: [
             {
                 spawns: [
@@ -1619,7 +1621,7 @@ export const LEVEL_WAVES = {
         },
         shop: true,
         waves: [
-             {
+            {
                 spawns: [
                     { id: "iceSlime", count: 5, interval: 0.5 },
                     { id: "penguin", count: 5, interval: 1 },
@@ -1895,7 +1897,7 @@ export const LEVEL_WAVES = {
         },
         shop: true,
         waves: [
-             {
+            {
                 spawns: [
                     { id: "iceSlime", count: 5, interval: 0.5 },
                     { id: "penguin", count: 5, interval: 1 },
@@ -2388,7 +2390,7 @@ export const ENEMIES = {
         }
     },
     beeQueen: {
-        hp: 6,
+        hp: 6, //6000
         damage: 50,
         speed: 25,
         sprite: "bee queen",
@@ -2510,7 +2512,7 @@ export const ENEMIES = {
         }
     },
     evilSanta: {
-        hp: 45000,
+        hp: 5, //4500
         damage: 50,
         speed: 20,
         sprite: "evil santa",
@@ -2523,49 +2525,49 @@ export const ENEMIES = {
         },
         presentDrops: [
             {
-                segment: 0, 
-                segmentProgress: 0.5, 
-                enemies: [{ id: "iceSlime", amount: 3 }] 
+                segment: 0,
+                segmentProgress: 0.5,
+                enemies: [{ id: "iceSlime", amount: 3 }]
             },
             {
-                segment: 4, 
-                segmentProgress: 0.5, 
-                enemies: [{ id: "penguin", amount: 3 }] 
+                segment: 4,
+                segmentProgress: 0.5,
+                enemies: [{ id: "penguin", amount: 3 }]
             },
             {
-                segment: 6, 
-                segmentProgress: 0.25, 
-                enemies: [{ id: "snowman", amount: 3 }] 
+                segment: 6,
+                segmentProgress: 0.25,
+                enemies: [{ id: "snowman", amount: 3 }]
             },
             {
-                segment: 6, 
-                segmentProgress: 0.75, 
-                enemies: [{ id: "polarBear", amount: 3 }] 
+                segment: 6,
+                segmentProgress: 0.75,
+                enemies: [{ id: "polarBear", amount: 3 }]
             },
             {
-                segment: 10, 
-                segmentProgress: 0.5, 
-                enemies: [{ id: "giantIceSlime", amount: 1 }] 
+                segment: 10,
+                segmentProgress: 0.5,
+                enemies: [{ id: "giantIceSlime", amount: 1 }]
             },
             {
-                segment: 12, 
-                segmentProgress: 0.5, 
-                enemies: [{ id: "giantSnowman", amount: 1 }] 
+                segment: 12,
+                segmentProgress: 0.5,
+                enemies: [{ id: "giantSnowman", amount: 1 }]
             },
             {
-                segment: 14, 
-                segmentProgress: 0.5, 
-                enemies: [{ id: "giantPenguin", amount: 1 }] 
+                segment: 14,
+                segmentProgress: 0.5,
+                enemies: [{ id: "giantPenguin", amount: 1 }]
             },
             {
-                segment: 16, 
-                segmentProgress: 0.5, 
-                enemies: [{ id: "giantPolarBear", amount: 1 }] 
+                segment: 16,
+                segmentProgress: 0.5,
+                enemies: [{ id: "giantPolarBear", amount: 1 }]
             },
             {
-                segment: 18, 
-                segmentProgress: 0.5, 
-                enemies: [{ id: "giantPolarBearJockey", amount: 1 }] 
+                segment: 18,
+                segmentProgress: 0.5,
+                enemies: [{ id: "giantPolarBearJockey", amount: 1 }]
             }
         ]
     },
@@ -5720,3 +5722,30 @@ export const SUMMONS = {
 } as const satisfies Record<string, Summon>;
 
 export type SummonId = keyof typeof SUMMONS;
+
+export const CHALLENGES: ChallengeDef[] = [
+    {
+        id: "no_build",
+        description: "Don't build any towers during a wave",
+        type: "restriction",
+        conditions: [
+            {
+                event: "BUILD_TOWER",
+                fail: true
+            }
+        ],
+        reward: 30
+    },
+    {
+        id: "no_draw",
+        description: "Don't draw any cards",
+        type: "restriction",
+        conditions: [
+            {
+                event: "DRAW_CARD",
+                fail: true
+            }
+        ],
+        reward: 30
+    }
+];

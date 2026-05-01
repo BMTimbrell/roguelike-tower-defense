@@ -170,6 +170,15 @@ export default function makeTower(
                 selectedUI: null
             }));
 
+            // build tower challenge
+            const challengeManager = store.get(gameStateAtom).challengeManager;
+
+            challengeManager.handleEvent({
+                type: "BUILD_TOWER",
+                towerId,
+                waveActive: store.get(gameStateAtom).waveActive
+            });
+
             // lava
             if ((TOWERS[towerId] as Record<"lavaTiles", []>).lavaTiles) {
                 tower.lavaTiles ??= getLavaTiles(k, tower.pos, tower.stats.range * TILE_SIZE, tower.tileGrid);

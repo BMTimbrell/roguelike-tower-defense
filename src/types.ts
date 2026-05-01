@@ -3,6 +3,7 @@ import { TILE_SIZE, type EnemyId, type HeroId, type ProjectileId, type SkillId, 
 import type { Vec2, GameObj, KAPLAYCtx, HealthComp, SpriteComp, StateComp, TimerComp, RotateComp, PosComp, ZComp, OpacityComp } from "kaplay";
 import { frostAoeBurst } from "./utils/makeUnitCombat";
 import type { StatusEffectComp } from "./kaplayComponents/statusEffect";
+import type { ChallengeManager } from "./utils/challengeHelpers";
 
 type LayerObj = {
     x: number;
@@ -316,9 +317,9 @@ export type EnemyGameObj = GameObj<
         presentDropIndex: number;
     };
     spawnIce?: boolean;
-    presentDrops?: { 
-        segment: number; 
-        segmentProgress: number; 
+    presentDrops?: {
+        segment: number;
+        segmentProgress: number;
         enemies: { id: presentSpawns; amount: number; }[];
     }[];
 };
@@ -447,6 +448,7 @@ export type GameState = {
     difficulty: "normal" | "hard";
     shops: ("shop" | "altar")[];
     towerCoins: number;
+    challengeManager: ChallengeManager;
 };
 
 export type ShopChoiceButtons = {
@@ -496,6 +498,7 @@ export type LevelWaves = {
     };
     startingFreezeAmount?: number;
     shop?: boolean;
+    challenge?: boolean;
 };
 
 export type EnemyConfig = {
@@ -540,16 +543,16 @@ export type EnemyConfig = {
     };
     isBoss?: boolean;
     spawnIce?: boolean;
-    presentDrops?: { 
-        segment: number; 
-        segmentProgress: number; 
+    presentDrops?: {
+        segment: number;
+        segmentProgress: number;
         enemies: { id: presentSpawns; amount: number; }[];
     }[];
 };
 
-export type presentSpawns = 
-    "iceSlime" | 
-    "penguin" | 
+export type presentSpawns =
+    "iceSlime" |
+    "penguin" |
     "snowman" |
     "polarBear" |
     "giantIceSlime" |
@@ -665,4 +668,40 @@ export type AttackType = "projectile" | "lightning" | "sniper_laser" | "piercing
 export type DamageResult = {
     damage: number;
     isCrit: boolean;
+};
+
+export type GameEvent =
+    | { type: "BUILD_TOWER"; towerId: TowerId; waveActive: boolean }
+    | { type: "DRAW_CARD" }
+    | { type: "DEAL_DAMAGE"; damageType: ElementName; amount: number };
+
+export type ChallengeDef = {
+    id: string;
+    description: string;
+
+    type: "progress" | "restriction";
+
+    params?: Record<string, any>;
+
+    // for progress challenges
+    target?: number;
+
+    // rules triggered by events
+    conditions: Condition[];
+
+    reward: number;
+};
+
+type Condition = {
+    event: GameEvent["type"];
+    where?: Record<string, any>;
+    increment?: number | "amount";
+    fail?: boolean;
+};
+
+export type ChallengeState = {
+    def: ChallengeDef;
+    progress: number;
+    failed: boolean;
+    completed: boolean;
 };

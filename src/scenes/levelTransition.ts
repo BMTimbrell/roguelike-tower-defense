@@ -1,8 +1,8 @@
 import type { KAPLAYCtx } from "kaplay";
-import { altarAtom, gameStateAtom, rewardsAtom, shopAtom, shopChoiceUIAtom, store } from "../store";
+import { altarAtom, challengesAtom, gameStateAtom, rewardsAtom, shopAtom, shopChoiceUIAtom, store } from "../store";
 import initCam from "../utils/initCam";
 import type { HeroGameObj, LevelWaves, Scene, Upgrade } from "../types";
-import { ENEMIES, LEVEL_REWARDS, LEVEL_WAVES, SCENES, TOWERS, UPGRADES, type LevelId, type TowerId } from "../constants";
+import { LEVEL_REWARDS, LEVEL_WAVES, SCENES, TOWERS, UPGRADES, type LevelId, type TowerId } from "../constants";
 import generateMap from "../utils/generateMap";
 import makeHero from "../entities/Hero";
 import addTowers from "../utils/addTowers";
@@ -17,10 +17,25 @@ export default function levelTransition(k: KAPLAYCtx) {
             initCam(k);
         });
 
+        const challengeManager = store.get(gameStateAtom).challengeManager;
+
+        challengeManager.completeIfSurvivedLevel();
+
+        const challenge = challengeManager.getChallenge();
+        const reward = challenge?.completed ? challenge.def.reward : 0;
+
         store.set(gameStateAtom, prev => ({
             ...prev,
             scene: "levelTransition",
-            selectedUI: null
+            selectedUI: null,
+            towerCoins: prev.towerCoins + reward
+        }));
+
+        challengeManager.setChallenge(null);
+
+        store.set(challengesAtom, prev => ({
+            ...prev,
+             visible: false
         }));
 
         const heroSprite = k.add([
@@ -34,6 +49,24 @@ export default function levelTransition(k: KAPLAYCtx) {
                 }
             }
         ]);
+
+        if (store.get(gameStateAtom).level >= 6) {
+            k.wait(0.5, () => {
+                k.add([
+                    k.pos(k.getCamPos()),
+                    k.text("You Win!", {
+                        size: 64,
+                        font: "free pixel"
+                    }),
+                    k.anchor("center"),
+                    k.scale(1),
+                    k.color("#FFFFFF"),
+                    k.z(999999),
+                ]);
+            });
+
+            return;
+        }
 
         k.wait(0.5, () => {
             let zoom = k.getCamScale().x;
@@ -129,7 +162,7 @@ export default function levelTransition(k: KAPLAYCtx) {
 
 
                     updateSkills(updatedHero);
-                
+
 
                     store.set(rewardsAtom, prev => ({
                         ...prev,
@@ -286,8 +319,6 @@ export default function levelTransition(k: KAPLAYCtx) {
                         const randomMUIndexes = generateRandomIndexes(new Set, mediumUpgrades);
                         const randomLUIndexes = generateRandomIndexes(new Set, largeUpgrades);
 
-
-                        
 
                         store.set(shopAtom, prev => ({
                             ...prev,

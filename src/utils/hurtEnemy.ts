@@ -3,6 +3,7 @@ import makeFloatingText from "../entities/FloatingText";
 import { CRIT_DAMAGE_NUMBER_SIZE, DAMAGE_NUMBER_SIZE, ELEMENTS, SCYTHE_MAX_KILL_STACKS, SMALL_DAMAGE_NUMBER_SIZE, TILE_SIZE, TOWER_RANGE_TOLERANCE } from "../constants";
 import type { AttackContext, ElementName, EnemyGameObj, TowerGameObj } from "../types";
 import spawnSummon from "../entities/Summon";
+import { gameStateAtom, store } from "../store";
 
 export default function hurtEnemy(k: KAPLAYCtx, opts: {
     target: EnemyGameObj;
@@ -58,6 +59,13 @@ export default function hurtEnemy(k: KAPLAYCtx, opts: {
         text: '' + effectiveDamage,
         size: isCrit ? CRIT_DAMAGE_NUMBER_SIZE : statusDamage ? SMALL_DAMAGE_NUMBER_SIZE : DAMAGE_NUMBER_SIZE,
         color: ELEMENTS[element].color
+    });
+
+    const challengeManager = store.get(gameStateAtom).challengeManager;
+    challengeManager.handleEvent({
+        type: "DEAL_DAMAGE",
+        damageType: element,
+        amount: damage
     });
 
     if (!statusDamage) ELEMENTS[element].applyEffect?.(k, { target, damage: effectiveDamage });

@@ -1,0 +1,61 @@
+.container {
+    display: flex;
+    position: absolute;
+    flex-direction: column;
+    top: 10dvh;
+    left: 50%;
+    align-items: center;
+    transform: translateX(-50%);
+    gap: 3em;
+}
+
+.challenges-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1em;
+}
+
+.challenges-container > * {
+    padding: 1em;
+    border-radius: 0.25em;
+    background-color: var(--card-color);
+    color: white;
+    border: 1px solid rgb(255, 255, 255, 0.25);
+}
+
+.challenges-container > *:hover {
+    background-color: rgb(109, 109, 109);
+    cursor: pointer;
+}
+
+.heading {
+    color: white;
+    font-size: 2em;
+    text-shadow:
+        -1px -1px 0 black,
+         1px -1px 0 black,
+        -1px  1px 0 black,
+         1px  1px 0 black;
+}
+
+.active-challenge {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5em;
+    position: absolute;
+    right: 1em;
+    top: 1em;
+    padding: 1em;
+    border-radius: 0.25em;
+    color: white;
+    background: rgb(85, 85, 85, 0.7);
+    border: 1px solid rgb(255, 255, 255, 0.4);
+}
+
+.reward {
+    display: flex;
+    align-items: center;
+    margin-top: 0.5em;
+    gap: 0.25em;
+}
