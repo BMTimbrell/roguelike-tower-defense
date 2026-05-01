@@ -8,15 +8,16 @@ export function generateChallenges() {
     const challenges: ChallengeDef[] = [];
     const result = new Set<ChallengeDef>();
 
-    let randomIndex = 0
+    let randomIndex = 0;
 
     if (damageTypes.length > 0) {
         randomIndex = Math.floor(Math.random() * damageTypes.length);
         const randomDamageType = damageTypes[randomIndex];
         const damageTypeAmount = store.get(gameStateAtom).towerButtons.map(tb => tb.element).filter(dt => dt === randomDamageType).length;
-        const difficulty = Math.random() < 0.5 ? "normal" : "hard";
-        const baseTarget = difficulty === "normal" ? 4000 : 8000;
-        const target = baseTarget * damageTypeAmount;
+        const difficulty = store.get(gameStateAtom).difficulty;
+        const tier= Math.random() < 0.5 ? "normal" : "hard";
+        const baseTarget = (tier === "normal" ? 4000 : 8000) * (difficulty === "normal" ? 1 : 1.15);
+        const target = Math.round(baseTarget * Math.pow(damageTypeAmount, 0.65));
 
         challenges.push({
             id: "deal_damage",
@@ -31,7 +32,7 @@ export function generateChallenges() {
                     increment: "amount"
                 }
             ],
-            reward: difficulty === "normal" ? 20 : 40
+            reward: tier === "normal" ? 20 : 40
         });
     }
 
