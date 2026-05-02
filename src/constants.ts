@@ -302,7 +302,6 @@ export const LEVEL_WAVES = {
     "level2-1": {
         startingGold: 150,
         startDelay: 120,
-        challenge: true,
         waves: [
             {
                 spawns: [
@@ -383,7 +382,6 @@ export const LEVEL_WAVES = {
     "level2-2": {
         startingGold: 150,
         startDelay: 120,
-        challenge: true,
         waves: [
             {
                 spawns: [
@@ -5004,7 +5002,7 @@ export const SKILLS = [
         id: "wizard-lightning-strike-plus",
         heroIds: ["wizard"],
         requires: ["wizard-lightning-strike"],
-        name: "Lightning Strike Plus",
+        name: "Lightning Strike +3",
         description: "Increase lightning strike targets by 3",
         apply(hero) {
             hero.effects?.push({
@@ -5021,7 +5019,7 @@ export const SKILLS = [
         id: "wizard-ice-blast-plus",
         heroIds: ["wizard"],
         requires: ["wizard-ice-blast"],
-        name: "Ice Blast Plus",
+        name: "Ice Blast +100%",
         description: "Increase ice blast damage by 100%",
         apply(hero) {
             hero.effects?.push({
@@ -5124,7 +5122,7 @@ export const SKILLS = [
         id: "knight-holy-skill-plus",
         heroIds: ["knight"],
         requires: ["knight-holy-skill"],
-        name: "Holy Knight Plus",
+        name: "Holy Knight +200%",
         description: "Increase holy knight bonus damage to 200%",
         apply(hero) {
             hero.effects?.push({
@@ -5141,7 +5139,7 @@ export const SKILLS = [
         id: "knight-dark-skill-plus",
         heroIds: ["knight"],
         requires: ["knight-dark-skill"],
-        name: "Dark Knight Plus",
+        name: "Dark Knight +200%",
         description: "Increase dark knight bonus damage to 200%",
         apply(hero) {
             hero.effects?.push({
@@ -5212,7 +5210,7 @@ export const SKILLS = [
         id: "assassin-killer-rythmn-plus",
         heroIds: ["assassin"],
         requires: ["assassin-killer-rythmn"],
-        name: "Deadly Rythmn Plus",
+        name: "Deadly Rythmn+",
         description: "Every second attack against the same target is guarenteed to be a critical hit",
         apply(hero) {
             hero.effects?.push({
@@ -5290,7 +5288,7 @@ export const SKILLS = [
         id: "assassin-killer-instinct-plus",
         heroIds: ["assassin"],
         requires: ["assassin-killer-instinct"],
-        name: "Killer Instinct Plus",
+        name: "Killer Instinct+",
         description: "Gain 100% crit chance when striking enemies below 40% health",
         apply(hero) {
             hero.effects?.push({
@@ -5327,7 +5325,7 @@ export const SKILLS = [
         id: "merchant-capital-punishment-plus",
         heroIds: ["merchant"],
         requires: ["merchant-capital-punishment"],
-        name: "Capital Punishment Plus",
+        name: "Capital Punishment+",
         description: "Deal 5% of current gold as bonus damage",
         apply(hero) {
             hero.effects?.push({
@@ -5354,7 +5352,7 @@ export const SKILLS = [
         id: "merchant-extra-income-plus",
         heroIds: ["merchant"],
         requires: ["merchant-extra-income"],
-        name: "Extra Income Plus",
+        name: "Extra Income+",
         description: "Gain 20% extra gold at the end of each wave while the merchant is on the field",
         apply(hero) {
             hero.incomeMod = 1.2;
@@ -5375,7 +5373,7 @@ export const SKILLS = [
         id: "merchant-gold-rush-plus",
         heroIds: ["merchant"],
         requires: ["merchant-gold-rush"],
-        name: "Gold Rush Plus",
+        name: "Gold Rush+",
         description: "Gain thrice the amount of gold when enemies die in range of the merchant",
         apply(hero) {
             hero.goldRushBoost = 3;
@@ -5424,7 +5422,7 @@ export const SKILLS = [
         id: "witch-volatile-concoction-plus",
         heroIds: ["witch"],
         requires: ["witch-volatile-concoction"],
-        name: "Volatile Concoction Plus",
+        name: "Volatile Concoction+",
         description: "Poison attacks have a 60% chance to burn enemies",
         apply(hero) {
             hero.volatileConcoction = true;
@@ -5522,7 +5520,7 @@ export const SKILLS = [
         id: "songstress-anthem-power-plus",
         heroIds: ["songstress"],
         requires: ["songstress-anthem-power"],
-        name: "Anthem of Power Plus",
+        name: "Anthem of Power+",
         description: "Towers in range gain a 30% damage buff for 5 seconds",
         apply(hero) {
             hero.songs?.push({
@@ -5538,7 +5536,7 @@ export const SKILLS = [
         id: "songstress-tempo-surge-plus",
         heroIds: ["songstress"],
         requires: ["songstress-tempo-surge"],
-        name: "Tempo Surge Plus",
+        name: "Tempo Surge+",
         description: "Towers in range gain a 30% fire rate buff for 5 seconds",
         apply(hero) {
             hero.songs?.push({
@@ -5553,7 +5551,7 @@ export const SKILLS = [
         id: "songstress-fortune-refrain-plus",
         heroIds: ["songstress"],
         requires: ["songstress-fortune-refrain"],
-        name: "Fortune's Refrain Plus",
+        name: "Fortune's Refrain+",
         description: "Towers in range gain a 20% crit chance buff for 5 seconds",
         apply(hero) {
             hero.songs?.push({
@@ -5568,7 +5566,7 @@ export const SKILLS = [
         id: "songstress-crescendo-ruin-plus",
         heroIds: ["songstress"],
         requires: ["songstress-crescendo-ruin"],
-        name: "Crescendo of Ruin Plus",
+        name: "Crescendo of Ruin+",
         description: "Towers in range gain a 80% crit damage buff for 5 seconds",
         apply(hero) {
             hero.songs?.push({

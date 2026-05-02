@@ -1,6 +1,6 @@
 import styles from './TowerButton.module.css';
 import { type MouseEventHandler } from 'react';
-import { gameStateAtom } from '../../store';
+import { challengesAtom, gameStateAtom } from '../../store';
 import { useAtom } from 'jotai';
 import type { TowerStats, ElementName } from '../../types';
 import CostText from '../CostText/CostText';
@@ -33,8 +33,9 @@ export default function TowerButton(
     }
 ) {
     const [gameState] = useAtom(gameStateAtom);
+    const [challenges] = useAtom(challengesAtom);
     const popup = useTowerPopup(scale, !!ELEMENTS[element].description);
-    const disabled = gameState.gold < cost;
+    const disabled = gameState.gold < cost || (!gameState.challengeManager?.getChallenge() && challenges.visible);
 
     return (
         <>

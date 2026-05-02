@@ -3,7 +3,7 @@ import type { EnemyId, LevelId } from "../constants";
 import type { TowerGameObj, Wave } from "../types";
 import { BASE_DRAW_COST, LEVEL_WAVES, MAX_HAND_SIZE, REDUCED_RANGE_TOWERS, ROUND_DRAW_NUM, SEEDS, TILE_SIZE } from "../constants";
 import makeEnemy from "./Enemy";
-import { store, gameStateAtom } from "../store";
+import { store, gameStateAtom, challengesAtom } from "../store";
 import screenPos from "../utils/screenPos";
 import drawCards from "../utils/drawCards";
 import makeTower from "./Tower";
@@ -229,14 +229,14 @@ export default function makeWaveSpawner(k: KAPLAYCtx, levelId: LevelId, waypoint
                 });
             }
 
-            if (waitingForNextWave) {
-                nextWaveTimer -= k.dt();
+            // if (waitingForNextWave) {
+            //     nextWaveTimer -= k.dt();
 
-                if (nextWaveTimer <= 0) {
-                    waitingForNextWave = false;
-                    spawner.startNextWave();
-                }
-            }
+            //     if (nextWaveTimer <= 0) {
+            //         waitingForNextWave = false;
+            //         spawner.startNextWave();
+            //     }
+            // }
 
             return;
         }
@@ -266,34 +266,106 @@ export default function makeWaveSpawner(k: KAPLAYCtx, levelId: LevelId, waypoint
         k.z(999),
         {
             update() {
-                const displayWave =
-                    spawner.waveIndex < 0
-                        ? 1
-                        : (spawning ? spawner.waveIndex + 1 : spawner.waveIndex + 2);
+                let textStr = "";
 
-                const clampedWave = Math.min(displayWave, level.waves.length);
-
-                if (spawning) {
-                    waveText.use(k.text(
-                        `Wave: ${clampedWave}/${level.waves.length}`,
-                        { size: 20, font: "free pixel" }
-                    ));
+                if (spawner.waveIndex < 0) {
+                    textStr = `Wave: 1/${level.waves.length}`;
+                } else if (spawning) {
+                    textStr = `Wave: ${spawner.waveIndex + 1}/${level.waves.length}`;
                 } else if (waitingForNextWave) {
-                    waveText.use(k.text(
-                        `Wave: ${clampedWave}/${level.waves.length}  Next Wave In: ${Math.ceil(nextWaveTimer)} (Enter to skip)`,
-                        { size: 20, font: "free pixel" }
-                    ));
+                    textStr = `Wave: ${Math.min(spawner.waveIndex + 2, level.waves.length)}/${level.waves.length}`;
+                } else {
+                    textStr = `Wave: ${spawner.waveIndex + 1}/${level.waves.length}`;
                 }
+
+                waveText.use(k.text(textStr, {
+                    size: 20,
+                    font: "free pixel"
+                }));
 
                 waveText.pos = screenPos(k, waveTextPos);
             }
         }
     ]);
 
-    k.onKeyPress("enter", () => {
+    const buttonPos = k.vec2(waveTextPos).add(k.vec2(160, 10));
+
+    const nextWaveButton = k.add([
+        k.rect(100, 25, { radius: 2 }),
+        k.pos(buttonPos),
+        k.anchor("center"),
+        k.area(),
+        k.color(85, 85, 85),
+        k.z(1000),
+        {
+            update() {
+                nextWaveButton.hidden = (!waitingForNextWave || levelComplete) ||
+                    (
+                        !store.get(gameStateAtom).challengeManager?.getChallenge() &&
+                        store.get(challengesAtom).visible
+                    );
+                nextWaveButton.pos = screenPos(k, buttonPos);
+            }
+        }
+    ]);
+
+    const outline = k.add([
+        k.rect(100, 25, { radius: 2, fill: false }),
+        k.pos(buttonPos),
+        k.anchor("center"),
+        k.opacity(0.5),
+        k.z(1001),
+        k.outline(1, k.rgb(255, 255, 255)),
+        {
+            update() {
+                outline.hidden = (!waitingForNextWave || levelComplete) ||
+                    (
+                        !store.get(gameStateAtom).challengeManager?.getChallenge() &&
+                        store.get(challengesAtom).visible
+                    );
+                outline.pos = screenPos(k, buttonPos);
+            }
+        }
+    ]);
+
+    const buttonText = k.add([
+        k.text("Start Wave", { size: 16, font: "free pixel" }),
+        k.pos(buttonPos.x, buttonPos.y),
+        k.anchor("center"),
+        k.z(1001),
+        {
+            update() {
+                buttonText.hidden = (!waitingForNextWave || levelComplete) ||
+                    (
+                        !store.get(gameStateAtom).challengeManager?.getChallenge() &&
+                        store.get(challengesAtom).visible
+                    );
+                buttonText.pos = screenPos(k, k.vec2(buttonPos.x, buttonPos.y));
+            }
+        }
+    ]);
+
+    nextWaveButton.onHover(() => {
+        k.setCursor("pointer");
+        nextWaveButton.color = k.rgb(144, 144, 144); // brighter green
+    });
+
+    nextWaveButton.onHoverEnd(() => {
+        k.setCursor("default");
+        nextWaveButton.color = k.rgb(85, 85, 85); // original color
+    });
+
+    // k.onKeyPress("enter", () => {
+    //     if (waitingForNextWave && !levelComplete) {
+    //         waitingForNextWave = false;
+    //         nextWaveTimer = 0;
+    //         spawner.startNextWave();
+    //     }
+    // });
+
+    nextWaveButton.onClick(() => {
         if (waitingForNextWave && !levelComplete) {
             waitingForNextWave = false;
-            nextWaveTimer = 0;
             spawner.startNextWave();
         }
     });
