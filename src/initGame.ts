@@ -14,6 +14,7 @@ import level5 from './scenes/level5';
 import level5_2 from './scenes/level5-2';
 import level6 from './scenes/level6';
 import { controlsAtom, store } from './store';
+import type { MouseButton } from 'kaplay';
 
 export default function initGame() {
     // focus back on canvas when clicking on html elements
@@ -53,24 +54,16 @@ export default function initGame() {
 
     k.go("mainMenu" satisfies Scene);
 
-    type MouseButton = "left" | "right" | "middle" | "back" | "forward";
-
-    function isMouseButton(key: string): key is MouseButton {
-        return ["left", "right", "middle", "back", "forward"].includes(key);
-    }
-
     store.set(controlsAtom, prev => ({
         ...prev,
         getButton: (action) => k.getButton(action as "cancel" | "scroll" | "camLeft" | "camRight" | "camUp" | "camDown" | "pause"),
-        setButton: (action, key) => {
+        setButton: (action, key, type) => {
             k.setButton(
                 action,
-                isMouseButton(key)
-                    ? { mouse: key }
+                type === "mouse"
+                    ? { mouse: key as MouseButton }
                     : { keyboard: key }
             );
-            console.log(k.getButton(action as "cancel" | "scroll" | "camLeft" | "camRight" | "camUp" | "camDown" | "pause"));
-
         }
     }));
 }

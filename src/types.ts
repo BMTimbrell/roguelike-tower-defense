@@ -715,5 +715,5 @@ export type PauseMenu = {
 
 export type Controls = {
     getButton: (action: string) => ButtonBinding;
-    setButton: (action: string, key: Key | MouseButton) => void;
+    setButton: (action: string, key: Key | MouseButton, type: "keyboard" | "mouse") => void;
 }

@@ -1,6 +1,5 @@
 import type { GameObj, KAPLAYCtx } from "kaplay"
 import type { Footprint, Tile } from "../types";
-import onAction from "./onAction";
 
 export default function makePlaceableOnGrid(
     k: KAPLAYCtx,
@@ -69,13 +68,11 @@ export default function makePlaceableOnGrid(
         }
     });
 
-    onAction(k, "cancel", {
-        onPress: () => {
-            if (!opts.obj.placed && opts.canCancel()) {
-                opts.onCancel?.();
-                k.destroy(opts.obj);
-                if (opts.heroSprite) k.destroy(opts.heroSprite);
-            }
+    opts.obj.onDestroy(() => {
+        if (!opts.obj.placed && opts.canCancel()) {
+            opts.onCancel?.();
+            k.destroy(opts.obj);
+            if (opts.heroSprite) k.destroy(opts.heroSprite);
         }
     });
 }

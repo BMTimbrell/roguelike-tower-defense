@@ -33,18 +33,28 @@ export default function PauseMenu() {
     };
 
     const handleKeyDown = (e: KeyboardEvent) => {
-        if (selectedKey) {
-            const key = e.key === " " ? "space" : e.key;
-            controls.setButton(selectedKey.action, key);
+        if (selectedKey && selectedKey.type === "keyboard") {
+            const key = e.key === " " ? "space" : e.key === "ArrowLeft" ? "left" : e.key === "ArrowRight" ? "right" : e.key === "ArrowUp" ? "up" : e.key === "ArrowDown" ? "down" : e.key;
+            controls.setButton(selectedKey.action, key, "keyboard");
+            setSelectedKey(null);
+        }
+    }
+
+    const handleMouseDown = (e: MouseEvent) => {
+        if (selectedKey && selectedKey.type === "mouse") {
+            const button = e.button === 0 ? "left" : e.button === 1 ? "middle" : e.button === 2 ? "right" : e.button === 3 ? "back" : e.button === 4 ? "forward" : "";
+            controls.setButton(selectedKey.action, button, "mouse");
             setSelectedKey(null);
         }
     }
 
     useEffect(() => {
         document.addEventListener("keydown", handleKeyDown);
+        document.addEventListener("mousedown", handleMouseDown);
 
         return () => {
             document.removeEventListener("keydown", handleKeyDown);
+            document.removeEventListener("mousedown", handleMouseDown);
         };
     });
 

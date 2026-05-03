@@ -36,7 +36,7 @@ export default function makeLevelScene(k: KAPLAYCtx, sceneName: Scene) {
         let zoom = initCam(k);
 
         let dragActive = false;
-        let lastTouchPos: Vec2 | null = null;
+        // let lastTouchPos: Vec2 | null = null;
 
         // ---- Mouse ----
         onAction(k, "scroll", {
@@ -45,22 +45,22 @@ export default function makeLevelScene(k: KAPLAYCtx, sceneName: Scene) {
         });
 
         // ---- Touch ----
-        k.onTouchStart(pos => {
-            dragActive = true;
-            lastTouchPos = pos;
-        })
+        // k.onTouchStart(pos => {
+        //     dragActive = true;
+        //     lastTouchPos = pos;
+        // })
 
-        k.onTouchEnd(() => {
-            dragActive = false;
-            lastTouchPos = null;
-        });
+        // k.onTouchEnd(() => {
+        //     dragActive = false;
+        //     lastTouchPos = null;
+        // });
 
-        k.onTouchMove(pos => {
-            if (!dragActive || !lastTouchPos) return;
-            const d = pos.sub(lastTouchPos);
-            k.setCamPos(k.getCamPos().sub(d));
-            lastTouchPos = pos;
-        });
+        // k.onTouchMove(pos => {
+        //     if (!dragActive || !lastTouchPos) return;
+        //     const d = pos.sub(lastTouchPos);
+        //     k.setCamPos(k.getCamPos().sub(d));
+        //     lastTouchPos = pos;
+        // });
 
         onAction(k, "cancel", {
             onPress: () => {
