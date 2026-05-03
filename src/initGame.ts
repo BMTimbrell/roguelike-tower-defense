@@ -61,7 +61,7 @@ export default function initGame() {
             k.setButton(
                 action,
                 type === "mouse"
-                    ? { mouse: key as MouseButton }
+                    ? { mouse: key ? key as MouseButton : undefined }
                     : { keyboard: key }
             );
         }

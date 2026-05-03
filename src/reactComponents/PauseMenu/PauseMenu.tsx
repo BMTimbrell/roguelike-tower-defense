@@ -35,7 +35,11 @@ export default function PauseMenu() {
     const handleKeyDown = (e: KeyboardEvent) => {
         if (selectedKey && selectedKey.type === "keyboard") {
             const key = e.key === " " ? "space" : e.key === "ArrowLeft" ? "left" : e.key === "ArrowRight" ? "right" : e.key === "ArrowUp" ? "up" : e.key === "ArrowDown" ? "down" : e.key;
-            controls.setButton(selectedKey.action, key, "keyboard");
+            controls.setButton(selectedKey.action, key.toLowerCase(), "keyboard");
+            setSelectedKey(null);
+        }
+        if (selectedKey && selectedKey.type === "mouse") {
+            controls.setButton(selectedKey.action, "", "mouse");
             setSelectedKey(null);
         }
     }
