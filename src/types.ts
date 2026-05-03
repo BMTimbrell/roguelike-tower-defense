@@ -1,6 +1,6 @@
 import { type MouseEventHandler } from "react";
 import { TILE_SIZE, type EnemyId, type HeroId, type ProjectileId, type SkillId, type TowerId } from "./constants";
-import type { Vec2, GameObj, KAPLAYCtx, HealthComp, SpriteComp, StateComp, TimerComp, RotateComp, PosComp, ZComp, OpacityComp } from "kaplay";
+import type { Vec2, GameObj, KAPLAYCtx, HealthComp, SpriteComp, StateComp, TimerComp, RotateComp, PosComp, ZComp, OpacityComp, ButtonBinding, MouseButton, Key } from "kaplay";
 import { frostAoeBurst } from "./utils/makeUnitCombat";
 import type { StatusEffectComp } from "./kaplayComponents/statusEffect";
 import type { ChallengeManager } from "./utils/challengeHelpers";
@@ -449,6 +449,7 @@ export type GameState = {
     shops: ("shop" | "altar")[];
     towerCoins: number;
     challengeManager: ChallengeManager;
+    camMoveAtEdge: boolean;
 };
 
 export type ShopChoiceButtons = {
@@ -705,3 +706,14 @@ export type ChallengeState = {
     failed: boolean;
     completed: boolean;
 };
+
+export type PauseMenu = {
+    visible: boolean;
+    buttons: { name: string; onClick: () => void; }[];
+    unPause: () => void;
+};
+
+export type Controls = {
+    getButton: (action: string) => ButtonBinding;
+    setButton: (action: string, key: Key | MouseButton) => void;
+}

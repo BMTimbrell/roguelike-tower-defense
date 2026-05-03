@@ -4,7 +4,7 @@ import showLevelStats from "./showLevelStats";
 import initCam from "./initCam";
 import generateFog from "./generateFog";
 import drawCards from "./drawCards";
-import { challengesAtom, gameStateAtom, store } from "../store";
+import { challengesAtom, controlsAtom, gameStateAtom, pauseMenuAtom, store } from "../store";
 import makeFloatingText from "../entities/FloatingText";
 import getCamViewRect from "./getCamViewRect";
 import { LEVEL_WAVES, MAX_HAND_SIZE, ROUND_DRAW_NUM, TILE_SIZE, type LevelId } from "../constants";
@@ -14,6 +14,8 @@ import { makeLavaManager } from "./lavaHelpers";
 import makeWaveSpawner from "../entities/WaveSpawner";
 import updateSkills from "./updateSkills";
 import { generateChallenges } from "./challengeHelpers";
+import isButtonDown from "./isButtonDown";
+import onAction from "./onAction";
 
 export default function makeLevelScene(k: KAPLAYCtx, sceneName: Scene) {
 
@@ -37,8 +39,10 @@ export default function makeLevelScene(k: KAPLAYCtx, sceneName: Scene) {
         let lastTouchPos: Vec2 | null = null;
 
         // ---- Mouse ----
-        k.onMousePress("middle", () => dragActive = true);
-        k.onMouseRelease("middle", () => dragActive = false);
+        onAction(k, "scroll", {
+            onPress: () => dragActive = true,
+            onRelease: () => dragActive = false,
+        });
 
         // ---- Touch ----
         k.onTouchStart(pos => {
@@ -58,30 +62,48 @@ export default function makeLevelScene(k: KAPLAYCtx, sceneName: Scene) {
             lastTouchPos = pos;
         });
 
+        onAction(k, "cancel", {
+            onPress: () => {
+                const hero = k.get("hero")[0];
+                if (hero && !hero.placed) k.destroy(hero);
+            }
+        });
+
+        // pause menu
+        k.onButtonPress("pause", () => {
+            store.set(pauseMenuAtom, prev => ({
+                ...prev,
+                visible: true,
+                unPause: () => k.get("*").forEach(obj => obj.paused = false)
+            }));
+        });
 
         k.onUpdate(() => {
+            const controls = store.get(controlsAtom);
             const speed = 400 * k.dt();
             const EDGE = 20;
 
             if (!dragActive) {
                 // wasd
-                if (k.isKeyDown("a")) k.setCamPos(k.getCamPos().add(-speed, 0));
-                if (k.isKeyDown("d")) k.setCamPos(k.getCamPos().add(speed, 0));
-                if (k.isKeyDown("w")) k.setCamPos(k.getCamPos().add(0, -speed));
-                if (k.isKeyDown("s")) k.setCamPos(k.getCamPos().add(0, speed));
+                if (isButtonDown(k, controls, "camLeft")) k.setCamPos(k.getCamPos().add(-speed, 0));
+                if (isButtonDown(k, controls, "camRight")) k.setCamPos(k.getCamPos().add(speed, 0));
+                if (isButtonDown(k, controls, "camUp")) k.setCamPos(k.getCamPos().add(0, -speed));
+                if (isButtonDown(k, controls, "camDown")) k.setCamPos(k.getCamPos().add(0, speed));
 
                 // --- Mouse Edge ---
-                const m = k.mousePos();
-                const w = k.width();
-                const h = k.height();
+                if (store.get(gameStateAtom).camMoveAtEdge) {
+                    const m = k.mousePos();
+                    const w = k.width();
+                    const h = k.height();
 
-                if (m.x < EDGE) k.setCamPos(k.getCamPos().add(-speed, 0));
-                if (m.x > w - EDGE) k.setCamPos(k.getCamPos().add(speed, 0));
-                if (m.y < EDGE) k.setCamPos(k.getCamPos().add(0, -speed));
-                if (m.y > h - EDGE) k.setCamPos(k.getCamPos().add(0, speed));
+                    if (m.x < EDGE) k.setCamPos(k.getCamPos().add(-speed, 0));
+                    if (m.x > w - EDGE) k.setCamPos(k.getCamPos().add(speed, 0));
+                    if (m.y < EDGE) k.setCamPos(k.getCamPos().add(0, -speed));
+                    if (m.y > h - EDGE) k.setCamPos(k.getCamPos().add(0, speed));
+                }
             }
 
-            if (dragActive && k.isMouseDown("middle")) {
+            if (dragActive && isButtonDown(k, controls, "scroll")) {
                 const d = k.mouseDeltaPos();
                 k.setCamPos(k.getCamPos().sub(d));
             }
@@ -102,6 +124,10 @@ export default function makeLevelScene(k: KAPLAYCtx, sceneName: Scene) {
             const camX = viewW < mapWorldWidth ? k.clamp(p.x, minX, maxX) : mapWorldWidth / 2;
             const camY = viewH < scrollHeight ? k.clamp(p.y, minY, maxY) : scrollHeight / 2;
             k.setCamPos(k.vec2(camX, camY));
+
+            if (store.get(pauseMenuAtom).visible) {
+                k.get("*").forEach(obj => obj.paused = true);
+            }
         });
 
         k.onResize(() => {

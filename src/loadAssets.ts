@@ -216,11 +216,11 @@ export default function loadAssets(k: KAPLAYCtx) {
     });
     k.loadSprite("discharge tower base", "/sprites/discharge-tower-base.png");
     k.loadSprite("discharge tower", "/sprites/discharge-tower.png", {
-        sliceX: 5,
+        sliceX: 4,
         sliceY: 1,
         anims: {
             idle: 0,
-            shoot: { from: 1, to: 4, loop: false, speed: 20 }
+            shoot: { from: 1, to: 3, loop: false, speed: 20 }
         }
     });
     k.loadSprite("beehive tower base", "/sprites/beehive-tower-base.png");

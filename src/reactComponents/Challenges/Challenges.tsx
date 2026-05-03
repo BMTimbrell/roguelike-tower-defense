@@ -4,7 +4,7 @@ import styles from "./Challenges.module.css";
 import { useState } from "react";
 
 export default function Challenges() {
-    const [challenges, setChallenges] = useAtom(challengesAtom);
+    const [challenges] = useAtom(challengesAtom);
     const [gameState] = useAtom(gameStateAtom);
     const [challengeActive, setChallengeActive] = useState(false);
     const challengeManager = gameState.challengeManager;

@@ -1,5 +1,6 @@
 import type { GameObj, KAPLAYCtx } from "kaplay"
 import type { Footprint, Tile } from "../types";
+import onAction from "./onAction";
 
 export default function makePlaceableOnGrid(
     k: KAPLAYCtx,
@@ -68,10 +69,13 @@ export default function makePlaceableOnGrid(
         }
     });
 
-    opts.obj.onMouseDown("right", () => {
-        if (!opts.obj.placed && opts.canCancel()) {
-            opts.onCancel?.();
-            k.destroy(opts.obj);
+    onAction(k, "cancel", {
+        onPress: () => {
+            if (!opts.obj.placed && opts.canCancel()) {
+                opts.onCancel?.();
+                k.destroy(opts.obj);
+                if (opts.heroSprite) k.destroy(opts.heroSprite);
+            }
         }
     });
 }
@@ -83,12 +87,12 @@ export function setBlockedTiles(opts: {
     gridX: number;
     blocked: boolean;
 }) {
-        const { w, h } = opts.footprint;
-        const { tileGrid, gridY, gridX, blocked } = opts;
+    const { w, h } = opts.footprint;
+    const { tileGrid, gridY, gridX, blocked } = opts;
 
-        for (let y = 0; y < h; y++) {
-            for (let x = 0; x < w; x++) {
-                tileGrid[gridY + y][gridX + x].blocked = blocked;
-            }
+    for (let y = 0; y < h; y++) {
+        for (let x = 0; x < w; x++) {
+            tileGrid[gridY + y][gridX + x].blocked = blocked;
         }
     }
+}

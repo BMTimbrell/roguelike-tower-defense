@@ -9,10 +9,10 @@ import { enemyTargetResolver, pathTargetResolver } from "../utils/targetingHelpe
 
 export default function makeHero(k: KAPLAYCtx,
     opts: {
-        heroId: HeroId
-        pos: Vec2,
-        tileGrid: Tile[][],
-        pathTiles: PathTile[],
+        heroId: HeroId;
+        pos: Vec2;
+        tileGrid: Tile[][];
+        pathTiles: PathTile[];
         level: number;
     }
 ): HeroGameObj {
@@ -56,11 +56,11 @@ export default function makeHero(k: KAPLAYCtx,
             targetType,
             stats: { ...stats },
             canReposition: true,
-            skillIds: heroId === "merchant" ? 
-                ["merchant-extra-income"] satisfies SkillId[] : 
+            skillIds: heroId === "merchant" ?
+                ["merchant-extra-income"] satisfies SkillId[] :
                 heroId === "songstress" ? ["songstress-anthem-power"] satisfies SkillId[] :
-                heroId === "necromancer" ? ["summon-skeleton"] satisfies SkillId[] :
-                [] satisfies SkillId[],
+                    heroId === "necromancer" ? ["summon-skeleton"] satisfies SkillId[] :
+                        [] satisfies SkillId[],
             level,
             footprint: { w: 1, h: 1 },
             element,
@@ -129,22 +129,6 @@ export default function makeHero(k: KAPLAYCtx,
             hero.hovered = false;
         });
 
-        hero.onDestroy(() => {
-            if (hero.placed) {
-                const gridX = Math.floor(hero.pos.x / TILE_SIZE);
-                const gridY = Math.floor(hero.pos.y / TILE_SIZE);
-                setBlockedTiles({
-                    footprint: hero.footprint,
-                    gridX,
-                    gridY,
-                    tileGrid: hero.tileGrid,
-                    blocked: false
-                });
-            }
-
-            combat.destroy();
-        });
-
         hero.onStateEnter("active", () => {
             sprite.color = k.rgb(255, 255, 255);
             combat.gun.use(k.color(255, 255, 255));
@@ -175,12 +159,16 @@ export default function makeHero(k: KAPLAYCtx,
             tileGrid,
             tileSize: TILE_SIZE,
             canConfirm: () => true,
-            canCancel: () => false,
+            canCancel: () => true,
             onConfirm: () => {
                 hero.selected = false;
                 store.set(gameStateAtom, prev => ({
                     ...prev,
-                    selectedUI: null
+                    selectedUI: null,
+                    heroButton: {
+                        ...prev.heroButton,
+                        visible: false
+                    }
                 }));
 
                 if (hero.changeNormalElement) {
@@ -199,7 +187,7 @@ export default function makeHero(k: KAPLAYCtx,
 
                         const towerCenter = tower.pos.add(k.vec2((tower.footprint.w * TILE_SIZE) / 2));
                         const heroCenter = hero.pos.add(k.vec2(TILE_SIZE / 2));
- 
+
                         if (towerCenter.dist(heroCenter) <= TILE_SIZE * tower.footprint.w) {
                             const amount = REDUCED_RANGE_TOWERS.some(name => name === tower.name) ? 0.5 : 1;
                             tower.stats.range += amount;
@@ -211,7 +199,7 @@ export default function makeHero(k: KAPLAYCtx,
                     k.get("tower").forEach(tower => {
                         const towerCenter = tower.pos.add(k.vec2((tower.footprint.w * TILE_SIZE) / 2));
                         const heroCenter = hero.pos.add(k.vec2(TILE_SIZE / 2));
- 
+
                         if (towerCenter.dist(heroCenter) <= TILE_SIZE * tower.footprint.w) {
                             tower.element = "Poison";
                         }
@@ -222,16 +210,16 @@ export default function makeHero(k: KAPLAYCtx,
                     k.get("tower").forEach(tower => {
                         const towerCenter = tower.pos.add(k.vec2((tower.footprint.w * TILE_SIZE) / 2));
                         const heroCenter = hero.pos.add(k.vec2(TILE_SIZE / 2));
- 
+
                         if (towerCenter.dist(heroCenter) <= TILE_SIZE * tower.footprint.w) {
                             tower.hasBlock = true;
                         }
                     });
                 }
-            },
+            }
         });
 
-        hero.onMouseDown("left", () => {
+        const mouseDown = hero.onMouseDown("left", () => {
             if (hero.placed && hero.selected) {
                 store.set(gameStateAtom, prev => ({
                     ...prev,
@@ -264,7 +252,7 @@ export default function makeHero(k: KAPLAYCtx,
             }
         });
 
-        hero.onUpdate(() => {
+        const update = hero.onUpdate(() => {
             if (hero.placed) {
                 if (hero.state === "disabled" && k.time() >= hero.disabledUntil) {
                     hero.enterState("active");
@@ -281,6 +269,26 @@ export default function makeHero(k: KAPLAYCtx,
                 sprite.angle = combat.gun.angle + 90;
             }
         });
+
+        hero.onDestroy(() => {
+            if (hero.placed) {
+                const gridX = Math.floor(hero.pos.x / TILE_SIZE);
+                const gridY = Math.floor(hero.pos.y / TILE_SIZE);
+                setBlockedTiles({
+                    footprint: hero.footprint,
+                    gridX,
+                    gridY,
+                    tileGrid: hero.tileGrid,
+                    blocked: false
+                });
+            }
+
+            combat.destroy();
+            update.cancel();
+            mouseDown.cancel();
+        });
+
+
     });
 
     return hero;

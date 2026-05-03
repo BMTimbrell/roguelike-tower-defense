@@ -13,6 +13,7 @@ import ShopChoiceUI from './reactComponents/ShopChoiceUI/ShopChoiceUI';
 import Shop from './reactComponents/Shop/Shop';
 import Altar from './reactComponents/Altar/Altar';
 import Challenges from './reactComponents/Challenges/Challenges';
+import PauseMenu from './reactComponents/PauseMenu/PauseMenu';
 
 export default function ReactUI() {
     const [gameState] = useAtom(gameStateAtom);
@@ -65,6 +66,8 @@ export default function ReactUI() {
             {altar.visible && <Altar />}
 
             {challenges.visible && <Challenges />}
+
+            <PauseMenu />
         </>
     );
 }

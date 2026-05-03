@@ -35,7 +35,7 @@ export default function levelTransition(k: KAPLAYCtx) {
 
         store.set(challengesAtom, prev => ({
             ...prev,
-             visible: false
+            visible: false
         }));
 
         const heroSprite = k.add([
@@ -148,16 +148,10 @@ export default function levelTransition(k: KAPLAYCtx) {
                         heroButton: {
                             ...prev.heroButton,
                             onClick: () => {
-                                k.add(updatedHero);
-                                store.set(gameStateAtom, prev => ({
-                                    ...prev,
-                                    heroButton: {
-                                        ...prev.heroButton,
-                                        visible: false
-                                    }
-                                }))
+                                if (k.get("hero")[0]) k.destroy(k.get("hero")[0]);
+                                else k.add(updatedHero);
                             }
-                        },
+                        }
                     }));
 
 
@@ -262,16 +256,13 @@ export default function levelTransition(k: KAPLAYCtx) {
                                             hero: updatedHero,
                                             heroButton: {
                                                 ...prev.heroButton,
-                                                onClick: () => {
-                                                    k.add(updatedHero);
-                                                    store.set(gameStateAtom, prev => ({
-                                                        ...prev,
-                                                        heroButton: {
-                                                            ...prev.heroButton,
-                                                            visible: false
-                                                        }
-                                                    }))
-                                                }
+                                                heroButton: {
+                                                    ...prev.heroButton,
+                                                    onClick: () => {
+                                                        if (k.get("hero")[0]) k.destroy(k.get("hero")[0]);
+                                                        else k.add(updatedHero);
+                                                    }
+                                                },
                                             },
                                             heroCharge: {
                                                 ...prev.heroCharge,
