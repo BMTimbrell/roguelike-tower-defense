@@ -1,7 +1,7 @@
 import type { KAPLAYCtx, Vec2 } from 'kaplay';
 import { CURSE_CRIT, ELEMENTS, REDUCED_RANGE_TOWERS, TILE_SIZE, type TowerId } from '../constants';
 import type { TowerGameObj, UnitEffects, TowerDef, SeedId, Tile, PathTile, RandomProjectiles, TimeData, ContinuousEffect, Charge, BuffType, Battery, EnemyGameObj, ElementName } from '../types';
-import { store, gameStateAtom } from '../store';
+import { store, gameStateAtom, controlsAtom } from '../store';
 import { calcUpgradeCost } from '../utils/calcUpgradeCost';
 import { TOWERS } from '../constants';
 import makePlaceableOnGrid, { setBlockedTiles } from '../utils/makePlacementOnGrid';
@@ -12,6 +12,7 @@ import { getLavaTiles, makeLavaTile, rebuildLava } from '../utils/lavaHelpers';
 import hurtEnemy from '../utils/hurtEnemy';
 import calcDamage from '../utils/calcDamage';
 import getBuffValue from '../utils/getBuffValue';
+import isButtonDown from '../utils/isButtonDown';
 
 export default function makeTower(
     k: KAPLAYCtx,
@@ -308,7 +309,11 @@ export default function makeTower(
     });
 
     tower.onUpdate(() => {
-        if (!tower.placed) return;
+        if (!tower.placed) {
+            const controls = store.get(controlsAtom);
+            if (isButtonDown(k, controls, "cancel")) k.destroy(tower);
+            return;
+        }
 
         const buffs = tower.buffs ?? {};
         tower.buffIcons ??= {};

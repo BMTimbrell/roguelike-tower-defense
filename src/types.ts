@@ -709,11 +709,17 @@ export type ChallengeState = {
 
 export type PauseMenu = {
     visible: boolean;
-    buttons: { name: string; onClick: () => void; }[];
+    mainMenu: () => void;
     unPause: () => void;
 };
 
 export type Controls = {
     getButton: (action: string) => ButtonBinding;
     setButton: (action: string, key: Key | MouseButton, type: "keyboard" | "mouse") => void;
-}
+};
+
+export type MainMenu = {
+    visible: boolean;
+    startGame: () => void;
+
+};

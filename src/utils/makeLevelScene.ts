@@ -1,4 +1,4 @@
-import type { GameObj, KAPLAYCtx, Vec2 } from "kaplay";
+import type { GameObj, KAPLAYCtx } from "kaplay";
 import type { MapData, PathTile, Scene, Tile } from "../types";
 import showLevelStats from "./showLevelStats";
 import initCam from "./initCam";
@@ -74,7 +74,11 @@ export default function makeLevelScene(k: KAPLAYCtx, sceneName: Scene) {
             store.set(pauseMenuAtom, prev => ({
                 ...prev,
                 visible: true,
-                unPause: () => k.get("*").forEach(obj => obj.paused = false)
+                unPause: () => k.get("*").forEach(obj => obj.paused = false),
+                mainMenu: () =>  {
+                    store.set(pauseMenuAtom, prev => ({ ...prev, visible: false }));
+                    k.go("mainMenu");
+                }
             }));
         });
 

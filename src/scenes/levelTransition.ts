@@ -63,6 +63,47 @@ export default function levelTransition(k: KAPLAYCtx) {
                     k.color("#FFFFFF"),
                     k.z(999999),
                 ]);
+
+                const buttonPos = k.getCamPos().add(k.vec2(0, 50));
+
+                const mainMenuButton = k.add([
+                    k.rect(100, 25, { radius: 2 }),
+                    k.pos(buttonPos),
+                    k.anchor("center"),
+                    k.area(),
+                    k.color(85, 85, 85),
+                    k.z(1000)
+                ]);
+
+                k.add([
+                    k.rect(100, 25, { radius: 2, fill: false }),
+                    k.pos(buttonPos),
+                    k.anchor("center"),
+                    k.opacity(0.5),
+                    k.z(1001),
+                    k.outline(1, k.rgb(255, 255, 255))
+                ]);
+
+                k.add([
+                    k.text("Main Menu", { size: 16, font: "free pixel" }),
+                    k.pos(buttonPos.x, buttonPos.y),
+                    k.anchor("center"),
+                    k.z(1001)
+                ]);
+
+                mainMenuButton.onHover(() => {
+                    k.setCursor("pointer");
+                    mainMenuButton.color = k.rgb(144, 144, 144); // brighter green
+                });
+
+                mainMenuButton.onHoverEnd(() => {
+                    k.setCursor("default");
+                    mainMenuButton.color = k.rgb(85, 85, 85); // original color
+                });
+
+                mainMenuButton.onClick(() => {
+                    k.go("mainMenu");
+                });
             });
 
             return;

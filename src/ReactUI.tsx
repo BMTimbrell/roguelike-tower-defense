@@ -1,5 +1,5 @@
 import { useAtom } from 'jotai';
-import { altarAtom, challengesAtom, gameStateAtom, rewardsAtom, selectHeroUIAtom, shopAtom, shopChoiceUIAtom, startingOptionsAtom } from './store';
+import { altarAtom, challengesAtom, gameStateAtom, mainMenuAtom, rewardsAtom, selectHeroUIAtom, shopAtom, shopChoiceUIAtom, startingOptionsAtom } from './store';
 import { BottomBar } from "./reactComponents/BottomBar/BottomBar";
 import SelectedTower from "./reactComponents/SelectedTower/SelectedTower";
 import SelectedHero from './reactComponents/SelectedHero/SelectedHero';
@@ -14,6 +14,7 @@ import Shop from './reactComponents/Shop/Shop';
 import Altar from './reactComponents/Altar/Altar';
 import Challenges from './reactComponents/Challenges/Challenges';
 import PauseMenu from './reactComponents/PauseMenu/PauseMenu';
+import MainMenu from './reactComponents/MainMenu/MainMenu';
 
 export default function ReactUI() {
     const [gameState] = useAtom(gameStateAtom);
@@ -27,6 +28,7 @@ export default function ReactUI() {
     const [shop] = useAtom(shopAtom);
     const [altar] = useAtom(altarAtom);
     const [challenges] = useAtom(challengesAtom);
+    const [mainMenu] = useAtom(mainMenuAtom);
 
     if (selectedUI) {
         selectedTower = "plantedSeed" in selectedUI
@@ -68,6 +70,8 @@ export default function ReactUI() {
             {challenges.visible && <Challenges />}
 
             <PauseMenu />
+
+            {mainMenu.visible && <MainMenu />}
         </>
     );
 }

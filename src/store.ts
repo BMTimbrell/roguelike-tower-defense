@@ -1,5 +1,5 @@
 import { atom, createStore } from "jotai";
-import { type startingHeroUI, type GameState, type Rewards, type StartingOptions, type ShopChoiceButtons, type Shop, type Altar, type ChallengeDef, type PauseMenu, type Controls } from "./types";
+import { type startingHeroUI, type GameState, type Rewards, type StartingOptions, type ShopChoiceButtons, type Shop, type Altar, type ChallengeDef, type PauseMenu, type Controls, type MainMenu } from "./types";
 import { ChallengeManager } from "./utils/challengeHelpers";
 
 export const gameStateAtom = atom<GameState>({
@@ -128,13 +128,18 @@ export const challengesAtom = atom({
 
 export const pauseMenuAtom = atom<PauseMenu>({
     visible: false,
-    buttons: [],
-    unPause: () => {}
+    unPause: () => {},
+    mainMenu: () => {}
 });
 
 export const controlsAtom = atom<Controls>({
     getButton: () => { return { keyboard: "" } },
     setButton: () => {}
+});
+
+export const mainMenuAtom = atom<MainMenu>({
+    visible: false,
+    startGame: () => {}
 });
 
 export const store = createStore();

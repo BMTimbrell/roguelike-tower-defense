@@ -355,14 +355,6 @@ export default function makeWaveSpawner(k: KAPLAYCtx, levelId: LevelId, waypoint
         nextWaveButton.color = k.rgb(85, 85, 85); // original color
     });
 
-    // k.onKeyPress("enter", () => {
-    //     if (waitingForNextWave && !levelComplete) {
-    //         waitingForNextWave = false;
-    //         nextWaveTimer = 0;
-    //         spawner.startNextWave();
-    //     }
-    // });
-
     nextWaveButton.onClick(() => {
         if (waitingForNextWave && !levelComplete) {
             waitingForNextWave = false;

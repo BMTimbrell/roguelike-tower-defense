@@ -1,5 +1,5 @@
 import type { KAPLAYCtx } from "kaplay";
-import { gameStateAtom, store, startingOptionsAtom, selectHeroUIAtom, shopChoiceUIAtom, shopAtom, altarAtom } from "../store";
+import { gameStateAtom, store, startingOptionsAtom, selectHeroUIAtom, shopChoiceUIAtom, shopAtom, altarAtom, mainMenuAtom } from "../store";
 import initCam from "../utils/initCam";
 import type { Scene, Upgrade } from "../types";
 import { CHARGE_DAMAGE_REQUIRED, type HeroId, type TowerId } from "../constants";
@@ -20,9 +20,18 @@ export default function mainMenu(k: KAPLAYCtx) {
             initCam(k);
         });
 
+        store.set(mainMenuAtom, prev => ({
+            ...prev,
+            visible: true
+        }));
+
+        store.set(gameStateAtom, prev => ({
+            ...prev,
+            scene: "mainMenu"
+        }));
+
         store.set(selectHeroUIAtom, prev => ({
             ...prev,
-            visible: true,
             addHero: (id: HeroId) => {
                 const hero = makeHero(
                     k,
