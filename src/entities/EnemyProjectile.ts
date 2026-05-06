@@ -28,15 +28,25 @@ export default function makeEnemyProjectile(k: KAPLAYCtx, opts: {
 
     const targetPos = target.pos.add((target.footprint.w * TILE_SIZE) / 2, (target.footprint.h * TILE_SIZE) / 2);
 
+    let prevPos = projectile.pos.clone();
+
     projectile.onUpdate(() => {
         const timeScale = store.get(gameStateAtom).timeScale;
+        const hitRadius = 4;
         const dir = targetPos.sub(projectile.pos).unit();
-        projectile.angle = projectile.pos.angle(target.pos);
+        projectile.angle = projectile.pos.angle(targetPos);
 
         projectile.pos = projectile.pos.add(dir.scale(projectile.speed * k.dt() * timeScale));
 
-        if (projectile.pos.dist(targetPos) < 4) {
+        const seg = projectile.pos.sub(prevPos);
+        const toEnemy = targetPos.sub(prevPos);
 
+        const segLenSq = seg.dot(seg);
+        const t = segLenSq === 0 ? 0 : toEnemy.dot(seg) / segLenSq;
+        const closest = prevPos.add(seg.scale(Math.max(0, Math.min(1, t))));
+        const hit = closest.dist(targetPos) < hitRadius;
+
+        if (hit) {
             if (target.hasBlock) {
                 makeFloatingText(k, {
                     text: "Block",
@@ -65,6 +75,8 @@ export default function makeEnemyProjectile(k: KAPLAYCtx, opts: {
 
             k.destroy(projectile);
         }
+
+        prevPos = projectile.pos.clone();
     });
 
     projectile.onDestroy(() => {

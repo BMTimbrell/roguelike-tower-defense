@@ -726,14 +726,22 @@ export type MainMenu = {
 
 export type GameSpeedUI = {
     visible: boolean;
+    activeIndex: number;
     buttons: [
         {
-            name: string;
+            icon: string;
             onClick: () => void;
+            width: number;
         },
         {
-            name: string;
+            icon: string;
             onClick: () => void;
+            width: number;
+        },
+        {
+            icon: string;
+            onClick: () => void;
+            width: number;
         }
     ];
 };

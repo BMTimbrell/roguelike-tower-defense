@@ -3,7 +3,7 @@ import type { EnemyId, LevelId } from "../constants";
 import type { TowerGameObj, Wave } from "../types";
 import { BASE_DRAW_COST, LEVEL_WAVES, MAX_HAND_SIZE, REDUCED_RANGE_TOWERS, ROUND_DRAW_NUM, SEEDS, TILE_SIZE } from "../constants";
 import makeEnemy from "./Enemy";
-import { store, gameStateAtom, challengesAtom } from "../store";
+import { store, gameStateAtom, challengesAtom, gameSpeedUIAtom } from "../store";
 import screenPos from "../utils/screenPos";
 import drawCards from "../utils/drawCards";
 import makeTower from "./Tower";
@@ -114,6 +114,12 @@ export default function makeWaveSpawner(k: KAPLAYCtx, levelId: LevelId, waypoint
                         {
                             update() {
                                 setGameSpeed(k, 1);
+                                store.set(gameSpeedUIAtom, prev => ({
+                                    ...prev,
+                                    visible: false,
+                                    activeIndex: 0
+                                }));
+                                
                                 complete.timer -= k.dt();
                                 if (complete.timer <= 1) {
                                     k.go("levelTransition", store.get(gameStateAtom).hero);

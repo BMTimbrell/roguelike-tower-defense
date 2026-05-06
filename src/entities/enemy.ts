@@ -266,7 +266,7 @@ export default function makeEnemy(
             ? traveled / segmentLen
             : 1;
 
-        if (enemy.pos.dist(next) <= enemy.speed / 50) {
+        if (enemy.pos.dist(next) <= (enemy.speed * k.dt() * timeScale)) {
             enemy.pathIndex++;
             enemy.segmentStart = enemy.path[enemy.pathIndex];
             enemy.segmentProgress = 0;

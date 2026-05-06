@@ -37,12 +37,23 @@ export default function makePathEntity(
     let pathEntity: GameObj | null = null;
     const splashRadius = PROJECTILES[projectileId].splashRadius * TILE_SIZE;
 
+    let prevPos = entity.pos.clone();
+    const hitRadius = 4;
+
     entity.onUpdate(() => {
         const timeScale = store.get(gameStateAtom).timeScale;
         const direction = targetPos.sub(entity.pos).unit();
         entity.pos = entity.pos.add(direction.scale(200 * k.dt() * timeScale));
 
-        if (entity.pos.dist(targetPos) < 4) {
+        const seg = entity.pos.sub(prevPos);
+        const toEnemy = targetPos.sub(prevPos);
+
+        const segLenSq = seg.dot(seg);
+        const t = segLenSq === 0 ? 0 : toEnemy.dot(seg) / segLenSq;
+        const closest = prevPos.add(seg.scale(Math.max(0, Math.min(1, t))));
+        const hit = closest.dist(targetPos) < hitRadius;
+
+        if (hit) {
             pathEntity = k.add([
                 k.sprite(sprite),
                 k.pos(entity.pos),
@@ -117,6 +128,8 @@ export default function makePathEntity(
 
             k.destroy(entity);
         }
+
+        prevPos = entity.pos.clone();
     });
 
 }

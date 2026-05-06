@@ -76,16 +76,28 @@ export default function makeProjectile(k: KAPLAYCtx, opts: {
         }
     });
 
+    let prevPos = projectile.pos.clone();
     projectile.onUpdate(() => {
         const timeScale = store.get(gameStateAtom).timeScale;
+        const hitRadius = 4;
         const persistentAndEnemyOutOfRange = target && behaviors?.persistent?.owner && behaviors.persistent.origin.dist(target.pos) > (behaviors.persistent.owner.stats.range + 1) * TILE_SIZE;
+
+        // delay angle change for volley
+        if (homing && target && timeAlive >= projectile.homingDelay) {
+            const desired = projectile.pos.angle(target.pos);
+
+            const diff = shortestAngleDiff(projectile.angle, desired);
+            projectile.angle += diff * Math.min(1, projectile.turnSpeed * k.dt() * timeScale);
+            direction = target.pos.sub(projectile.pos).unit();
+        }
+
         if (homing && (!target || !isValidTarget(target) || persistentAndEnemyOutOfRange)) {
             const origin = behaviors?.persistent ? behaviors.persistent.origin : projectile.pos;
 
-            target = behaviors?.persistent ? 
-                selectTarget(k.get("enemy") as EnemyGameObj[], behaviors.persistent.owner, origin) : 
-                    findNewTarget(k, origin, 5 * TILE_SIZE);
-                    
+            target = behaviors?.persistent ?
+                selectTarget(k.get("enemy") as EnemyGameObj[], behaviors.persistent.owner, origin) :
+                findNewTarget(k, origin, 5 * TILE_SIZE);
+
             if (behaviors?.persistent) behaviors.persistent.state = "flying";
 
             if (!target) {
@@ -101,7 +113,6 @@ export default function makeProjectile(k: KAPLAYCtx, opts: {
                     }
 
                     const dir = towerPos.sub(projectile.pos);
-                    const dist = dir.len();
 
                     if (!noRotate) projectile.angle = projectile.pos.angle(towerPos);
                     projectile.pos = projectile.pos.add(
@@ -109,10 +120,18 @@ export default function makeProjectile(k: KAPLAYCtx, opts: {
                     );
 
                     // Arrived
-                    if (dist < 4) {
+                    const seg = projectile.pos.sub(prevPos);
+                    const toEnemy = towerPos.sub(prevPos);
+
+                    const segLenSq = seg.dot(seg);
+                    const t = segLenSq === 0 ? 0 : toEnemy.dot(seg) / segLenSq;
+                    const closest = prevPos.add(seg.scale(Math.max(0, Math.min(1, t))));
+                    const hit = closest.dist(towerPos) < hitRadius;
+                    if (hit) {
                         k.destroy(projectile);
                     }
 
+                    prevPos = projectile.pos.clone();
                     return;
                 }
             }
@@ -143,7 +162,7 @@ export default function makeProjectile(k: KAPLAYCtx, opts: {
             }
 
             if (behaviors.persistent.owner.state === "disabled") k.destroy(projectile);
-    
+
         } else projectile.pos = projectile.pos.add(direction.scale(projectile.speed * k.dt() * timeScale));
         timeAlive += k.dt() * timeScale;
 
@@ -154,91 +173,94 @@ export default function makeProjectile(k: KAPLAYCtx, opts: {
             damage = Math.round(baseDamage + baseDamage * distanceDamageMultiplier);
         }
 
-        // delay angle change for volley
-        if (homing && target && timeAlive >= projectile.homingDelay) {
-            const desired = projectile.pos.angle(target.pos);
-
-            const diff = shortestAngleDiff(projectile.angle, desired);
-            projectile.angle += diff * Math.min(1, projectile.turnSpeed * k.dt() * timeScale);
-            direction = target.pos.sub(projectile.pos).unit();
-        }
-
         // damage enemy when close enough
-        if (target && projectile.pos.dist(target.pos) < 4) {
-            // attach to enemy if persistent projectile
-            if (behaviors?.persistent?.state === "flying") {
-                behaviors.persistent.state = "attached";
-            }
+        if (target) {
+            const seg = projectile.pos.sub(prevPos);
+            const toEnemy = target.pos.sub(prevPos);
 
-            if (attackTimer !== null) attackTimer -= k.dt() * timeScale;
-            if (!target.isDying && (behaviors?.persistent?.state !== "attached" || (attackTimer !== null && attackTimer <= 0))) {
-                if (behaviors?.persistent) {
-                    const owner = behaviors.persistent.owner;
-                    const damageMult = 1 + getBuffValue(owner, "damage");
-                    const { isCrit, damage: newDamage } = calcDamage({
-                        bonusDamage: 0,
-                        bonusCritChance: target.has("curse") ? CURSE_CRIT + (k.get("hero")[0]?.hasCurseBuff ? 10 : 0) : 0,
-                        critChance: owner.stats.critChance + (getBuffValue(owner, "critChance") * 100),
-                        critDamage: owner.stats.critDamage * (1 + getBuffValue(owner, "critDamage")),
-                        damage: owner.stats.damage,
-                        damageMultiplier: damageMult
-                    });
-                    crit = isCrit;
-                    damage = newDamage;
+            const segLenSq = seg.dot(seg);
+            const t = segLenSq === 0 ? 0 : toEnemy.dot(seg) / segLenSq;
+            const closest = prevPos.add(seg.scale(Math.max(0, Math.min(1, t))));
+            const hit = closest.dist(target.pos) < hitRadius;
+
+            if (hit) {
+                // attach to enemy if persistent projectile
+                if (behaviors?.persistent?.state === "flying") {
+                    behaviors.persistent.state = "attached";
                 }
 
-                hurtEnemy(k, {
-                    target,
-                    damage,
-                    isCrit: crit ?? false,
-                    element
-                });
-
-                if (splashRadius) {
-                    (k.get("enemy") as EnemyGameObj[]).filter(e => e !== target && e.pos.dist(projectile.pos) < splashRadius * TILE_SIZE).forEach(e => {
-                        hurtEnemy(k, {
-                            target: e,
-                            damage,
-                            isCrit: crit ?? false,
-                            element
+                if (attackTimer !== null) attackTimer -= k.dt() * timeScale;
+                if (!target.isDying && (behaviors?.persistent?.state !== "attached" || (attackTimer !== null && attackTimer <= 0))) {
+                    if (behaviors?.persistent) {
+                        const owner = behaviors.persistent.owner;
+                        const damageMult = 1 + getBuffValue(owner, "damage");
+                        const { isCrit, damage: newDamage } = calcDamage({
+                            bonusDamage: 0,
+                            bonusCritChance: target.has("curse") ? CURSE_CRIT + (k.get("hero")[0]?.hasCurseBuff ? 10 : 0) : 0,
+                            critChance: owner.stats.critChance + (getBuffValue(owner, "critChance") * 100),
+                            critDamage: owner.stats.critDamage * (1 + getBuffValue(owner, "critDamage")),
+                            damage: owner.stats.damage,
+                            damageMultiplier: damageMult
                         });
-                    });
-                }
-
-                if (attackTimer !== null && behaviors?.persistent?.owner) {
-                    const fireRateBuff = getBuffValue(behaviors.persistent.owner, "fireRate");
-                    attackTimer += behaviors.persistent.owner.stats.fireInterval * (1 - fireRateBuff);
-                }
-                    
-            }
-
-            if (remainingBounces > 0 && willBounce) {
-                remainingBounces--;
-                hitEnemies.add(target);
-                willBounce = behaviors?.bounceChance ? Math.random() < behaviors.bounceChance : true;
-
-                const nextTarget = selectBounceTarget(k, target, { bounceRange: behaviors?.bounceRange, visited: hitEnemies });
-
-                if (nextTarget) {
-                    target = nextTarget;
-                    if (!noRotate) projectile.angle = projectile.pos.angle(target.pos);
-
-                    // only change damage for first bounce
-                    if (remainingBounces === (behaviors?.bounces ?? 0) - 1) {
-                        damage *= behaviors?.bounceDamageMultiplier ?? 1;
-                        baseDamage *= behaviors?.bounceDamageMultiplier ?? 1;
-                        baseDamage = Math.round(baseDamage);
-                        damage = Math.round(damage);
+                        crit = isCrit;
+                        damage = newDamage;
                     }
 
-                    return;
+                    hurtEnemy(k, {
+                        target,
+                        damage,
+                        isCrit: crit ?? false,
+                        element
+                    });
+
+                    if (splashRadius) {
+                        (k.get("enemy") as EnemyGameObj[]).filter(e => e !== target && e.pos.dist(projectile.pos) < splashRadius * TILE_SIZE).forEach(e => {
+                            hurtEnemy(k, {
+                                target: e,
+                                damage,
+                                isCrit: crit ?? false,
+                                element
+                            });
+                        });
+                    }
+
+                    if (attackTimer !== null && behaviors?.persistent?.owner) {
+                        const fireRateBuff = getBuffValue(behaviors.persistent.owner, "fireRate");
+                        attackTimer += behaviors.persistent.owner.stats.fireInterval * (1 - fireRateBuff);
+                    }
+
+                }
+
+                if (remainingBounces > 0 && willBounce) {
+                    remainingBounces--;
+                    hitEnemies.add(target);
+                    willBounce = behaviors?.bounceChance ? Math.random() < behaviors.bounceChance : true;
+
+                    const nextTarget = selectBounceTarget(k, target, { bounceRange: behaviors?.bounceRange, visited: hitEnemies });
+
+                    if (nextTarget) {
+                        target = nextTarget;
+                        if (!noRotate) projectile.angle = projectile.pos.angle(target.pos);
+
+                        // only change damage for first bounce
+                        if (remainingBounces === (behaviors?.bounces ?? 0) - 1) {
+                            damage *= behaviors?.bounceDamageMultiplier ?? 1;
+                            baseDamage *= behaviors?.bounceDamageMultiplier ?? 1;
+                            baseDamage = Math.round(baseDamage);
+                            damage = Math.round(damage);
+                        }
+
+                        prevPos = projectile.pos.clone();
+                        return;
+                    }
+                }
+
+                if (!behaviors?.persistent || !store.get(gameStateAtom).waveActive) {
+                    k.destroy(projectile);
                 }
             }
-
-            if (!behaviors?.persistent || !store.get(gameStateAtom).waveActive) {
-                k.destroy(projectile);
-            }
         }
+        prevPos = projectile.pos.clone();
     });
 
     return projectile;

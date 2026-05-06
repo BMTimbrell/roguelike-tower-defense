@@ -4,7 +4,7 @@ import showLevelStats from "./showLevelStats";
 import initCam from "./initCam";
 import generateFog from "./generateFog";
 import drawCards from "./drawCards";
-import { challengesAtom, controlsAtom, gameStateAtom, pauseMenuAtom, store } from "../store";
+import { challengesAtom, controlsAtom, gameSpeedUIAtom, gameStateAtom, pauseMenuAtom, store } from "../store";
 import makeFloatingText from "../entities/FloatingText";
 import getCamViewRect from "./getCamViewRect";
 import { LEVEL_WAVES, MAX_HAND_SIZE, ROUND_DRAW_NUM, TILE_SIZE, type LevelId } from "../constants";
@@ -16,6 +16,7 @@ import updateSkills from "./updateSkills";
 import { generateChallenges } from "./challengeHelpers";
 import isButtonDown from "./isButtonDown";
 import onAction from "./onAction";
+import setGameSpeed from "./setGameSpeed";
 
 export default function makeLevelScene(k: KAPLAYCtx, sceneName: Scene) {
 
@@ -453,6 +454,28 @@ export default function makeLevelScene(k: KAPLAYCtx, sceneName: Scene) {
                 challenges: generateChallenges()
             }));
         }
+
+        store.set(gameSpeedUIAtom, prev => ({
+            ...prev,
+            visible: true,
+            buttons: [
+                {
+                    icon: "sprites/play-icon.png",
+                    onClick: () => setGameSpeed(k, 1),
+                    width: 16
+                },
+                {
+                    icon: "sprites/fast-forward-icon.png",
+                    onClick: () => setGameSpeed(k, 2),
+                    width: 16
+                },
+                {
+                    icon: "sprites/fast-fast-forward-icon.png",
+                    onClick: () => setGameSpeed(k, 3),
+                    width: 25
+                }
+            ]
+        }));
     });
 
 }

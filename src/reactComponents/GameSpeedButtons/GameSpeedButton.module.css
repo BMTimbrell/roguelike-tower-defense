@@ -1,5 +1,11 @@
 .container {
     position: absolute;
-    top: 10dvh;
-    right: 20%;
+    top: 1em;
+    right: 1em;
+    display: flex;
+    gap: 0.25em;
+}
+
+.active {
+    background-color: rgb(114, 114, 114);
 }

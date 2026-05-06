@@ -3220,6 +3220,8 @@ export const TOWERS = {
                             k.pos(impactPos)
                         ]);
 
+                        smashEffect.animSpeed = store.get(gameStateAtom).timeScale;
+
                         smashEffect.onAnimEnd(() => {
                             k.destroy(smashEffect);
                         });

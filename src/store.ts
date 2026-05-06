@@ -145,14 +145,22 @@ export const mainMenuAtom = atom<MainMenu>({
 
 export const gameSpeedUIAtom = atom<GameSpeedUI>({
     visible: false,
+    activeIndex: 0,
     buttons: [
         {
-            name: "normal",
-            onClick: () => {}
+            icon: "sprites/play-icon.png",
+            onClick: () => {},
+            width: 16
         },
         {
-            name: "speed up",
-            onClick: () => {}
+            icon: "sprites/fast-forward-icon.png",
+            onClick: () => {},
+            width: 16
+        },
+        {
+            icon: "sprites/fast-fast-forward-icon.png",
+            onClick: () => {},
+            width: 25
         }
     ]
 });

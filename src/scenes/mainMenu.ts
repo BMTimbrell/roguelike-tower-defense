@@ -145,20 +145,5 @@ export default function mainMenu(k: KAPLAYCtx) {
                 }
             ]
         }));
-
-        store.set(gameSpeedUIAtom, prev => ({
-            ...prev,
-            visible: true,
-            buttons: [
-                {
-                    name: "normal",
-                    onClick: () => setGameSpeed(k, 1)
-                },
-                {
-                    name: "speed up",
-                    onClick: () => setGameSpeed(k, 2)
-                }
-            ]
-        }));
     });
 }
