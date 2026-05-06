@@ -184,7 +184,7 @@ export type ContinuousEffect = "flame particle";
 export type BuffType = "damage" | "fireRate" | "critChance" | "critDamage";
 export type Buffs = Partial<Record<BuffType, {
     value: number;
-    expiresAt: number;
+    timeLeft: number;
 }>>;
 export type Song = { type: BuffType; value: number; duration: number; };
 export type Summon = {
@@ -256,7 +256,6 @@ export type EnemyGameObj = GameObj<
     HealthComp |
     SpriteComp |
     StateComp |
-    TimerComp |
     RotateComp |
     PosComp |
     ZComp |
@@ -450,6 +449,7 @@ export type GameState = {
     towerCoins: number;
     challengeManager: ChallengeManager;
     camMoveAtEdge: boolean;
+    timeScale: number;
 };
 
 export type ShopChoiceButtons = {
@@ -722,4 +722,18 @@ export type MainMenu = {
     visible: boolean;
     startGame: () => void;
 
+};
+
+export type GameSpeedUI = {
+    visible: boolean;
+    buttons: [
+        {
+            name: string;
+            onClick: () => void;
+        },
+        {
+            name: string;
+            onClick: () => void;
+        }
+    ];
 };

@@ -5,6 +5,7 @@ import { dirToRotation } from "./Enemy";
 import hurtEnemy from "../utils/hurtEnemy";
 import calcDamage from "../utils/calcDamage";
 import getBuffValue from "../utils/getBuffValue";
+import { gameStateAtom, store } from "../store";
 
 export default function spawnSummon(k: KAPLAYCtx, ctx: AttackContext, id: SummonId, pos: Vec2) {
     const {
@@ -38,6 +39,8 @@ export default function spawnSummon(k: KAPLAYCtx, ctx: AttackContext, id: Summon
         k.state("move", ["move", "attack", "die"])
     ]);
 
+    summon.animSpeed = store.get(gameStateAtom).timeScale;
+
     summon.onStateEnter("move", () => {
         summon.play("move");
     });
@@ -61,10 +64,10 @@ export default function spawnSummon(k: KAPLAYCtx, ctx: AttackContext, id: Summon
         const { isCrit, damage } = calcDamage({
             bonusDamage,
             bonusCritChance: enemy.has("curse") ? CURSE_CRIT + (k.get("hero")[0]?.hasCurseBuff ? 10 : 0) : 0,
-            critChance: ctx.attacker.stats.critChance + (getBuffValue(k, ctx.attacker as TowerGameObj, "critChance") * 100),
-            critDamage: ctx.attacker.stats.critDamage * (1 + getBuffValue(k, ctx.attacker as TowerGameObj, "critDamage")),
+            critChance: ctx.attacker.stats.critChance + (getBuffValue(ctx.attacker as TowerGameObj, "critChance") * 100),
+            critDamage: ctx.attacker.stats.critDamage * (1 + getBuffValue(ctx.attacker as TowerGameObj, "critDamage")),
             damage: summon.damage,
-            damageMultiplier: 1 + getBuffValue(k, ctx.attacker as TowerGameObj, "damage")
+            damageMultiplier: 1 + getBuffValue(ctx.attacker as TowerGameObj, "damage")
         });
 
         hurtEnemy(k, {
@@ -108,6 +111,7 @@ export default function spawnSummon(k: KAPLAYCtx, ctx: AttackContext, id: Summon
     });
 
     summon.onStateUpdate("move", () => {
+        const timeScale = store.get(gameStateAtom).timeScale;
         if (summon.attacks >= summon.maxAttacks) {
             // 75% chance to persist with ghost buff
             if (name === "Ghost" && ctx.attacker.hasGhostBuff && Math.random() < 0.75) {
@@ -118,14 +122,14 @@ export default function spawnSummon(k: KAPLAYCtx, ctx: AttackContext, id: Summon
         }
 
         if (summon.attackTimer > 0) {
-            summon.attackTimer -= k.dt();
+            summon.attackTimer -= k.dt() * timeScale;
         }
 
         const next = summon.path[summon.pathIndex - 1];
         if (!next) return;
 
         const dir = next.sub(summon.pos).unit();
-        summon.move(dir.scale(summon.speed));
+        summon.pos = summon.pos.add(dir.scale(summon.speed * k.dt() * timeScale));
 
         summon.angle = dirToRotation(dir);
 

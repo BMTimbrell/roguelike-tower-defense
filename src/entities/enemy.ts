@@ -7,6 +7,8 @@ import statusEffect from '../kaplayComponents/statusEffect';
 import type { EnemyConfig, EnemyGameObj, presentSpawns, TowerGameObj } from '../types';
 import makeEnemyProjectile from './EnemyProjectile';
 import { aoeBurst } from '../utils/makeUnitCombat';
+import { waitScaled } from '../utils/timerFunctions';
+import { lifespan } from '../kaplayComponents/lifespan';
 
 export default function makeEnemy(
     k: KAPLAYCtx,
@@ -27,7 +29,6 @@ export default function makeEnemy(
             shape: new k.Rect(k.vec2(0), 16, 16)
         }),
         k.rotate(),
-        k.timer(),
         k.opacity(1),
         k.health(health, health),
         {
@@ -86,6 +87,8 @@ export default function makeEnemy(
         enemyId
     ]);
 
+    enemy.animSpeed = store.get(gameStateAtom).timeScale;
+
     if (enemy.boss) enemy.use(healthBar(k, 1, { isBoss: true }));
 
     enemy.onHurt(amount => {
@@ -141,7 +144,7 @@ export default function makeEnemy(
             k.z(999),
             `dizzy ${enemy.id}`
         ]);
-        enemy.wait(STUN_DURATION, () => {
+        waitScaled(k, STUN_DURATION, () => {
             k.destroy(dizzyEffect);
             if (enemy?.boss?.reachedStopIndex) enemy.enterState("attack");
             enemy.enterState("move");
@@ -154,8 +157,9 @@ export default function makeEnemy(
 
     // attack for boss
     enemy.onStateUpdate("attack", () => {
+        const timeScale = store.get(gameStateAtom).timeScale;
         if (enemy.stunResistanceTimer > 0) {
-            enemy.stunResistanceTimer -= k.dt();
+            enemy.stunResistanceTimer -= k.dt() * timeScale;
         } else enemy.stunResistance = false;
 
         while (attackTimer <= 0 && store.get(gameStateAtom).waveActive) {
@@ -175,7 +179,7 @@ export default function makeEnemy(
             attackTimer += enemy.attacker!.attackCooldown;
         }
         if (attackTimer > 0) {
-            attackTimer -= k.dt();
+            attackTimer -= k.dt() * timeScale;
         }
 
         if (!store.get(gameStateAtom).waveActive) {
@@ -186,15 +190,16 @@ export default function makeEnemy(
     });
 
     enemy.onStateUpdate("move", () => {
+        const timeScale = store.get(gameStateAtom).timeScale;
         if (enemy.isDying) return;
 
         if (enemy.invincibleCooldown && enemy.invincibleTimer > 0) {
-            enemy.invincibleTimer -= k.dt();
+            enemy.invincibleTimer -= k.dt() * timeScale;
             if (enemy.invincibleTimer <= 0) enemy.invincible = true;
         }
 
         if (enemy.invincible) {
-            enemy.invincibleDuration -= k.dt();
+            enemy.invincibleDuration -= k.dt() * timeScale;
             if (enemy.invincibleDuration <= 0) {
                 enemy.invincible = false;
                 enemy.invincibleTimer += enemy.invincibleCooldown;
@@ -208,10 +213,10 @@ export default function makeEnemy(
         }
 
         if (enemy.stunResistanceTimer > 0) {
-            enemy.stunResistanceTimer -= k.dt();
+            enemy.stunResistanceTimer -= k.dt() * timeScale;
         } else enemy.stunResistance = false;
 
-        if (enemy.attacker && attackTimer > 0) attackTimer -= k.dt();
+        if (enemy.attacker && attackTimer > 0) attackTimer -= k.dt() * timeScale;
 
         enemy.z = enemy.pos.y;
 
@@ -250,7 +255,7 @@ export default function makeEnemy(
         if (!next) return;
 
         dir = next.sub(enemy.pos).unit();
-        enemy.move(dir.scale(enemy.speed));
+        enemy.pos = enemy.pos.add(dir.scale(enemy.speed * k.dt() * timeScale));
 
         enemy.angle = dirToRotation(dir);
 
@@ -372,7 +377,7 @@ export default function makeEnemy(
         // healing enemies if healer
         if (!enemy.healer && !enemy.healTickRate) return;
 
-        healTimer -= k.dt();
+        healTimer -= k.dt() * timeScale;
 
         while (healTimer <= 0) {
             const circleEffect = k.add([
@@ -381,13 +386,13 @@ export default function makeEnemy(
                 k.outline(1, k.rgb(0, 255, 0)),
                 k.anchor("center"),
                 k.pos(enemy.pos),
-                k.lifespan(0.5),
+                lifespan(k, 0.5),
                 k.opacity(1),
                 k.scale(1),
                 {
                     update() {
-                        circleEffect.radius += k.dt() * 90;
-                        circleEffect.opacity -= k.dt() * 0.5;
+                        circleEffect.radius += k.dt() * timeScale * 90;
+                        circleEffect.opacity -= k.dt() * timeScale * 0.5;
                         circleEffect.pos = enemy.pos
                     }
                 }
@@ -426,6 +431,7 @@ export default function makeEnemy(
     });
 
     if (enemy.speedBooster) {
+        let t = 0;
         const boostRing = k.add([
             k.circle(enemy.speedBooster.range * TILE_SIZE, { fill: false }),
             k.color(),
@@ -436,6 +442,8 @@ export default function makeEnemy(
             k.scale(1),
             {
                 update() {
+                    const timeScale = store.get(gameStateAtom).timeScale;
+                    t += k.dt() * timeScale;
                     boostRing.pos = enemy.pos;
                     boostRing.opacity = 1 + Math.sin(k.time() * 3) * 0.1;
                 }
@@ -496,7 +504,7 @@ export default function makeEnemy(
                 k.sprite("ice puddle"),
                 k.anchor("center"),
                 k.pos(enemy.pos),
-                k.lifespan(2),
+                lifespan(k, 2),
                 k.opacity(1),
                 "slime ice"
             ]);
@@ -542,15 +550,14 @@ function spawnPresent(k: KAPLAYCtx, pos: Vec2, enemiesToSpawn: { id: presentSpaw
     const present = k.add([
         k.pos(pos),
         k.anchor("center"),
-        k.sprite("present", { anim: "idle" }),
-        k.timer()
+        k.sprite("present", { anim: "idle" })
     ]);
     
     present.onAnimEnd(anim => {
         if (anim === "open") k.destroy(present);
     });
 
-    present.wait(5, () => {
+    waitScaled(k, 5, () => {
 
         present.play("open");
 

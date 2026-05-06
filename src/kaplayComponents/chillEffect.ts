@@ -3,6 +3,7 @@ import type { EnemyGameObj, StatusEffectResult } from "../types";
 import type { StatusEffect, StatusEffectComp } from "./statusEffect";
 import { CHILL_PERCENT, MAX_CHILL_STACKS } from "../constants";
 import { updateSpeed } from "../entities/Enemy";
+import { gameStateAtom, store } from "../store";
 
 export type ChillComp = Comp & {
     id: StatusEffect;
@@ -49,7 +50,7 @@ export default function chillEffect(k: KAPLAYCtx, duration: number, stacks: numb
         },
 
         update(this: EnemyGameObj) {
-            timer -= k.dt();
+            timer -= k.dt() * store.get(gameStateAtom).timeScale;
 
             if (timer <= 0) {
                 stacks--;

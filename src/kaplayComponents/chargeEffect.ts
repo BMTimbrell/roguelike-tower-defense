@@ -2,6 +2,7 @@ import type { KAPLAYCtx, Comp, GameObj } from "kaplay";
 import type { StatusEffectResult } from "../types";
 import type { StatusEffect, StatusEffectComp } from "./statusEffect";
 import { MAX_CHARGE_STACKS } from "../constants";
+import { gameStateAtom, store } from "../store";
 
 export type ChargeComp = Comp & {
     id: StatusEffect;
@@ -45,7 +46,7 @@ export default function chargeEffect(k: KAPLAYCtx, duration: number, stacks: num
         },
 
         update(this: GameObj<{ isDying: boolean; }>) {
-            timer -= k.dt();
+            timer -= k.dt() * store.get(gameStateAtom).timeScale;
 
             if (timer <= 0) {
                 stacks--;

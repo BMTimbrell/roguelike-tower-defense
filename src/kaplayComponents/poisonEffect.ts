@@ -3,6 +3,7 @@ import type { EnemyGameObj, StatusEffectResult } from "../types";
 import type { StatusEffect } from "./statusEffect";
 import hurtEnemy from "../utils/hurtEnemy";
 import { MAX_POISON_STACKS } from "../constants";
+import { gameStateAtom, store } from "../store";
 
 export type PoisonComp = Comp & {
     id: StatusEffect;
@@ -47,7 +48,7 @@ export default function poisonEffect(k: KAPLAYCtx, stacks: number): PoisonComp {
         },
 
         update(this: EnemyGameObj) {
-            tickTimer += k.dt();
+            tickTimer += k.dt() * store.get(gameStateAtom).timeScale;
 
             if (tickTimer >= tickRate) {
                 tickTimer -= tickRate;

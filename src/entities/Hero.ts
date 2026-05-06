@@ -253,13 +253,18 @@ export default function makeHero(k: KAPLAYCtx,
         });
 
         const update = hero.onUpdate(() => {
+            const timeScale = store.get(gameStateAtom).timeScale;
             if (hero.placed) {
-                if (hero.state === "disabled" && k.time() >= hero.disabledUntil) {
-                    hero.enterState("active");
+                if (hero.disabledTimeLeft > 0) {
+                    hero.disabledTimeLeft -= k.dt() * timeScale;
+
+                    if (hero.disabledTimeLeft <= 0) {
+                        hero.enterState("active");
+                    }
                 }
 
                 if (hero.fireIntervalBoostTimer > 0) {
-                    hero.fireIntervalBoostTimer -= k.dt();
+                    hero.fireIntervalBoostTimer -= k.dt() * timeScale;
                 } else hero.fireIntervalBoostTimer = 0;
 
                 if (hero.state === "disabled") return;

@@ -2,6 +2,7 @@ import type { KAPLAYCtx, Comp, HealthComp, GameObj, PosComp } from "kaplay";
 import type { EnemyGameObj, StatusEffectResult } from "../types";
 import type { StatusEffect, StatusEffectComp } from "./statusEffect";
 import hurtEnemy from "../utils/hurtEnemy";
+import { gameStateAtom, store } from "../store";
 
 export type BurnComp = Comp & {
     id: StatusEffect;
@@ -39,8 +40,8 @@ export default function burnEffect(k: KAPLAYCtx, duration: number): BurnComp {
         },
 
         update(this: GameObj<HealthComp | PosComp | { isDying: boolean, armour: number; }>) {
-            tickTimer += k.dt();
-            timer -= k.dt();
+            tickTimer += k.dt() * store.get(gameStateAtom).timeScale;
+            timer -= k.dt() * store.get(gameStateAtom).timeScale;
 
             if (tickTimer >= tickRate) {
                 tickTimer -= tickRate;

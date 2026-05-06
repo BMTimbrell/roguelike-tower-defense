@@ -437,7 +437,7 @@ export default function makeLevelScene(k: KAPLAYCtx, sceneName: Scene) {
                     {
                         update() {
                             particle.move(isEast ? speed : -speed, yDrift);
-                            particle.opacity -= k.dt() * 1.5;
+                            particle.opacity -= k.dt() * store.get(gameStateAtom).timeScale * 1.5;
 
                             if (particle.opacity <= 0) k.destroy(particle);
                         }

@@ -12,6 +12,8 @@ import drawLaser from "./drawLaser";
 import isEnemyOnRay from "./isEnemyOnRay";
 import enemiesInCone from "./enemiesInCone";
 import getBuffValue from "./getBuffValue";
+import { lifespan } from "../kaplayComponents/lifespan";
+import { waitScaled } from "./timerFunctions";
 
 export default function makeUnitCombat(
     k: KAPLAYCtx,
@@ -49,6 +51,8 @@ export default function makeUnitCombat(
         },
         k.state("idle", ["idle", "meleeSwing"])
     ]);
+
+    gun.animSpeed = store.get(gameStateAtom).timeScale;
 
     if (opts.owner.melee?.meleeHandleSprite && opts.owner.melee?.meleeHeadSprite) {
         const handleLength = opts.owner.melee?.handleLength;
@@ -244,13 +248,13 @@ export default function makeUnitCombat(
                 ctx.lightning.maxChains = Math.floor(ctx.attacker.battery.charge / 20) + 1;
                 ctx.damage += ctx.attacker.battery.charge * 0.5;
             }
-            const damageMult = 1 + getBuffValue(k, opts.owner as TowerGameObj, "damage");
+            const damageMult = 1 + getBuffValue(opts.owner as TowerGameObj, "damage");
 
             const { isCrit, damage } = calcDamage({
                 bonusDamage: 0,
                 bonusCritChance: enemy.has("curse") ? CURSE_CRIT + (k.get("hero")[0]?.hasCurseBuff ? 10 : 0) : 0,
-                critChance: opts.stats.critChance + (getBuffValue(k, opts.owner as TowerGameObj, "critChance") * 100),
-                critDamage: opts.stats.critDamage * (1 + getBuffValue(k, opts.owner as TowerGameObj, "critDamage")),
+                critChance: opts.stats.critChance + (getBuffValue(opts.owner as TowerGameObj, "critChance") * 100),
+                critDamage: opts.stats.critDamage * (1 + getBuffValue(opts.owner as TowerGameObj, "critDamage")),
                 damage: ctx.damage,
                 damageMultiplier: damageMult
             });
@@ -303,8 +307,8 @@ export default function makeUnitCombat(
                 const { isCrit, damage } = calcDamage({
                     bonusDamage,
                     bonusCritChance: bonusCrit,
-                    critChance: opts.stats.critChance + (getBuffValue(k, opts.owner as TowerGameObj, "critChance") * 100),
-                    critDamage: opts.stats.critDamage * (1 + getBuffValue(k, opts.owner as TowerGameObj, "critDamage")),
+                    critChance: opts.stats.critChance + (getBuffValue(opts.owner as TowerGameObj, "critChance") * 100),
+                    critDamage: opts.stats.critDamage * (1 + getBuffValue(opts.owner as TowerGameObj, "critDamage")),
                     damage: ctx.damage,
                     damageMultiplier: damageMult
                 });
@@ -355,7 +359,7 @@ export default function makeUnitCombat(
 
             opts.owner.effects?.forEach(e => e.firstEffect?.(ctx));
             opts.owner.effects?.forEach(e => e.secondEffect?.(ctx));
-            const damageMult = 1 + getBuffValue(k, opts.owner as TowerGameObj, "damage");
+            const damageMult = 1 + getBuffValue(opts.owner as TowerGameObj, "damage");
 
             if (!ctx.isSummon) {
                 makePathEntity(k, {
@@ -364,8 +368,8 @@ export default function makeUnitCombat(
                     targetPos: target.pos,
                     damage: opts.stats.damage,
                     damageMultiplier: damageMult,
-                    critChance: opts.stats.critChance + (getBuffValue(k, opts.owner as TowerGameObj, "critChance") * 100),
-                    critDamage: opts.stats.critDamage * (1 + getBuffValue(k, opts.owner as TowerGameObj, "critDamage")),
+                    critChance: opts.stats.critChance + (getBuffValue(opts.owner as TowerGameObj, "critChance") * 100),
+                    critDamage: opts.stats.critDamage * (1 + getBuffValue(opts.owner as TowerGameObj, "critDamage")),
                     element: opts.owner.element,
                     projectileId: opts.projectile ?? "basic"
                 });
@@ -375,7 +379,7 @@ export default function makeUnitCombat(
     }
 
     function update() {
-        const fireRateBuff = getBuffValue(k, opts.owner as TowerGameObj, "fireRate");
+        const fireRateBuff = getBuffValue(opts.owner as TowerGameObj, "fireRate");
         const interval =
             opts.owner.stats.fireInterval *
             (opts.owner.timeData?.timeMultiplier ?? 1)
@@ -394,7 +398,7 @@ export default function makeUnitCombat(
         }
 
         if (shootTimer > 0) {
-            shootTimer -= k.dt();
+            shootTimer -= k.dt() * store.get(gameStateAtom).timeScale;
         }
 
         if (!store.get(gameStateAtom).waveActive) {
@@ -409,7 +413,7 @@ export default function makeUnitCombat(
             const turnSpeed = 12;
 
             const diff = shortestAngleDiff(gun.angle, desired);
-            gun.angle += diff * Math.min(1, turnSpeed * k.dt());
+            gun.angle += diff * Math.min(1, turnSpeed * k.dt() * store.get(gameStateAtom).timeScale);
 
         } else gun.angle = 0;
 
@@ -544,19 +548,19 @@ export function aoeBurst(k: KAPLAYCtx, pos: Vec2, radius: number, particle: stri
             k.anchor("center"),
             k.opacity(0.8),
             k.scale(startScale),
-            k.lifespan(life),
+            lifespan(k, life),
             {
                 time: 0,
 
                 update() {
-                    p.time += k.dt();
+                    p.time += k.dt() * store.get(gameStateAtom).timeScale;
                     const t = p.time / life;
 
                     p.opacity = 0.8 * (1 - t);
 
                     p.scale = k.vec2(startScale * (1 - t));
 
-                    p.pos.y -= 6 * k.dt();
+                    p.pos.y -= 6 * k.dt() * store.get(gameStateAtom).timeScale;
                 },
             },
         ]);
@@ -621,7 +625,7 @@ function lightningAttack(k: KAPLAYCtx, ctx: AttackContext, dmg: DamageResult) {
 
     const lightning = k.add([
         k.pos(0, 0),
-        k.lifespan(0.2),
+        lifespan(k, 0.2),
         k.opacity(1),
         {
             segments: [] as Vec2[][],
@@ -666,7 +670,7 @@ function meleeAttack(
         handleLength
     });
 
-    k.wait(swingTime ?? 0.15, () => {
+    waitScaled(k, swingTime ?? 0.15, () => {
         if (splashRadius) {
             (k.get("enemy") as EnemyGameObj[]).forEach(e => {
                 if (e.pos.dist(target.enemy.pos) < splashRadius * TILE_SIZE) hurtEnemy(k, {
@@ -766,7 +770,7 @@ function blizzardAttack(
                 k.vec2(k.rand(-80, -40), -10),
                 k.rand(20, 80)
             ),
-            k.lifespan(0.6),
+            lifespan(k, 0.6),
             k.z(9999),
             k.opacity(k.rand(0.5, 1)),
             k.scale(k.rand(0.5, 1.2)),
@@ -852,21 +856,21 @@ function spawnFlameParticles(
             k.anchor("center"),
             k.opacity(1),
             k.scale(k.rand(0.8, 1.4)),
-            k.lifespan(life),
+            lifespan(k, life),
             {
                 vel,
                 time: 0,
                 update() {
-                    flame.time += k.dt();
+                    flame.time += k.dt() * store.get(gameStateAtom).timeScale;
 
-                    flame.pos = flame.pos.add(flame.vel.scale(k.dt()));
+                    flame.pos = flame.pos.add(flame.vel.scale(k.dt() * store.get(gameStateAtom).timeScale));
 
                     const p = flame.time / life;
 
                     flame.opacity = 1 - p / 3;
                     flame.scale = k.vec2(1.4 * (1 - p / 2));
 
-                    flame.pos.y -= 12 * k.dt();
+                    flame.pos.y -= 12 * k.dt() * store.get(gameStateAtom).timeScale;
                 }
             }
         ]);

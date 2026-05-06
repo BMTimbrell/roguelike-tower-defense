@@ -1,4 +1,6 @@
 import type { Vec2, KAPLAYCtx } from 'kaplay';
+import { gameStateAtom, store } from '../store';
+import { lifespan } from '../kaplayComponents/lifespan';
 
 export default function makeFloatingText(k: KAPLAYCtx, opts: {
     color?: string;
@@ -25,7 +27,7 @@ export default function makeFloatingText(k: KAPLAYCtx, opts: {
             }),
             k.color("#000000"),
             k.opacity(1),
-            k.lifespan(life),
+            lifespan(k, life),
             k.scale(1),
             "fTextOutline",
             k.z(999999)
@@ -35,7 +37,7 @@ export default function makeFloatingText(k: KAPLAYCtx, opts: {
     const fText = k.add([
         k.pos(pos),
         k.color(color),
-        k.lifespan(life),
+        lifespan(k, life),
         k.text(text, {
             size,
             font: "free pixel"
@@ -50,7 +52,8 @@ export default function makeFloatingText(k: KAPLAYCtx, opts: {
     const all = [fText, ...outlines];
 
     fText.onUpdate(() => {
-        const dt = k.dt();
+        const timeScale = store.get(gameStateAtom).timeScale;
+        const dt = k.dt() * timeScale;
         time += dt;
 
         const t = Math.min(time / life, 1);

@@ -3,6 +3,7 @@ import type { ElementName, EnemyGameObj } from "../types";
 import hurtEnemy from "../utils/hurtEnemy";
 import calcDamage from "../utils/calcDamage";
 import { CURSE_CRIT, PROJECTILES, TILE_SIZE, type ProjectileId } from "../constants";
+import { gameStateAtom, store } from "../store";
 
 export default function makePathEntity(
     k: KAPLAYCtx,
@@ -31,12 +32,15 @@ export default function makePathEntity(
         "pathEntity"
     ]);
 
+    entity.animSpeed = store.get(gameStateAtom).timeScale;
+
     let pathEntity: GameObj | null = null;
     const splashRadius = PROJECTILES[projectileId].splashRadius * TILE_SIZE;
 
     entity.onUpdate(() => {
+        const timeScale = store.get(gameStateAtom).timeScale;
         const direction = targetPos.sub(entity.pos).unit();
-        entity.pos = entity.pos.add(direction.scale(200 * k.dt()));
+        entity.pos = entity.pos.add(direction.scale(200 * k.dt() * timeScale));
 
         if (entity.pos.dist(targetPos) < 4) {
             pathEntity = k.add([
@@ -104,6 +108,8 @@ export default function makePathEntity(
                         k.anchor("center"),
                         k.pos(entity.pos)
                     ]);
+
+                    explosion.animSpeed = timeScale;
 
                     explosion.onAnimEnd(() => k.destroy(explosion));
                 }

@@ -1,6 +1,7 @@
 import type { KAPLAYCtx, Comp, GameObj} from "kaplay";
 import type { StatusEffectResult } from "../types";
 import type { StatusEffect, StatusEffectComp } from "./statusEffect";
+import { gameStateAtom, store } from "../store";
 
 export type CurseComp = Comp & {
     id: StatusEffect;
@@ -37,7 +38,7 @@ export default function blindEffect(k: KAPLAYCtx, duration: number): CurseComp {
         },
 
         update(this: GameObj<{ isDying: boolean }>) {
-            timer -= k.dt();
+            timer -= k.dt() * store.get(gameStateAtom).timeScale;
 
             if (timer <= 0 || this.isDying) {
                 this.unuse("blind");

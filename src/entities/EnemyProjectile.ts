@@ -2,6 +2,7 @@ import type { KAPLAYCtx, Vec2 } from "kaplay";
 import { PROJECTILES, TILE_SIZE, type ProjectileId } from "../constants";
 import type { HeroGameObj, TowerGameObj } from "../types";
 import makeFloatingText from "./FloatingText";
+import { gameStateAtom, store } from "../store";
 
 export default function makeEnemyProjectile(k: KAPLAYCtx, opts: {
     id: ProjectileId;
@@ -23,13 +24,16 @@ export default function makeEnemyProjectile(k: KAPLAYCtx, opts: {
         k.z(9999)
     ]);
 
+    projectile.animSpeed = store.get(gameStateAtom).timeScale;
+
     const targetPos = target.pos.add((target.footprint.w * TILE_SIZE) / 2, (target.footprint.h * TILE_SIZE) / 2);
 
     projectile.onUpdate(() => {
+        const timeScale = store.get(gameStateAtom).timeScale;
         const dir = targetPos.sub(projectile.pos).unit();
         projectile.angle = projectile.pos.angle(target.pos);
 
-        projectile.pos = projectile.pos.add(dir.scale(projectile.speed * k.dt()));
+        projectile.pos = projectile.pos.add(dir.scale(projectile.speed * k.dt() * timeScale));
 
         if (projectile.pos.dist(targetPos) < 4) {
 
@@ -43,9 +47,9 @@ export default function makeEnemyProjectile(k: KAPLAYCtx, opts: {
             } else if (Math.random() < hitChance) {
                 const duration = 2;
 
-                target.disabledUntil = Math.max(
-                    target.disabledUntil,
-                    k.time() + duration
+                target.disabledTimeLeft = Math.max(
+                    target.disabledTimeLeft ?? 0,
+                    duration
                 );
 
                 target.enterState("disabled");
@@ -72,6 +76,7 @@ export default function makeEnemyProjectile(k: KAPLAYCtx, opts: {
                 k.z(999),
                 k.anchor("center")
             ]);
+            animSprite.animSpeed = store.get(gameStateAtom).timeScale;
             animSprite.onAnimEnd(() => k.destroy(animSprite));
         }
     });

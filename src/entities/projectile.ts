@@ -47,6 +47,8 @@ export default function makeProjectile(k: KAPLAYCtx, opts: {
         k.z(9999)
     ]);
 
+    projectile.animSpeed = store.get(gameStateAtom).timeScale;
+
     let timeAlive = 0;
     let distance = 0;
     let direction = k.Vec2.fromAngle(projectile.angle + 180);
@@ -69,11 +71,13 @@ export default function makeProjectile(k: KAPLAYCtx, opts: {
                 k.z(999),
                 k.anchor("center")
             ]);
+            animSprite.animSpeed = store.get(gameStateAtom).timeScale;
             animSprite.onAnimEnd(() => k.destroy(animSprite));
         }
     });
 
     projectile.onUpdate(() => {
+        const timeScale = store.get(gameStateAtom).timeScale;
         const persistentAndEnemyOutOfRange = target && behaviors?.persistent?.owner && behaviors.persistent.origin.dist(target.pos) > (behaviors.persistent.owner.stats.range + 1) * TILE_SIZE;
         if (homing && (!target || !isValidTarget(target) || persistentAndEnemyOutOfRange)) {
             const origin = behaviors?.persistent ? behaviors.persistent.origin : projectile.pos;
@@ -101,7 +105,7 @@ export default function makeProjectile(k: KAPLAYCtx, opts: {
 
                     if (!noRotate) projectile.angle = projectile.pos.angle(towerPos);
                     projectile.pos = projectile.pos.add(
-                        dir.unit().scale(projectile.speed * k.dt())
+                        dir.unit().scale(projectile.speed * k.dt() * timeScale)
                     );
 
                     // Arrived
@@ -120,7 +124,7 @@ export default function makeProjectile(k: KAPLAYCtx, opts: {
 
         if (behaviors?.persistent?.state === "attached") {
             projectile.pos = target?.pos ?? projectile.pos;
-            retargetTimer -= k.dt();
+            retargetTimer -= k.dt() * timeScale;
 
             if (behaviors?.persistent && retargetTimer <= 0) {
                 retargetTimer = 0.2;
@@ -140,11 +144,11 @@ export default function makeProjectile(k: KAPLAYCtx, opts: {
 
             if (behaviors.persistent.owner.state === "disabled") k.destroy(projectile);
     
-        } else projectile.pos = projectile.pos.add(direction.scale(projectile.speed * k.dt()));
-        timeAlive += k.dt();
+        } else projectile.pos = projectile.pos.add(direction.scale(projectile.speed * k.dt() * timeScale));
+        timeAlive += k.dt() * timeScale;
 
         if (behaviors?.distanceDamageCap && behaviors.distanceDamageCap > distanceDamageMultiplier) {
-            distance += k.dt() * speed;
+            distance += k.dt() * timeScale * speed;
             const distanceTiles = distance / TILE_SIZE;
             distanceDamageMultiplier = Math.min(distanceTiles * (behaviors.damagePerTile ?? 0.05), behaviors.distanceDamageCap);
             damage = Math.round(baseDamage + baseDamage * distanceDamageMultiplier);
@@ -155,7 +159,7 @@ export default function makeProjectile(k: KAPLAYCtx, opts: {
             const desired = projectile.pos.angle(target.pos);
 
             const diff = shortestAngleDiff(projectile.angle, desired);
-            projectile.angle += diff * Math.min(1, projectile.turnSpeed * k.dt());
+            projectile.angle += diff * Math.min(1, projectile.turnSpeed * k.dt() * timeScale);
             direction = target.pos.sub(projectile.pos).unit();
         }
 
@@ -166,16 +170,16 @@ export default function makeProjectile(k: KAPLAYCtx, opts: {
                 behaviors.persistent.state = "attached";
             }
 
-            if (attackTimer !== null) attackTimer -= k.dt();
+            if (attackTimer !== null) attackTimer -= k.dt() * timeScale;
             if (!target.isDying && (behaviors?.persistent?.state !== "attached" || (attackTimer !== null && attackTimer <= 0))) {
                 if (behaviors?.persistent) {
                     const owner = behaviors.persistent.owner;
-                    const damageMult = 1 + getBuffValue(k, owner, "damage");
+                    const damageMult = 1 + getBuffValue(owner, "damage");
                     const { isCrit, damage: newDamage } = calcDamage({
                         bonusDamage: 0,
                         bonusCritChance: target.has("curse") ? CURSE_CRIT + (k.get("hero")[0]?.hasCurseBuff ? 10 : 0) : 0,
-                        critChance: owner.stats.critChance + (getBuffValue(k, owner, "critChance") * 100),
-                        critDamage: owner.stats.critDamage * (1 + getBuffValue(k, owner, "critDamage")),
+                        critChance: owner.stats.critChance + (getBuffValue(owner, "critChance") * 100),
+                        critDamage: owner.stats.critDamage * (1 + getBuffValue(owner, "critDamage")),
                         damage: owner.stats.damage,
                         damageMultiplier: damageMult
                     });
@@ -202,7 +206,7 @@ export default function makeProjectile(k: KAPLAYCtx, opts: {
                 }
 
                 if (attackTimer !== null && behaviors?.persistent?.owner) {
-                    const fireRateBuff = getBuffValue(k, behaviors.persistent.owner, "fireRate");
+                    const fireRateBuff = getBuffValue(behaviors.persistent.owner, "fireRate");
                     attackTimer += behaviors.persistent.owner.stats.fireInterval * (1 - fireRateBuff);
                 }
                     

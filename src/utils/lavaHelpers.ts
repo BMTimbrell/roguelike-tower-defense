@@ -13,7 +13,7 @@ export function makeLavaManager(k: KAPLAYCtx) {
     k.onUpdate(() => {
         if (!store.get(gameStateAtom).waveActive) return;
 
-        tick += k.dt();
+        tick += k.dt() * store.get(gameStateAtom).timeScale;
 
         while (tick >= tickRate) {
             tick -= tickRate;
@@ -36,14 +36,14 @@ export function makeLavaManager(k: KAPLAYCtx) {
     
                         if (!tower) return;
     
-                        const damageMult = 1 + getBuffValue(k, tower, "damage");
+                        const damageMult = 1 + getBuffValue(tower, "damage");
     
                         const { damage, isCrit } = calcDamage({
                             damage: tower.stats.damage,
                             bonusDamage: 0,
                             bonusCritChance: e.has("curse") ? CURSE_CRIT + (k.get("hero")[0]?.hasCurseBuff ? 10 : 0) : 0,
-                            critChance: tower.stats.critChance + (getBuffValue(k, tower, "critChance") * 100),
-                            critDamage: tower.stats.critDamage * (1 + getBuffValue(k, tower, "critDamage")),
+                            critChance: tower.stats.critChance + (getBuffValue(tower, "critChance") * 100),
+                            critDamage: tower.stats.critDamage * (1 + getBuffValue(tower, "critDamage")),
                             damageMultiplier: damageMult
                         });
     

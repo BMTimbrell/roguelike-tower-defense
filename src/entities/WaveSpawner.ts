@@ -7,6 +7,7 @@ import { store, gameStateAtom, challengesAtom } from "../store";
 import screenPos from "../utils/screenPos";
 import drawCards from "../utils/drawCards";
 import makeTower from "./Tower";
+import setGameSpeed from "../utils/setGameSpeed";
 
 export default function makeWaveSpawner(k: KAPLAYCtx, levelId: LevelId, waypoints: Vec2[], opts?: { onWaveEnd?: () => void; onWaveStart?: () => void; }) {
     const level = LEVEL_WAVES[levelId];
@@ -35,7 +36,6 @@ export default function makeWaveSpawner(k: KAPLAYCtx, levelId: LevelId, waypoint
 
     const spawner = k.add([
         "waveSpawner",
-        k.timer(),
         {
             waveIndex: -1,
             add() {
@@ -113,6 +113,7 @@ export default function makeWaveSpawner(k: KAPLAYCtx, levelId: LevelId, waypoint
                         k.stay(),
                         {
                             update() {
+                                setGameSpeed(k, 1);
                                 complete.timer -= k.dt();
                                 if (complete.timer <= 1) {
                                     k.go("levelTransition", store.get(gameStateAtom).hero);
@@ -229,19 +230,10 @@ export default function makeWaveSpawner(k: KAPLAYCtx, levelId: LevelId, waypoint
                 });
             }
 
-            // if (waitingForNextWave) {
-            //     nextWaveTimer -= k.dt();
-
-            //     if (nextWaveTimer <= 0) {
-            //         waitingForNextWave = false;
-            //         spawner.startNextWave();
-            //     }
-            // }
-
             return;
         }
 
-        timer += k.dt();
+        timer += k.dt() * store.get(gameStateAtom).timeScale;
 
         while (spawnQueue.length && spawnQueue[0].time <= timer) {
             const spawn = spawnQueue.shift()!;

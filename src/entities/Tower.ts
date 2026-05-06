@@ -13,6 +13,7 @@ import hurtEnemy from '../utils/hurtEnemy';
 import calcDamage from '../utils/calcDamage';
 import getBuffValue from '../utils/getBuffValue';
 import isButtonDown from '../utils/isButtonDown';
+import { waitScaled } from '../utils/timerFunctions';
 
 export default function makeTower(
     k: KAPLAYCtx,
@@ -94,7 +95,7 @@ export default function makeTower(
             ...("continuousEffect" in TOWERS[towerId] ? { continuousEffect: TOWERS[towerId].continuousEffect as ContinuousEffect } : {}),
             ...("charge" in TOWERS[towerId] ? { charge: { ...(TOWERS[towerId].charge as Charge) } } : {}),
             ...("battery" in TOWERS[towerId] ? { battery: { ...(TOWERS[towerId].battery as Battery) } } : {}),
-            disabledUntil: 0
+            disabledTimeLeft: 0
         },
         k.state("active", ["active", "disabled"]),
         "tower",
@@ -203,8 +204,9 @@ export default function makeTower(
                 ]);
 
                 orbiter.onUpdate(() => {
+                    const timeScale = store.get(gameStateAtom).timeScale;
                     orbiter.r = tower.stats.range * TILE_SIZE;
-                    const fireRateBuff = getBuffValue(k, tower, "fireRate");
+                    const fireRateBuff = getBuffValue(tower, "fireRate");
 
                     if (tower.state === "disabled") {
                         orbiter.speed = 0;
@@ -212,7 +214,7 @@ export default function makeTower(
                     }
 
                     orbiter.speed = 2 * Math.PI / ((1 - fireRateBuff) * tower.stats.fireInterval);
-                    orbiter.angle += orbiter.speed * k.dt();
+                    orbiter.angle += orbiter.speed * k.dt() * timeScale;
 
                     const cx = tower.pos.x + (tower.footprint.w * TILE_SIZE) / 2;
                     const cy = tower.pos.y + (tower.footprint.h * TILE_SIZE) / 2;
@@ -224,18 +226,18 @@ export default function makeTower(
                         if (orbiter.hitEnemies.has(enemy)) return;
 
                         if (enemy.pos.dist(orbiter.pos) < TILE_SIZE * 0.75 && store.get(gameStateAtom).waveActive) {
-                            const damageMult = 1 + getBuffValue(k, tower, "damage");
+                            const damageMult = 1 + getBuffValue(tower, "damage");
 
                             const { isCrit, damage } = calcDamage({
                                 bonusDamage: 0,
                                 bonusCritChance: enemy.has("curse") ? CURSE_CRIT + (k.get("hero")[0]?.hasCurseBuff ? 10 : 0) : 0,
-                                critChance: tower.stats.critChance + (getBuffValue(k, tower, "critChance") * 100),
-                                critDamage: tower.stats.critDamage * (1 + getBuffValue(k, tower, "critDamage")),
+                                critChance: tower.stats.critChance + (getBuffValue(tower, "critChance") * 100),
+                                critDamage: tower.stats.critDamage * (1 + getBuffValue(tower, "critDamage")),
                                 damage: tower.stats.damage,
                                 damageMultiplier: damageMult
                             });
                             orbiter.hitEnemies.add(enemy);
-                            k.wait(1, () => orbiter.hitEnemies.delete(enemy));
+                            waitScaled(k, 1, () => orbiter.hitEnemies.delete(enemy));
                             hurtEnemy(k, {
                                 target: enemy,
                                 damage,
@@ -309,6 +311,7 @@ export default function makeTower(
     });
 
     tower.onUpdate(() => {
+        const timeScale = store.get(gameStateAtom).timeScale;
         if (!tower.placed) {
             const controls = store.get(controlsAtom);
             if (isButtonDown(k, controls, "cancel")) k.destroy(tower);
@@ -340,10 +343,14 @@ export default function makeTower(
 
             icon.pos = tower.pos.add(i * 20, 0);
 
-            if (buff.expiresAt < k.time()) delete buffs[type as BuffType];
+            buff.timeLeft -= k.dt() * timeScale;
 
-            const timeLeft = buff.expiresAt - k.time();
-            icon.opacity = Math.max(0.3, timeLeft / 3);
+            if (buff.timeLeft <= 0) {
+                delete buffs[type as BuffType];
+                continue;
+            }
+
+            icon.opacity = Math.max(0.3, buff.timeLeft / 3);
 
             i++;
         }
@@ -355,16 +362,20 @@ export default function makeTower(
             }
         }
 
-        if (tower.state === "disabled" && k.time() >= tower.disabledUntil) {
-            tower.enterState("active");
+        if (tower.disabledTimeLeft > 0) {
+            tower.disabledTimeLeft -= k.dt() * timeScale;
+
+            if (tower.disabledTimeLeft <= 0) {
+                tower.enterState("active");
+            }
         }
 
-        tower.lastShotTime += k.dt();
+        tower.lastShotTime += k.dt() * timeScale;
 
         if (tower.charge && tower.lastShotTime > tower.charge.decayDelay) {
             tower.charge.currentCharge = Math.max(
                 0,
-                tower.charge.currentCharge - 0.5 * k.dt()
+                tower.charge.currentCharge - 0.5 * k.dt() * timeScale
             );
         }
 
@@ -375,7 +386,7 @@ export default function makeTower(
 
             td.timeMultiplier = Math.min(
                 td.maxMultiplier,
-                td.timeMultiplier * Math.pow(td.growthPerSecond, k.dt())
+                td.timeMultiplier * Math.pow(td.growthPerSecond, k.dt() * timeScale)
             );
         }
 

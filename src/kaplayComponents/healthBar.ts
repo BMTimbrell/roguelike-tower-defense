@@ -1,5 +1,6 @@
 import type { Comp, GameObj, KAPLAYCtx } from "kaplay";
 import type { EnemyGameObj } from "../types";
+import { gameStateAtom, store } from "../store";
 
 export default function healthBar(k: KAPLAYCtx, duration: number, opts?: { isBoss: boolean }): Comp {
     let timer = duration;
@@ -109,7 +110,7 @@ export default function healthBar(k: KAPLAYCtx, duration: number, opts?: { isBos
         update(this: GameObj) {
             if (opts?.isBoss) return;
 
-            timer -= k.dt();
+            timer -= k.dt() * store.get(gameStateAtom).timeScale;
 
             if ((timer <= 0 || this.isDying) && this.statuses.length < 1) {
                 this.unuse("healthBar");

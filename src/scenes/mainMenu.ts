@@ -1,5 +1,5 @@
 import type { KAPLAYCtx } from "kaplay";
-import { gameStateAtom, store, startingOptionsAtom, selectHeroUIAtom, shopChoiceUIAtom, shopAtom, altarAtom, mainMenuAtom } from "../store";
+import { gameStateAtom, store, startingOptionsAtom, selectHeroUIAtom, shopChoiceUIAtom, shopAtom, altarAtom, mainMenuAtom, gameSpeedUIAtom } from "../store";
 import initCam from "../utils/initCam";
 import type { Scene, Upgrade } from "../types";
 import { CHARGE_DAMAGE_REQUIRED, type HeroId, type TowerId } from "../constants";
@@ -8,6 +8,7 @@ import addTowers from "../utils/addTowers";
 import generateDeck from "../utils/generateDeck";
 import generateMap from "../utils/generateMap";
 import makeHero from "../entities/Hero";
+import setGameSpeed from "../utils/setGameSpeed";
 
 export default function mainMenu(k: KAPLAYCtx) {
     k.scene("mainMenu" satisfies Scene, async () => {
@@ -141,6 +142,21 @@ export default function mainMenu(k: KAPLAYCtx) {
                             visible: true
                         }));
                     }
+                }
+            ]
+        }));
+
+        store.set(gameSpeedUIAtom, prev => ({
+            ...prev,
+            visible: true,
+            buttons: [
+                {
+                    name: "normal",
+                    onClick: () => setGameSpeed(k, 1)
+                },
+                {
+                    name: "speed up",
+                    onClick: () => setGameSpeed(k, 2)
                 }
             ]
         }));
