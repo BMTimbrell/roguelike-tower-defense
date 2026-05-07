@@ -119,7 +119,7 @@ export default function makeWaveSpawner(k: KAPLAYCtx, levelId: LevelId, waypoint
                                     visible: false,
                                     activeIndex: 0
                                 }));
-                                
+
                                 complete.timer -= k.dt();
                                 if (complete.timer <= 1) {
                                     k.go("levelTransition", store.get(gameStateAtom).hero);
@@ -145,7 +145,7 @@ export default function makeWaveSpawner(k: KAPLAYCtx, levelId: LevelId, waypoint
                     opts?.onWaveEnd?.();
                     store.set(gameStateAtom, prev => ({
                         ...prev,
-                        gold: prev.gold + (level.waves[spawner.waveIndex].reward * incomeMod),
+                        gold: prev.gold + (Math.round(level.waves[spawner.waveIndex].reward * incomeMod)),
                         deck: {
                             ...prev.deck,
                             drawCost: BASE_DRAW_COST

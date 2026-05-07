@@ -8,7 +8,6 @@ import addTowers from "../utils/addTowers";
 import generateDeck from "../utils/generateDeck";
 import generateMap from "../utils/generateMap";
 import makeHero from "../entities/Hero";
-import setGameSpeed from "../utils/setGameSpeed";
 
 export default function mainMenu(k: KAPLAYCtx) {
     k.scene("mainMenu" satisfies Scene, async () => {
@@ -21,6 +20,12 @@ export default function mainMenu(k: KAPLAYCtx) {
             initCam(k);
         });
 
+        store.set(gameSpeedUIAtom, prev => ({
+            ...prev,
+            visible: false,
+            activeIndex: 0
+        }));
+
         store.set(mainMenuAtom, prev => ({
             ...prev,
             visible: true
@@ -28,6 +33,7 @@ export default function mainMenu(k: KAPLAYCtx) {
 
         store.set(gameStateAtom, prev => ({
             ...prev,
+            timeScale: 1,
             scene: "mainMenu"
         }));
 

@@ -246,7 +246,8 @@ export default function makeUnitCombat(
 
             if (ctx.attacker.battery && ctx.lightning) {
                 ctx.lightning.maxChains = Math.floor(ctx.attacker.battery.charge / 20) + 1;
-                ctx.damage += ctx.attacker.battery.charge * 0.5;
+                ctx.lightning.range = Math.min(Math.floor(ctx.attacker.battery.charge / 20) + 1, 5);
+                ctx.damage += ctx.attacker.battery.charge * 0.42;
             }
             const damageMult = 1 + getBuffValue(opts.owner as TowerGameObj, "damage");
 
@@ -610,17 +611,33 @@ function lightningAttack(k: KAPLAYCtx, ctx: AttackContext, dmg: DamageResult) {
     const maxChains = ctx.lightning?.maxChains ?? 3;
     const range = (ctx.lightning?.range ?? 5) * TILE_SIZE;
 
-    const chain = resolveChain(k, {
-        startPos: ctx.origin,
+    const targets = resolveChain(k, {
         target: ctx.target.enemy,
-        damage: Math.round(damage * (ctx.lightning?.damageMult ?? 1)),
-        isCrit,
-        element: "Electric",
         maxChains,
-        range,
+        range
     });
 
     const attacker = ctx.attacker;
+
+    // if battery distribute damage
+    const efficiency = !attacker.battery ? 1 : 1 + ((maxChains / targets.length) - 1);
+
+    const finalDamage =
+        Math.round(
+            damage *
+            efficiency *
+            (ctx.lightning?.damageMult ?? 1)
+        );
+
+    targets.forEach(enemy => {
+        hurtEnemy(k, {
+            target: enemy,
+            damage: finalDamage,
+            isCrit,
+            element: "Electric",
+        });
+    });
+
     const chargeRatio = attacker.battery ? attacker.battery.charge / attacker.battery.maxCharge : 0;
 
     const lightning = k.add([
@@ -630,7 +647,7 @@ function lightningAttack(k: KAPLAYCtx, ctx: AttackContext, dmg: DamageResult) {
         {
             segments: [] as Vec2[][],
             update() {
-                lightning.segments = buildLightningSegments(k, chain);
+                lightning.segments = buildLightningSegments(k, [ctx.origin, ...targets.map(t => t.pos)]);
             },
             draw() {
                 lightning.segments.forEach(points => drawLightning(k, points, !attacker.battery ? 2 : 1 + chargeRatio * 6));

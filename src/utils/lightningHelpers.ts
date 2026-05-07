@@ -1,26 +1,20 @@
 import type { KAPLAYCtx, Vec2 } from "kaplay";
 import { selectBounceTarget } from "./targetingHelpers";
-import type { ElementName, EnemyGameObj } from "../types";
-import hurtEnemy from "./hurtEnemy";
+import type { EnemyGameObj } from "../types";
 
-export function resolveChain(k: KAPLAYCtx, {
-    startPos,
-    target,
-    damage,
-    isCrit,
-    element,
-    maxChains,
-    range
-}: {
-    startPos: Vec2;
-    target: EnemyGameObj;
-    element: ElementName;
-    damage: number;
-    isCrit: boolean;
-    maxChains: number;
-    range: number;
-}
-): Vec2[] {
+export function resolveChain(
+    k: KAPLAYCtx,
+    {
+        target,
+        maxChains,
+        range
+    }: {
+        target: EnemyGameObj;
+        maxChains: number;
+        range: number;
+    }
+): EnemyGameObj[] {
+
     const targets: EnemyGameObj[] = [];
     let nextTarget = target;
 
@@ -28,19 +22,20 @@ export function resolveChain(k: KAPLAYCtx, {
         if (!nextTarget) break;
 
         maxChains--;
+
         targets.push(nextTarget);
 
-        hurtEnemy(k, {
-            target: nextTarget,
-            damage,
-            isCrit,
-            element
-        });
-
-        nextTarget = selectBounceTarget(k, nextTarget, { bounceRange: range, exclude: new Set(targets) });
+        nextTarget = selectBounceTarget(
+            k,
+            nextTarget,
+            {
+                bounceRange: range,
+                exclude: new Set(targets)
+            }
+        );
     }
 
-    return [startPos, ...targets.map(t => t.pos)];
+    return targets;
 }
 
 export function buildLightningSegments(k: KAPLAYCtx, chain: Vec2[]) {
