@@ -107,7 +107,8 @@ export default function SelectedTower({ tower }: { tower: SelectedTowerUI }) {
             selectedUpgrade: null,
             selectedUI: {
                 ...tower,
-                upgrades: newUpgrades
+                upgrades: newUpgrades,
+                ...(prev.selectedUI && "previewRange" in prev.selectedUI ? { previewRange:  prev.selectedUI?.previewRange ?? null }  : {})
             }
         }));
 
@@ -131,6 +132,38 @@ export default function SelectedTower({ tower }: { tower: SelectedTowerUI }) {
         });
     }, [selectedUpgrade, unlockedUpgradeSlots]);
 
+    useEffect(() => {
+        const highlightedCount = upgradeSlots.filter(s => s.highlighted).length;
+
+        const shouldShowPreview =
+            selectedUpgrade &&
+            selectedUpgrade.stat === "range" &&
+            highlightedCount > 0;
+
+        const previewRange = shouldShowPreview
+            ? stats.range +
+            (REDUCED_RANGE_TOWERS.includes(name)
+                ? selectedUpgrade.amount / 2
+                : selectedUpgrade.amount)
+            : null;
+
+        setGameState(prev => {
+            if (!prev.selectedUI) return prev;
+
+            // avoid unnecessary updates
+            if ("previewRange" in prev.selectedUI && prev.selectedUI.previewRange === previewRange) {
+                return prev;
+            }
+
+            return {
+                ...prev,
+                selectedUI: {
+                    ...prev.selectedUI,
+                    previewRange
+                }
+            };
+        });
+    }, [selectedUpgrade, unlockedUpgradeSlots, stats.range, upgradeSlots, name]);
 
     return (
         <Popup mode="world" pos={pos}>

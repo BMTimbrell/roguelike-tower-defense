@@ -102,6 +102,40 @@ export default function makeUnitCombat(
         k.z(1)
     ]);
 
+    const previewRangeCircle = k.add([
+        k.pos(),
+        k.opacity(0.5),
+        k.z(1),
+        {
+            draw() {
+                const selectedUI = store.get(gameStateAtom).selectedUI;
+                if (selectedUI && "previewRange" in selectedUI) {
+                    const radius = (selectedUI?.previewRange ?? 0) * TILE_SIZE;
+
+                    const segments = 48;
+
+                    for (let i = 0; i < segments; i += 2) {
+                        const a1 = (i / segments) * Math.PI * 2;
+                        const a2 = ((i + 1) / segments) * Math.PI * 2;
+
+                        k.drawLine({
+                            p1: k.vec2(
+                                Math.cos(a1) * radius,
+                                Math.sin(a1) * radius
+                            ),
+                            p2: k.vec2(
+                                Math.cos(a2) * radius,
+                                Math.sin(a2) * radius
+                            ),
+                            width: 2,
+                            color: k.rgb(88, 255, 97)
+                        });
+                    }
+                }
+            }
+        }
+    ]);
+
     gun.onAnimEnd(anim => {
         if (anim === "shoot" && !opts.owner.activeProjectile) {
             gun.play("idle");
@@ -165,6 +199,24 @@ export default function makeUnitCombat(
         rangeCircle.hidden = !opts.owner.selected && !opts.owner.hovered;
 
         if (opts.owner.activeProjectile === null) gun.play("idle");
+
+        const selectedUI = store.get(gameStateAtom).selectedUI;
+
+        const isSelectedTower =
+            selectedUI &&
+            "towerId" in selectedUI &&
+            selectedUI.towerId === opts.owner.instanceId;
+
+        if (
+            isSelectedTower &&
+            "previewRange" in selectedUI
+        ) {
+            previewRangeCircle.hidden = false;
+
+            previewRangeCircle.pos = rangeCircle.pos;
+        } else {
+            previewRangeCircle.hidden = true;
+        }
     });
 
     function shoot(target: AttackTarget) {

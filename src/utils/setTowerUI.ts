@@ -12,6 +12,7 @@ export default function setTowerUI(k: KAPLAYCtx, type: "combat" | "farm", tower:
         store.set(gameStateAtom, prev => ({
             ...prev,
             selectedUI: {
+                ...(prev.selectedUI && "previewRange" in prev.selectedUI ? { previewRange:  prev.selectedUI?.previewRange ?? null }  : {}),
                 towerId: tower.instanceId,
                 pos: tower.screenPos().scale(1 / k.getCamScale().x, 1 / k.getCamScale().y),
                 priority: tower.priority,

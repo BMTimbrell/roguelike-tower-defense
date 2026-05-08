@@ -374,6 +374,7 @@ export type SelectedTowerUI = SelectedUnitUI & {
         critDamage: number;
     };
     sellTower: () => void;
+    previewRange?: number | null;
 };
 
 export type SelectedFarmTowerUI = Pick<SelectedTowerUI, "towerId" | "cost" | "name" | "pos" | "sellTower" | "element"> & {
