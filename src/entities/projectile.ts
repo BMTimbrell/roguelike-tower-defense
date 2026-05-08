@@ -29,6 +29,7 @@ export default function makeProjectile(k: KAPLAYCtx, opts: {
     const noRotate = (PROJECTILES[id] as Record<"noRotate", boolean>)?.noRotate ?? false;
 
     const anim = (PROJECTILES[id] as ProjectileDef).anim ? (PROJECTILES[id] as ProjectileDef).anim : null;
+    const splitDamage = (PROJECTILES[id] as ProjectileDef).splitDamage;
 
     const projectile = k.add([
         k.sprite(sprite, { ...(anim ? { anim } : {}) }),
@@ -206,22 +207,52 @@ export default function makeProjectile(k: KAPLAYCtx, opts: {
                         damage = newDamage;
                     }
 
-                    hurtEnemy(k, {
-                        target,
-                        damage,
-                        isCrit: crit ?? false,
-                        element
-                    });
-
                     if (splashRadius) {
-                        (k.get("enemy") as EnemyGameObj[]).filter(e => e !== target && e.pos.dist(projectile.pos) < splashRadius * TILE_SIZE).forEach(e => {
-                            hurtEnemy(k, {
-                                target: e,
-                                damage,
-                                isCrit: crit ?? false,
-                                element
+
+                        const enemies = (k.get("enemy") as EnemyGameObj[])
+                            .filter(e =>
+                                !e.isDying &&
+                                e.pos.dist(projectile.pos) < splashRadius * TILE_SIZE
+                            );
+
+                        if (splitDamage) {
+                            const exponent = 0.6;
+
+                            const finalDamage = Math.round(damage / Math.pow(enemies.length, exponent));
+                            const maxTargets = 5;
+
+                            enemies.sort((a, b) => a.pos.dist(projectile.pos) - b.pos.dist(projectile.pos))
+                                .slice(0, maxTargets)
+                                .forEach(e => {
+                                    hurtEnemy(k, {
+                                        target: e,
+                                        damage: finalDamage,
+                                        isCrit: crit ?? false,
+                                        element
+                                    });
+                                });
+
+                        } else {
+                            enemies.forEach(e => {
+                                hurtEnemy(k, {
+                                    target: e,
+                                    damage,
+                                    isCrit: crit ?? false,
+                                    element
+                                });
                             });
+                        }
+
+
+                    } else {
+
+                        hurtEnemy(k, {
+                            target,
+                            damage,
+                            isCrit: crit ?? false,
+                            element
                         });
+
                     }
 
                     if (attackTimer !== null && behaviors?.persistent?.owner) {

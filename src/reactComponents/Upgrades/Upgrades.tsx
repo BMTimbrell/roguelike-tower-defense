@@ -2,7 +2,7 @@ import type { Upgrade } from "../../types";
 import styles from "./Upgrades.module.css";
 import { gameStateAtom, mapAtom } from '../../store';
 import { useAtom } from 'jotai';
-import { useState, useRef, useLayoutEffect } from 'react';
+import { useState, useRef, useLayoutEffect, useEffect } from 'react';
 import UpgradePopup from "../UpgradePopup/UpgradePopup";
 import Card from "../Card/Card";
 import UpgradeCard from "../UpgradeCard/UpgradeCard";

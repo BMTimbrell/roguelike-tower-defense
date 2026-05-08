@@ -70,6 +70,21 @@ export default function makeLevelScene(k: KAPLAYCtx, sceneName: Scene) {
             }
         });
 
+        for (let i = 0; i < 10; i++) {
+            onAction(k, `card${i + 1}`, {
+                onPress: () => {
+                    const upgrade = store.get(gameStateAtom).upgrades[i];
+                    if (upgrade) {
+                        store.set(gameStateAtom, prev => ({
+                            ...prev,
+                            selectedUpgrade: store.get(gameStateAtom).upgrades[i]
+                        }));
+                    }
+                }
+            });
+        }
+
+
         // pause menu
         k.onButtonPress("pause", () => {
             store.set(pauseMenuAtom, prev => ({

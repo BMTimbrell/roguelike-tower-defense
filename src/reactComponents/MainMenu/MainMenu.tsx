@@ -11,19 +11,24 @@ export default function MainMenu() {
     const [, setSelectHeroUI] = useAtom(selectHeroUIAtom);
     const [, setMenu] = useAtom(mainMenuAtom)
     const [map] = useAtom(mapAtom);
+    const scale = map.scale;
+    const header = showSettings && <div style={{
+        fontSize: `${16 * scale * 1.2}px`, marginBottom: "0.5em",
+        textAlign: "center"
+    }} className={styles.heading}>Settings</div>;
 
     return (
         <>
-            <div className={styles.container} style={{ fontSize: `${16 * map.scale}px` }}>
+            <div className={styles.container} style={{ fontSize: `${16 * scale}px` }}>
                 <Button onClick={() => {
                     setSelectHeroUI(prev => ({ ...prev, visible: true }));
                     setMenu(prev => ({ ...prev, visible: false }));
                 }}>New Game</Button>
                 <Button onClick={() => setShowSettings(true)}>Settings</Button>
             </div>
-            <Modal isOpen={showSettings} onClose={() => setShowSettings(false)}>
-                <div style={{ fontSize: `${16 * map.scale}px` }}>
-                    <Settings setShowSettings={setShowSettings} />
+            <Modal header={header} isOpen={showSettings} onClose={() => setShowSettings(false)}>
+                <div style={{ fontSize: `${16 * scale}px` }}>
+                    <Settings />
                 </div>
             </Modal>
         </>

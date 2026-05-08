@@ -1,6 +1,6 @@
 import { useAtom } from "jotai";
 import Button from "../Button/Button";
-import { gameStateAtom, mapAtom, pauseMenuAtom } from "../../store";
+import { mapAtom, pauseMenuAtom } from "../../store";
 import Modal from "../Modal/Modal";
 import styles from "./PauseMenu.module.css";
 import { useState } from "react";
@@ -11,7 +11,8 @@ export default function PauseMenu() {
     const [map] = useAtom(mapAtom);
     const scale = map.scale;
     const [showSettings, setShowSettings] = useState(false);
-    const [gameState, setGameState] = useAtom(gameStateAtom);
+    const footer = showSettings && <div style={{ fontSize: `${16 * scale}px` }}><Button onClick={() => setShowSettings(false)}>Back</Button></div>;
+    const header = showSettings && <div style={{ fontSize: `${16 * scale * 1.2}px` }} className={styles.heading}>Settings</div>;
 
     const onClose = () => {
         setPauseMenu(prev => ({ ...prev, visible: false }));
@@ -20,7 +21,7 @@ export default function PauseMenu() {
     };
 
     return (
-        <Modal isOpen={pauseMenu.visible} onClose={onClose}>
+        <Modal header={header} footer={footer} isOpen={pauseMenu.visible} onClose={onClose}>
             <div style={{ fontSize: `${16 * scale}px` }}>
                 {!showSettings ? (
                     <div className={styles.container}>
@@ -32,7 +33,7 @@ export default function PauseMenu() {
                         </div>
                     </div>
 
-                ) : <Settings setShowSettings={setShowSettings} />}
+                ) : <Settings />}
             </div>
         </Modal>
     );

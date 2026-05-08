@@ -3478,10 +3478,10 @@ export const TOWERS = {
         gunSprite: "beehive tower",
         baseSprite: "beehive tower base",
         sprite: "beehive-tower-sprite.png",
-        description: "Sends out a swarm of bees that follow the target dealing area damage",
+        description: "Summons a bee swarm that chases enemies, splitting its damage across up to 5 nearby targets",
         cost: 250,
         stats: {
-            damage: 10,
+            damage: 15,
             range: 4,
             fireInterval: 0.5,
             critChance: 5,
@@ -4679,7 +4679,8 @@ export const PROJECTILES = {
         sprite: "bees",
         homing: true,
         speed: 200,
-        splashRadius: 1.4
+        splashRadius: 1.4,
+        splitDamage: true
     },
     frostArrow: {
         sprite: "frost arrow",

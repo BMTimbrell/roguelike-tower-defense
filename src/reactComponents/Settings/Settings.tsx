@@ -18,7 +18,17 @@ export default function Settings({ setShowSettings }: { setShowSettings: React.D
         { name: "camLeft", description: "Scroll left" },
         { name: "camRight", description: "Scroll right" },
         { name: "scroll", description: "Scroll camera" },
-        { name: "cancel", description: "Cancel selection" }
+        { name: "cancel", description: "Cancel selection" },
+        { name: "card1", description: "Card 1" },
+        { name: "card2", description: "Card 2" },
+        { name: "card3", description: "Card 3" },
+        { name: "card4", description: "Card 4" },
+        { name: "card5", description: "Card 5" },
+        { name: "card6", description: "Card 6" },
+        { name: "card7", description: "Card 7" },
+        { name: "card8", description: "Card 8" },
+        { name: "card9", description: "Card 9" },
+        { name: "card10", description: "Card 10" }
     ];
 
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -53,7 +63,6 @@ export default function Settings({ setShowSettings }: { setShowSettings: React.D
 
     return (
         <div className={styles["settings-container"]}>
-            <div className={styles.heading}>Settings</div>
             <div className={styles["button-container"]}>
                 {actions.map((action, index) => (
                     <div key={index} className={styles["key-container"]}>
@@ -87,7 +96,6 @@ export default function Settings({ setShowSettings }: { setShowSettings: React.D
                     />
                 </div>
             </div>
-            <Button onClick={() => setShowSettings(false)}>Back</Button>
         </div>
     );
 }

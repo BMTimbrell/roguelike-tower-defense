@@ -1,7 +1,19 @@
 import type { MouseEventHandler } from "react";
 import styles from './Modal.module.css';
 
-export default function Modal({ isOpen, children, onClose }: { children: React.ReactNode; isOpen: boolean; onClose: MouseEventHandler<HTMLDivElement> }) {
+export default function Modal({
+    isOpen,
+    children,
+    onClose,
+    footer,
+    header
+}: {
+    children: React.ReactNode;
+    isOpen: boolean;
+    onClose: MouseEventHandler<HTMLDivElement>;
+    footer?: React.ReactNode;
+    header?: React.ReactNode;
+}) {
     return (
         <div
             className={`${styles["modal-overlay"]} ${isOpen ? styles.active : ""}`}
@@ -11,7 +23,15 @@ export default function Modal({ isOpen, children, onClose }: { children: React.R
                 className={styles.modal}
                 onClick={(e) => e.stopPropagation()}
             >
-                {isOpen && children}
+                {header && <div className={styles["modal-header"]}>
+                    {header}
+                </div>}
+                <div className={styles["modal-main"]}>
+                    {isOpen && children}
+                </div>
+                {footer && <div className={styles["modal-footer"]}>
+                    {footer}
+                </div>}
             </div>
         </div>
     );

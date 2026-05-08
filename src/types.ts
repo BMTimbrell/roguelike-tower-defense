@@ -78,6 +78,7 @@ export type ProjectileDef = {
     splashRadius: number;
     anim?: string;
     noRotate?: boolean;
+    splitDamage?: boolean;
 };
 
 export type RandomProjectiles = {
