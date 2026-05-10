@@ -42,6 +42,7 @@ export const gameStateAtom = atom<GameState>({
     towerCoins: 0,
     challengeManager: new ChallengeManager(),
     camMoveAtEdge: true,
+    showDamageNumbers: true,
     timeScale: 1
 });
 

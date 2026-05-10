@@ -54,12 +54,14 @@ export default function hurtEnemy(k: KAPLAYCtx, opts: {
 
     target.hurt(remainingDamage);
 
-    makeFloatingText(k, {
-        pos: target.pos,
-        text: '' + effectiveDamage,
-        size: isCrit ? CRIT_DAMAGE_NUMBER_SIZE : statusDamage ? SMALL_DAMAGE_NUMBER_SIZE : DAMAGE_NUMBER_SIZE,
-        color: ELEMENTS[element].color
-    });
+    if (store.get(gameStateAtom).showDamageNumbers) {
+        makeFloatingText(k, {
+            pos: target.pos,
+            text: '' + effectiveDamage,
+            size: isCrit ? CRIT_DAMAGE_NUMBER_SIZE : statusDamage ? SMALL_DAMAGE_NUMBER_SIZE : DAMAGE_NUMBER_SIZE,
+            color: ELEMENTS[element].color
+        });
+    }
 
     const challengeManager = store.get(gameStateAtom).challengeManager;
     challengeManager.handleEvent({

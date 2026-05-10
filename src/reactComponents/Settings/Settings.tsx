@@ -1,10 +1,9 @@
 import { useEffect, useState } from "react";
-import Button from "../Button/Button";
 import { useAtom } from "jotai";
 import { controlsAtom, gameStateAtom } from "../../store";
 import styles from "./Settings.module.css";
 
-export default function Settings({ setShowSettings }: { setShowSettings: React.Dispatch<React.SetStateAction<boolean>> }) {
+export default function Settings() {
     const [gameState, setGameState] = useAtom(gameStateAtom);
     type SelectedKey = {
         action: string;
@@ -91,6 +90,20 @@ export default function Settings({ setShowSettings }: { setShowSettings: React.D
                             setGameState(prev => ({
                                 ...prev,
                                 camMoveAtEdge: e.target.checked
+                            }));
+                        }}
+                    />
+                </div>
+                <div className={styles["toggle-container"]}>
+                    <label htmlFor="showDamageNumbers">Show damage numbers</label>
+                    <input
+                        id="showDamageNumbers"
+                        type="checkbox"
+                        checked={gameState.showDamageNumbers}
+                        onChange={(e) => {
+                            setGameState(prev => ({
+                                ...prev,
+                                showDamageNumbers: e.target.checked
                             }));
                         }}
                     />

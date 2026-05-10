@@ -453,6 +453,7 @@ export type GameState = {
     towerCoins: number;
     challengeManager: ChallengeManager;
     camMoveAtEdge: boolean;
+    showDamageNumbers: boolean;
     timeScale: number;
 };
 
