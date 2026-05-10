@@ -77,7 +77,7 @@ export default function makeLevelScene(k: KAPLAYCtx, sceneName: Scene) {
                     if (upgrade) {
                         store.set(gameStateAtom, prev => ({
                             ...prev,
-                            selectedUpgrade: store.get(gameStateAtom).upgrades[i]
+                            selectedUpgrade: upgrade
                         }));
                     }
                 }
@@ -91,7 +91,7 @@ export default function makeLevelScene(k: KAPLAYCtx, sceneName: Scene) {
                 ...prev,
                 visible: true,
                 unPause: () => k.get("*").forEach(obj => obj.paused = false),
-                mainMenu: () =>  {
+                mainMenu: () => {
                     store.set(pauseMenuAtom, prev => ({ ...prev, visible: false }));
                     k.go("mainMenu");
                 }
@@ -319,6 +319,12 @@ export default function makeLevelScene(k: KAPLAYCtx, sceneName: Scene) {
                     previewIce(((spawner?.waveIndex ?? 0) + 1) + ((LEVEL_WAVES[wave] as { startingFreezeAmount?: number; }).startingFreezeAmount ?? 4));
 
                     updateWindDirections((spawner?.waveIndex ?? 0) + 1);
+
+                    k.get("chimney").forEach((chimney, index) => {
+                        console.log(spawner?.waveIndex + 1);
+                        if (spawner?.waveIndex + 1 === index) chimney.opacity = 1;
+                        else chimney.opacity = 0;
+                    });
                 }
 
             });
@@ -461,6 +467,20 @@ export default function makeLevelScene(k: KAPLAYCtx, sceneName: Scene) {
                 ]);
             });
         }
+
+        // chimneys
+        mapData.layers
+            .find(layer => layer.name === "Chimneys")
+            ?.objects
+            ?.map((obj, index) => {
+                k.add([
+                    k.sprite("chimney"),
+                    k.pos(k.vec2(obj.x, obj.y).add(TILE_SIZE / 2, TILE_SIZE / 2)),
+                    k.opacity(index === 0 ? 1 : 0),
+                    "chimney",
+                    k.anchor("center")
+                ]);
+            });
 
         if ((LEVEL_WAVES[wave] as { challenge: boolean }).challenge) {
             store.set(challengesAtom, prev => ({

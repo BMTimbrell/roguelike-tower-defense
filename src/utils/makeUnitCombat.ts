@@ -109,7 +109,7 @@ export default function makeUnitCombat(
         {
             draw() {
                 const selectedUI = store.get(gameStateAtom).selectedUI;
-                if (selectedUI && "previewRange" in selectedUI) {
+                if (selectedUI && "previewRange" in selectedUI && selectedUI.towerId === opts.owner.instanceId) {
                     const radius = (selectedUI?.previewRange ?? 0) * TILE_SIZE;
 
                     const segments = 48;
@@ -383,7 +383,7 @@ export default function makeUnitCombat(
                     turnSpeed: p.turnSpeed,
                     behaviors: p?.behaviors,
                     splashRadius: PROJECTILES[p.id].splashRadius * (opts.owner.timeData?.timeScaling?.damage ? opts.owner.timeData.timeMultiplier : 1),
-                    scale: (opts.owner.timeData?.timeScaling?.damage ? opts.owner.timeData.timeMultiplier : 1)
+                    scale: (opts.owner.timeData?.timeScaling?.damage ? opts.owner.timeData.timeMultiplier : 1) 
                 });
 
                 if (p.behaviors?.persistent) {

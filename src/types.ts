@@ -322,6 +322,8 @@ export type EnemyGameObj = GameObj<
         segmentProgress: number;
         enemies: { id: presentSpawns; amount: number; }[];
     }[];
+    checkpointTimer?: number;
+    checkpointDuration?: number;
 };
 
 export type Upgrade = {
@@ -551,6 +553,7 @@ export type EnemyConfig = {
         segmentProgress: number;
         enemies: { id: presentSpawns; amount: number; }[];
     }[];
+    checkpointTimer?: number;
 };
 
 export type presentSpawns =
@@ -637,6 +640,11 @@ export type ProjectileBehavior = {
         origin: Vec2;
     };
     animOnDestroy?: string;
+    attach?: {
+        ticks: number;
+        interval: number;
+        offset: number;
+    };
 };
 
 export type Rewards = {
@@ -746,4 +754,13 @@ export type GameSpeedUI = {
             width: number;
         }
     ];
+};
+
+export type AttachedZapOpts = {
+    enemy: EnemyGameObj;
+    damage: number;
+    ticks: number;
+    interval: number;
+    element: ElementName;
+    attacker: TowerGameObj;
 };

@@ -71,6 +71,10 @@ export default function makeEnemy(
             stunResistance: false,
             stunResistanceDuration: 3,
             stunResistanceTimer: 0,
+            ...("checkpointTimer" in ENEMIES[enemyId] ? {
+                checkpointTimer: ENEMIES[enemyId].checkpointTimer as number,
+                checkpointDuration: ENEMIES[enemyId].checkpointTimer as number
+            } : {}),
             ...("spawnIce" in ENEMIES[enemyId] ? { spawnIce: ENEMIES[enemyId].spawnIce as boolean } : {}),
             speedMultipliers: {
                 chill: 1,
@@ -79,7 +83,7 @@ export default function makeEnemy(
                 ice: 1
             }
         },
-        k.state("move", ["move", "stunned", "attack", "idle"]),
+        k.state("move", ["move", "stunned", "attack", "idle", "escape", "hidden"]),
         statusEffect(),
         k.z(1),
         "enemy",
@@ -118,11 +122,23 @@ export default function makeEnemy(
     enemy.onAnimEnd(anim => {
         if (anim === "die") {
             k.destroy(enemy);
+        } else if (anim === "escape") {
+            enemy.enterState("hidden");
+        } else if (anim === "attack") {
+            enemy.play("idle");
         }
     });
 
     enemy.onStateEnter("idle", () => {
         enemy.play("idle");
+    });
+
+    enemy.onStateUpdate("idle", () => {
+        if (!store.get(gameStateAtom).waveActive) {
+            enemy.statuses.forEach(s => {
+                if (enemy.has(s)) enemy.unuse(s);
+            });
+        }
     });
 
     enemy.onStateEnter("move", () => {
@@ -131,6 +147,14 @@ export default function makeEnemy(
 
     enemy.onStateEnter("attack", () => {
         enemy.play("idle");
+    });
+
+    enemy.onStateUpdate("hidden", () => {
+        if (!store.get(gameStateAtom).waveActive) {
+            enemy.invincible = false;
+            enemy.hidden = false;
+            enemy.enterState("idle");
+        }
     });
 
     enemy.onStateEnter("stunned", () => {
@@ -162,6 +186,14 @@ export default function makeEnemy(
             enemy.stunResistanceTimer -= k.dt() * timeScale;
         } else enemy.stunResistance = false;
 
+        if (enemy.checkpointTimer) {
+            enemy.checkpointTimer -= k.dt() * timeScale;
+            if (enemy.checkpointTimer <= 0) {
+                enemy.checkpointTimer = enemy.checkpointDuration;
+                enemy.enterState("escape");
+            }
+        }
+
         while (attackTimer <= 0 && store.get(gameStateAtom).waveActive) {
             const towers = (k.get("tower") as TowerGameObj[]).filter(
                 t => t.placed && t.name !== "Farm Tower" && enemy.pos.dist(t.pos.add((t.footprint.w * TILE_SIZE) / 2, (t.footprint.h * TILE_SIZE) / 2)) <= enemy.attacker!.attackRange * TILE_SIZE
@@ -176,17 +208,23 @@ export default function makeEnemy(
                 hitChance: enemy.has("blind") ? 0.7 : 1
             });
 
+            if (enemy.hasAnim("attack")) enemy.play("attack");
             attackTimer += enemy.attacker!.attackCooldown;
         }
+
         if (attackTimer > 0) {
             attackTimer -= k.dt() * timeScale;
         }
+    });
 
-        if (!store.get(gameStateAtom).waveActive) {
-            enemy.statuses.forEach(s => {
-                if (enemy.has(s)) enemy.unuse(s);
-            });
-        }
+    enemy.onStateEnter("escape", () => {
+        enemy.angle = 0;
+        enemy.play("escape");
+    });
+
+    enemy.onStateEnter("hidden", () => {
+        enemy.invincible = true;
+        enemy.hidden = true;
     });
 
     enemy.onStateUpdate("move", () => {
@@ -226,6 +264,7 @@ export default function makeEnemy(
 
             if (enemy.pathIndex >= stopIndex) {
                 enemy.boss.reachedStopIndex = true;
+                enemy.angle = 0;
                 enemy.enterState("attack");
                 return;
             }
@@ -246,7 +285,7 @@ export default function makeEnemy(
 
             const pos = start.lerp(end, drop.segmentProgress);
 
-            spawnPresent(k, pos, drop.enemies, enemy);
+            spawnPresent(k, pos, drop.enemies.map(e => ({ ...e, path: enemy.path, pathIndex: enemy.pathIndex })));
 
             enemy.boss.presentDropIndex++;
         }
@@ -546,13 +585,13 @@ export function updateSpeed(this: EnemyGameObj) {
     this.speed = this.baseSpeed * multiplier;
 }
 
-function spawnPresent(k: KAPLAYCtx, pos: Vec2, enemiesToSpawn: { id: presentSpawns; amount: number; }[], source: EnemyGameObj) {
+function spawnPresent(k: KAPLAYCtx, pos: Vec2, enemiesToSpawn: { id: presentSpawns; amount: number; path: Vec2[]; pathIndex: number; }[]) {
     const present = k.add([
         k.pos(pos),
         k.anchor("center"),
         k.sprite("present", { anim: "idle" })
     ]);
-    
+
     present.onAnimEnd(anim => {
         if (anim === "open") k.destroy(present);
     });
@@ -563,10 +602,10 @@ function spawnPresent(k: KAPLAYCtx, pos: Vec2, enemiesToSpawn: { id: presentSpaw
 
         enemiesToSpawn.forEach(group => {
             const mid = group.amount / 2;
-                
+
             for (let i = 0; i < group.amount; i++) {
                 const posOffset = (i - mid) * 12;
-                const spawnedEnemy = makeEnemy(k, group.id, source.path, source.pathIndex, present.pos.add(posOffset));
+                const spawnedEnemy = makeEnemy(k, group.id, group.path, group.pathIndex, present.pos.add(posOffset));
                 spawnedEnemy.invincible = true;
                 spawnedEnemy.invincibleDuration = 0.1;
             }

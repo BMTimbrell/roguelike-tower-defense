@@ -60,6 +60,15 @@ export default function loadAssets(k: KAPLAYCtx) {
             shoot: { from: 1, to: 7, loop: false, speed: 35 }
         }
     });
+    k.loadSprite("volt dart tower base", "/sprites/volt-dart-tower-base.png");
+    k.loadSprite("volt dart tower", "/sprites/volt-dart-tower.png", {
+        sliceX: 4,
+        sliceY: 1,
+        anims: {
+            idle: 0,
+            shoot: { from: 1, to: 3, loop: false, speed: 10 }
+        }
+    });
     k.loadSprite("lux tower base", "/sprites/lux-tower-base.png");
     k.loadSprite("lux tower", "/sprites/lux-tower.png", {
         sliceX: 6,
@@ -405,6 +414,15 @@ export default function loadAssets(k: KAPLAYCtx) {
     k.loadSprite("star", "/sprites/star-projectile.png");
     k.loadSprite("poop", "/sprites/poop.png");
     k.loadSprite("icicle projectile", "/sprites/icicle-projectile.png");
+    k.loadSprite("electric dart", "/sprites/electric-dart-projectile.png", {
+        sliceX: 5,
+        sliceY: 1,
+        anims: {
+            idle: 0,
+            damage: { from: 1, to: 4, loop: false }
+        }
+
+    });
     k.loadSprite("snowball", "/sprites/snowball.png", {
         sliceX: 4,
         sliceY: 1,
@@ -951,14 +969,18 @@ export default function loadAssets(k: KAPLAYCtx) {
     });
 
     k.loadSprite("evil santa", "/sprites/evil-santa.png", {
-        sliceX: 7,
-        sliceY: 3,
+        sliceX: 10,
+        sliceY: 5,
         anims: {
-            idle: { from: 14, to: 15, loop: true, speed: 5 },
+            idle: { from: 20, to: 21, loop: true, speed: 5 },
             move: { from: 0, to: 3, loop: true, speed: 5 },
-            die: { from: 7, to: 13, loop: false, speed: 5 }
+            die: { from: 10, to: 16, loop: false, speed: 5 },
+            escape: { from: 30, to: 39, loop: false, speed: 10 },
+            attack: { from: 40, to: 41, loop: false, speed: 5 }
         }
     });
+
+    k.loadSprite("chimney", "/sprites/chimney.png");
 
     k.loadSprite("polar bear jockey", "/sprites/polar-bear-jockey.png", {
         sliceX: 3,

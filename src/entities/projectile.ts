@@ -6,6 +6,7 @@ import calcDamage from '../utils/calcDamage';
 import hurtEnemy from '../utils/hurtEnemy';
 import getBuffValue from '../utils/getBuffValue';
 import { gameStateAtom, store } from '../store';
+import makeAttachedEntity from './AttachedEntity';
 
 export default function makeProjectile(k: KAPLAYCtx, opts: {
     id: ProjectileId;
@@ -59,6 +60,7 @@ export default function makeProjectile(k: KAPLAYCtx, opts: {
     let baseDamage = damage;
     let attackTimer = behaviors?.persistent ? 0 : null;
     let retargetTimer = 0.2;
+    const attach = behaviors?.attach;
     const hitEnemies = new Set<EnemyGameObj>();
     projectile.onDestroy(() => {
         if (behaviors?.persistent) {
@@ -245,6 +247,25 @@ export default function makeProjectile(k: KAPLAYCtx, opts: {
 
 
                     } else {
+                        if (attach) {
+
+                            k.destroy(projectile);
+
+                            makeAttachedEntity(k, {
+                                sprite,
+                                enemy: target,
+                                damage,
+                                isCrit: crit ?? false,
+                                element,
+                                angle: projectile.angle,
+                                ticks: attach.ticks,
+                                interval: attach.interval,
+                                stickDir: target.pos.sub(projectile.pos).unit(),
+                                offset: attach.offset ?? 0
+
+                            });
+                            return;
+                        }
 
                         hurtEnemy(k, {
                             target,
