@@ -3165,8 +3165,8 @@ export const TOWERS = {
                 projectile: "arrow",
                 element: "Normal",
                 behaviors: {
-                    distanceDamageMultiplier: 0,
-                    distanceDamageCap: 0.5
+                    distanceScaling: 0.05,
+                    distanceScalingCap: 0.5
                 }
             },
             {
@@ -3626,9 +3626,8 @@ export const TOWERS = {
             firstEffect(ctx) {
                 ctx.projectiles.forEach(projectile => {
                     projectile.behaviors ??= {};
-                    projectile.behaviors.distanceDamageMultiplier ??= 0;
-                    projectile.behaviors.damagePerTile = 0.1;
-                    projectile.behaviors.distanceDamageCap = 1;
+                    projectile.behaviors.distanceScaling ??= 0.1;
+                    projectile.behaviors.distanceScalingCap ??= 1;
                 });
             }
         }],
@@ -4201,6 +4200,43 @@ export const TOWERS = {
                 });
             }
         }],
+        priority: "Most Progress"
+    },
+    gatlingGun: {
+        name: "Gatling Gun Tower",
+        gunSprite: "gatling gun tower",
+        baseSprite: "gatling gun tower base",
+        sprite: "gatling-gun-tower-sprite.png",
+        description: "Fire rate decreases with time, but damage and splash radius increases",
+        cost: 400,
+        stats: {
+            damage: 12,
+            range: 5,
+            fireInterval: 0.15,
+            critChance: 5,
+            critDamage: 200
+        },
+        element: "Normal",
+        gunOffset: { x: 10, y: 0 },
+        anchorOffset: { x: 20 / 64, y: 0 },
+        shootOffset: { x: -40, y: 0 },
+        projectile: "basic",
+        canRotate: true,
+        effects: [{
+            firstEffect(ctx) {
+                ctx.projectiles.forEach(projectile => {
+                    projectile.behaviors ??= {};
+                    projectile.behaviors.distanceScaling ??= -0.12;
+                    projectile.behaviors.distanceScalingCap ??= 0.7;
+                });
+            }
+        }],
+        source: "reward",
+        targetType: "enemy",
+        footprint: {
+            w: 2,
+            h: 2
+        },
         priority: "Most Progress"
     }
 } as const satisfies Record<string, TowerDef>;
@@ -5003,8 +5039,8 @@ export const SKILLS = [
                 secondEffect(ctx) {
                     ctx.projectiles.forEach(projectile => {
                         projectile.behaviors ??= {};
-                        projectile.behaviors.distanceDamageMultiplier ??= 0;
-                        projectile.behaviors.distanceDamageCap = 0.5;
+                        projectile.behaviors.distanceScaling ??= 1.5;
+                        projectile.behaviors.distanceScalingCap ??= 0.5;
                     });
                 }
             });

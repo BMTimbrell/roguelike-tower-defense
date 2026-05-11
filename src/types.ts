@@ -632,9 +632,8 @@ export type ProjectileBehavior = {
     bounceRange?: number;
     bounceDamageMultiplier?: number;
     bounceChance?: number;
-    distanceDamageMultiplier?: number;
-    distanceDamageCap?: number;
-    damagePerTile?: number;
+    distanceScaling?: number;
+    distanceScalingCap?: number;
     persistent?: {
         owner: TowerGameObj;
         state: "flying" | "attached" | "returning";

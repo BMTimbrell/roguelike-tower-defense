@@ -136,6 +136,7 @@ export default function makeEnemy(
     enemy.onStateUpdate("idle", () => {
         if (!store.get(gameStateAtom).waveActive) {
             if (enemy.checkpointTimer) enemy.checkpointTimer = enemy.checkpointDuration;
+            attackTimer = 0;
             enemy.statuses.forEach(s => {
                 if (enemy.has(s)) enemy.unuse(s);
             });
@@ -182,6 +183,8 @@ export default function makeEnemy(
 
     // attack for boss
     enemy.onStateUpdate("attack", () => {
+        if (!store.get(gameStateAtom).waveActive) enemy.enterState("idle");
+
         const timeScale = store.get(gameStateAtom).timeScale;
         if (enemy.stunResistanceTimer > 0) {
             enemy.stunResistanceTimer -= k.dt() * timeScale;
@@ -195,7 +198,7 @@ export default function makeEnemy(
             }
         }
 
-        while (attackTimer <= 0 && store.get(gameStateAtom).waveActive) {
+        while (attackTimer <= 0) {
             const towers = (k.get("tower") as TowerGameObj[]).filter(
                 t => t.placed && t.name !== "Farm Tower" && enemy.pos.dist(t.pos.add((t.footprint.w * TILE_SIZE) / 2, (t.footprint.h * TILE_SIZE) / 2)) <= enemy.attacker!.attackRange * TILE_SIZE
             );
@@ -223,9 +226,21 @@ export default function makeEnemy(
         enemy.play("escape");
     });
 
+    enemy.onStateUpdate("escape", () => {
+        enemy.statuses.forEach(s => {
+            if (enemy.has(s)) enemy.unuse(s);
+        });
+    });
+
     enemy.onStateEnter("hidden", () => {
         enemy.invincible = true;
         enemy.hidden = true;
+
+        attackTimer = 0;
+
+        enemy.statuses.forEach(s => {
+            if (enemy.has(s)) enemy.unuse(s);
+        });
     });
 
     enemy.onStateUpdate("move", () => {

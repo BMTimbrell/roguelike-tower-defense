@@ -56,7 +56,6 @@ export default function makeProjectile(k: KAPLAYCtx, opts: {
     let direction = k.Vec2.fromAngle(projectile.angle + 180);
     let willBounce = behaviors?.bounceChance ? Math.random() < behaviors.bounceChance : true;
     let remainingBounces = behaviors?.bounces ?? 0;
-    let distanceDamageMultiplier = behaviors?.distanceDamageMultiplier ?? 0;
     let baseDamage = damage;
     let attackTimer = behaviors?.persistent ? 0 : null;
     let retargetTimer = 0.2;
@@ -169,11 +168,22 @@ export default function makeProjectile(k: KAPLAYCtx, opts: {
         } else projectile.pos = projectile.pos.add(direction.scale(projectile.speed * k.dt() * timeScale));
         timeAlive += k.dt() * timeScale;
 
-        if (behaviors?.distanceDamageCap && behaviors.distanceDamageCap > distanceDamageMultiplier) {
+        if (behaviors?.distanceScaling) {
             distance += k.dt() * timeScale * speed;
+
             const distanceTiles = distance / TILE_SIZE;
-            distanceDamageMultiplier = Math.min(distanceTiles * (behaviors.damagePerTile ?? 0.05), behaviors.distanceDamageCap);
-            damage = Math.round(baseDamage + baseDamage * distanceDamageMultiplier);
+
+            const scaling =
+                distanceTiles * behaviors.distanceScaling;
+
+            const capped =
+                behaviors.distanceScaling > 0
+                    ? Math.min(scaling, behaviors.distanceScalingCap ?? scaling)
+                    : Math.max(scaling, -(behaviors.distanceScalingCap ?? Math.abs(scaling)));
+
+            const multiplier = 1 + capped;
+
+            damage = Math.round(baseDamage * multiplier);
         }
 
         // damage enemy when close enough
@@ -244,7 +254,6 @@ export default function makeProjectile(k: KAPLAYCtx, opts: {
                                 });
                             });
                         }
-
 
                     } else {
                         if (attach) {
