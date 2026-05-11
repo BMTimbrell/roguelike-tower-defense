@@ -135,6 +135,7 @@ export default function makeEnemy(
 
     enemy.onStateUpdate("idle", () => {
         if (!store.get(gameStateAtom).waveActive) {
+            if (enemy.checkpointTimer) enemy.checkpointTimer = enemy.checkpointDuration;
             enemy.statuses.forEach(s => {
                 if (enemy.has(s)) enemy.unuse(s);
             });

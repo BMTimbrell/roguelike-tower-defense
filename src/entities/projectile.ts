@@ -261,8 +261,8 @@ export default function makeProjectile(k: KAPLAYCtx, opts: {
                                 ticks: attach.ticks,
                                 interval: attach.interval,
                                 stickDir: target.pos.sub(projectile.pos).unit(),
-                                offset: attach.offset ?? 0
-
+                                offset: attach.offset ?? 0,
+                                ...(attach.infectionLevel ? { infectionLevel: attach.infectionLevel } : {})
                             });
                             return;
                         }

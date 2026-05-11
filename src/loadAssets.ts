@@ -375,6 +375,14 @@ export default function loadAssets(k: KAPLAYCtx) {
             idle: 0,
         }
     });
+    k.loadSprite("parasite tower", "/sprites/parasite-tower.png", {
+        sliceX: 5,
+        sliceY: 1,
+        anims: {
+            idle: 0,
+            shoot: { from: 1, to: 4, loop: false, speed: 70 }
+        }
+    });
     k.loadSprite("fog", "/sprites/fog5.png");
     k.loadSprite("basic projectile", "/sprites/basic-projectile.png");
     k.loadSprite("slimeball", "/sprites/slimeball.png");
@@ -420,6 +428,33 @@ export default function loadAssets(k: KAPLAYCtx) {
         anims: {
             idle: 0,
             damage: { from: 1, to: 4, loop: false }
+        }
+
+    });
+    k.loadSprite("parasite", "/sprites/parasite.png", {
+        sliceX: 3,
+        sliceY: 1,
+        anims: {
+            idle: 0,
+            damage: { from: 1, to: 2, loop: false, speed: 3 }
+        }
+
+    });
+    k.loadSprite("parasite 2", "/sprites/parasite-2.png", {
+        sliceX: 4,
+        sliceY: 1,
+        anims: {
+            idle: 0,
+            damage: { from: 1, to: 3, loop: false, speed: 8 }
+        }
+
+    });
+    k.loadSprite("parasite 3", "/sprites/parasite-3.png", {
+        sliceX: 5,
+        sliceY: 1,
+        anims: {
+            idle: 0,
+            damage: { from: 1, to: 4, loop: false, speed: 8 }
         }
 
     });
@@ -976,7 +1011,7 @@ export default function loadAssets(k: KAPLAYCtx) {
             move: { from: 0, to: 3, loop: true, speed: 5 },
             die: { from: 10, to: 16, loop: false, speed: 5 },
             escape: { from: 30, to: 39, loop: false, speed: 10 },
-            attack: { from: 40, to: 41, loop: false, speed: 5 }
+            attack: { from: 41, to: 41, loop: false, speed: 5 }
         }
     });
 

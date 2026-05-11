@@ -645,6 +645,7 @@ export type ProjectileBehavior = {
         ticks: number;
         interval: number;
         offset: number;
+        infectionLevel?: number;
     };
 };
 

@@ -14,8 +14,11 @@ export default function makeAttachedEntity(k: KAPLAYCtx, opts: {
     angle: number;
     stickDir: Vec2;
     offset: number;
+    infectionLevel?: number;
 }) {
-    const { enemy, damage, isCrit, ticks, interval, element, sprite, angle } = opts;
+    const { enemy, isCrit, ticks, interval, element, sprite, angle } = opts;
+    let damage = opts.damage;
+    let infectionLevel = opts.infectionLevel;
 
     let timer = interval;
     let remaining = ticks;
@@ -33,7 +36,14 @@ export default function makeAttachedEntity(k: KAPLAYCtx, opts: {
     entity.onAnimEnd(anim => {
         if (anim === "damage") {
             if (remaining <= 0 || enemy.isDying) {
-                k.destroy(entity);
+                if (infectionLevel && infectionLevel < 3) {
+                    infectionLevel++;
+                    damage = Math.round(damage * 1.5);
+                    remaining = ticks;
+                    entity.use(k.sprite(`${sprite} ${infectionLevel}`));
+                } else {
+                    k.destroy(entity);
+                }
             }
             entity.play("idle");
         }

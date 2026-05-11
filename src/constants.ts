@@ -2775,7 +2775,7 @@ export const TOWERS = {
         baseSprite: "volt dart tower base",
         sprite: "volt-dart-tower-sprite.png",
         description: "Shoots a dart that sticks to enemies, zapping them every second, up to 3 times",
-        cost: 50,
+        cost: 70,
         stats: {
             damage: 4,
             range: 4,
@@ -3199,6 +3199,17 @@ export const TOWERS = {
                 element: "Ice",
                 behaviors: {
                     critChance: 35
+                }
+            },
+            {
+                projectile: "electricDart",
+                element: "Electric",
+                behaviors: {
+                    attach: {
+                        ticks: 3,
+                        interval: 1,
+                        offset: -8
+                    }
                 }
             }
         ],
@@ -4150,6 +4161,47 @@ export const TOWERS = {
             h: 2
         },
         priority: null
+    },
+    parasite: {
+        name: "Parasite Tower",
+        gunSprite: "parasite tower",
+        baseSprite: "sludge bomb tower base",
+        sprite: "parasite-tower-sprite.png",
+        description: "Fires parasites that attach to enemies and evolve over time, dealing increasingly devastating damage",
+        cost: 200,
+        stats: {
+            damage: 4,
+            range: 5,
+            fireInterval: 2,
+            critChance: 5,
+            critDamage: 200
+        },
+        element: "Poison",
+        gunOffset: { x: 5, y: -1 },
+        anchorOffset: { x: 10 / 64, y: -2 / 64 },
+        shootOffset: { x: -40, y: 0 },
+        projectile: "parasite",
+        canRotate: true,
+        source: "reward",
+        targetType: "enemy",
+        footprint: {
+            w: 2,
+            h: 2
+        },
+        effects: [{
+            firstEffect(ctx) {
+                ctx.projectiles.forEach(projectile => {
+                    projectile.behaviors ??= {};
+                    projectile.behaviors.attach = {
+                        ticks: 3,
+                        interval: 0.5,
+                        offset: -2,
+                        infectionLevel: 1
+                    };
+                });
+            }
+        }],
+        priority: "Most Progress"
     }
 } as const satisfies Record<string, TowerDef>;
 
@@ -4692,6 +4744,12 @@ export const PROJECTILES = {
     },
     poop: {
         sprite: "poop",
+        homing: true,
+        speed: 200,
+        splashRadius: 0
+    },
+    parasite: {
+        sprite: "parasite",
         homing: true,
         speed: 200,
         splashRadius: 0
