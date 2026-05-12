@@ -2774,7 +2774,7 @@ export const TOWERS = {
         gunSprite: "volt dart tower",
         baseSprite: "volt dart tower base",
         sprite: "volt-dart-tower-sprite.png",
-        description: "Shoots a dart that sticks to enemies, zapping them every second, up to 3 times",
+        description: "Shoots a dart that sticks to enemies, dealing electric shocks every second for 3 hits",
         cost: 70,
         stats: {
             damage: 4,
@@ -4220,14 +4220,14 @@ export const TOWERS = {
         gunOffset: { x: 10, y: 0 },
         anchorOffset: { x: 20 / 64, y: 0 },
         shootOffset: { x: -40, y: 0 },
-        projectile: "basic",
+        projectile: "gatlingBullet",
         canRotate: true,
         effects: [{
             firstEffect(ctx) {
                 ctx.projectiles.forEach(projectile => {
                     projectile.behaviors ??= {};
-                    projectile.behaviors.distanceScaling ??= -0.12;
-                    projectile.behaviors.distanceScalingCap ??= 0.7;
+                    projectile.behaviors.distanceScaling ??= -0.125;
+                    projectile.behaviors.distanceScalingCap ??= 0.8;
                 });
             }
         }],
@@ -4237,6 +4237,7 @@ export const TOWERS = {
             w: 2,
             h: 2
         },
+        spread: 20,
         priority: "Most Progress"
     }
 } as const satisfies Record<string, TowerDef>;
@@ -4868,6 +4869,13 @@ export const PROJECTILES = {
         homing: true,
         speed: 300,
         splashRadius: 0
+    },
+    gatlingBullet: {
+        sprite: "gatling bullet",
+        homing: true,
+        speed: 300,
+        splashRadius: 0,
+        noRotate: true
     }
 } as const satisfies Record<string, ProjectileDef>;
 

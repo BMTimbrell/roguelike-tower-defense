@@ -354,6 +354,12 @@ export default function makeUnitCombat(
             for (const p of ctx.projectiles) {
                 const bonusDamage = p?.bonusDamage ?? 0;
                 let bonusCrit = p?.bonusCrit ?? 0;
+                const spread = opts.owner?.spread ?? 0;
+                const finalAngle = p.angle + k.rand(-spread, spread);
+                const dir = k.Vec2.fromAngle(finalAngle + 180);
+                const right = k.vec2(-dir.y, dir.x);
+                const spawnOffset = right.scale(k.rand(-5, 5));
+                const homingDelay = p.homingDelay || (spread && 0.1) || 0;
 
                 if (enemy.has("curse")) bonusCrit += 10;
 
@@ -372,18 +378,18 @@ export default function makeUnitCombat(
 
                 const projectile = makeProjectile(k, {
                     id: p.id,
-                    pos: ctx.origin,
+                    pos: ctx.origin.add(spawnOffset),
                     target: enemy,
                     damage: damage,
                     crit: isCrit,
-                    angle: p.angle,
+                    angle: (PROJECTILES[p.id] as { noRotate: boolean }).noRotate && !spread ? 0 : finalAngle,
                     element: p?.element ?? ctx.element,
                     homing: p.homing,
-                    homingDelay: p.homingDelay,
+                    homingDelay,
                     turnSpeed: p.turnSpeed,
                     behaviors: p?.behaviors,
                     splashRadius: PROJECTILES[p.id].splashRadius * (opts.owner.timeData?.timeScaling?.damage ? opts.owner.timeData.timeMultiplier : 1),
-                    scale: (opts.owner.timeData?.timeScaling?.damage ? opts.owner.timeData.timeMultiplier : 1) 
+                    scale: (opts.owner.timeData?.timeScaling?.damage ? opts.owner.timeData.timeMultiplier : 1)
                 });
 
                 if (p.behaviors?.persistent) {

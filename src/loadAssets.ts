@@ -406,6 +406,7 @@ export default function loadAssets(k: KAPLAYCtx) {
     });
     k.loadSprite("arrow", "/sprites/arrow.png");
     k.loadSprite("knife", "/sprites/knife.png");
+    k.loadSprite("gatling bullet", "/sprites/gatling-bullet.png");
     k.loadSprite("money bag", "/sprites/money-bag.png", {
         sliceX: 4,
         sliceY: 1,

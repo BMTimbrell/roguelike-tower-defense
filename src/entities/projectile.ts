@@ -36,7 +36,7 @@ export default function makeProjectile(k: KAPLAYCtx, opts: {
         k.sprite(sprite, { ...(anim ? { anim } : {}) }),
         k.anchor("center"),
         k.pos(pos),
-        k.rotate(!noRotate ? opts.angle : 0),
+        k.rotate(opts.angle),
         k.scale(scale),
         {
             splashRadius,

@@ -95,6 +95,7 @@ export default function makeTower(
             ...("continuousEffect" in TOWERS[towerId] ? { continuousEffect: TOWERS[towerId].continuousEffect as ContinuousEffect } : {}),
             ...("charge" in TOWERS[towerId] ? { charge: { ...(TOWERS[towerId].charge as Charge) } } : {}),
             ...("battery" in TOWERS[towerId] ? { battery: { ...(TOWERS[towerId].battery as Battery) } } : {}),
+            ...("spread" in TOWERS[towerId] ? { spread: TOWERS[towerId].spread as number } : {}),
             disabledTimeLeft: 0
         },
         k.state("active", ["active", "disabled"]),

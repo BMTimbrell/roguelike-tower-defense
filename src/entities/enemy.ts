@@ -209,7 +209,7 @@ export default function makeEnemy(
                 id: enemy.attacker!.projectile as ProjectileId,
                 pos: enemy.pos,
                 target: towers[index],
-                hitChance: enemy.has("blind") ? 0.7 : 1
+                hitChance: enemy.has("blind") ? 0.3 : 1
             });
 
             if (enemy.hasAnim("attack")) enemy.play("attack");
@@ -348,7 +348,7 @@ export default function makeEnemy(
                     id: enemy.attacker!.projectile as ProjectileId,
                     pos: enemy.pos,
                     target: towers[index],
-                    hitChance: enemy.has("blind") ? 0.5 : 1
+                    hitChance: enemy.has("blind") ? 0.3 : 1
                 });
 
                 attackTimer += enemy.attacker!.attackCooldown;

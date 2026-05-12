@@ -139,6 +139,7 @@ export type TowerDef = {
     lavaTiles?: Vec2[];
     priority: TargetPriority;
     battery?: Battery;
+    spread?: number;
 };
 
 export type Charge = {
@@ -218,6 +219,7 @@ export type TowerInstance = UnitInstance & {
     killStacks?: number;
     lavaTiles?: Vec2[];
     buffs?: Buffs;
+    spread?: number;
 };
 
 export type TowerGameObj = GameObj & TowerInstance;

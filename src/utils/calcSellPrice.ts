@@ -1,7 +1,7 @@
 import { calcUpgradeCost } from "./calcUpgradeCost";
 
 export default function(cost: number, upgradeCount: number): number {
-    let result = cost / 2;
+    let result = cost * 0.75;
     let upgradeCost = 0;
 
     for (let i = 0; i < upgradeCount + 1; i++) {
@@ -10,6 +10,6 @@ export default function(cost: number, upgradeCount: number): number {
         upgradeCost += calcUpgradeCost(cost, i - 1);
     }
 
-    result += upgradeCost / 2;
+    result += upgradeCost * 0.75;
     return Math.round(result);
 }
