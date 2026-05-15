@@ -1,4 +1,4 @@
-import type { GameObj, KAPLAYCtx, Vec2 } from "kaplay";
+import type { GameObj, KAPLAYCtx, KEventController, Vec2 } from "kaplay";
 import type { AttackContext, AttackTarget, DamageResult, EnemyGameObj, HeroGameObj, RandomProjectiles, TargetResolver, TowerGameObj } from "../types";
 import { CURSE_CRIT, PROJECTILES, SCYTHE_MAX_KILL_STACKS, TILE_SIZE, TIME_TOWER_BASE_ANIM_SPEED, TOWER_RANGE_TOLERANCE, type ProjectileId } from "../constants";
 import makeProjectile from "../entities/Projectile";
@@ -8,7 +8,7 @@ import calcDamage from "./calcDamage";
 import hurtEnemy from "./hurtEnemy";
 import makePathEntity from "../entities/PathEntity";
 import { gameStateAtom, store } from "../store";
-import drawLaser from "./drawLaser";
+import drawLaser, { renderLaser } from "./drawLaser";
 import isEnemyOnRay from "./isEnemyOnRay";
 import enemiesInCone from "./enemiesInCone";
 import getBuffValue from "./getBuffValue";
@@ -37,6 +37,7 @@ export default function makeUnitCombat(
     let shootTimer = 0;
     let meleeHandle: GameObj | null = null;
     let meleeHead: GameObj | null = null;
+    let activeBeam: GameObj | null = null;
 
     const gun = k.add([
         k.sprite(opts.gunSprite, { anim: "idle" }),
@@ -187,6 +188,273 @@ export default function makeUnitCombat(
         });
     }
 
+    if (opts.owner.deathCharge) {
+
+        const barWidth = opts.owner.width * 0.8;
+        let barPos = opts.owner.pos.add(opts.owner.width * 0.09, 0);
+
+        // background
+        const soulBackground = k.add([
+            k.pos(barPos),
+            k.rect(barWidth, 4),
+            k.color(k.Color.fromHex("#3a2a4a")),
+            k.outline(1, k.Color.fromHex("#000000")),
+            k.opacity(0),
+            k.z(9999),
+            {
+                update() {
+                    barPos = opts.owner.pos.add(
+                        opts.owner.width * 0.09,
+                        0
+                    );
+
+                    soulBackground.pos = barPos;
+
+                    if (opts.owner.placed) {
+                        soulBackground.opacity = 1;
+                    }
+                }
+            }
+        ]);
+
+        // fill bar
+        const soulBar = k.add([
+            k.pos(barPos),
+            k.rect(0, 4),
+            k.color(k.Color.fromHex("#9b6dff")),
+            k.opacity(0),
+            k.z(10000),
+            {
+                update() {
+
+                    if (!opts.owner.deathCharge) return;
+
+                    const ratio =
+                        opts.owner.deathCharge.current /
+                        opts.owner.deathCharge.required;
+
+                    barPos = opts.owner.pos.add(
+                        opts.owner.width * 0.09,
+                        0
+                    );
+
+                    soulBar.pos = barPos;
+
+                    soulBar.width = barWidth * ratio;
+
+                    if (opts.owner.placed) {
+                        soulBar.opacity = 1;
+                    }
+                }
+            }
+        ]);
+
+        opts.owner.onDestroy(() => {
+            k.destroy(soulBackground);
+            k.destroy(soulBar);
+        });
+    }
+
+    if (opts.owner.overheat) {
+
+        const barWidth = opts.owner.width * 0.8;
+        let barPos = opts.owner.pos.add(opts.owner.width * 0.1, -8);
+
+        // background
+        const heatBackground = k.add([
+            k.pos(barPos),
+            k.rect(barWidth, 4),
+            k.color(k.Color.fromHex("#3b1f1f")),
+            k.outline(1, k.Color.fromHex("#000000")),
+            k.opacity(0),
+            k.z(9999),
+            {
+                update() {
+                    barPos = opts.owner.pos.add(
+                        opts.owner.width * 0.1,
+                        -8
+                    );
+
+                    heatBackground.pos = barPos;
+
+                    if (opts.owner.placed) {
+                        heatBackground.opacity = 1;
+                    }
+                }
+            }
+        ]);
+
+        // fill
+        const heatBar = k.add([
+            k.pos(barPos),
+            k.rect(0, 4),
+            k.color(k.Color.fromHex("#ff5a36")),
+            k.opacity(0),
+            k.z(10000),
+            {
+                update() {
+
+                    if (!opts.owner.overheat) return;
+
+                    const ratio =
+                        opts.owner.overheat.current /
+                        opts.owner.overheat.max;
+
+                    barPos = opts.owner.pos.add(
+                        opts.owner.width * 0.1,
+                        -8
+                    );
+
+                    heatBar.pos = barPos;
+
+                    heatBar.width = k.lerp(
+                        heatBar.width,
+                        barWidth * ratio,
+                        12 * k.dt()
+                    );
+
+                    if (opts.owner.placed) {
+                        heatBar.opacity = 1;
+                    }
+
+                    // optional overheating color
+                    if (opts.owner.overheat.overheated) {
+                        const flash =
+                            Math.sin(k.time() * 20) * 0.5 + 0.5;
+
+                        heatBar.color = k.rgb(
+                            255,
+                            80 + flash * 100,
+                            40
+                        );
+                        
+                        if (gun.getCurAnim()?.name !== "overheated") gun.play("overheated");
+                    } else if (ratio > 0.9) {
+                        heatBar.color = k.rgb(248, 63, 39);
+                        if (gun.getCurAnim()?.name !== "overheating") gun.play("overheating")
+                    } else if (ratio > 0.6) {
+                        heatBar.color = k.Color.fromHex("#ff5a36");
+                        gun.play("heating");
+                    } else if (ratio > 0.25) {
+                        heatBar.color = k.rgb(255, 140, 60);
+                        gun.play("idle");
+                    } else {
+                        gun.play("idle");
+                        heatBar.color = k.rgb(255, 220, 120);
+                    }
+                }
+            }
+        ]);
+
+        const thresholdMarker = k.add([
+            k.pos(barPos),
+            k.z(10001),
+            {
+                update() {
+                    if (!opts.owner.overheat) return;
+
+                    barPos = opts.owner.pos.add(
+                        opts.owner.width * 0.1,
+                        -8
+                    );
+
+                    thresholdMarker.pos = barPos;
+                },
+
+                draw() {
+                    if (!opts.owner.overheat || !opts.owner.placed) return;
+
+                    const thresholdX =
+                        barWidth *
+                        (
+                            opts.owner.overheat.recoveryThreshold /
+                            opts.owner.overheat.max
+                        );
+
+                    k.drawLine({
+                        p1: k.vec2(thresholdX, 0),
+                        p2: k.vec2(thresholdX, 4),
+                        width: 2,
+                        color: k.rgb(255, 255, 255),
+                    });
+                }
+            }
+        ]);
+
+        opts.owner.onDestroy(() => {
+            k.destroy(heatBackground);
+            k.destroy(heatBar);
+        });
+    }
+
+    let offDeath: KEventController | undefined;
+
+    if (opts.owner.deathCharge) {
+        offDeath = k.on("enemyDeath", "ghost", (tower, data) => {
+            if (!tower.placed) return;
+
+            const center = tower.pos.add(
+                (tower.footprint.w * TILE_SIZE) / 2,
+                (tower.footprint.h * TILE_SIZE) / 2
+            );
+            const payload = (data[0] ?? data) as { enemy: EnemyGameObj; pos: Vec2; soulClaimed: boolean; };
+
+            const enemy = payload?.enemy;
+            const pos = payload?.pos;
+
+            if (
+                !payload.soulClaimed &&
+                center.dist(pos) <=
+                tower.stats.range * TILE_SIZE + TOWER_RANGE_TOLERANCE
+            ) {
+                payload.soulClaimed = true;
+
+                const soul = k.add([
+                    k.sprite("soul"),
+                    k.anchor("center"),
+                    k.pos(pos),
+                    k.scale(enemy.boss ? 4 : enemy.damage > 1 ? 2 : 1),
+                    lifespan(k, 10),
+                    {
+                        target: center,
+                        speed: 150,
+
+                        update() {
+                            if (!tower.exists()) k.destroy(soul);
+
+                            const prevDist = soul.pos.dist(soul.target);
+
+                            const dir = soul.target.sub(soul.pos).unit();
+
+                            soul.pos = soul.pos.add(
+                                dir.scale(
+                                    soul.speed *
+                                    k.dt() *
+                                    store.get(gameStateAtom).timeScale
+                                )
+                            );
+
+                            const newDist = soul.pos.dist(soul.target);
+
+                            if (newDist < 6 || newDist > prevDist) {
+                                tower.deathCharge.current += enemy.boss ? 10 : enemy.damage > 1 ? 3 : 1;
+
+                                tower.deathCharge.current = Math.min(
+                                    tower.deathCharge.current,
+                                    tower.deathCharge.required
+                                );
+                                k.destroy(soul);
+                            }
+                        }
+                    }
+                ]);
+            }
+        });
+        opts.owner.onDestroy(() => {
+            offDeath?.cancel();
+        });
+    }
+
     gun.onUpdate(() => {
         gun.pos = opts.owner.pos.add(
             opts.owner.width / 2 + opts.gunOffset.x,
@@ -220,7 +488,6 @@ export default function makeUnitCombat(
     });
 
     function shoot(target: AttackTarget) {
-
         if (target.type === "enemy") {
             let enemy = target.enemy;
             let projectile = {
@@ -303,8 +570,22 @@ export default function makeUnitCombat(
             }
             const damageMult = 1 + getBuffValue(opts.owner as TowerGameObj, "damage");
 
+            // laser ramp up charge damage
+            let bonusDamage = 0;
+
+            if (
+                ctx.attackType === "ramp_laser" &&
+                opts.owner.overheat
+            ) {
+                const heat = opts.owner.overheat;
+
+                // const t = heat.current / heat.max;
+
+                bonusDamage = heat.current * 0.3;
+            }
+
             const { isCrit, damage } = calcDamage({
-                bonusDamage: 0,
+                bonusDamage,
                 bonusCritChance: enemy.has("curse") ? CURSE_CRIT + (k.get("hero")[0]?.hasCurseBuff ? 10 : 0) : 0,
                 critChance: opts.stats.critChance + (getBuffValue(opts.owner as TowerGameObj, "critChance") * 100),
                 critDamage: opts.stats.critDamage * (1 + getBuffValue(opts.owner as TowerGameObj, "critDamage")),
@@ -333,11 +614,12 @@ export default function makeUnitCombat(
 
                 const volleyCount = ctx.volley.volleyCount ?? 3;
                 const homingDelay = ctx.volley.homingDelay ?? 0.2;
+                const volleyAngle = ctx.volley.volleyAngle ?? 45;
                 const projectiles = [];
-                const mid = Math.floor(volleyCount / 2);
 
                 for (let i = 0; i < volleyCount; i++) {
-                    const angleMult = 45 * (i - mid);
+                    const offset = i - (volleyCount - 1) / 2;
+                    const angleMult = volleyAngle * offset;
 
                     projectiles.push(
                         { ...base, angle: base.angle + angleMult, homingDelay, turnSpeed: 12 }
@@ -434,10 +716,10 @@ export default function makeUnitCombat(
                 });
             }
         }
-
     }
 
     function update() {
+        const dt = k.dt() * store.get(gameStateAtom).timeScale;
         const fireRateBuff = getBuffValue(opts.owner as TowerGameObj, "fireRate");
         const interval =
             opts.owner.stats.fireInterval *
@@ -457,7 +739,7 @@ export default function makeUnitCombat(
         }
 
         if (shootTimer > 0) {
-            shootTimer -= k.dt() * store.get(gameStateAtom).timeScale;
+            shootTimer -= dt;
         }
 
         if (!store.get(gameStateAtom).waveActive) {
@@ -472,7 +754,7 @@ export default function makeUnitCombat(
             const turnSpeed = 12;
 
             const diff = shortestAngleDiff(gun.angle, desired);
-            gun.angle += diff * Math.min(1, turnSpeed * k.dt() * store.get(gameStateAtom).timeScale);
+            gun.angle += diff * Math.min(1, turnSpeed * dt);
 
         } else gun.angle = 0;
 
@@ -487,7 +769,14 @@ export default function makeUnitCombat(
             spawnFlameParticles(k, origin, target.enemy, opts.stats.range * TILE_SIZE - origin.dist(rangeCircle.pos), opts.owner.continuousEffect);
         }
 
-        while (shootTimer <= 0 && target && !opts.owner.activeProjectile) {
+        // regular shooting
+        while (
+            shootTimer <= 0 &&
+            target &&
+            !opts.owner.activeProjectile &&
+            !opts.owner.deathCharge &&
+            !opts.owner.overheat
+        ) {
             shootTimer += interval;
 
             if (opts.owner.canRotate) gun.angle = gun.pos.angle(target.type === "point" ? target.pos : target.enemy.pos);
@@ -501,6 +790,86 @@ export default function makeUnitCombat(
             opts.owner.lastShotTime = 0;
 
             if (gun.getAnim("shoot")) gun.play("shoot");
+        }
+
+
+        // death charge shooting
+        if (
+            opts.owner.deathCharge &&
+            opts.owner.deathCharge.current >= opts.owner.deathCharge.required &&
+            target
+        ) {
+            opts.owner.deathCharge.current = 0;
+            shoot(target);
+            gun.play("shoot");
+        }
+
+        // beam weapon ramp up
+        const wantsToFire = !!target;
+
+        if (opts.owner.overheat) {
+            const heat = opts.owner.overheat;
+
+            if (
+                target &&
+                !opts.owner.deathCharge &&
+                heat &&
+                !heat.overheated
+            ) {
+
+                createBeam();
+
+                while (shootTimer <= 0) {
+                    shootTimer += interval;
+
+                    shoot(target);
+                }
+
+                if (activeBeam && target.type === "enemy") {
+                    const rotatedOffset = rotateVector(
+                        k,
+                        k.vec2(opts.shootOffset.x, opts.shootOffset.y),
+                        gun.angle * Math.PI / 180
+                    );
+
+                    activeBeam.start = gun.pos.add(rotatedOffset);
+                    activeBeam.end = target.enemy.pos;
+
+                    const heat = opts.owner.overheat;
+
+                    const t = heat
+                        ? heat.current / heat.max
+                        : 0;
+
+                    activeBeam.width =
+                        8 + Math.pow(t, 0.8) * 150;
+                }
+            } else {
+                destroyBeam();
+            }
+
+            if (wantsToFire && !heat.overheated) {
+                heat.current += heat.gainPerSecond * dt;
+            } else {
+                heat.current -= heat.decayPerSecond * dt;
+            }
+
+            heat.current = k.clamp(
+                heat.current,
+                0,
+                heat.max
+            );
+
+            if (heat.current >= heat.max) {
+                heat.overheated = true;
+            }
+
+            if (
+                heat.overheated &&
+                heat.current <= heat.recoveryThreshold
+            ) {
+                heat.overheated = false;
+            }
         }
     }
 
@@ -550,6 +919,36 @@ export default function makeUnitCombat(
             k.destroy(rangeCircle)
         },
     };
+
+    function createBeam() {
+        if (activeBeam) return;
+
+        activeBeam = k.add([
+            k.pos(0, 0),
+            k.z(99999),
+            {
+                start: k.vec2(0),
+                end: k.vec2(0),
+                width: 12,
+
+                draw() {
+                    renderLaser(
+                        k,
+                        activeBeam?.start,
+                        activeBeam?.end,
+                        activeBeam?.width
+                    );
+                }
+            }
+        ]);
+    }
+
+    function destroyBeam() {
+        if (!activeBeam) return;
+
+        k.destroy(activeBeam);
+        activeBeam = null;
+    }
 }
 
 function aoeAttack(k: KAPLAYCtx, ctx: AttackContext, dmg: DamageResult) {
@@ -658,6 +1057,10 @@ function executeAttack(k: KAPLAYCtx, ctx: AttackContext, dmg: DamageResult) {
 
         case "cone":
             coneAttack(k, ctx, dmg);
+            break;
+
+        case "ramp_laser":
+            rampLaserAttack(k, ctx, dmg);
             break;
     }
 }
@@ -950,4 +1353,16 @@ function spawnFlameParticles(
             }
         ]);
     }
+}
+
+function rampLaserAttack(
+    k: KAPLAYCtx,
+    ctx: AttackContext,
+    dmg: DamageResult
+) {
+    if (!ctx.target || ctx.target.type !== "enemy") return;
+
+    const { damage, isCrit } = dmg;
+
+    hurtEnemy(k, { target: ctx.target.enemy, damage, isCrit, element: ctx.element });
 }

@@ -392,6 +392,36 @@ export default function loadAssets(k: KAPLAYCtx) {
         }
     });
     k.loadSprite("gatling gun tower base", "/sprites/gatling-gun-tower-base.png");
+    k.loadSprite("phoenix tower", "/sprites/phoenix-tower.png", {
+        sliceX: 1,
+        sliceY: 1,
+        anims: {
+            idle: 0,
+        }
+    });
+    k.loadSprite("phoenix tower base", "/sprites/phoenix-tower-base.png");
+    k.loadSprite("ghost tower base", "/sprites/ghost-tower-base.png");
+    k.loadSprite("ghost tower", "/sprites/ghost-tower.png", {
+        sliceX: 2,
+        sliceY: 1,
+        anims: {
+            idle: 0,
+            shoot: { from: 0, to: 1, loop: false }
+        }
+    });
+    k.loadSprite("solar lance tower", "/sprites/solar-lance-tower.png", {
+        sliceX: 4,
+        sliceY: 4,
+        anims: {
+            idle: 0,
+            overheating: { from: 4, to: 7, loop: true },
+            heating: 8,
+            overheated: { from: 12, to: 13, loop: true, speed: 5 }
+        }
+    });
+    k.loadSprite("solar lance tower base", "/sprites/solar-lance-tower-base.png");
+    k.loadSprite("soul", "/sprites/soul.png");
+    k.loadSprite("ghost projectile", "/sprites/ghost-projectile.png");
     k.loadSprite("fog", "/sprites/fog5.png");
     k.loadSprite("basic projectile", "/sprites/basic-projectile.png");
     k.loadSprite("slimeball", "/sprites/slimeball.png");
@@ -413,6 +443,14 @@ export default function loadAssets(k: KAPLAYCtx) {
         anims: {
             idle: 0,
             break: { from: 1, to: 3, loop: false, speed: 6 }
+        }
+    });
+    k.loadSprite("phoenix", "/sprites/phoenix.png", {
+        sliceX: 6,
+        sliceY: 1,
+        anims: {
+            idle: 0,
+            fly: { from: 0, to: 5, loop: true, speed: 10 }
         }
     });
     k.loadSprite("witch poison", "/sprites/witch-poison.png");
@@ -1066,6 +1104,7 @@ export default function loadAssets(k: KAPLAYCtx) {
     });
     k.loadSprite("slash effect", "/sprites/slash-effect.png");
     k.loadSprite("sniper laser", "/sprites/sniper-laser.png");
+    k.loadSprite("solar lance", "/sprites/solar-lance.png");
     k.loadSprite("thunder effect", "/sprites/thunder-effect3.png", {
         sliceX: 13,
         sliceY: 1,

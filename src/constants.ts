@@ -205,7 +205,7 @@ export const LEVEL_WAVES = {
         waves: [
             {
                 spawns: [
-                    { id: "slime", count: 5, interval: 1 }
+                    { id: "giantSkeleton", count: 10, interval: 1 }
                 ],
                 reward: 50
             },
@@ -256,7 +256,7 @@ export const LEVEL_WAVES = {
         waves: [
             {
                 spawns: [
-                    { id: "bee", count: 5, interval: 1 }
+                    { id: "giantSkeleton", count: 10, interval: 1 }
                 ],
                 reward: 50
             },
@@ -2572,7 +2572,7 @@ export const ENEMIES = {
     },
     polarBearJockey: {
         hp: 50,
-        damage: 2,
+        damage: 1,
         speed: 60,
         sprite: "polar bear jockey",
         spawnOnDeath: {
@@ -2582,7 +2582,7 @@ export const ENEMIES = {
     },
     giantPolarBearJockey: {
         hp: 700,
-        damage: 10,
+        damage: 5,
         speed: 30,
         sprite: "giant polar bear jockey",
         spawnOnDeath: {
@@ -2702,7 +2702,7 @@ export const TOWERS = {
         baseSprite: "ice tower base",
         sprite: "ice-tower-sprite.png",
         description: "Emits a frost that damages all enemies in range. This tower receives half the amount from range upgrades and buffs",
-        cost: 120,
+        cost: 110,
         stats: {
             damage: 2,
             range: 2,
@@ -2996,7 +2996,7 @@ export const TOWERS = {
         description: "Deals fire damage to all enemies in range. This tower receives half the amount from range upgrades and buffs",
         cost: 90,
         stats: {
-            damage: 4,
+            damage: 5,
             range: 2,
             fireInterval: 2,
             critChance: 5,
@@ -3464,9 +3464,9 @@ export const TOWERS = {
         description: "Shoots a giant laser beam that damages all enemies in its path",
         cost: 300,
         stats: {
-            damage: 40,
+            damage: 35,
             range: 4.5,
-            fireInterval: 2.5,
+            fireInterval: 2,
             critChance: 5,
             critDamage: 200
         },
@@ -3497,7 +3497,7 @@ export const TOWERS = {
         description: "Releases an electrical discharge that damages all enemies in range",
         cost: 300,
         stats: {
-            damage: 12,
+            damage: 13,
             range: 2.5,
             fireInterval: 2,
             critChance: 5,
@@ -4239,6 +4239,118 @@ export const TOWERS = {
         },
         spread: 20,
         priority: "Most Progress"
+    },
+    phoenix: {
+        name: "Phoenix Tower",
+        gunSprite: "phoenix tower",
+        baseSprite: "phoenix tower base",
+        sprite: "phoenix-tower-sprite.png",
+        description: "A phoenix circles the tower's outer range, rapidly shooting fireballs at nearby enemies. Its flight and attack speed scale with Fire Rate",
+        cost: 250,
+        stats: {
+            damage: 9,
+            range: 3,
+            fireInterval: 4,
+            critChance: 5,
+            critDamage: 200
+        },
+        element: "Fire",
+        gunOffset: { x: 0, y: 0 },
+        anchorOffset: { x: 0, y: 0 },
+        shootOffset: { x: 0, y: 0 },
+        projectile: null,
+        canRotate: false,
+        source: "reward",
+        targetType: "enemy",
+        footprint: {
+            w: 2,
+            h: 2
+        },
+        priority: "Most Progress"
+    },
+    ghost: {
+        name: "Ghost Tower",
+        gunSprite: "ghost tower",
+        baseSprite: "ghost tower base",
+        sprite: "ghost-tower-sprite.png",
+        description: "Harvests souls from fallen enemies. When fully charged, unleashes a swarm of ghosts at nearby enemies",
+        cost: 250,
+        stats: {
+            damage: 14,
+            range: 4,
+            fireInterval: 900,
+            critChance: 5,
+            critDamage: 200
+        },
+        element: "Dark",
+        gunOffset: { x: 0, y: 2 },
+        anchorOffset: { x: 0, y: 4 / 64 },
+        shootOffset: { x: -25, y: 0 },
+        projectile: "ghostProjectile",
+        canRotate: false,
+        source: "reward",
+        targetType: "enemy",
+        footprint: {
+            w: 2,
+            h: 2
+        },
+        effects: [{
+            firstEffect(ctx) {
+                if (ctx.projectiles.length === 0) return;
+
+                ctx.volley ??= {};
+                ctx.volley.volleyChance ??= 100;
+                ctx.volley.volleyCount ??= 10;
+                ctx.volley.homingDelay ??= 0.2;
+                ctx.volley.volleyAngle ??= 15;
+            }
+        }],
+        deathCharge: {
+            current: 0,
+            required: 8
+        },
+        priority: null
+    },
+    solarLance: {
+        name: "Solar Lance Tower",
+        gunSprite: "solar lance tower",
+        baseSprite: "solar lance tower base",
+        sprite: "solar-lance-tower-sprite.png",
+        description: "Fires a continuous beam that grows stronger over time. Overheats if fired too long",
+        cost: 250,
+        stats: {
+            damage: 1,
+            range: 4,
+            fireInterval: 0.25,
+            critChance: 5,
+            critDamage: 200
+        },
+        element: "Light",
+        gunOffset: { x: 0, y: 0 },
+        anchorOffset: { x: 0, y: 0 },
+        shootOffset: { x: 0, y: 0 },
+        projectile: null,
+        canRotate: false,
+        source: "reward",
+        targetType: "enemy",
+        footprint: {
+            w: 2,
+            h: 2
+        },
+        effects: [{
+            firstEffect(ctx) {
+                ctx.attackType = "ramp_laser";
+            }
+        }],
+        overheat: {
+            current: 0,
+            max: 100,
+            gainPerSecond: 10,
+            decayPerSecond: 12,
+            overheated: false,
+            recoveryThreshold: 25
+        },
+        priority: "Most Progress"
     }
 } as const satisfies Record<string, TowerDef>;
 
@@ -4876,6 +4988,12 @@ export const PROJECTILES = {
         speed: 300,
         splashRadius: 0,
         noRotate: true
+    },
+    ghostProjectile: {
+        sprite: "ghost projectile",
+        homing: true,
+        speed: 300,
+        splashRadius: 0
     }
 } as const satisfies Record<string, ProjectileDef>;
 

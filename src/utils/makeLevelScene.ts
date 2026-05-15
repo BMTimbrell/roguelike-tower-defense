@@ -7,7 +7,7 @@ import drawCards from "./drawCards";
 import { challengesAtom, controlsAtom, gameSpeedUIAtom, gameStateAtom, pauseMenuAtom, store } from "../store";
 import makeFloatingText from "../entities/FloatingText";
 import getCamViewRect from "./getCamViewRect";
-import { LEVEL_WAVES, MAX_HAND_SIZE, ROUND_DRAW_NUM, TILE_SIZE, type LevelId } from "../constants";
+import { LEVEL_WAVES, MAX_HAND_SIZE, ROUND_DRAW_NUM, TILE_SIZE, TOWER_RANGE_TOLERANCE, type LevelId } from "../constants";
 import reroll from "./reroll";
 import { addSelectTowerListener } from "../entities/Tower";
 import { makeLavaManager } from "./lavaHelpers";

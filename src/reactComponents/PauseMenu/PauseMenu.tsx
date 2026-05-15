@@ -11,7 +11,9 @@ export default function PauseMenu() {
     const [map] = useAtom(mapAtom);
     const scale = map.scale;
     const [showSettings, setShowSettings] = useState(false);
-    const footer = showSettings && <div style={{ fontSize: `${16 * scale}px` }}><Button onClick={() => setShowSettings(false)}>Back</Button></div>;
+    const footer = showSettings && <div style={{ fontSize: `${16 * scale}px` }}>
+        <Button onClick={() => setShowSettings(false)}>Back</Button>
+    </div>;
     const header = showSettings && <div style={{ fontSize: `${16 * scale * 1.2}px` }} className={styles.heading}>Settings</div>;
 
     const onClose = () => {

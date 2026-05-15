@@ -2,7 +2,7 @@ import type { KAPLAYCtx } from "kaplay";
 import { altarAtom, challengesAtom, gameStateAtom, rewardsAtom, shopAtom, shopChoiceUIAtom, store } from "../store";
 import initCam from "../utils/initCam";
 import type { HeroGameObj, LevelWaves, Scene, Upgrade } from "../types";
-import { LEVEL_REWARDS, LEVEL_WAVES, SCENES, TOWERS, UPGRADES, type LevelId, type TowerId } from "../constants";
+import { BASE_DRAW_COST, LEVEL_REWARDS, LEVEL_WAVES, SCENES, TOWERS, UPGRADES, type LevelId, type TowerId } from "../constants";
 import generateMap from "../utils/generateMap";
 import makeHero from "../entities/Hero";
 import addTowers from "../utils/addTowers";
@@ -28,7 +28,11 @@ export default function levelTransition(k: KAPLAYCtx) {
             ...prev,
             scene: "levelTransition",
             selectedUI: null,
-            towerCoins: prev.towerCoins + reward
+            towerCoins: prev.towerCoins + reward,
+            deck: {
+                ...prev.deck,
+                drawCost: BASE_DRAW_COST
+            }
         }));
 
         challengeManager.setChallenge(null);

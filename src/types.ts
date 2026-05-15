@@ -140,6 +140,20 @@ export type TowerDef = {
     priority: TargetPriority;
     battery?: Battery;
     spread?: number;
+    deathCharge?: {
+        current: number;
+        required: number;
+    };
+    overheat?: Overheat;
+};
+
+export type Overheat = {
+    current: number;
+    max: number;
+    gainPerSecond: number;
+    decayPerSecond: number;
+    overheated: boolean;
+    recoveryThreshold: number;
 };
 
 export type Charge = {
@@ -220,6 +234,11 @@ export type TowerInstance = UnitInstance & {
     lavaTiles?: Vec2[];
     buffs?: Buffs;
     spread?: number;
+    deathCharge?: {
+        current: number;
+        required: number;
+    };
+    overheat?: Overheat;
 };
 
 export type TowerGameObj = GameObj & TowerInstance;
@@ -607,6 +626,7 @@ export type AttackContext = {
         volleyChance?: number;
         volleyCount?: number;
         homingDelay?: number;
+        volleyAngle?: number;
     };
 
     meleeAttack?: {
@@ -677,7 +697,16 @@ export type AttackTarget =
 
 export type TargetResolver = () => AttackTarget | null;
 
-export type AttackType = "projectile" | "lightning" | "sniper_laser" | "piercing_laser" | "cone" | "aoe" | "melee" | "thunder" | "blizzard";
+export type AttackType = "projectile" | 
+    "lightning" | 
+    "sniper_laser" | 
+    "piercing_laser" | 
+    "cone" | 
+    "aoe" | 
+    "melee" | 
+    "thunder" | 
+    "blizzard" |
+    "ramp_laser";
 
 export type DamageResult = {
     damage: number;

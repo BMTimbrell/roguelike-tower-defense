@@ -17,7 +17,6 @@ export default function makeWaveSpawner(k: KAPLAYCtx, levelId: LevelId, waypoint
     let spawning = false;
     let enemyDeadCheck = true;
     let levelComplete = false;
-    let nextWaveTimer: number = level.startDelay;
     let waitingForNextWave = true;
 
     function buildQueue(wave: Wave) {
@@ -171,7 +170,6 @@ export default function makeWaveSpawner(k: KAPLAYCtx, levelId: LevelId, waypoint
                     tower.buffs = null;
                 });
 
-                nextWaveTimer = level.startDelay;
                 waitingForNextWave = true;
 
                 k.get("pathEntity").forEach(e => k.destroy(e));

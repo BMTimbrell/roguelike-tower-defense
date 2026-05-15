@@ -1,19 +1,20 @@
 import type { KAPLAYCtx, Vec2 } from 'kaplay';
 import { CURSE_CRIT, ELEMENTS, REDUCED_RANGE_TOWERS, TILE_SIZE, type TowerId } from '../constants';
-import type { TowerGameObj, UnitEffects, TowerDef, SeedId, Tile, PathTile, RandomProjectiles, TimeData, ContinuousEffect, Charge, BuffType, Battery, EnemyGameObj, ElementName } from '../types';
+import type { TowerGameObj, UnitEffects, TowerDef, SeedId, Tile, PathTile, RandomProjectiles, TimeData, ContinuousEffect, Charge, BuffType, Battery, EnemyGameObj, ElementName, Overheat } from '../types';
 import { store, gameStateAtom, controlsAtom } from '../store';
 import { calcUpgradeCost } from '../utils/calcUpgradeCost';
 import { TOWERS } from '../constants';
 import makePlaceableOnGrid, { setBlockedTiles } from '../utils/makePlacementOnGrid';
 import makeUnitCombat from '../utils/makeUnitCombat';
 import setTowerUI from '../utils/setTowerUI';
-import { enemyTargetResolver, pathTargetResolver } from '../utils/targetingHelpers';
+import { enemyTargetResolver, pathTargetResolver, rotateVector, selectTarget } from '../utils/targetingHelpers';
 import { getLavaTiles, makeLavaTile, rebuildLava } from '../utils/lavaHelpers';
 import hurtEnemy from '../utils/hurtEnemy';
 import calcDamage from '../utils/calcDamage';
 import getBuffValue from '../utils/getBuffValue';
 import isButtonDown from '../utils/isButtonDown';
 import { waitScaled } from '../utils/timerFunctions';
+import makeProjectile from './Projectile';
 
 export default function makeTower(
     k: KAPLAYCtx,
@@ -96,6 +97,8 @@ export default function makeTower(
             ...("charge" in TOWERS[towerId] ? { charge: { ...(TOWERS[towerId].charge as Charge) } } : {}),
             ...("battery" in TOWERS[towerId] ? { battery: { ...(TOWERS[towerId].battery as Battery) } } : {}),
             ...("spread" in TOWERS[towerId] ? { spread: TOWERS[towerId].spread as number } : {}),
+            ...("deathCharge" in TOWERS[towerId] ? { deathCharge: { ...(TOWERS[towerId].deathCharge as { current: number; required: number; }) } } : {}),
+            ...("overheat" in TOWERS[towerId] ? { overheat: { ...(TOWERS[towerId].overheat as Overheat) } } : {}),
             disabledTimeLeft: 0
         },
         k.state("active", ["active", "disabled"]),
@@ -252,6 +255,119 @@ export default function makeTower(
 
                 tower.onDestroy(() => {
                     k.destroy(orbiter);
+                });
+            } else if (towerId === "phoenix") {
+
+                const phoenix = k.add([
+                    k.sprite("phoenix", { anim: "fly" }),
+                    k.pos(tower.pos),
+                    k.opacity(1),
+                    k.anchor("center"),
+                    k.rotate(0),
+                    {
+                        orbitAngle: 0,
+                        r: 80,
+                        speed: 2 * Math.PI,
+                        fireTimer: 0,
+                        towerId: tower.instanceId
+                    },
+                    "phoenix"
+                ]);
+
+                phoenix.onUpdate(() => {
+                    const timeScale = store.get(gameStateAtom).timeScale;
+
+                    phoenix.opacity = tower.state === "disabled" ? 0 : 1;
+
+                    if (tower.state === "disabled") return;
+
+                    // orbit speed
+                    const fireRateBuff = getBuffValue(tower, "fireRate");
+
+                    const fireInterval = ((1 - fireRateBuff) * tower.stats.fireInterval);
+
+                    phoenix.speed =
+                        2 * Math.PI /
+                        fireInterval;
+
+                    phoenix.orbitAngle += phoenix.speed * k.dt() * timeScale;
+
+                    phoenix.angle = (phoenix.orbitAngle * 180) / Math.PI - 90;
+
+                    phoenix.r = tower.stats.range * TILE_SIZE;
+
+                    const cx =
+                        tower.pos.x + (tower.footprint.w * TILE_SIZE) / 2;
+
+                    const cy =
+                        tower.pos.y + (tower.footprint.h * TILE_SIZE) / 2;
+
+                    phoenix.pos.x =
+                        cx + Math.cos(phoenix.orbitAngle) * phoenix.r;
+
+                    phoenix.pos.y =
+                        cy + Math.sin(phoenix.orbitAngle) * phoenix.r;
+
+                    if (phoenix.fireTimer > fireInterval) phoenix.fireTimer = fireInterval;
+
+                    if (phoenix.fireTimer > 0) {
+                        phoenix.fireTimer -= k.dt() * timeScale;
+                    }
+
+                    if (phoenix.fireTimer <= 0 && store.get(gameStateAtom).waveActive) {
+
+                        const enemies = k.get("enemy") as EnemyGameObj[];
+
+                        const target = selectTarget(enemies, { ...tower, stats: { ...tower.stats, range: 3 } }, phoenix.pos);
+
+                        if (!target) return;
+
+                        phoenix.fireTimer += fireInterval / 8;
+
+                        const damageMult =
+                            1 + getBuffValue(tower, "damage");
+
+                        const { isCrit, damage } = calcDamage({
+                            bonusDamage: 0,
+                            bonusCritChance:
+                                target.has("curse")
+                                    ? CURSE_CRIT +
+                                    (k.get("hero")[0]?.hasCurseBuff ? 10 : 0)
+                                    : 0,
+                            critChance:
+                                tower.stats.critChance +
+                                (getBuffValue(tower, "critChance") * 100),
+                            critDamage:
+                                tower.stats.critDamage *
+                                (1 + getBuffValue(tower, "critDamage")),
+                            damage: tower.stats.damage,
+                            damageMultiplier: damageMult
+                        });
+
+                        const rotatedOffset = rotateVector(
+                            k,
+                            k.vec2(-15, 0),
+                            phoenix.angle * Math.PI / 180
+                        );
+
+                        makeProjectile(k, {
+                            id: "fireball",
+                            pos: phoenix.pos.add(rotatedOffset),
+                            target,
+                            damage,
+                            crit: isCrit,
+                            angle: phoenix.pos.angle(target.pos),
+                            element: "Fire",
+                            homing: true,
+                            turnSpeed: 6,
+                            scale: 1,
+                            splashRadius: 0
+                        });
+                    }
+                });
+
+                tower.onDestroy(() => {
+                    k.destroy(phoenix);
                 });
             }
 

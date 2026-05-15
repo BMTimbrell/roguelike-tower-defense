@@ -11,3 +11,19 @@ export default function drawLaser(k: KAPLAYCtx, origin: Vec2, target: Vec2, heig
         k.opacity(1)
     ]);
 }
+
+export function renderLaser(
+    k: KAPLAYCtx,
+    origin: Vec2,
+    target: Vec2,
+    height: number
+) {
+    k.drawSprite({
+        sprite: "solar lance",
+        pos: origin,
+        anchor: "left",
+        width: origin.dist(target),
+        height,
+        angle: target.sub(origin).angle(),
+    });
+}

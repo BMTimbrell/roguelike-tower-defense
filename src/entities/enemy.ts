@@ -88,7 +88,7 @@ export default function makeEnemy(
         k.z(1),
         "enemy",
         "isBoss" in ENEMIES[enemyId] && ENEMIES[enemyId].isBoss ? "boss" : "",
-        enemyId
+        `${enemyId}-enemy`
     ]);
 
     enemy.animSpeed = store.get(gameStateAtom).timeScale;
@@ -198,6 +198,12 @@ export default function makeEnemy(
             }
         }
 
+        if (attackTimer > enemy.attacker!.attackCooldown) attackTimer = enemy.attacker!.attackCooldown;
+
+        if (attackTimer > 0) {
+            attackTimer -= k.dt() * timeScale;
+        }
+
         while (attackTimer <= 0) {
             const towers = (k.get("tower") as TowerGameObj[]).filter(
                 t => t.placed && t.name !== "Farm Tower" && enemy.pos.dist(t.pos.add((t.footprint.w * TILE_SIZE) / 2, (t.footprint.h * TILE_SIZE) / 2)) <= enemy.attacker!.attackRange * TILE_SIZE
@@ -214,10 +220,6 @@ export default function makeEnemy(
 
             if (enemy.hasAnim("attack")) enemy.play("attack");
             attackTimer += enemy.attacker!.attackCooldown;
-        }
-
-        if (attackTimer > 0) {
-            attackTimer -= k.dt() * timeScale;
         }
     });
 
@@ -269,6 +271,8 @@ export default function makeEnemy(
         if (enemy.stunResistanceTimer > 0) {
             enemy.stunResistanceTimer -= k.dt() * timeScale;
         } else enemy.stunResistance = false;
+
+        if (enemy.attacker && attackTimer > enemy.attacker!.attackCooldown) attackTimer = enemy.attacker!.attackCooldown;
 
         if (enemy.attacker && attackTimer > 0) attackTimer -= k.dt() * timeScale;
 
@@ -508,14 +512,12 @@ export default function makeEnemy(
         enemy.onDeath(() => {
             k.destroy(boostRing);
         });
-
-        enemy.onDestroy(() => {
-            k.destroy(boostRing);
-        });
     }
 
     enemy.onDeath(() => {
         if (enemy.isDying) return;
+
+        k.trigger("enemyDeath", "ghost", { pos: enemy.pos, enemy, soulClaimed: false });
 
         if (enemyId === "polarBearJockey" || enemyId === "giantPolarBearJockey") enemy.z = 0;
 

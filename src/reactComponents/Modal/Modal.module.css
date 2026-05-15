@@ -59,4 +59,5 @@
 .modal-footer {
     width: 100%;
     padding: 1.25em;
+    border-top: 1px solid rgba(255, 255, 255, 0.4);
 }
