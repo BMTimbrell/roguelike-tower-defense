@@ -142,6 +142,66 @@ export default function makeWaveSpawner(k: KAPLAYCtx, levelId: LevelId, waypoint
 
                 if (spawner.waveIndex >= 0) {
                     opts?.onWaveEnd?.();
+                    const reward = Math.round(level.waves[spawner.waveIndex].reward * incomeMod);
+                    const duration = 1;
+
+                    const offsets = [
+                        [-1, 0],
+                        [1, 0],
+                        [0, -1],
+                        [0, 1]
+                    ];
+
+                    offsets.forEach(([x, y]) => {
+                        const outline = k.add([
+                            k.pos(k.getCamPos().x, k.getCamPos().y + y),
+                            k.text(`Reward: +${reward}`, {
+                                font: "free pixel"
+                            }),
+                            k.color("#000000"),
+                            k.opacity(1),
+                            "textOutline",
+                            k.anchor("center"),
+                            {
+                                time: 0,
+                                update() {
+                                    outline.time += k.dt() * store.get(gameStateAtom).timeScale;
+                                    const t = Math.min(rewardText.time / duration, 1);
+
+                                    const eased = 1 - Math.pow(t, 3);
+                                    outline.opacity = eased;
+
+                                    if (t >= duration) {
+                                        k.destroy(outline);
+                                    }
+                                }
+                            }
+                        ]);
+                    });
+
+                    const rewardText = k.add([
+                        k.pos(k.getCamPos()),
+                        k.text(`Reward: +${reward}`, {
+                            font: "free pixel"
+                        }),
+                        k.opacity(1),
+                        k.anchor("center"),
+                        {
+                            time: 0,
+                            update() {
+                                rewardText.time += k.dt() * store.get(gameStateAtom).timeScale;
+                                const t = Math.min(rewardText.time / duration, 1);
+
+                                const eased = 1 - Math.pow(t, 3);
+                                rewardText.opacity = eased;
+
+                                if (t >= duration) {
+                                    k.destroy(rewardText);
+                                }
+                            }
+                        }
+                    ]);
+
                     store.set(gameStateAtom, prev => ({
                         ...prev,
                         gold: prev.gold + (Math.round(level.waves[spawner.waveIndex].reward * incomeMod)),
