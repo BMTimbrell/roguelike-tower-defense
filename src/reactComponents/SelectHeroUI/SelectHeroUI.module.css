@@ -80,3 +80,19 @@
     opacity: 0.5;
     font-size: 0.9em;
 }
+
+.locked {
+    opacity: 0.45;
+    filter: grayscale(100%);
+    position: relative;
+}
+
+.locked:hover {
+    transform: none;
+    background-color: var(--card-color);
+}
+
+.lockedText {
+    font-size: 0.65em;
+    color: rgb(220, 220, 220);
+}

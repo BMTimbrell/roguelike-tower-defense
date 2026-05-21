@@ -15,11 +15,27 @@ export default function makeEnemy(
     enemyId: EnemyId,
     waypoints: Vec2[],
     pathIndex: number = 0,
+    waveNumber: number,
     pos?: Vec2,
     stopIndexes?: number[]
 ) {
     const difficulty = store.get(gameStateAtom).difficulty;
-    const health = ENEMIES[enemyId].hp * (difficulty === "hard" ? HARD_HEALTH_MULT : 1);
+
+    const expertWaveMultiplier =
+        difficulty === "expert" && waveNumber >= 5
+            ? waveNumber - 4
+            : 0;
+
+    const speedMultiplier = 1 + expertWaveMultiplier * 0.01;
+    const healthMultiplier = 1 + expertWaveMultiplier * 0.02;
+    const expertBossHealthMult = "isBoss" in ENEMIES[enemyId] && ENEMIES[enemyId].isBoss && difficulty === "expert" ? 1.1 : 1;
+    const health = ENEMIES[enemyId].hp * (difficulty !== "normal" ? HARD_HEALTH_MULT : 1) * healthMultiplier * expertBossHealthMult;
+
+    const baseSpeed = ENEMIES[enemyId].speed * speedMultiplier;
+
+    const armour = (ENEMIES[enemyId] as Record<"armour", number>).armour 
+        ? (ENEMIES[enemyId] as Record<"armour", number>).armour * (difficulty === "hard" ? 1.1 : 1) 
+        : 0;
 
     const enemy: EnemyGameObj = k.add([
         k.pos(pos ?? waypoints[pathIndex]),
@@ -36,12 +52,12 @@ export default function makeEnemy(
             pathIndex,
             segmentStart: waypoints[0],
             segmentProgress: 0,
-            baseSpeed: ENEMIES[enemyId].speed,
-            speed: ENEMIES[enemyId].speed,
+            baseSpeed: baseSpeed,
+            speed: baseSpeed,
             damage: ENEMIES[enemyId].damage,
             isDying: false,
-            armour: (ENEMIES[enemyId] as Record<"armour", number>).armour ?? 0,
-            maxArmour: (ENEMIES[enemyId] as Record<"armour", number>).armour ?? 0,
+            armour: armour,
+            maxArmour: armour,
             ...("healer" in ENEMIES[enemyId] ? { healer: ENEMIES[enemyId].healer as { amount: number; range: number; }, healTickRate: 2 } : {}),
             ...("spawnOnDeath" in ENEMIES[enemyId] ? { spawnOnDeath: ENEMIES[enemyId].spawnOnDeath as { id: "slime"; amount: number; } } : {}),
             ...("spawnArmourOnDeath" in ENEMIES[enemyId] ? { spawnArmourOnDeath: ENEMIES[enemyId].spawnArmourOnDeath as { amount: number; range: number; } } : {}),
@@ -90,6 +106,8 @@ export default function makeEnemy(
         "isBoss" in ENEMIES[enemyId] && ENEMIES[enemyId].isBoss ? "boss" : "",
         `${enemyId}-enemy`
     ]);
+
+    if (waveNumber >= 5) console.log(enemy.hp());
 
     enemy.animSpeed = store.get(gameStateAtom).timeScale;
 
@@ -276,7 +294,7 @@ export default function makeEnemy(
 
         if (enemy.attacker && attackTimer > 0) attackTimer -= k.dt() * timeScale;
 
-        enemy.z = enemy.pos.y + enemy.pos.x * 0.0001;
+        enemy.z = enemy.pos.y + enemy.pos.x * 0.0001 * (dir.x > 0 ? 1 : -1);
 
         // boss
         if (enemy.boss && enemy.boss.stopIndexes.length) {
@@ -305,7 +323,7 @@ export default function makeEnemy(
 
             const pos = start.lerp(end, drop.segmentProgress);
 
-            spawnPresent(k, pos, drop.enemies.map(e => ({ ...e, path: enemy.path, pathIndex: enemy.pathIndex })));
+            spawnPresent(k, pos, drop.enemies.map(e => ({ ...e, path: enemy.path, pathIndex: enemy.pathIndex, waveNumber })));
 
             enemy.boss.presentDropIndex++;
         }
@@ -537,6 +555,7 @@ export default function makeEnemy(
                     enemy.spawnOnDeath.id,
                     enemy.path,
                     enemy.pathIndex,
+                    waveNumber,
                     k.vec2(enemy.pos).add(posOffsetX, posOffsetY)
                 );
 
@@ -603,7 +622,13 @@ export function updateSpeed(this: EnemyGameObj) {
     this.speed = this.baseSpeed * multiplier;
 }
 
-function spawnPresent(k: KAPLAYCtx, pos: Vec2, enemiesToSpawn: { id: presentSpawns; amount: number; path: Vec2[]; pathIndex: number; }[]) {
+function spawnPresent(k: KAPLAYCtx, pos: Vec2, enemiesToSpawn: {
+    id: presentSpawns;
+    amount: number;
+    path: Vec2[];
+    pathIndex: number;
+    waveNumber: number;
+}[]) {
     const present = k.add([
         k.pos(pos),
         k.anchor("center"),
@@ -623,7 +648,7 @@ function spawnPresent(k: KAPLAYCtx, pos: Vec2, enemiesToSpawn: { id: presentSpaw
 
             for (let i = 0; i < group.amount; i++) {
                 const posOffset = (i - mid) * 12;
-                const spawnedEnemy = makeEnemy(k, group.id, group.path, group.pathIndex, present.pos.add(posOffset));
+                const spawnedEnemy = makeEnemy(k, group.id, group.path, group.pathIndex, group.waveNumber, present.pos.add(posOffset));
                 spawnedEnemy.invincible = true;
                 spawnedEnemy.invincibleDuration = 0.1;
             }

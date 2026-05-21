@@ -1,11 +1,12 @@
 .container {
     user-select: none;
     position: absolute;
-    top: 20dvh;
+    height: 100dvh;
     width: 100%;
     color: white;
     display: flex;
     flex-direction: column;
+    justify-content: center;
     align-items: center;
     row-gap: 3em;
 }

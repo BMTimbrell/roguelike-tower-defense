@@ -10,10 +10,10 @@ export default function makeKaplayCtx() {
         // letterbox: true,
         buttons: {
             cancel: {
-                mouse: "middle"
+                mouse: "right"
             },
             scroll: {
-                mouse: "right"
+                mouse: "middle"
             },
             camLeft: {
                 keyboard: "a"
@@ -29,6 +29,15 @@ export default function makeKaplayCtx() {
             },
             pause: {
                 keyboard: "escape"
+            },
+            speed1x: {
+                keyboard: "z"
+            },
+            speed2x: {
+                keyboard: "x"
+            },
+            speed3x: {
+                keyboard: "c"
             },
             card1: {
                 keyboard: "1"

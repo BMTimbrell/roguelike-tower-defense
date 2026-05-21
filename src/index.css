@@ -21,3 +21,11 @@
 button {
     font-size: inherit;
 }
+
+@media (max-width: 1200px) {
+    *,
+    *::before,
+    *::after {
+        font-family: sans-serif;
+    }
+}

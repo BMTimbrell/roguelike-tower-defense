@@ -44,7 +44,7 @@ export default function makeWaveSpawner(k: KAPLAYCtx, levelId: LevelId, waypoint
                         bossStops: number[];
                     };
 
-                    const bossInstance = makeEnemy(k, boss.id, waypoints, 0, undefined, boss.bossStops);
+                    const bossInstance = makeEnemy(k, boss.id, waypoints, 0, 1, undefined, boss.bossStops);
                     bossInstance.enterState("idle");
                 }
                 opts?.onWaveStart?.();
@@ -154,7 +154,7 @@ export default function makeWaveSpawner(k: KAPLAYCtx, levelId: LevelId, waypoint
 
                     offsets.forEach(([x, y]) => {
                         const outline = k.add([
-                            k.pos(k.getCamPos().x, k.getCamPos().y + y),
+                            k.pos(k.getCamPos().x + x, k.getCamPos().y + y),
                             k.text(`Reward: +${reward}`, {
                                 font: "free pixel"
                             }),
@@ -301,7 +301,8 @@ export default function makeWaveSpawner(k: KAPLAYCtx, levelId: LevelId, waypoint
 
         while (spawnQueue.length && spawnQueue[0].time <= timer) {
             const spawn = spawnQueue.shift()!;
-            makeEnemy(k, spawn.id, waypoints);
+
+            makeEnemy(k, spawn.id, waypoints, 0, spawner.waveIndex + 1);
         }
 
         if (spawning && spawnQueue.length === 0) {
@@ -312,6 +313,48 @@ export default function makeWaveSpawner(k: KAPLAYCtx, levelId: LevelId, waypoint
     });
 
     const waveTextPos = k.vec2(20, 15);
+
+    const offsets = [
+        [-1, 0],
+        [1, 0],
+        [0, -1],
+        [0, 1]
+    ];
+
+    offsets.forEach(([x, y]) => {
+        const outline = k.add([
+            k.pos(waveTextPos.x + x, waveTextPos.y + y),
+            k.text("", {
+                size: 20,
+                font: "free pixel"
+            }),
+            k.color("#000000"),
+            k.z(999),
+            {
+                update() {
+                    let textStr = "";
+
+                    if (spawner.waveIndex < 0) {
+                        textStr = `Wave: 1/${level.waves.length}`;
+                    } else if (spawning) {
+                        textStr = `Wave: ${spawner.waveIndex + 1}/${level.waves.length}`;
+                    } else if (waitingForNextWave) {
+                        textStr = `Wave: ${Math.min(spawner.waveIndex + 2, level.waves.length)}/${level.waves.length}`;
+                    } else {
+                        textStr = `Wave: ${spawner.waveIndex + 1}/${level.waves.length}`;
+                    }
+
+                    outline.use(k.text(textStr, {
+                        size: 20,
+                        font: "free pixel"
+                    }));
+
+                    outline.pos = screenPos(k, waveTextPos).add(x, y);
+                }
+            }
+        ]);
+    });
+
     const waveText = k.add([
         k.pos(waveTextPos),
         k.color('#FFFFFF'),

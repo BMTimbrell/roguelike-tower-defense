@@ -51,15 +51,15 @@ export default function spawnSummon(k: KAPLAYCtx, ctx: AttackContext, id: Summon
 
         let bonusDamage = 0;
 
-        if (name === "Chomper") {
-            const maxHp = enemy?.maxHP() ?? 1;
-            const hp = enemy?.hp() ?? 0;
-            const remainingHealthPercent = hp / maxHp;
+        // if (name === "Chomper") {
+        //     const maxHp = enemy?.maxHP() ?? 1;
+        //     const hp = enemy?.hp() ?? 0;
+        //     const remainingHealthPercent = hp / maxHp;
 
-            if (remainingHealthPercent >= 0.8) {
-                bonusDamage = ctx.damage;
-            }
-        }
+        //     if (remainingHealthPercent >= 0.8) {
+        //         bonusDamage = ctx.damage;
+        //     }
+        // }
 
         const { isCrit, damage } = calcDamage({
             bonusDamage,

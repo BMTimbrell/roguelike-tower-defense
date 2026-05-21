@@ -5,8 +5,10 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
+    justify-content: flex-start;
+    overflow-y: auto;
     row-gap: 0.75em;
+    padding: 4em 1em;
 }
 
 .heading {

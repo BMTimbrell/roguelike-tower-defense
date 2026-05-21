@@ -322,7 +322,7 @@ export default function makeTower(
 
                         if (!target) return;
 
-                        phoenix.fireTimer += fireInterval / 8;
+                        phoenix.fireTimer += fireInterval / 12;
 
                         const damageMult =
                             1 + getBuffValue(tower, "damage");

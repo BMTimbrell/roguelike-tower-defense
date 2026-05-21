@@ -7,7 +7,7 @@ import drawCards from "./drawCards";
 import { challengesAtom, controlsAtom, gameSpeedUIAtom, gameStateAtom, pauseMenuAtom, store } from "../store";
 import makeFloatingText from "../entities/FloatingText";
 import getCamViewRect from "./getCamViewRect";
-import { LEVEL_WAVES, MAX_HAND_SIZE, ROUND_DRAW_NUM, TILE_SIZE, TOWER_RANGE_TOLERANCE, type LevelId } from "../constants";
+import { LEVEL_WAVES, MAX_HAND_SIZE, ROUND_DRAW_NUM, TILE_SIZE, type LevelId } from "../constants";
 import reroll from "./reroll";
 import { addSelectTowerListener } from "../entities/Tower";
 import { makeLavaManager } from "./lavaHelpers";
@@ -84,7 +84,6 @@ export default function makeLevelScene(k: KAPLAYCtx, sceneName: Scene) {
             });
         }
 
-
         // pause menu
         k.onButtonPress("pause", () => {
             store.set(pauseMenuAtom, prev => ({
@@ -133,7 +132,7 @@ export default function makeLevelScene(k: KAPLAYCtx, sceneName: Scene) {
         let viewH = k.height() / zoom;
         const scrollHeight = mapWorldHeight + 4 * TILE_SIZE;
         let minX = viewW / 2;
-        let minY = viewH / 2 - 2 * TILE_SIZE;
+        let minY = viewH / 2 - 3 * TILE_SIZE;
         let maxX = mapWorldWidth - viewW / 2;
         let maxY = scrollHeight - viewH / 2;
 
@@ -155,7 +154,7 @@ export default function makeLevelScene(k: KAPLAYCtx, sceneName: Scene) {
             viewW = k.width() / zoom;
             viewH = k.height() / zoom;
             minX = viewW / 2;
-            minY = viewH / 2 - 2 * TILE_SIZE;
+            minY = viewH / 2 - 3 * TILE_SIZE;
             maxX = mapWorldWidth - viewW / 2;
             maxY = scrollHeight - viewH / 2;
         });
@@ -511,6 +510,20 @@ export default function makeLevelScene(k: KAPLAYCtx, sceneName: Scene) {
                 }
             ]
         }));
+
+        for (let i = 0; i < 3; i++) {
+            onAction(k, `speed${i + 1}x`, {
+                onPress: () => {
+                    store.set(gameSpeedUIAtom, prev => ({
+                        ...prev,
+                        activeIndex: i,
+                    }));
+                    
+                    setGameSpeed(k, i + 1);
+                }
+            });
+        }
+
     });
 
 }

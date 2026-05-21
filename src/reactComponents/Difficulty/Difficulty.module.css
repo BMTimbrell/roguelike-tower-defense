@@ -1,0 +1,39 @@
+.difficulty-container {
+    display: flex;
+    gap: 1em;
+}
+
+.difficulty {
+    background-color: var(--card-color);
+    color: white;
+    cursor: pointer;
+    padding: 0.5em 1em;
+    padding-bottom: 1em;
+    flex: 1 1 0;
+    border-radius: 0.25em;
+}
+
+.difficulty:hover {
+    background-color: rgb(114, 114, 114);
+}
+
+.heading {
+    font-size: 1.2em;
+    color: white;
+    margin-bottom: 1em;
+}
+
+.locked {
+    opacity: 0.6;
+    cursor: default;
+}
+
+.locked:hover {
+    background-color: var(--card-color);
+}
+
+.unlockText {
+    margin-top: 1em;
+    font-size: 0.9em;
+    color: white;
+}

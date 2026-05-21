@@ -35,8 +35,6 @@ export default function levelTransition(k: KAPLAYCtx) {
             }
         }));
 
-        challengeManager.setChallenge(null);
-
         store.set(challengesAtom, prev => ({
             ...prev,
             visible: false
@@ -199,9 +197,7 @@ export default function levelTransition(k: KAPLAYCtx) {
                         }
                     }));
 
-
                     updateSkills(updatedHero);
-
 
                     store.set(rewardsAtom, prev => ({
                         ...prev,
@@ -256,6 +252,49 @@ export default function levelTransition(k: KAPLAYCtx) {
                     ]);
 
                     await k.wait(1);
+
+                    if (challenge) {
+                        const heading = reward ? "Challenge Complete!" : "Challenge Failed!";
+                        // const description = challenge.def.description;
+
+                        const headingText = k.add([
+                            k.text(heading, {
+                                size: 24,
+                                font: "free pixel"
+                            }),
+                            k.scale(2),
+                            k.opacity(1),
+                            k.lifespan(2),
+                            k.anchor("center"),
+                            k.pos(k.center())
+                        ]);
+
+                        if (reward) {
+                            const coin = k.add([
+                                k.sprite("tower coin"),
+                                k.scale(2),
+                                k.anchor("center"),
+                                k.opacity(1),
+                                k.lifespan(2),
+                                k.pos(headingText.pos.add(0, headingText.height + 30))
+                            ]);
+
+                            k.add([
+                                k.text(`+${reward}`, {
+                                    size: 16,
+                                    font: "free pixel"
+                                }),
+                                k.lifespan(2),
+                                k.opacity(1),
+                                k.scale(2),
+                                k.anchor("center"),
+                                k.pos(coin.pos.add(coin.width + 30, 0))
+                            ]);
+                        }
+
+                        challengeManager.setChallenge(null);
+                        await k.wait(2);
+                    }
 
                     const level = LEVEL_WAVES[wave] as LevelWaves;
 

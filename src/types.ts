@@ -469,7 +469,7 @@ export type GameState = {
     waveActive: boolean;
     sceneIndex: number;
     level: number;
-    difficulty: "normal" | "hard";
+    difficulty: "normal" | "hard" | "expert";
     shops: ("shop" | "altar")[];
     towerCoins: number;
     challengeManager: ChallengeManager;
@@ -795,4 +795,18 @@ export type AttachedZapOpts = {
     interval: number;
     element: ElementName;
     attacker: TowerGameObj;
+};
+
+export type HeroProgression = {
+    unlocked: HeroId[];
+    progress: {
+        kills: number;
+        towerCoinsSpent: number;
+        completedLevels: {
+            forest: "normal"[],
+            snow: "normal" | "hard"[];
+            desert: "normal"[];
+            lava: "normal" | "hard"[];
+        };
+    };
 };

@@ -94,6 +94,10 @@ export default function makeUnitCombat(
 
     }
 
+    opts.owner.onStateEnter("disabled", () => {
+        destroyBeam();
+    });
+
     const rangeCircle = k.add([
         k.pos(),
         k.color(255, 255, 255),

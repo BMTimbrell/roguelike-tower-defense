@@ -1,5 +1,5 @@
 import { atom, createStore } from "jotai";
-import { type startingHeroUI, type GameState, type Rewards, type StartingOptions, type ShopChoiceButtons, type Shop, type Altar, type ChallengeDef, type PauseMenu, type Controls, type MainMenu, type GameSpeedUI } from "./types";
+import { type startingHeroUI, type GameState, type Rewards, type StartingOptions, type ShopChoiceButtons, type Shop, type Altar, type ChallengeDef, type PauseMenu, type Controls, type MainMenu, type GameSpeedUI, type HeroProgression } from "./types";
 import { ChallengeManager } from "./utils/challengeHelpers";
 
 export const gameStateAtom = atom<GameState>({
@@ -16,7 +16,7 @@ export const gameStateAtom = atom<GameState>({
     level: 1,
     deck: {
         cards: [],
-        drawCard: () => {},
+        drawCard: () => { },
         drawCost: 10
     },
     selectedUpgrade: null,
@@ -37,7 +37,7 @@ export const gameStateAtom = atom<GameState>({
         damageDealt: 0,
         damageRequired: 0
     },
-    difficulty: "hard",
+    difficulty: "normal",
     shops: ["shop", "altar"],
     towerCoins: 0,
     challengeManager: new ChallengeManager(),
@@ -59,29 +59,29 @@ export const rewardsAtom = atom<Rewards>({
     visible: false,
     show: ["skills", "upgrades", "towers"],
     rewardIndex: 0,
-    addSkill: () => {},
-    addTower: () => {}
+    addSkill: () => { },
+    addTower: () => { }
 });
 
 export const startingOptionsAtom = atom<StartingOptions>({
     visible: false,
     options: [],
-    addLoadout: () => {}
+    addLoadout: () => { }
 });
 
 export const selectHeroUIAtom = atom<startingHeroUI>({
     visible: false,
     options: [
-        "archer", 
-        "wizard", 
-        "knight", 
-        "assassin", 
-        "merchant", 
-        "witch", 
+        "archer",
+        "wizard",
+        "knight",
+        "assassin",
+        "merchant",
+        "witch",
         "songstress",
         "necromancer"
     ],
-    addHero: () => {}
+    addHero: () => { }
 });
 
 export const shopChoiceUIAtom = atom<ShopChoiceButtons>({
@@ -91,13 +91,13 @@ export const shopChoiceUIAtom = atom<ShopChoiceButtons>({
             name: "Shop",
             text: "Go to Shop",
             description: "Buy towers and upgrade cards.",
-            onClick: () => {}
+            onClick: () => { }
         },
         {
             name: "Altar",
             text: "Go to Altar",
             description: "Make offerings to recover HP, increase max HP, and cleanse your deck of unwanted cards.",
-            onClick: () => {}
+            onClick: () => { }
         }
     ]
 });
@@ -106,8 +106,8 @@ export const shopAtom = atom<Shop>({
     visible: false,
     towers: [],
     upgrades: [],
-    addTower: () => {},
-    nextLevel: () => {}
+    addTower: () => { },
+    nextLevel: () => { }
 });
 
 export const altarAtom = atom<Altar>({
@@ -120,7 +120,7 @@ export const altarAtom = atom<Altar>({
         removeCard: 3,
         levelUp: 1
     },
-    levelUp: () => {}
+    levelUp: () => { }
 });
 
 export const challengesAtom = atom({
@@ -130,18 +130,18 @@ export const challengesAtom = atom({
 
 export const pauseMenuAtom = atom<PauseMenu>({
     visible: false,
-    unPause: () => {},
-    mainMenu: () => {}
+    unPause: () => { },
+    mainMenu: () => { }
 });
 
 export const controlsAtom = atom<Controls>({
     getButton: () => { return { keyboard: "" } },
-    setButton: () => {}
+    setButton: () => { }
 });
 
 export const mainMenuAtom = atom<MainMenu>({
     visible: false,
-    startGame: () => {}
+    startGame: () => { }
 });
 
 export const gameSpeedUIAtom = atom<GameSpeedUI>({
@@ -150,20 +150,34 @@ export const gameSpeedUIAtom = atom<GameSpeedUI>({
     buttons: [
         {
             icon: "sprites/play-icon.png",
-            onClick: () => {},
+            onClick: () => { },
             width: 16
         },
         {
             icon: "sprites/fast-forward-icon.png",
-            onClick: () => {},
+            onClick: () => { },
             width: 16
         },
         {
             icon: "sprites/fast-fast-forward-icon.png",
-            onClick: () => {},
+            onClick: () => { },
             width: 25
         }
     ]
+});
+
+export const heroProgressionAtom = atom<HeroProgression>({
+    unlocked: ["archer"],
+    progress: {
+        kills: 0,
+        towerCoinsSpent: 0,
+        completedLevels: {
+            forest: [],
+            snow: [],
+            desert: [],
+            lava: []
+        }
+    }
 });
 
 export const store = createStore();
