@@ -1,11 +1,13 @@
 import { useAtom } from 'jotai';
 import styles from './Difficulty.module.css';
-import { gameStateAtom } from '../../store';
+import { gameStateAtom, mapAtom } from '../../store';
 
 export default function Difficulty({ onClick }: { onClick: React.MouseEventHandler<HTMLDivElement> }) {
     const [, setGameState] = useAtom(gameStateAtom);
     const hardUnlocked = false;
     const expertUnlocked = false;
+    const [map] = useAtom(mapAtom);
+    const scale = map.scale
 
     return (
         <>
@@ -37,7 +39,7 @@ export default function Difficulty({ onClick }: { onClick: React.MouseEventHandl
                         }));
                     }}
                 >
-                    <div className={styles.heading}>Hard {!hardUnlocked && "🔒"}</div>
+                    <div className={styles.heading}>Hard {!hardUnlocked && <img width={`${16 * scale}`} src="/sprites/lock.png" />}</div>
                     <div>For experienced players who already understand the game's systems. Enemies have more health, making combat more demanding and less forgiving.</div>
                     {!hardUnlocked && (
                         <div className={styles.unlockText}>
@@ -59,7 +61,7 @@ export default function Difficulty({ onClick }: { onClick: React.MouseEventHandl
                         }));
                     }}
                 >
-                    <div className={styles.heading}>Expert {!expertUnlocked && "🔒"}</div>
+                    <div className={styles.heading}>Expert {!expertUnlocked && <img width={`${16 * scale}`} src="/sprites/lock.png" />}</div>
                     <div>For veteran players who have mastered the game's systems. Enemies have increased armour, and gain additional health and speed in later waves, creating a relentless late-game challenge.</div>
                     {!expertUnlocked && (
                         <div className={styles.unlockText}>

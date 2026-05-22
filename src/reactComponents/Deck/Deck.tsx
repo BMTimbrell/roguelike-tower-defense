@@ -21,8 +21,13 @@ export default function Deck({ deck, gold }: { deck: Deck, gold: number }) {
                 <div className={styles.card3}></div>
                 <div className={`${styles["top-card"]} ${cantAfford ? styles['cant-afford'] : ''}`}>
                     <div className={styles.label}>
-                        <img style={{ width: `${16 * scale}px`, height: `${16 * scale}px` }} src={'./sprites/coin.png'} />
-                        <div><CostText cost={deck.drawCost} /></div>
+                        {deck.drawCost ? (
+                            <>
+                                <img style={{ width: `${16 * scale}px`, height: `${16 * scale}px` }} src={'./sprites/coin.png'} />
+                                <div><CostText cost={deck.drawCost} /></div>
+                            </>
+                        ) : <>Free</>}
+
                     </div>
                 </div>
             </div>

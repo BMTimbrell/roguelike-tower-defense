@@ -27,7 +27,7 @@ export const SMALL_DAMAGE_NUMBER_SIZE = 11;
 export const CRIT_DAMAGE_NUMBER_SIZE = 22;
 export const DAMAGE_NUMBER_COLOR = "#fffb00";
 export const CRIT_DAMAGE_NUMBER_COLOR = "#ff0000";
-export const CHARGE_DAMAGE_REQUIRED = 80;
+export const CHARGE_DAMAGE_REQUIRED = 1;
 export const CHILL_PERCENT = 6;
 export const MAX_CHILL_STACKS = 5;
 export const ICE_DAMAGE_PER_STACK = 10;
@@ -5619,6 +5619,16 @@ export const SKILLS = [
             }));
         },
         icon: "sprites/haggle-skill-icon.png"
+    },
+    {
+        id: "merchant-free-sample",
+        heroIds: ["merchant"],
+        name: "Free Sample",
+        description: "First card draw each wave is free while the merchant is on the field",
+        apply(hero) {
+            hero.freeCardDraw = true;
+        },
+        icon: "sprites/free-sample-skill-icon.png"
     },
     {
         id: "witch-festering-toxins",

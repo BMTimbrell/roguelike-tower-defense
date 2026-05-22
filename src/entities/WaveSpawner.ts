@@ -139,6 +139,7 @@ export default function makeWaveSpawner(k: KAPLAYCtx, levelId: LevelId, waypoint
 
                 enemyDeadCheck = false;
                 const incomeMod = k.get("hero")[0]?.incomeMod ?? 1;
+                const freeCardDraw = k.get("hero")[0]?.freeCardDraw ?? false;
 
                 if (spawner.waveIndex >= 0) {
                     opts?.onWaveEnd?.();
@@ -207,7 +208,7 @@ export default function makeWaveSpawner(k: KAPLAYCtx, levelId: LevelId, waypoint
                         gold: prev.gold + (Math.round(level.waves[spawner.waveIndex].reward * incomeMod)),
                         deck: {
                             ...prev.deck,
-                            drawCost: BASE_DRAW_COST
+                            drawCost: freeCardDraw ? 0 : BASE_DRAW_COST
                         }
 
                     }));

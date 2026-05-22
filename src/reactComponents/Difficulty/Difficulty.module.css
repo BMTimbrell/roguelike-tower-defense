@@ -21,6 +21,9 @@
     font-size: 1.2em;
     color: white;
     margin-bottom: 1em;
+    display: flex;
+    align-items: center;
+    gap: 0.5em;
 }
 
 .locked {
