@@ -52,7 +52,12 @@ export default function hurtEnemy(k: KAPLAYCtx, opts: {
         }
     }
 
-    target.hurt(remainingDamage);
+    if (target.shieldHp && target.state === "shield") {
+        target.shieldHp -= remainingDamage;
+        if (target.shieldHp < 0) target.hurt(-target.shieldHp);
+    } else {
+        target.hurt(remainingDamage);
+    }
 
     if (store.get(gameStateAtom).showDamageNumbers) {
         makeFloatingText(k, {

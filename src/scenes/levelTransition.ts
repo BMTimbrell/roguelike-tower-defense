@@ -164,9 +164,13 @@ export default function levelTransition(k: KAPLAYCtx) {
 
             const { mapData, tileGrid, pathTiles } = await generateMap(k, `data/${sceneName}.json`);
 
-            rand = k.randi();
+            const level = store.get(gameStateAtom).level;
 
-            const wave = `level${store.get(gameStateAtom).level}-${rand + 1}` as LevelId;
+            rand = level === 6 ? 0 : k.randi();
+
+            rand = 0;
+
+            const wave = `level${level}-${rand + 1}` as LevelId;
 
             store.set(rewardsAtom, prev => ({
                 ...prev,
@@ -255,7 +259,6 @@ export default function levelTransition(k: KAPLAYCtx) {
 
                     if (challenge) {
                         const heading = reward ? "Challenge Complete!" : "Challenge Failed!";
-                        // const description = challenge.def.description;
 
                         const headingText = k.add([
                             k.text(heading, {

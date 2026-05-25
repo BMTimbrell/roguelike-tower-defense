@@ -9,5 +9,10 @@
     justify-content: flex-start;
     gap: 1em;
     padding: 4em 0.5em;
+    pointer-events: none;
     overflow-y: auto;
+}
+
+.container * {
+    pointer-events: all;
 }

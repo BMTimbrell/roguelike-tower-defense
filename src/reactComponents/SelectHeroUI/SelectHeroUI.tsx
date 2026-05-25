@@ -1,11 +1,13 @@
 import { useAtom } from "jotai";
-import { heroProgressionAtom, mapAtom, selectHeroUIAtom } from "../../store";
+import { gameStateAtom, heroProgressionAtom, mapAtom, selectHeroUIAtom } from "../../store";
 import { HEROES, type HeroId } from "../../constants";
 import styles from './SelectHeroUI.module.css';
 import Stats from "../Stats/Stats";
 import { useState } from "react";
+import { playUISound } from "../../utils/soundHelpers";
 
 export default function SelectHeroUI() {
+    const [gameState] = useAtom(gameStateAtom);
     const [selectHeroUI] = useAtom(selectHeroUIAtom);
     const [map] = useAtom(mapAtom);
     const [heroProgression] = useAtom(heroProgressionAtom);
@@ -32,7 +34,10 @@ export default function SelectHeroUI() {
                                         selectHeroUI.addHero(id);
                                     }
                                 }}
-                                onMouseEnter={() => setShowDetails(id)}
+                                onMouseEnter={() => {
+                                    setShowDetails(id);
+                                    playUISound(gameState.context, "ui pop");
+                                }}
                             >
                                 <div>
                                     {HEROES[id].name}

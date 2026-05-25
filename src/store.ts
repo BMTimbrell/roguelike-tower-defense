@@ -1,8 +1,9 @@
 import { atom, createStore } from "jotai";
-import { type startingHeroUI, type GameState, type Rewards, type StartingOptions, type ShopChoiceButtons, type Shop, type Altar, type ChallengeDef, type PauseMenu, type Controls, type MainMenu, type GameSpeedUI, type HeroProgression } from "./types";
+import { type startingHeroUI, type GameState, type Rewards, type StartingOptions, type ShopChoiceButtons, type Shop, type Altar, type ChallengeDef, type PauseMenu, type Controls, type MainMenu, type GameSpeedUI, type HeroProgression, type AudioState } from "./types";
 import { ChallengeManager } from "./utils/challengeHelpers";
 
 export const gameStateAtom = atom<GameState>({
+    context: null,
     towerButtons: [],
     selectedUI: null,
     waveActive: false,
@@ -178,6 +179,14 @@ export const heroProgressionAtom = atom<HeroProgression>({
             lava: []
         }
     }
+});
+
+export const audioAtom = atom<AudioState>({
+    masterVolume: 1,
+    sfxVolume: 1,
+    musicVolume: 0.7,
+    uiVolume: 0.5,
+    muted: false
 });
 
 export const store = createStore();

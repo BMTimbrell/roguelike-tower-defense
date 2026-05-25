@@ -2,6 +2,7 @@ import { useAtom } from "jotai";
 import { challengesAtom, gameStateAtom, mapAtom } from "../../store";
 import styles from "./Challenges.module.css";
 import { useState } from "react";
+import { playUISound } from "../../utils/soundHelpers";
 
 export default function Challenges() {
     const [challenges] = useAtom(challengesAtom);
@@ -23,7 +24,9 @@ export default function Challenges() {
                             onClick={() => {
                                 challengeManager?.setChallenge(challenge);
                                 setChallengeActive(true);
+                                playUISound(gameState.context, "ui click");
                             }}
+                            onMouseEnter={() => playUISound(gameState.context, "ui hover")}
                         >
                             <div>{challenge.description}</div>
                             <div className={styles.reward}>Reward: {challenge.reward}<img width={`${17 * scale}px`} src="/sprites/tower-coin.png" /></div>

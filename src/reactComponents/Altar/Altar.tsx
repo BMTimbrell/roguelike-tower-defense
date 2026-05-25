@@ -7,6 +7,7 @@ import { useState } from "react";
 import Modal from "../Modal/Modal";
 import UpgradeCard from "../UpgradeCard/UpgradeCard";
 import Card from "../Card/Card";
+import { playUISound } from "../../utils/soundHelpers";
 
 export default function Altar() {
     const [altar, setAltar] = useAtom(altarAtom);

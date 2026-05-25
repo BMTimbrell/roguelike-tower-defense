@@ -14,6 +14,7 @@ import enemiesInCone from "./enemiesInCone";
 import getBuffValue from "./getBuffValue";
 import { lifespan } from "../kaplayComponents/lifespan";
 import { waitScaled } from "./timerFunctions";
+import { playSfx } from "./soundHelpers";
 
 export default function makeUnitCombat(
     k: KAPLAYCtx,
@@ -417,7 +418,7 @@ export default function makeUnitCombat(
                     k.sprite("soul"),
                     k.anchor("center"),
                     k.pos(pos),
-                    k.scale(enemy.boss ? 4 : enemy.damage > 1 ? 2 : 1),
+                    k.scale(enemy.boss ? 4 : enemy.hasLargeSoul ? 2 : 1),
                     lifespan(k, 10),
                     {
                         target: center,
@@ -492,6 +493,8 @@ export default function makeUnitCombat(
     });
 
     function shoot(target: AttackTarget) {
+        if (opts.owner.shootSound) playSfx(k, opts.owner.shootSound, 0.7);
+        
         if (target.type === "enemy") {
             let enemy = target.enemy;
             let projectile = {

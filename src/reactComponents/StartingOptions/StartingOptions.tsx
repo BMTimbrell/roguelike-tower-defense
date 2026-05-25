@@ -1,12 +1,14 @@
-import { startingOptionsAtom, mapAtom } from "../../store";
+import { startingOptionsAtom, mapAtom, gameStateAtom } from "../../store";
 import { useAtom } from "jotai";
 import styles from './StartingOptions.module.css';
 import UpgradeCard from "../UpgradeCard/UpgradeCard";
 import TowerCard from "../TowerCard/TowerCard";
+import { playUISound } from "../../utils/soundHelpers";
 
 export default function StartingOptions() {
     const [startingOptions] = useAtom(startingOptionsAtom);
     const addLoadout = startingOptions.addLoadout;
+    const [gameState] = useAtom(gameStateAtom);
     const [map] = useAtom(mapAtom);
     const scale = map.scale;
     const options = startingOptions.options;
@@ -17,7 +19,12 @@ export default function StartingOptions() {
 
             <div className={styles.options}>
                 {options.map((o, index) => (
-                    <div onClick={() => addLoadout(o.ids, o.upgrades)} className={styles.option} key={index}>
+                    <div 
+                        onClick={() => addLoadout(o.ids, o.upgrades)}
+                        onMouseEnter={() => playUISound(gameState.context, "ui pop")}
+                        className={styles.option} 
+                        key={index}
+                    >
                         <div className={styles.towers}>
                             {o.ids.map((i, index) => (
                                 <TowerCard key={index} id={i} scale={scale} />

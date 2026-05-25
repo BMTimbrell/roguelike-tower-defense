@@ -109,6 +109,7 @@ export type TowerDef = {
     sprite: string;
     gunSprite: string;
     baseSprite: string;
+    shootSound?: string;
     gunOffset: { x: number; y: number; };
     anchorOffset: { x: number; y: number; };
     shootOffset: { x: number; y: number; };
@@ -336,6 +337,7 @@ export type EnemyGameObj = GameObj<
         currentStopIndex: number;
         reachedStopIndex: boolean;
         presentDropIndex: number;
+        bossMechanic?: "escape" | "shield";
     };
     spawnIce?: boolean;
     presentDrops?: {
@@ -345,6 +347,10 @@ export type EnemyGameObj = GameObj<
     }[];
     checkpointTimer?: number;
     checkpointDuration?: number;
+    hasLargeSoul?: boolean;
+    shieldHp?: number;
+    maxShieldHp?: number;
+    shieldSprite?: string;
 };
 
 export type Upgrade = {
@@ -439,6 +445,7 @@ export type Scene = "level1" |
 export type Scenes = Scene[][];
 
 export type GameState = {
+    context: KAPLAYCtx | null;
     towerButtons: TowerButton[];
     nextTowerId: number;
     selectedUI: SelectedUI;
@@ -526,6 +533,7 @@ export type LevelWaves = {
     startingFreezeAmount?: number;
     shop?: boolean;
     challenge?: boolean;
+    music: string;
 };
 
 export type EnemyConfig = {
@@ -533,6 +541,7 @@ export type EnemyConfig = {
     damage: number;
     speed: number;
     sprite: string;
+    hasLargeSoul?: boolean;
     armour?: number;
     healer?: {
         amount: number;
@@ -576,6 +585,10 @@ export type EnemyConfig = {
         enemies: { id: presentSpawns; amount: number; }[];
     }[];
     checkpointTimer?: number;
+    goldDropped: number;
+    bossMechanic?: "shield" | "escape";
+    shieldSprite?: string;
+    shieldHp?: number;
 };
 
 export type presentSpawns =
@@ -809,4 +822,12 @@ export type HeroProgression = {
             lava: "normal" | "hard"[];
         };
     };
+};
+
+export type AudioState = {
+    masterVolume: number;
+    sfxVolume: number;
+    musicVolume: number;
+    uiVolume: number;
+    muted: boolean;
 };

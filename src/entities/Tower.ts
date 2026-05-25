@@ -15,6 +15,7 @@ import getBuffValue from '../utils/getBuffValue';
 import isButtonDown from '../utils/isButtonDown';
 import { waitScaled } from '../utils/timerFunctions';
 import makeProjectile from './Projectile';
+import { playUISound } from '../utils/soundHelpers';
 
 export default function makeTower(
     k: KAPLAYCtx,
@@ -71,6 +72,7 @@ export default function makeTower(
             lastShotTime: 0,
             upgrades: [],
             ...("effects" in TOWERS[towerId] ? { effects: TOWERS[towerId].effects as UnitEffects } : {}),
+            ...("shootSound" in TOWERS[towerId] ? { shootSound: TOWERS[towerId].shootSound as string } : {}),
             ...("farmData" in TOWERS[towerId] ? {
                 farmData: TOWERS[towerId].farmData as {
                     plantedSeed: SeedId | null;
@@ -175,6 +177,8 @@ export default function makeTower(
                 gold: prev.gold - (tower.cost * discount),
                 selectedUI: null
             }));
+
+            playUISound(k, "ui buy");
 
             // build tower challenge
             const challengeManager = store.get(gameStateAtom).challengeManager;

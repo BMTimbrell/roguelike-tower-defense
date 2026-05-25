@@ -1,10 +1,12 @@
 import { useAtom } from "jotai";
-import { gameSpeedUIAtom, mapAtom } from "../../store";
+import { gameSpeedUIAtom, gameStateAtom, mapAtom } from "../../store";
 import Button from "../Button/Button";
 import styles from './GameSpeedButton.module.css';
+import { playUISound } from "../../utils/soundHelpers";
 
 export default function GameSpeedButtons() {
     const [gameSpeedUI, setGameSpeedUI] = useAtom(gameSpeedUIAtom);
+    const [gameState] = useAtom(gameStateAtom);
     const [map] = useAtom(mapAtom);
     const scale = map.scale;
 
@@ -19,7 +21,9 @@ export default function GameSpeedButtons() {
                             ...prev,
                             activeIndex: index
                         }));
+                        playUISound(gameState.context, "ui click");
                     }}
+                    onMouseEnter={() => playUISound(gameState.context, "ui hover")}
                     classNames={[`${gameSpeedUI.activeIndex === index ? styles.active : ''}`]}
                 >
                     <img width={button.width * scale} src={button.icon} />

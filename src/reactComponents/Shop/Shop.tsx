@@ -6,6 +6,7 @@ import styles from './Shop.module.css';
 import TowerCard from "../TowerCard/TowerCard";
 import Button from "../Button/Button";
 import LoadoutPreviewPanel from "../LoadoutPreviewPanel/LoadoutPreviewPanel";
+import { playUISound } from "../../utils/soundHelpers";
 
 export default function Shop() {
     const [shop, setShop] = useAtom(shopAtom);
@@ -43,6 +44,8 @@ export default function Shop() {
                                     towers: prev.towers.filter(t => tower !== t)
                                 }));
 
+                                playUISound(gameState.context, "ui buy");
+
                                 shop.addTower(tower);
                             }}    
                             disabled={TOWERS[tower].cost / 10 > towerCoins}
@@ -77,6 +80,8 @@ export default function Shop() {
                                     ...prev,
                                     upgrades: prev.upgrades.filter(upgrade => upgrade !== u)
                                 }));
+
+                                playUISound(gameState.context, "ui buy");
                             }}
                         >
                             Buy

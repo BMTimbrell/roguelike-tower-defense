@@ -8,6 +8,7 @@ import screenPos from "../utils/screenPos";
 import drawCards from "../utils/drawCards";
 import makeTower from "./Tower";
 import setGameSpeed from "../utils/setGameSpeed";
+import { fadeOutMusic, getMusic } from "../utils/soundHelpers";
 
 export default function makeWaveSpawner(k: KAPLAYCtx, levelId: LevelId, waypoints: Vec2[], opts?: { onWaveEnd?: () => void; onWaveStart?: () => void; }) {
     const level = LEVEL_WAVES[levelId];
@@ -103,6 +104,10 @@ export default function makeWaveSpawner(k: KAPLAYCtx, levelId: LevelId, waypoint
 
                 if (spawner.waveIndex === level.waves.length - 1 || ("boss" in level && !boss && !normalEnemiesAlive)) {
                     levelComplete = true;
+                    
+                    const currentMusic = getMusic();
+                    if (currentMusic) fadeOutMusic(k, currentMusic);
+
                     const complete = k.add([
                         k.pos(k.getCamPos()),
                         k.text("Level Complete!", {

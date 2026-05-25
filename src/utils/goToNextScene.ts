@@ -1,6 +1,7 @@
 import type { KAPLAYCtx } from "kaplay";
 import type { LevelWaves, MapData, PathTile, Scene, Tile } from "../types";
 import { ENEMIES, type LevelId } from "../constants";
+import { playSfx } from "./soundHelpers";
 
 export default function goToNextScene(k: KAPLAYCtx, opts: {
     sceneName: Scene,
@@ -13,6 +14,7 @@ export default function goToNextScene(k: KAPLAYCtx, opts: {
     const { sceneName, mapData, tileGrid, pathTiles, wave, level } = opts;
 
     if (level.boss) {
+        playSfx(k, "boss drums");
         const bossId = level.boss.id;
         const sprite = ENEMIES[bossId].sprite;
 
@@ -22,8 +24,6 @@ export default function goToNextScene(k: KAPLAYCtx, opts: {
             k.scale(4),
             k.anchor("center")
         ]);
-
-        // bossSprite.pos = bossSprite.pos.add(0, bossSprite.height / 4);
 
         k.add([
             k.text(sprite.toUpperCase(), {

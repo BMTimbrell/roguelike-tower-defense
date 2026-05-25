@@ -27,7 +27,7 @@ export const SMALL_DAMAGE_NUMBER_SIZE = 11;
 export const CRIT_DAMAGE_NUMBER_SIZE = 22;
 export const DAMAGE_NUMBER_COLOR = "#fffb00";
 export const CRIT_DAMAGE_NUMBER_COLOR = "#ff0000";
-export const CHARGE_DAMAGE_REQUIRED = 1;
+export const CHARGE_DAMAGE_REQUIRED = 80;
 export const CHILL_PERCENT = 6;
 export const MAX_CHILL_STACKS = 5;
 export const ICE_DAMAGE_PER_STACK = 10;
@@ -202,6 +202,7 @@ export const LEVEL_WAVES = {
     "level1-1": {
         startingGold: 100,
         startDelay: 120,
+        music: "forest biome",
         waves: [
             {
                 spawns: [
@@ -226,9 +227,10 @@ export const LEVEL_WAVES = {
             // },
             // {
             //     spawns: [
-            //         { id: "armouredSkeleton", count: 3, interval: 1 },
             //         { id: "giantSlime", count: 1, interval: 1 },
-            //         { id: "skeleton", count: 8, interval: 1 },
+            //         { id: "slime", count: 5, interval: 0.5 },
+            //         { id: "armouredSkeleton", count: 3, interval: 1 },
+            //         { id: "skeleton", count: 5, interval: 1 },
             //         { id: "fairy", count: 1, interval: 1 }
             //     ],
             //     reward: 300
@@ -236,12 +238,12 @@ export const LEVEL_WAVES = {
             // {
             //     spawns: [
             //         { id: "armouredSkeleton", count: 5, interval: 1 },
-            //         { id: "giantSlime", count: 1, interval: 1 },
-            //         { id: "skeleton", count: 5, interval: 0.5 },
             //         { id: "giantSkeleton", count: 1, interval: 1 },
+            //         { id: "skeleton", count: 5, interval: 0.75 },
             //         { id: "fairy", count: 1, interval: 1 },
-            //         { id: "skeleton", count: 5, interval: 0.5 },
+            //         { id: "skeleton", count: 5, interval: 0.75 },
             //         { id: "giantSlime", count: 1, interval: 1 },
+            //         { id: "slime", count: 5, interval: 0.5 },
             //         { id: "armouredSkeleton", count: 5, interval: 1 },
             //         { id: "fairy", count: 1, interval: 1 },
             //     ],
@@ -253,6 +255,7 @@ export const LEVEL_WAVES = {
     "level1-2": {
         startingGold: 100,
         startDelay: 120,
+        music: "forest biome",
         waves: [
             {
                 spawns: [
@@ -277,7 +280,7 @@ export const LEVEL_WAVES = {
             // },
             // {
             //     spawns: [
-            //         { id: "armouredOrc", count: 2, interval: 2 },
+            //         { id: "armouredOrc", count: 2, interval: 1.5 },
             //         { id: "giantBee", count: 1, interval: 2 },
             //         { id: "bee", count: 5, interval: 1 },
             //         { id: "orc", count: 8, interval: 1.4 },
@@ -287,14 +290,14 @@ export const LEVEL_WAVES = {
             // },
             // {
             //     spawns: [
-            //         { id: "armouredOrc", count: 5, interval: 1.5 },
-            //         { id: "giantBee", count: 1, interval: 1 },
-            //         { id: "orc", count: 8, interval: 1 },
             //         { id: "giantOrc", count: 1, interval: 1.5 },
-            //         { id: "armouredOrc", count: 5, interval: 1.5 },
+            //         { id: "orc", count: 5, interval: 1 },
+            //         { id: "giantBee", count: 1, interval: 1 },
+            //         { id: "bee", count: 5, interval: 0.5 },
+            //         { id: "armouredOrc", count: 3, interval: 1.5 },
             //         { id: "fairy", count: 1, interval: 1 },
-            //         { id: "giantBee", count: 1, interval: 2 },
-            //         { id: "bee", count: 10, interval: 0.5 },
+            //         { id: "orc", count: 2, interval: 1 },
+            //         { id: "bee", count: 5, interval: 0.5 },
             //     ],
             //     reward: 0
             // }
@@ -304,6 +307,7 @@ export const LEVEL_WAVES = {
     "level2-1": {
         startingGold: 150,
         startDelay: 120,
+        music: "forest biome",
         waves: [
             {
                 spawns: [
@@ -343,37 +347,39 @@ export const LEVEL_WAVES = {
             // {
             //     spawns: [
             //         { id: "giantSkeleton", count: 1, interval: 1 },
-            //         { id: "armouredSkeleton", count: 5, interval: 1 },
+            //         { id: "skeleton", count: 5, interval: 1 },
             //         { id: "fairy", count: 1, interval: 1 },
             //         { id: "giantSlime", count: 1, interval: 1 },
-            //         { id: "skeleton", count: 5, interval: 0.75 },
+            //         { id: "slime", count: 10, interval: 0.5 },
+            //         { id: "armouredSkeleton", count: 3, interval: 1.5 },
             //         { id: "ghost", count: 3, interval: 1.5 },
-            //         { id: "armouredSkeleton", count: 3, interval: 1 },
+            //         { id: "armouredSkeleton", count: 3, interval: 1.5 },
             //         { id: "ghost", count: 3, interval: 1.5 },
             //         { id: "fairy", count: 1, interval: 1 },
-            //         { id: "skeleton", count: 5, interval: 0.75 },
             //         { id: "giantSlime", count: 1, interval: 1 },
-            //         { id: "skeleton", count: 5, interval: 0.75 },
-            //         { id: "redFairy", count: 1, interval: 1 }
+            //         { id: "slime", count: 5, interval: 0.5 },
+            //         { id: "skeleton", count: 5, interval: 0.5 },
+            //         { id: "fairy", count: 1, interval: 1 }
             //     ],
             //     reward: 400
             // },
             // {
             //     spawns: [
-            //         { id: "giantSkeleton", count: 1, interval: 1 },
             //         { id: "armouredSkeleton", count: 5, interval: 1 },
-            //         { id: "fairy", count: 1, interval: 1 },
-            //         { id: "giantSlime", count: 1, interval: 1 },
-            //         { id: "ghost", count: 5, interval: 1.5 },
-            //         { id: "giantSlime", count: 1, interval: 1 },
             //         { id: "redFairy", count: 1, interval: 1 },
+            //         { id: "armouredSkeleton", count: 5, interval: 1 },
+            //         { id: "giantSlime", count: 1, interval: 1 },
+            //         { id: "slime", count: 10, interval: 0.5 },
+            //         { id: "giantSlime", count: 1, interval: 1 },
+            //         { id: "fairy", count: 1, interval: 1 },
+            //         { id: "armouredSkeleton", count: 3, interval: 1 },
             //         { id: "skeleton", count: 5, interval: 0.5 },
             //         { id: "giantSkeleton", count: 1, interval: 1 },
             //         { id: "skeleton", count: 5, interval: 0.5 },
             //         { id: "giantSkeleton", count: 1, interval: 1 },
             //         { id: "ghost", count: 5, interval: 1.5 },
             //         { id: "giantSlime", count: 1, interval: 1 },
-            //         { id: "skeleton", count: 5, interval: 0.5 },
+            //         { id: "ghost", count: 5, interval: 1.5 },
             //         { id: "redFairy", count: 1, interval: 1 }
             //     ],
             //     reward: 500
@@ -384,6 +390,7 @@ export const LEVEL_WAVES = {
     "level2-2": {
         startingGold: 150,
         startDelay: 120,
+        music: "forest biome",
         waves: [
             {
                 spawns: [
@@ -420,35 +427,37 @@ export const LEVEL_WAVES = {
             // {
             //     spawns: [
             //         { id: "giantOrc", count: 1, interval: 2 },
-            //         { id: "orc", count: 8, interval: 1 },
+            //         { id: "orc", count: 5, interval: 1 },
             //         { id: "fairy", count: 1, interval: 1 },
-            //         { id: "armouredOrc", count: 3, interval: 1.5 },
+            //         { id: "armouredOrc", count: 3, interval: 2},
             //         { id: "giantBee", count: 1, interval: 2 },
+            //         { id: "bee", count: 10, interval: 0.5 },
             //         { id: "spider", count: 2, interval: 2 },
-            //         { id: "armouredOrc", count: 3, interval: 1.5 },
+            //         { id: "armouredOrc", count: 3, interval: 2 },
             //         { id: "fairy", count: 1, interval: 1 },
             //         { id: "spider", count: 2, interval: 2 },
             //         { id: "orc", count: 5, interval: 1 },
-            //         { id: "redFairy", count: 1, interval: 1 }
+            //         { id: "fairy", count: 1, interval: 1 }
             //     ],
             //     reward: 400
             // },
             // {
             //     spawns: [
-            //         { id: "armouredOrc", count: 6, interval: 1.5 },
             //         { id: "giantOrc", count: 1, interval: 2 },
             //         { id: "orc", count: 6, interval: 1 },
             //         { id: "redFairy", count: 1, interval: 1 },
-            //         { id: "armouredOrc", count: 5, interval: 1 },
-            //         { id: "spider", count: 3, interval: 1.2 },
+            //         { id: "armouredOrc", count: 5, interval: 1.5 },
+            //         { id: "spider", count: 3, interval: 1.5 },
             //         { id: "giantBee", count: 1, interval: 1.5 },
-            //         { id: "spider", count: 3, interval: 1.2 },
+            //         { id: "bee", count: 10, interval: 0.5 },
+            //         { id: "spider", count: 3, interval: 1.5 },
             //         { id: "armouredOrc", count: 3, interval: 1.5 },
             //         { id: "giantBee", count: 1, interval: 1 },
-            //         { id: "spider", count: 2, interval: 1.2 },
+            //         { id: "bee", count: 10, interval: 0.5 },
             //         { id: "giantOrc", count: 1, interval: 2 },
-            //         { id: "orc", count: 10, interval: 1 },
-            //         { id: "redFairy", count: 1, interval: 1 }
+            //         { id: "orc", count: 5, interval: 1 },
+            //         { id: "redFairy", count: 1, interval: 1 },
+            //         { id: "spider", count: 2, interval: 1.5 }
             //     ],
             //     reward: 500
             // }
@@ -457,8 +466,9 @@ export const LEVEL_WAVES = {
     "level3-1": {
         startingGold: 200,
         startDelay: 120,
+        music: "forest boss",
         boss: {
-            id: "beeQueen",
+            id: "slimeKing",
             bossStops: [0, 1, 3, 5, 7, 9, 11, 17]
         },
         waves: [
@@ -565,6 +575,7 @@ export const LEVEL_WAVES = {
     "level3-2": {
         startingGold: 200,
         startDelay: 120,
+        music: "forest boss",
         boss: {
             id: "beeQueen",
             bossStops: [0, 1, 3, 5, 7, 9, 11, 17]
@@ -677,6 +688,7 @@ export const LEVEL_WAVES = {
         startingGold: 150,
         startDelay: 120,
         startingFreezeAmount: 4,
+        music: "snow biome",
         shop: true,
         challenge: true,
         waves: [
@@ -847,6 +859,7 @@ export const LEVEL_WAVES = {
         startingGold: 150,
         startDelay: 120,
         startingFreezeAmount: 4,
+        music: "snow biome",
         shop: true,
         challenge: true,
         waves: [
@@ -1018,6 +1031,7 @@ export const LEVEL_WAVES = {
         startingGold: 150,
         startDelay: 120,
         startingFreezeAmount: 6,
+        music: "snow biome",
         waves: [
             {
                 spawns: [
@@ -1313,6 +1327,7 @@ export const LEVEL_WAVES = {
         startingGold: 150,
         startDelay: 120,
         startingFreezeAmount: 6,
+        music: "snow biome",
         waves: [
             {
                 spawns: [
@@ -1567,6 +1582,7 @@ export const LEVEL_WAVES = {
         startingGold: 200,
         startDelay: 120,
         startingFreezeAmount: 10,
+        music: "snow boss",
         boss: {
             id: "evilSanta",
             bossStops: [0, 1, 6, 7, 12, 14, 16, 17, 22, 24]
@@ -1769,283 +1785,7 @@ export const LEVEL_WAVES = {
                     { id: "ghost", count: 5, interval: 1 },
                     { id: "redFairy", count: 2, interval: 1 }
                 ],
-                reward: 850
-            },
-            {
-                spawns: [
-                    { id: "giantArmouredSlime", count: 1, interval: 1 },
-                    { id: "armouredSlime", count: 3, interval: 0.5 },
-                    { id: "giantArmouredSlime", count: 1, interval: 1 },
-                    { id: "armouredSlime", count: 3, interval: 0.5 },
-                    { id: "ghost", count: 5, interval: 0.5 },
-                    { id: "giantGhost", count: 1, interval: 1 },
-                    { id: "ghost", count: 5, interval: 0.5 },
-                    { id: "giantRedFairy", count: 1, interval: 1 },
-                    { id: "redFairy", count: 2, interval: 1 },
-                    { id: "iceSlime", count: 1, interval: 0.5 },
-                    { id: "ghost", count: 5, interval: 0.5 },
-                    { id: "giantGhost", count: 1, interval: 1 },
-                    { id: "ghost", count: 5, interval: 0.5 },
-                    { id: "wolf", count: 1, interval: 1 },
-                    { id: "giantWolf", count: 1, interval: 1 },
-                    { id: "wolf", count: 1, interval: 1 },
-                    { id: "iceSlime", count: 1, interval: 0.5 },
-                    { id: "polarBearJockey", count: 5, interval: 0.5 },
-                    { id: "giantPolarBearJockey", count: 1, interval: 1 },
-                    { id: "polarBearJockey", count: 5, interval: 0.5 },
-                    { id: "giantPolarBearJockey", count: 1, interval: 1 },
-                    { id: "wolf", count: 1, interval: 1 },
-                    { id: "giantWolf", count: 1, interval: 1 },
-                    { id: "wolf", count: 1, interval: 1 },
-                    { id: "iceSlime", count: 1, interval: 0.5 },
-                    { id: "giantArmouredSlime", count: 1, interval: 1 },
-                    { id: "armouredSlime", count: 3, interval: 0.5 },
-                    { id: "giantArmouredSlime", count: 1, interval: 1 },
-                    { id: "armouredSlime", count: 3, interval: 0.5 },
-                    { id: "spider", count: 5, interval: 0.5 },
-                    { id: "giantSpider", count: 1, interval: 1 },
-                    { id: "spider", count: 5, interval: 0.5 },
-                    { id: "giantSpider", count: 1, interval: 1 },
-                    { id: "spider", count: 5, interval: 0.5 },
-                    { id: "giantFairy", count: 1, interval: 1 },
-                    { id: "fairy", count: 5, interval: 0.5 },
-                    { id: "armouredSkeleton", count: 5, interval: 0.5 },
-                    { id: "giantArmouredSkeleton", count: 1, interval: 1 },
-                    { id: "armouredSkeleton", count: 5, interval: 0.5 },
-                    { id: "wolf", count: 1, interval: 1 },
-                    { id: "giantWolf", count: 1, interval: 1 },
-                    { id: "wolf", count: 1, interval: 1 },
-                    { id: "armouredOrc", count: 5, interval: 0.5 },
-                    { id: "giantArmouredOrc", count: 1, interval: 1 },
-                    { id: "armouredOrc", count: 5, interval: 0.5 },
-                    { id: "giantIceSlime", count: 1, interval: 1 },
-                    { id: "iceSlime", count: 3, interval: 0.5 },
-                    { id: "giantFairy", count: 1, interval: 1 },
-                    { id: "fairy", count: 5, interval: 0.5 },
-                    { id: "snowman", count: 1, interval: 0.5 },
-                    { id: "giantSnowman", count: 1, interval: 1 },
-                    { id: "snowman", count: 2, interval: 0.5 },
-                    { id: "snowman", count: 1, interval: 0.5 },
-                    { id: "giantSnowman", count: 1, interval: 1 },
-                    { id: "snowman", count: 2, interval: 0.5 },
-                    { id: "giantFairy", count: 1, interval: 1 },
-                    { id: "fairy", count: 5, interval: 0.5 },
-                    { id: "wolf", count: 1, interval: 1 },
-                    { id: "giantWolf", count: 1, interval: 1 },
-                    { id: "wolf", count: 1, interval: 1 }
-                ],
-                reward: 50
-            }
-        ],
-    },
-
-    "level6-2": {
-        startingGold: 200,
-        startDelay: 120,
-        startingFreezeAmount: 10,
-        boss: {
-            id: "evilSanta",
-            bossStops: [0, 1, 6, 7, 12, 14, 16, 17, 22, 24]
-        },
-        shop: true,
-        waves: [
-            {
-                spawns: [
-                    { id: "iceSlime", count: 5, interval: 0.5 },
-                    { id: "penguin", count: 5, interval: 1 },
-                    { id: "skeleton", count: 1, interval: 1 },
-                    { id: "orc", count: 1, interval: 1 }
-                ],
-                reward: 100
-            },
-            {
-                spawns: [
-                    { id: "iceSlime", count: 2, interval: 1 },
-                    { id: "penguin", count: 3, interval: 1 },
-                    { id: "iceSlime", count: 2, interval: 1 },
-                    { id: "snowman", count: 3, interval: 1 },
-                    { id: "iceSlime", count: 2, interval: 1 },
-                    { id: "polarBear", count: 2, interval: 1 },
-                    { id: "skeleton", count: 2, interval: 1 },
-                    { id: "orc", count: 1, interval: 1 }
-                ],
-                reward: 200
-            },
-            {
-                spawns: [
-                    { id: "iceSlime", count: 3, interval: 0.5 },
-                    { id: "armouredOrc", count: 1, interval: 1 },
-                    { id: "armouredSkeleton", count: 1, interval: 1 },
-                    { id: "snowman", count: 3, interval: 1 },
-                    { id: "skeleton", count: 5, interval: 1 },
-                    { id: "orc", count: 5, interval: 1 },
-                    { id: "fairy", count: 1, interval: 1 },
-                    { id: "iceSlime", count: 2, interval: 1 },
-                    { id: "polarBear", count: 3, interval: 1 },
-                ],
-                reward: 300
-            },
-            {
-                spawns: [
-                    { id: "polarBearJockey", count: 3, interval: 1 },
-                    { id: "iceSlime", count: 3, interval: 0.5 },
-                    { id: "snowman", count: 1, interval: 1 },
-                    { id: "giantSnowman", count: 1, interval: 1 },
-                    { id: "snowman", count: 2, interval: 1 },
-                    { id: "fairy", count: 1, interval: 1 },
-                    { id: "giantOrc", count: 1, interval: 1 },
-                    { id: "orc", count: 3, interval: 1 },
-                    { id: "giantIceSlime", count: 1, interval: 1 },
-                    { id: "iceSlime", count: 3, interval: 0.5 },
-                    { id: "armouredSkeleton", count: 5, interval: 1 },
-                    { id: "giantSkeleton", count: 1, interval: 1 },
-                    { id: "skeleton", count: 3, interval: 1 },
-                    { id: "polarBear", count: 2, interval: 1 },
-                    { id: "fairy", count: 1, interval: 1 }
-                ],
-                reward: 400
-            },
-            {
-                spawns: [
-                    { id: "giantIceSlime", count: 1, interval: 1 },
-                    { id: "iceSlime", count: 3, interval: 0.5 },
-                    { id: "polarBearJockey", count: 5, interval: 1 },
-                    { id: "fairy", count: 1, interval: 1 },
-                    { id: "ghost", count: 2, interval: 1 },
-                    { id: "snowman", count: 1, interval: 1 },
-                    { id: "giantSnowman", count: 1, interval: 1 },
-                    { id: "snowman", count: 2, interval: 1 },
-                    { id: "fairy", count: 1, interval: 1 },
-                    { id: "penguin", count: 1, interval: 1 },
-                    { id: "giantPenguin", count: 1, interval: 1 },
-                    { id: "penguin", count: 2, interval: 1 },
-                    { id: "armouredSkeleton", count: 5, interval: 1 },
-                    { id: "giantSkeleton", count: 1, interval: 1 },
-                    { id: "skeleton", count: 5, interval: 0.5 },
-                    { id: "fairy", count: 1, interval: 1 },
-                    { id: "giantOrc", count: 1, interval: 1 },
-                    { id: "orc", count: 5, interval: 0.5 },
-                    { id: "giantPolarBear", count: 1, interval: 1 },
-                    { id: "polarBear", count: 3, interval: 1 },
-                    { id: "spider", count: 2, interval: 1 },
-                    { id: "redFairy", count: 1, interval: 1 },
-                ],
-                reward: 500
-            },
-            {
-                spawns: [
-                    { id: "polarBearJockey", count: 5, interval: 1 },
-                    { id: "giantPolarBearJockey", count: 1, interval: 1 },
-                    { id: "polarBearJockey", count: 5, interval: 1 },
-                    { id: "redFairy", count: 1, interval: 1 },
-                    { id: "wolf", count: 1, interval: 1 },
-                    { id: "armouredSlime", count: 1, interval: 1 },
-                    { id: "ghost", count: 5, interval: 1 },
-                    { id: "armouredSlime", count: 1, interval: 1 },
-                    { id: "spider", count: 5, interval: 1 },
-                    { id: "giantIceSlime", count: 1, interval: 1 },
-                    { id: "iceSlime", count: 3, interval: 0.5 },
-                    { id: "redFairy", count: 1, interval: 1 },
-                    { id: "giantArmouredSkeleton", count: 1, interval: 1 },
-                    { id: "armouredSkeleton", count: 5, interval: 1 },
-                    { id: "armouredOrc", count: 5, interval: 1 },
-                    { id: "giantArmouredOrc", count: 1, interval: 1 },
-                    { id: "wolf", count: 1, interval: 1 },
-                    { id: "snowman", count: 1, interval: 1 },
-                    { id: "giantSnowman", count: 1, interval: 1 },
-                    { id: "snowman", count: 2, interval: 1 },
-                    { id: "redFairy", count: 1, interval: 1 },
-                    { id: "giantOrc", count: 1, interval: 1 },
-                    { id: "orc", count: 5, interval: 0.5 },
-                    { id: "wolf", count: 1, interval: 1 },
-                    { id: "giantSkeleton", count: 1, interval: 1 },
-                    { id: "skeleton", count: 5, interval: 0.5 },
-                    { id: "redFairy", count: 1, interval: 1 }
-                ],
-                reward: 600
-            },
-            {
-                spawns: [
-                    { id: "ghost", count: 5, interval: 1 },
-                    { id: "giantGhost", count: 1, interval: 1 },
-                    { id: "armouredSlime", count: 2, interval: 1 },
-                    { id: "ghost", count: 5, interval: 1 },
-                    { id: "redFairy", count: 1, interval: 1 },
-                    { id: "wolf", count: 1, interval: 1 },
-                    { id: "giantIceSlime", count: 1, interval: 1 },
-                    { id: "iceSlime", count: 3, interval: 0.5 },
-                    { id: "giantArmouredSkeleton", count: 1, interval: 1 },
-                    { id: "armouredSkeleton", count: 5, interval: 1 },
-                    { id: "armouredOrc", count: 5, interval: 1 },
-                    { id: "giantArmouredOrc", count: 1, interval: 1 },
-                    { id: "giantFairy", count: 1, interval: 1 },
-                    { id: "fairy", count: 5, interval: 0.5 },
-                    { id: "wolf", count: 1, interval: 1 },
-                    { id: "polarBearJockey", count: 5, interval: 1 },
-                    { id: "giantPolarBearJockey", count: 1, interval: 1 },
-                    { id: "polarBearJockey", count: 5, interval: 1 },
-                    { id: "armouredSlime", count: 2, interval: 1 },
-                    { id: "wolf", count: 1, interval: 1 },
-                    { id: "spider", count: 5, interval: 1 },
-                    { id: "giantSpider", count: 1, interval: 1 },
-                    { id: "spider", count: 5, interval: 1 },
-                    { id: "redFairy", count: 1, interval: 1 },
-                    { id: "snowman", count: 1, interval: 1 },
-                    { id: "giantSnowman", count: 1, interval: 1 },
-                    { id: "snowman", count: 2, interval: 1 },
-                    { id: "wolf", count: 1, interval: 1 },
-                    { id: "giantSkeleton", count: 1, interval: 1 },
-                    { id: "skeleton", count: 5, interval: 0.5 },
-                    { id: "armouredSlime", count: 1, interval: 1 },
-                    { id: "giantOrc", count: 1, interval: 1 },
-                    { id: "orc", count: 5, interval: 0.5 },
-                    { id: "wolf", count: 1, interval: 1 }
-                ],
-                reward: 700
-            },
-            {
-                spawns: [
-                    { id: "giantArmouredSlime", count: 1, interval: 1 },
-                    { id: "armouredSlime", count: 3, interval: 1 },
-                    { id: "ghost", count: 5, interval: 1 },
-                    { id: "giantGhost", count: 1, interval: 1 },
-                    { id: "armouredSlime", count: 2, interval: 1 },
-                    { id: "ghost", count: 5, interval: 1 },
-                    { id: "wolf", count: 1, interval: 1 },
-                    { id: "giantWolf", count: 1, interval: 1 },
-                    { id: "wolf", count: 1, interval: 1 },
-                    { id: "redFairy", count: 2, interval: 1 },
-                    { id: "giantIceSlime", count: 1, interval: 1 },
-                    { id: "iceSlime", count: 3, interval: 0.5 },
-                    { id: "giantArmouredSkeleton", count: 1, interval: 1 },
-                    { id: "armouredSkeleton", count: 5, interval: 1 },
-                    { id: "armouredOrc", count: 5, interval: 0.5 },
-                    { id: "giantArmouredOrc", count: 1, interval: 1 },
-                    { id: "armouredOrc", count: 5, interval: 0.5 },
-                    { id: "giantFairy", count: 1, interval: 1 },
-                    { id: "fairy", count: 5, interval: 0.5 },
-                    { id: "snowman", count: 1, interval: 0.5 },
-                    { id: "giantSnowman", count: 1, interval: 1 },
-                    { id: "snowman", count: 2, interval: 0.5 },
-                    { id: "polarBearJockey", count: 5, interval: 1 },
-                    { id: "giantPolarBearJockey", count: 1, interval: 1 },
-                    { id: "polarBearJockey", count: 5, interval: 1 },
-                    { id: "giantPolarBearJockey", count: 1, interval: 1 },
-                    { id: "armouredSlime", count: 3, interval: 1 },
-                    { id: "spider", count: 5, interval: 1 },
-                    { id: "giantSpider", count: 1, interval: 1 },
-                    { id: "spider", count: 5, interval: 1 },
-                    { id: "giantSpider", count: 1, interval: 1 },
-                    { id: "giantIceSlime", count: 1, interval: 1 },
-                    { id: "iceSlime", count: 3, interval: 0.5 },
-                    { id: "giantArmouredSlime", count: 1, interval: 1 },
-                    { id: "armouredSlime", count: 3, interval: 1 },
-                    { id: "ghost", count: 5, interval: 1 },
-                    { id: "giantGhost", count: 1, interval: 1 },
-                    { id: "ghost", count: 5, interval: 1 },
-                    { id: "redFairy", count: 2, interval: 1 }
-                ],
-                reward: 850
+                reward: 800
             },
             {
                 spawns: [
@@ -2114,13 +1854,14 @@ export const LEVEL_WAVES = {
             }
         ],
     }
+
 } as const satisfies Record<string, LevelWaves>;
 
 export type LevelId = keyof typeof LEVEL_WAVES;
 
 export const SCENES: Scenes = [
     ["level1", "level1-2"],
-    ["level2", "level2-2"],
+    ["level2", "level2"],
     ["level3", "level3"],
     ["level4", "level4-2"],
     ["level5", "level5-2"],
@@ -2131,17 +1872,20 @@ export const ENEMIES = {
     slime: {
         hp: 10,
         damage: 1,
+        goldDropped: 1,
         speed: 50,
         sprite: "slime"
     },
     skeleton: {
         hp: 35,
         damage: 1,
+        goldDropped: 1,
         speed: 50,
         sprite: "skeleton"
     },
     armouredSkeleton: {
         hp: 40,
+        goldDropped: 2,
         armour: 30,
         damage: 1,
         speed: 50,
@@ -2150,6 +1894,7 @@ export const ENEMIES = {
     fairy: {
         hp: 50,
         damage: 1,
+        goldDropped: 1,
         speed: 60,
         sprite: "fairy",
         healer: {
@@ -2160,6 +1905,8 @@ export const ENEMIES = {
     giantSlime: {
         hp: 300,
         damage: 5,
+        hasLargeSoul: true,
+        goldDropped: 3,
         speed: 25,
         spawnOnDeath: {
             id: "slime",
@@ -2176,49 +1923,59 @@ export const ENEMIES = {
     giantSkeleton: {
         hp: 500,
         damage: 5,
+        goldDropped: 4,
         speed: 25,
+        hasLargeSoul: true,
         sprite: "giant skeleton"
     },
     bee: {
         hp: 8,
         damage: 1,
+        goldDropped: 1,
         speed: 75,
         sprite: "bee"
     },
     orc: {
         hp: 50,
         damage: 1,
+        goldDropped: 1,
         speed: 50,
         sprite: "orc"
     },
     armouredOrc: {
         hp: 60,
         armour: 50,
+        goldDropped: 2,
         damage: 1,
         speed: 50,
         sprite: "armoured orc"
     },
     giantBee: {
-        hp: 250,
+        hp: 225,
         damage: 5,
         speed: 35,
+        hasLargeSoul: true,
+        goldDropped: 3,
         sprite: "giant bee",
         attacker: {
             projectile: "stinger",
             attackRange: 3.5,
             canAttack: false,
-            attackCooldown: 3.5
+            attackCooldown: 4
         }
     },
     giantOrc: {
         hp: 700,
+        hasLargeSoul: true,
+        goldDropped: 4,
         damage: 5,
         speed: 25,
         sprite: "giant orc"
     },
     ghost: {
-        hp: 120,
+        hp: 100,
         damage: 1,
+        goldDropped: 2,
         speed: 50,
         sprite: "ghost",
         invincibleDuration: 2,
@@ -2227,6 +1984,7 @@ export const ENEMIES = {
     redFairy: {
         hp: 120,
         damage: 1,
+        goldDropped: 2,
         speed: 60,
         sprite: "red fairy",
         healer: {
@@ -2235,8 +1993,9 @@ export const ENEMIES = {
         }
     },
     spider: {
-        hp: 120,
-        damage: 1,
+        hp: 100,
+        damage: 4,
+        goldDropped: 2,
         speed: 50,
         sprite: "spider",
         spawnOnDeath: {
@@ -2245,14 +2004,16 @@ export const ENEMIES = {
         },
     },
     spiderling: {
-        hp: 15,
+        hp: 10,
         damage: 1,
+        goldDropped: 1,
         speed: 75,
         sprite: "spiderling"
     },
     wolf: {
         hp: 60,
         damage: 1,
+        goldDropped: 2,
         speed: 90,
         sprite: "wolf",
         speedBooster: {
@@ -2262,6 +2023,7 @@ export const ENEMIES = {
     },
     armouredSlime: {
         hp: 10,
+        goldDropped: 2,
         armour: 100,
         damage: 1,
         speed: 40,
@@ -2274,6 +2036,8 @@ export const ENEMIES = {
     giantArmouredSkeleton: {
         hp: 700,
         armour: 100,
+        goldDropped: 5,
+        hasLargeSoul: true,
         damage: 5,
         speed: 25,
         sprite: "giant armoured skeleton"
@@ -2281,21 +2045,27 @@ export const ENEMIES = {
     giantArmouredOrc: {
         hp: 1000,
         armour: 140,
+        goldDropped: 5,
+        hasLargeSoul: true,
         damage: 5,
         speed: 25,
         sprite: "giant armoured orc"
     },
     giantGhost: {
-        hp: 1500,
+        hp: 1250,
         damage: 5,
         speed: 25,
+        hasLargeSoul: true,
+        goldDropped: 5,
         sprite: "giant ghost",
         invincibleDuration: 3,
         invincibleCooldown: 7
     },
     giantSpider: {
-        hp: 1500,
+        hp: 1250,
         damage: 5,
+        hasLargeSoul: true,
+        goldDropped: 5,
         speed: 25,
         sprite: "giant spider",
         spawnOnDeath: {
@@ -2306,6 +2076,8 @@ export const ENEMIES = {
     giantArmouredSlime: {
         hp: 300,
         armour: 600,
+        hasLargeSoul: true,
+        goldDropped: 5,
         damage: 5,
         speed: 25,
         spawnOnDeath: {
@@ -2317,6 +2089,8 @@ export const ENEMIES = {
     giantWolf: {
         hp: 800,
         damage: 5,
+        hasLargeSoul: true,
+        goldDropped: 5,
         speed: 40,
         sprite: "giant wolf",
         speedBooster: {
@@ -2326,9 +2100,14 @@ export const ENEMIES = {
     },
     slimeKing: {
         hp: 6500,
-        damage: 50,
+        damage: 99,
+        goldDropped: 50,
+        bossMechanic: "shield",
+        shieldSprite: "slime shield",
+        shieldHp: 200,
         speed: 20,
         sprite: "slime king",
+        checkpointTimer: 12,
         isBoss: true,
         attacker: {
             projectile: "slimeball",
@@ -2342,8 +2121,13 @@ export const ENEMIES = {
         }
     },
     beeQueen: {
-        hp: 6, //6000
-        damage: 50,
+        hp: 6000,
+        damage: 99,
+        bossMechanic: "shield",
+        shieldSprite: "bee shield",
+        shieldHp: 700,
+        goldDropped: 50,
+        checkpointTimer: 10,
         speed: 25,
         sprite: "bee queen",
         isBoss: true,
@@ -2351,7 +2135,7 @@ export const ENEMIES = {
             projectile: "beeProjectile",
             attackRange: 4,
             canAttack: false,
-            attackCooldown: 8
+            attackCooldown: 7
         },
         spawnOnDeath: {
             id: "bee",
@@ -2361,6 +2145,7 @@ export const ENEMIES = {
     iceSlime: {
         hp: 15,
         damage: 1,
+        goldDropped: 1,
         speed: 50,
         spawnIce: true,
         sprite: "ice slime"
@@ -2368,6 +2153,7 @@ export const ENEMIES = {
     snowman: {
         hp: 30,
         damage: 1,
+        goldDropped: 1,
         speed: 50,
         sprite: "snowman",
         spawnOnDeath: {
@@ -2378,24 +2164,29 @@ export const ENEMIES = {
     snowmanHead: {
         hp: 10,
         damage: 1,
+        goldDropped: 1,
         speed: 50,
         sprite: "snowman head"
     },
     penguin: {
         hp: 20,
         damage: 1,
+        goldDropped: 1,
         speed: 50,
         sprite: "penguin"
     },
     polarBear: {
         hp: 50,
         damage: 1,
+        goldDropped: 1,
         speed: 60,
         sprite: "polar bear"
     },
     giantIceSlime: {
         hp: 350,
         damage: 5,
+        goldDropped: 3,
+        hasLargeSoul: true,
         speed: 25,
         spawnOnDeath: {
             id: "iceSlime",
@@ -2411,6 +2202,8 @@ export const ENEMIES = {
     },
     giantPolarBear: {
         hp: 700,
+        goldDropped: 4,
+        hasLargeSoul: true,
         damage: 5,
         speed: 30,
         sprite: "giant polar bear"
@@ -2418,6 +2211,8 @@ export const ENEMIES = {
     giantFairy: {
         hp: 700,
         damage: 5,
+        goldDropped: 5,
+        hasLargeSoul: true,
         speed: 30,
         sprite: "giant fairy",
         healer: {
@@ -2428,6 +2223,8 @@ export const ENEMIES = {
     giantPenguin: {
         hp: 400,
         damage: 5,
+        goldDropped: 3,
+        hasLargeSoul: true,
         speed: 25,
         sprite: "giant penguin",
         attacker: {
@@ -2440,6 +2237,8 @@ export const ENEMIES = {
     giantSnowman: {
         hp: 500,
         damage: 5,
+        goldDropped: 4,
+        hasLargeSoul: true,
         speed: 25,
         sprite: "giant snowman",
         spawnOnDeath: {
@@ -2450,13 +2249,16 @@ export const ENEMIES = {
     giantSnowmanHead: {
         hp: 150,
         damage: 1,
+        goldDropped: 1,
         speed: 25,
         sprite: "giant snowman head"
     },
     giantRedFairy: {
         hp: 1400,
         damage: 5,
+        hasLargeSoul: true,
         speed: 30,
+        goldDropped: 6,
         sprite: "giant red fairy",
         healer: {
             amount: 60,
@@ -2466,8 +2268,10 @@ export const ENEMIES = {
     evilSanta: {
         hp: 18000,
         damage: 50,
+        goldDropped: 100,
         speed: 20,
         sprite: "evil santa",
+        bossMechanic: "escape",
         isBoss: true,
         checkpointTimer: 12,
         attacker: {
@@ -2526,7 +2330,8 @@ export const ENEMIES = {
     },
     polarBearJockey: {
         hp: 50,
-        damage: 1,
+        damage: 2,
+        goldDropped: 1,
         speed: 60,
         sprite: "polar bear jockey",
         spawnOnDeath: {
@@ -2536,7 +2341,8 @@ export const ENEMIES = {
     },
     giantPolarBearJockey: {
         hp: 700,
-        damage: 5,
+        damage: 10,
+        goldDropped: 5,
         speed: 30,
         sprite: "giant polar bear jockey",
         spawnOnDeath: {
@@ -2642,6 +2448,7 @@ export const TOWERS = {
             }
         }],
         canRotate: true,
+        shootSound: "squish",
         source: "starting",
         targetType: "enemy",
         footprint: {
@@ -3308,7 +3115,7 @@ export const TOWERS = {
         baseSprite: "shadow ball tower base",
         sprite: "shadow-ball-tower-sprite.png",
         description: "Shoots a dark, shadowy blob that deals splash damage and has a 50% chance to bounce between enemies",
-        cost: 350,
+        cost: 400,
         stats: {
             damage: 12,
             range: 5,
@@ -4025,7 +3832,7 @@ export const TOWERS = {
         description: "Shoots a poisonous concoction that leaves a puddle on the ground, damaging all enemies that walk over it for 25% of the initial damage per tick",
         cost: 300,
         stats: {
-            damage: 25,
+            damage: 20,
             range: 5,
             fireInterval: 1.5,
             critChance: 5,
@@ -4616,11 +4423,11 @@ export const ELEMENTS: Record<ElementName, ElementDef> = {
     },
 
     Fire: {
-        description: "Fire attacks have a 20% chance to burn enemies, dealing 1% max HP damage per second (caps at 10 damage)",
+        description: "Fire attacks have a 15% chance to burn enemies, dealing 1% max HP damage per second (caps at 10 damage)",
         applyEffect: (k, { target, chance }) => {
             const duration = 5;
 
-            if (k.randi(100) < (chance ?? 20)) {
+            if (k.randi(100) < (chance ?? 15)) {
                 const burn = target.has("burn");
                 if (burn) {
                     target.refreshBurn();
@@ -4713,7 +4520,7 @@ export const ELEMENTS: Record<ElementName, ElementDef> = {
             const stacks = 1 + Math.floor(damage / POISON_DAMAGE_PER_STACK);
 
             if (k.get("hero")[0]?.volatileConcoction) {
-                ELEMENTS["Fire"]?.applyEffect?.(k, { target, damage, chance: k.get("hero")[0]?.volatileConcoctionChance ?? 30 });
+                ELEMENTS["Fire"]?.applyEffect?.(k, { target, damage, chance: k.get("hero")[0]?.volatileConcoctionChance ?? 20 });
             }
 
             if (poison) {
@@ -5644,10 +5451,10 @@ export const SKILLS = [
         id: "witch-volatile-concoction",
         heroIds: ["witch"],
         name: "Volatile Concoction",
-        description: "Poison attacks have a 30% chance to burn enemies",
+        description: "Poison attacks have a 20% chance to burn enemies",
         apply(hero) {
             hero.volatileConcoction = true;
-            hero.volatileConcoctionChance = 30;
+            hero.volatileConcoctionChance = 20;
         },
         icon: "sprites/volatile-concoction-skill-icon.png"
     },
@@ -5656,10 +5463,10 @@ export const SKILLS = [
         heroIds: ["witch"],
         requires: ["witch-volatile-concoction"],
         name: "Volatile Concoction+",
-        description: "Poison attacks have a 60% chance to burn enemies",
+        description: "Poison attacks have a 40% chance to burn enemies",
         apply(hero) {
             hero.volatileConcoction = true;
-            hero.volatileConcoctionChance = 60;
+            hero.volatileConcoctionChance = 40;
         },
         icon: "sprites/volatile-concoction-skill-icon.png"
     },

@@ -6,6 +6,7 @@ import calcFireInterval from "./calcFireInterval";
 import calcSellPrice from "./calcSellPrice";
 import { SEEDS } from "../constants";
 import { rebuildLava } from "./lavaHelpers";
+import { playUISound } from "./soundHelpers";
 
 export default function setTowerUI(k: KAPLAYCtx, type: "combat" | "farm", tower: TowerGameObj) {
     if (type === "combat") {
@@ -42,6 +43,8 @@ export default function setTowerUI(k: KAPLAYCtx, type: "combat" | "farm", tower:
                             ...prev,
                             gold: prev.gold - tower.upgradeCost
                         }));
+
+                        playUISound(k, "ui buy");
 
                         tower.upgradeCost = calcUpgradeCost(tower.cost, tower.unlockedUpgradeSlots);
                         store.set(gameStateAtom, prev => ({
@@ -92,6 +95,7 @@ export default function setTowerUI(k: KAPLAYCtx, type: "combat" | "farm", tower:
                         gold: prev.gold + calcSellPrice(tower.cost, tower.unlockedUpgradeSlots),
                         selectedUI: null
                     }));
+                    playUISound(k, "ui buy");
                     k.destroy(tower);
                 }
             } as SelectedTowerUI

@@ -17,6 +17,7 @@ import { generateChallenges } from "./challengeHelpers";
 import isButtonDown from "./isButtonDown";
 import onAction from "./onAction";
 import setGameSpeed from "./setGameSpeed";
+import { playMusic } from "./soundHelpers";
 
 export default function makeLevelScene(k: KAPLAYCtx, sceneName: Scene) {
 
@@ -62,6 +63,8 @@ export default function makeLevelScene(k: KAPLAYCtx, sceneName: Scene) {
         //     k.setCamPos(k.getCamPos().sub(d));
         //     lastTouchPos = pos;
         // });
+
+        playMusic(k, LEVEL_WAVES[wave].music);
 
         onAction(k, "cancel", {
             onPress: () => {

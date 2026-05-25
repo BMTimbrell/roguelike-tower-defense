@@ -1,13 +1,18 @@
 import { useAtom } from 'jotai';
 import styles from './Difficulty.module.css';
 import { gameStateAtom, mapAtom } from '../../store';
+import { playUISound } from '../../utils/soundHelpers';
 
 export default function Difficulty({ onClick }: { onClick: React.MouseEventHandler<HTMLDivElement> }) {
-    const [, setGameState] = useAtom(gameStateAtom);
-    const hardUnlocked = false;
+    const [gameState, setGameState] = useAtom(gameStateAtom);
+    const hardUnlocked = true;
     const expertUnlocked = false;
     const [map] = useAtom(mapAtom);
-    const scale = map.scale
+    const scale = map.scale;
+
+    const onMouseEnter = () => {
+        playUISound(gameState.context, "ui hover");
+    };
 
     return (
         <>
@@ -22,6 +27,7 @@ export default function Difficulty({ onClick }: { onClick: React.MouseEventHandl
                             difficulty: "normal"
                         }));
                     }}
+                    onMouseEnter={onMouseEnter}
                 >
                     <div className={styles.heading}>Normal</div>
                     <div>A balanced adventure designed for your first journey through the world.</div>

@@ -13,7 +13,7 @@ import level4_2 from './scenes/level4-2';
 import level5 from './scenes/level5';
 import level5_2 from './scenes/level5-2';
 import level6 from './scenes/level6';
-import { controlsAtom, store } from './store';
+import { controlsAtom, gameStateAtom, store } from './store';
 import type { MouseButton } from 'kaplay';
 
 export default function initGame() {
@@ -65,5 +65,10 @@ export default function initGame() {
                     : { keyboard: key }
             );
         }
+    }));
+
+    store.set(gameStateAtom, prev => ({
+        ...prev,
+        context: k
     }));
 }

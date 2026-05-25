@@ -21,20 +21,20 @@ export default function makeEnemy(
 ) {
     const difficulty = store.get(gameStateAtom).difficulty;
 
-    const expertWaveMultiplier =
-        difficulty === "expert" && waveNumber >= 5
-            ? waveNumber - 4
-            : 0;
+    // const expertWaveMultiplier =
+    //     difficulty === "expert" && waveNumber >= 5
+    //         ? waveNumber - 4
+    //         : 0;
 
-    const speedMultiplier = 1 + expertWaveMultiplier * 0.01;
-    const healthMultiplier = 1 + expertWaveMultiplier * 0.02;
+    // const speedMultiplier = 1 + expertWaveMultiplier * 0.015;
+    // const healthMultiplier = 1 + expertWaveMultiplier * 0.025;
     const expertBossHealthMult = "isBoss" in ENEMIES[enemyId] && ENEMIES[enemyId].isBoss && difficulty === "expert" ? 1.1 : 1;
-    const health = ENEMIES[enemyId].hp * (difficulty !== "normal" ? HARD_HEALTH_MULT : 1) * healthMultiplier * expertBossHealthMult;
+    const health = Math.round(getHPAndArmour(ENEMIES[enemyId].hp, waveNumber) * (difficulty !== "normal" ? HARD_HEALTH_MULT : 1) * expertBossHealthMult);
 
-    const baseSpeed = ENEMIES[enemyId].speed * speedMultiplier;
+    const baseSpeed = getEnemySpeed(ENEMIES[enemyId].speed, waveNumber);
 
-    const armour = (ENEMIES[enemyId] as Record<"armour", number>).armour 
-        ? (ENEMIES[enemyId] as Record<"armour", number>).armour * (difficulty === "hard" ? 1.1 : 1) 
+    const armour = (ENEMIES[enemyId] as Record<"armour", number>).armour
+        ? Math.round(getHPAndArmour((ENEMIES[enemyId] as Record<"armour", number>).armour, waveNumber) * (difficulty === "hard" ? 1.1 : 1))
         : 0;
 
     const enemy: EnemyGameObj = k.add([
@@ -75,8 +75,8 @@ export default function makeEnemy(
                     currentStopIndex: 0,
                     stopIndexes: stopIndexes ?? [],
                     reachedStopIndex: false,
-
-                    presentDropIndex: 0
+                    presentDropIndex: 0,
+                    ...("bossMechanic" in ENEMIES[enemyId] ? { bossMechanic: ENEMIES[enemyId].bossMechanic as "shield" | "escape" } : {})
                 }
             } : {}),
             debuffDurationMultiplier: 1,
@@ -91,7 +91,12 @@ export default function makeEnemy(
                 checkpointTimer: ENEMIES[enemyId].checkpointTimer as number,
                 checkpointDuration: ENEMIES[enemyId].checkpointTimer as number
             } : {}),
+            ...("shieldHp" in ENEMIES[enemyId] ? {
+                shieldHp: ENEMIES[enemyId].shieldHp as number,
+                maxShieldHp: ENEMIES[enemyId].shieldHp as number } : 
+            {}),
             ...("spawnIce" in ENEMIES[enemyId] ? { spawnIce: ENEMIES[enemyId].spawnIce as boolean } : {}),
+            ...("hasLargeSoul" in ENEMIES[enemyId] ? { hasLargeSoul: ENEMIES[enemyId].hasLargeSoul as boolean } : {}),
             speedMultipliers: {
                 chill: 1,
                 boost: 1,
@@ -99,13 +104,15 @@ export default function makeEnemy(
                 ice: 1
             }
         },
-        k.state("move", ["move", "stunned", "attack", "idle", "escape", "hidden"]),
+        k.state("move", ["move", "stunned", "attack", "idle", "escape", "hidden", "shield"]),
         statusEffect(),
         k.z(1),
         "enemy",
         "isBoss" in ENEMIES[enemyId] && ENEMIES[enemyId].isBoss ? "boss" : "",
         `${enemyId}-enemy`
     ]);
+
+    console.log(enemy.armour)
 
     if (waveNumber >= 5) console.log(enemy.hp());
 
@@ -153,7 +160,7 @@ export default function makeEnemy(
 
     enemy.onStateUpdate("idle", () => {
         if (!store.get(gameStateAtom).waveActive) {
-            if (enemy.checkpointTimer) enemy.checkpointTimer = enemy.checkpointDuration;
+            if (enemy.checkpointTimer && "checkpointDuration" in ENEMIES[enemyId]) enemy.checkpointTimer = ENEMIES[enemyId].checkpointDuration as number;
             attackTimer = 0;
             enemy.statuses.forEach(s => {
                 if (enemy.has(s)) enemy.unuse(s);
@@ -212,7 +219,8 @@ export default function makeEnemy(
             enemy.checkpointTimer -= k.dt() * timeScale;
             if (enemy.checkpointTimer <= 0) {
                 enemy.checkpointTimer = enemy.checkpointDuration;
-                enemy.enterState("escape");
+                if (enemy.boss?.bossMechanic === "escape") enemy.enterState("escape");
+                if (enemy.boss?.bossMechanic === "shield") enemy.enterState("shield");
             }
         }
 
@@ -261,6 +269,36 @@ export default function makeEnemy(
         enemy.statuses.forEach(s => {
             if (enemy.has(s)) enemy.unuse(s);
         });
+    });
+
+    enemy.onStateEnter("shield", () => {
+        enemy.play("idle");
+        enemy.shieldHp = enemy.maxShieldHp;
+        enemy.statuses.forEach(s => {
+            if (enemy.has(s)) enemy.unuse(s);
+        });
+        k.add([
+            k.sprite("slime shield"),
+            k.anchor("center"),
+            k.pos(enemy.pos),
+            k.z(999999),
+            "shield"
+        ]);
+    });
+
+    enemy.onStateUpdate("shield", () => {
+        if (!store.get(gameStateAtom).waveActive) enemy.enterState("idle");
+        if (!enemy.shieldHp || enemy.shieldHp <= 0) {
+            if (enemy.maxShieldHp) {
+                enemy.maxShieldHp *= 2;
+                if (enemy.checkpointDuration !== undefined) enemy.checkpointDuration = Math.max(2, enemy.checkpointDuration / 2);
+            }
+            enemy.enterState("attack");
+        }
+    });
+
+    enemy.onStateEnd("shield", () => {
+        k.destroy(k.get("shield")[0]);
     });
 
     enemy.onStateUpdate("move", () => {
@@ -329,7 +367,16 @@ export default function makeEnemy(
         }
 
         const next = enemy.path[enemy.pathIndex + 1];
-        if (!next) return;
+        if (!next) {
+            if (enemy.pathIndex >= enemy.path.length - 1) {
+                k.destroy(enemy);
+                store.set(gameStateAtom, prev => ({
+                    ...prev,
+                    health: prev.health - enemy.damage
+                }));
+            }
+            return;
+        }
 
         dir = next.sub(enemy.pos).unit();
         enemy.pos = enemy.pos.add(dir.scale(enemy.speed * k.dt() * timeScale));
@@ -654,4 +701,38 @@ function spawnPresent(k: KAPLAYCtx, pos: Vec2, enemiesToSpawn: {
             }
         });
     });
+}
+
+function getHPAndArmour(baseHp: number, wave: number) {
+    let hp = baseHp;
+
+    for (let i = 2; i <= wave; i++) {
+        let growthRate = 0;
+
+        if (i === 2) growthRate = 0.02;
+        else if (i === 3) growthRate = 0.03;
+        else if (i === 4) growthRate = 0.05;
+        else if (i === 5) growthRate = 0.07;
+        else if (i === 6) growthRate = 0.1;
+        else if (i === 7) growthRate = 0.15;
+        else growthRate = 0.2;
+
+        hp *= 1 + growthRate;
+    }
+
+    return hp;
+}
+
+function getEnemySpeed(baseSpeed: number, wave: number) {
+    let speed = baseSpeed;
+
+    for (let i = 2; i <= wave; i++) {
+        let growthRate = 0;
+
+        if (i > 1) growthRate = 0.01;
+
+        speed *= 1 + growthRate;
+    }
+
+    return speed;
 }

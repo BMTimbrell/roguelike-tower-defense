@@ -1191,4 +1191,20 @@ export default function loadAssets(k: KAPLAYCtx) {
             open: { from: 0, to: 4, loop: false }
         }
     });
+    k.loadSprite("slime shield", "/sprites/slime-shield.png");
+    k.loadSprite("bee shield", "/sprites/bee-shield.png");
+
+    k.loadSound("ui hover", "/sounds/ui/ui-hover.mp3");
+    k.loadSound("ui click", "/sounds/ui/ui-click.mp3");
+    k.loadSound("ui buy", "/sounds/ui/coins.mp3");
+    k.loadSound("ui pop", "/sounds/ui/ui-pop.mp3");
+    k.loadSound("squish", "/sounds/towers/squish.mp3");
+    k.loadSound("boss drums", "/sounds/soundEffects/bossApproach.wav");
+
+    //music
+    k.loadSound("main title", "/sounds/music/main-title.mp3");
+    k.loadSound("forest biome", "/sounds/music/forest-biome.mp3");
+    k.loadSound("forest boss", "/sounds/music/first-boss.mp3");
+    k.loadSound("snow biome", "/sounds/music/backgroundmusicforvideos-game-minecraft-gaming-background-music-402451.mp3");
+    k.loadSound("snow boss", "/sounds/music/backgroundmusicforvideos-game-minecraft-gaming-background-music-402451.mp3");
 }

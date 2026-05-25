@@ -3,6 +3,7 @@ import type { PathTile, Tile, TowerButton, TowerGameObj } from "../types";
 import { TOWERS, type TowerId } from "../constants";
 import makeTower from "../entities/Tower";
 import { gameStateAtom, store } from "../store";
+import { playUISound } from "./soundHelpers";
 
 export default function addTowers(k: KAPLAYCtx, towers: TowerId[], tileGrid: Tile[][], pathTiles: PathTile[]): TowerButton[] {
     return towers.map(t => ({
@@ -26,6 +27,8 @@ export default function addTowers(k: KAPLAYCtx, towers: TowerId[], tileGrid: Til
                     nextTowerId: prev.nextTowerId + 1,
                     selectedTower: null,
                 }));
+
+                playUISound(k, "ui click");
             }
             if (unplacedTower) {
                 k.destroy(unplacedTower);

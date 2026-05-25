@@ -1,15 +1,16 @@
 import type { MouseEventHandler } from "react";
 import styles from './Button.module.css';
 
-export default function Button({ style, onClick, disabled, children, classNames }: {
+export default function Button({ style, onClick, onMouseEnter, disabled, children, classNames }: {
     style?: React.CSSProperties; 
     onClick?: MouseEventHandler<HTMLButtonElement>; 
+    onMouseEnter?: MouseEventHandler<HTMLButtonElement>; 
     children?: React.ReactNode;
     disabled?: boolean;
     classNames?: string[];
 }) {
     return (
-        <button disabled={disabled} className={`${styles.button} ${classNames?.map(c => c)}`} style={style} onClick={onClick}>
+        <button onMouseEnter={onMouseEnter} disabled={disabled} className={`${styles.button} ${classNames?.map(c => c)}`} style={style} onClick={onClick}>
             {children}
         </button>
     );

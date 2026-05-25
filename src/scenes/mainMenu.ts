@@ -1,5 +1,5 @@
-import type { KAPLAYCtx } from "kaplay";
-import { gameStateAtom, store, startingOptionsAtom, selectHeroUIAtom, shopChoiceUIAtom, shopAtom, altarAtom, mainMenuAtom, gameSpeedUIAtom } from "../store";
+import type { AudioPlay, KAPLAYCtx } from "kaplay";
+import { gameStateAtom, store, startingOptionsAtom, selectHeroUIAtom, shopChoiceUIAtom, shopAtom, altarAtom, mainMenuAtom, gameSpeedUIAtom, challengesAtom } from "../store";
 import initCam from "../utils/initCam";
 import type { Scene, Upgrade } from "../types";
 import { CHARGE_DAMAGE_REQUIRED, type HeroId, type TowerId } from "../constants";
@@ -8,9 +8,19 @@ import addTowers from "../utils/addTowers";
 import generateDeck from "../utils/generateDeck";
 import generateMap from "../utils/generateMap";
 import makeHero from "../entities/Hero";
+import { playMusic } from "../utils/soundHelpers";
 
 export default function mainMenu(k: KAPLAYCtx) {
+    let music: AudioPlay | null = null;
+
     k.scene("mainMenu" satisfies Scene, async () => {
+
+        k.onClick(async () => {
+            if (!music) {
+                music = await playMusic(k, "main title");
+            }
+        });
+
         let rand = k.randi();
         const sceneName = rand === 1 ? "level1" : "level1-2";
         const { mapData, tileGrid, pathTiles } = await generateMap(k, `data/${sceneName}.json`);
@@ -24,6 +34,11 @@ export default function mainMenu(k: KAPLAYCtx) {
             ...prev,
             visible: false,
             activeIndex: 0
+        }));
+
+        store.set(challengesAtom, prev => ({
+            ...prev,
+            visible: false
         }));
 
         store.set(mainMenuAtom, prev => ({
@@ -98,11 +113,11 @@ export default function mainMenu(k: KAPLAYCtx) {
                         cards: upgrades
                     }
                 }));
-                k.go(sceneName satisfies Scene, { mapData, tileGrid, pathTiles, wave: waveId });
                 store.set(startingOptionsAtom, prev => ({
                     ...prev,
                     visible: false
                 }));
+                k.go(sceneName satisfies Scene, { mapData, tileGrid, pathTiles, wave: waveId });
             }
         }));
 

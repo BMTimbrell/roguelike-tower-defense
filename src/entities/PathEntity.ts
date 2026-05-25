@@ -64,7 +64,7 @@ export default function makePathEntity(
                         const enemies = k.get("enemy") as EnemyGameObj[];
 
                         enemies.forEach(e => {
-                            if (pathEntity?.pos.dist(e.pos) < 10) {
+                            if (!e.invincible && pathEntity?.pos.dist(e.pos) < 10) {
                                 if (splashRadius) {
                                     enemies.forEach(enemy => {
                                         if (pathEntity?.pos.dist(enemy.pos) < splashRadius) {
