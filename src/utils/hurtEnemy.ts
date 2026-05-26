@@ -77,7 +77,11 @@ export default function hurtEnemy(k: KAPLAYCtx, opts: {
 
     if (!statusDamage) ELEMENTS[element].applyEffect?.(k, { target, damage: effectiveDamage });
 
-    if (attacker?.name === "Hammer Tower" && !target.isDying && Math.random() < effectiveDamage * 0.002) {
+    if (
+        attacker?.name === "Hammer Tower" && 
+        !target.isDying && Math.random() < effectiveDamage * 0.002 &&
+        !(target.shieldHp && k.get("shield").length) 
+    ) {
         target.enterState("stunned");
     }
 

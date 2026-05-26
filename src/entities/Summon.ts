@@ -83,7 +83,12 @@ export default function spawnSummon(k: KAPLAYCtx, ctx: AttackContext, id: Summon
 
         summon.attacks++;
 
-        if (name === "Zombie" && ctx.attacker.hasZombieBuff && Math.random() < 0.25 && !enemy.isDying)
+        if (
+            name === "Zombie" && 
+            ctx.attacker.hasZombieBuff && 
+            Math.random() < 0.3 && !enemy.isDying &&
+            !(enemy.shieldHp && k.get("shield").length)
+        )
             enemy.enterState("stunned");
     });
 

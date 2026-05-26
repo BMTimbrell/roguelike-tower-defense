@@ -93,10 +93,12 @@ export default function makeEnemy(
             } : {}),
             ...("shieldHp" in ENEMIES[enemyId] ? {
                 shieldHp: ENEMIES[enemyId].shieldHp as number,
-                maxShieldHp: ENEMIES[enemyId].shieldHp as number } : 
-            {}),
+                maxShieldHp: ENEMIES[enemyId].shieldHp as number
+            } :
+                {}),
             ...("spawnIce" in ENEMIES[enemyId] ? { spawnIce: ENEMIES[enemyId].spawnIce as boolean } : {}),
             ...("hasLargeSoul" in ENEMIES[enemyId] ? { hasLargeSoul: ENEMIES[enemyId].hasLargeSoul as boolean } : {}),
+            ...("shieldSprite" in ENEMIES[enemyId] ? { shieldSprite: ENEMIES[enemyId].shieldSprite as string } : {}),
             speedMultipliers: {
                 chill: 1,
                 boost: 1,
@@ -111,10 +113,6 @@ export default function makeEnemy(
         "isBoss" in ENEMIES[enemyId] && ENEMIES[enemyId].isBoss ? "boss" : "",
         `${enemyId}-enemy`
     ]);
-
-    console.log(enemy.armour)
-
-    if (waveNumber >= 5) console.log(enemy.hp());
 
     enemy.animSpeed = store.get(gameStateAtom).timeScale;
 
@@ -156,12 +154,20 @@ export default function makeEnemy(
 
     enemy.onStateEnter("idle", () => {
         enemy.play("idle");
+
+        if (!store.get(gameStateAtom).waveActive) {
+            if ("checkpointTimer" in ENEMIES[enemyId]) {
+                enemy.checkpointDuration = ENEMIES[enemyId].checkpointTimer as number;
+                enemy.checkpointTimer = enemy.checkpointDuration
+            }
+            if ("shieldHp" in ENEMIES[enemyId]) enemy.maxShieldHp = ENEMIES[enemyId].shieldHp as number;
+
+            attackTimer = 0;
+        }
     });
 
     enemy.onStateUpdate("idle", () => {
         if (!store.get(gameStateAtom).waveActive) {
-            if (enemy.checkpointTimer && "checkpointDuration" in ENEMIES[enemyId]) enemy.checkpointTimer = ENEMIES[enemyId].checkpointDuration as number;
-            attackTimer = 0;
             enemy.statuses.forEach(s => {
                 if (enemy.has(s)) enemy.unuse(s);
             });
@@ -274,19 +280,48 @@ export default function makeEnemy(
     enemy.onStateEnter("shield", () => {
         enemy.play("idle");
         enemy.shieldHp = enemy.maxShieldHp;
+
         enemy.statuses.forEach(s => {
             if (enemy.has(s)) enemy.unuse(s);
         });
         k.add([
-            k.sprite("slime shield"),
+            k.sprite(enemy.shieldSprite ?? "slime shield"),
             k.anchor("center"),
             k.pos(enemy.pos),
             k.z(999999),
             "shield"
         ]);
+
+        const barWidth = 64;
+        const barHeight = 5;
+
+        const shieldBar = k.add([
+            k.rect(barWidth, barHeight),
+            k.color(70, 70, 70),
+            k.pos(enemy.pos.sub(enemy.width / 4, enemy.height / 4)),
+            k.z(999999),
+            k.opacity(1),
+            k.outline(1, k.BLACK),
+            "shieldBar"
+        ]);
+
+        k.add([
+            k.rect(barWidth, barHeight),
+            k.color(k.Color.fromHex("#5ba675")),
+            k.pos(shieldBar.pos),
+            k.opacity(1),
+            k.z(999999),
+            "shieldHealth"
+        ]);
     });
 
     enemy.onStateUpdate("shield", () => {
+        if (enemy.shieldHp && enemy.maxShieldHp)
+            k.get("shieldHealth")[0].width = (enemy.shieldHp / enemy.maxShieldHp) * k.get("shieldBar")[0].width;
+
+        enemy.statuses.forEach(s => {
+            if (enemy.has(s)) enemy.unuse(s);
+        });
         if (!store.get(gameStateAtom).waveActive) enemy.enterState("idle");
         if (!enemy.shieldHp || enemy.shieldHp <= 0) {
             if (enemy.maxShieldHp) {
@@ -299,6 +334,22 @@ export default function makeEnemy(
 
     enemy.onStateEnd("shield", () => {
         k.destroy(k.get("shield")[0]);
+
+        const bar = k.get("shieldBar")[0];
+        const barHealth = k.get("shieldHealth")[0];
+
+        bar.onUpdate(() => {
+            bar.opacity -= k.dt() * store.get(gameStateAtom).timeScale;
+        });
+
+        barHealth.onUpdate(() => {
+            barHealth.opacity -= k.dt() * store.get(gameStateAtom).timeScale;
+        });
+
+        waitScaled(k, 0.5, () => {
+            k.destroy(bar);
+            k.destroy(barHealth);
+        })
     });
 
     enemy.onStateUpdate("move", () => {
