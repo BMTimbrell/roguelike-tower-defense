@@ -34,7 +34,7 @@ export default function makeEnemy(
     const baseSpeed = getEnemySpeed(ENEMIES[enemyId].speed, waveNumber);
 
     const armour = (ENEMIES[enemyId] as Record<"armour", number>).armour
-        ? Math.round(getHPAndArmour((ENEMIES[enemyId] as Record<"armour", number>).armour, waveNumber) * (difficulty === "hard" ? 1.1 : 1))
+        ? Math.round(getHPAndArmour((ENEMIES[enemyId] as Record<"armour", number>).armour, waveNumber) * (difficulty === "hard" ? 1.2 : 1))
         : 0;
 
     const enemy: EnemyGameObj = k.add([
@@ -59,7 +59,7 @@ export default function makeEnemy(
             armour: armour,
             maxArmour: armour,
             ...("healer" in ENEMIES[enemyId] ? { healer: ENEMIES[enemyId].healer as { amount: number; range: number; }, healTickRate: 2 } : {}),
-            ...("spawnOnDeath" in ENEMIES[enemyId] ? { spawnOnDeath: ENEMIES[enemyId].spawnOnDeath as { id: "slime"; amount: number; } } : {}),
+            ...("spawnOnDeath" in ENEMIES[enemyId] ? { spawnOnDeath: ENEMIES[enemyId].spawnOnDeath as { id: "slime"; amount: number; offset?: number; } } : {}),
             ...("spawnArmourOnDeath" in ENEMIES[enemyId] ? { spawnArmourOnDeath: ENEMIES[enemyId].spawnArmourOnDeath as { amount: number; range: number; } } : {}),
             ...("attacker" in ENEMIES[enemyId] ? {
                 attacker: ENEMIES[enemyId].attacker as {
@@ -645,7 +645,7 @@ export default function makeEnemy(
             const mid = enemy.spawnOnDeath.amount / 2;
 
             for (let i = 0; i < enemy.spawnOnDeath.amount; i++) {
-                const posOffset = (i - mid) * 12;
+                const posOffset = (i - mid) *  (enemy.spawnOnDeath.offset ?? 12);
                 const posOffsetX = Math.abs(dir.x) > 0.5 ? posOffset : 0;
                 const posOffsetY = Math.abs(dir.y) > 0.5 ? posOffset : 0;
 

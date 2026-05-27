@@ -301,8 +301,19 @@ export type EnemyGameObj = GameObj<
     };
     healTickRate?: number;
     spawnOnDeath?: {
-        id: "slime" | "spiderling",
+        id: "slime" |
+        "spiderling" |
+        "spider" |
+        "armouredSlime" |
+        "giantSlime" |
+        "bee" |
+        "snowmanHead" |
+        "iceSlime" |
+        "giantSnowmanHead" |
+        "penguin" |
+        "giantPenguin";
         amount: number;
+        offset?: number;
     };
     attacker?: {
         projectile?: ProjectileId;
@@ -560,6 +571,7 @@ export type EnemyConfig = {
         "penguin" |
         "giantPenguin";
         amount: number;
+        offset?: number;
     };
     attacker?: {
         projectile?: ProjectileId;
