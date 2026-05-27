@@ -15,11 +15,11 @@ export default function makeEnemy(
     enemyId: EnemyId,
     waypoints: Vec2[],
     pathIndex: number = 0,
-    waveNumber: number,
     pos?: Vec2,
     stopIndexes?: number[]
 ) {
     const difficulty = store.get(gameStateAtom).difficulty;
+    const waveNumber = store.get(gameStateAtom).waveNumber;
 
     // const expertWaveMultiplier =
     //     difficulty === "expert" && waveNumber >= 5
@@ -412,7 +412,7 @@ export default function makeEnemy(
 
             const pos = start.lerp(end, drop.segmentProgress);
 
-            spawnPresent(k, pos, drop.enemies.map(e => ({ ...e, path: enemy.path, pathIndex: enemy.pathIndex, waveNumber })));
+            spawnPresent(k, pos, drop.enemies.map(e => ({ ...e, path: enemy.path, pathIndex: enemy.pathIndex })));
 
             enemy.boss.presentDropIndex++;
         }
@@ -653,7 +653,6 @@ export default function makeEnemy(
                     enemy.spawnOnDeath.id,
                     enemy.path,
                     enemy.pathIndex,
-                    waveNumber,
                     k.vec2(enemy.pos).add(posOffsetX, posOffsetY)
                 );
 
@@ -725,7 +724,6 @@ function spawnPresent(k: KAPLAYCtx, pos: Vec2, enemiesToSpawn: {
     amount: number;
     path: Vec2[];
     pathIndex: number;
-    waveNumber: number;
 }[]) {
     const present = k.add([
         k.pos(pos),
@@ -746,7 +744,7 @@ function spawnPresent(k: KAPLAYCtx, pos: Vec2, enemiesToSpawn: {
 
             for (let i = 0; i < group.amount; i++) {
                 const posOffset = (i - mid) * 12;
-                const spawnedEnemy = makeEnemy(k, group.id, group.path, group.pathIndex, group.waveNumber, present.pos.add(posOffset));
+                const spawnedEnemy = makeEnemy(k, group.id, group.path, group.pathIndex, present.pos.add(posOffset));
                 spawnedEnemy.invincible = true;
                 spawnedEnemy.invincibleDuration = 0.1;
             }

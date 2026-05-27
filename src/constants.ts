@@ -27,7 +27,7 @@ export const SMALL_DAMAGE_NUMBER_SIZE = 11;
 export const CRIT_DAMAGE_NUMBER_SIZE = 22;
 export const DAMAGE_NUMBER_COLOR = "#fffb00";
 export const CRIT_DAMAGE_NUMBER_COLOR = "#ff0000";
-export const CHARGE_DAMAGE_REQUIRED = 80;
+export const CHARGE_DAMAGE_REQUIRED = 1;
 export const CHILL_PERCENT = 6;
 export const MAX_CHILL_STACKS = 5;
 export const ICE_DAMAGE_PER_STACK = 10;
@@ -399,68 +399,68 @@ export const LEVEL_WAVES = {
                 ],
                 reward: 50
             },
-            {
-                spawns: [
-                    { id: "orc", count: 5, interval: 1.5 },
-                    { id: "bee", count: 20, interval: 0.5 }
-                ],
-                reward: 100
-            },
-            {
-                spawns: [
-                    { id: "armouredOrc", count: 2, interval: 1.75 },
-                    { id: "orc", count: 10, interval: 1.5 },
-                    { id: "fairy", count: 1, interval: 1 }
-                ],
-                reward: 200
-            },
-            {
-                spawns: [
-                    { id: "spider", count: 2, interval: 2 },
-                    { id: "armouredOrc", count: 4, interval: 2 },
-                    { id: "giantBee", count: 1, interval: 2 },
-                    { id: "orc", count: 8, interval: 1.5 },
-                    { id: "fairy", count: 1, interval: 1 }
-                ],
-                reward: 300
-            },
-            {
-                spawns: [
-                    { id: "giantOrc", count: 1, interval: 2 },
-                    { id: "orc", count: 5, interval: 1 },
-                    { id: "fairy", count: 1, interval: 1 },
-                    { id: "armouredOrc", count: 3, interval: 2 },
-                    { id: "giantBee", count: 1, interval: 2 },
-                    { id: "bee", count: 10, interval: 0.5 },
-                    { id: "spider", count: 2, interval: 2 },
-                    { id: "armouredOrc", count: 3, interval: 2 },
-                    { id: "fairy", count: 1, interval: 1 },
-                    { id: "spider", count: 2, interval: 2 },
-                    { id: "orc", count: 5, interval: 1 },
-                    { id: "fairy", count: 1, interval: 1 }
-                ],
-                reward: 400
-            },
-            {
-                spawns: [
-                    { id: "giantOrc", count: 1, interval: 2 },
-                    { id: "orc", count: 6, interval: 1 },
-                    { id: "redFairy", count: 1, interval: 1 },
-                    { id: "armouredOrc", count: 5, interval: 1.5 },
-                    { id: "spider", count: 3, interval: 1.5 },
-                    { id: "giantBee", count: 1, interval: 1.5 },
-                    { id: "bee", count: 10, interval: 0.5 },
-                    { id: "spider", count: 3, interval: 1.5 },
-                    { id: "armouredOrc", count: 3, interval: 1.5 },
-                    { id: "giantBee", count: 1, interval: 1 },
-                    { id: "bee", count: 10, interval: 0.5 },
-                    { id: "giantOrc", count: 1, interval: 2 },
-                    { id: "orc", count: 5, interval: 1 },
-                    { id: "redFairy", count: 1, interval: 1 },
-                    { id: "spider", count: 2, interval: 1.5 }
-                ],
-                reward: 500
-            }
+            // {
+            //     spawns: [
+            //         { id: "orc", count: 5, interval: 1.5 },
+            //         { id: "bee", count: 20, interval: 0.5 }
+            //     ],
+            //     reward: 100
+            // },
+            // {
+            //     spawns: [
+            //         { id: "armouredOrc", count: 2, interval: 1.75 },
+            //         { id: "orc", count: 10, interval: 1.5 },
+            //         { id: "fairy", count: 1, interval: 1 }
+            //     ],
+            //     reward: 200
+            // },
+            // {
+            //     spawns: [
+            //         { id: "spider", count: 2, interval: 2 },
+            //         { id: "armouredOrc", count: 4, interval: 2 },
+            //         { id: "giantBee", count: 1, interval: 2 },
+            //         { id: "orc", count: 8, interval: 1.5 },
+            //         { id: "fairy", count: 1, interval: 1 }
+            //     ],
+            //     reward: 300
+            // },
+            // {
+            //     spawns: [
+            //         { id: "giantOrc", count: 1, interval: 2 },
+            //         { id: "orc", count: 5, interval: 1 },
+            //         { id: "fairy", count: 1, interval: 1 },
+            //         { id: "armouredOrc", count: 3, interval: 2 },
+            //         { id: "giantBee", count: 1, interval: 2 },
+            //         { id: "bee", count: 10, interval: 0.5 },
+            //         { id: "spider", count: 2, interval: 2 },
+            //         { id: "armouredOrc", count: 3, interval: 2 },
+            //         { id: "fairy", count: 1, interval: 1 },
+            //         { id: "spider", count: 2, interval: 2 },
+            //         { id: "orc", count: 5, interval: 1 },
+            //         { id: "fairy", count: 1, interval: 1 }
+            //     ],
+            //     reward: 400
+            // },
+            // {
+            //     spawns: [
+            //         { id: "giantOrc", count: 1, interval: 2 },
+            //         { id: "orc", count: 6, interval: 1 },
+            //         { id: "redFairy", count: 1, interval: 1 },
+            //         { id: "armouredOrc", count: 5, interval: 1.5 },
+            //         { id: "spider", count: 3, interval: 1.5 },
+            //         { id: "giantBee", count: 1, interval: 1.5 },
+            //         { id: "bee", count: 10, interval: 0.5 },
+            //         { id: "spider", count: 3, interval: 1.5 },
+            //         { id: "armouredOrc", count: 3, interval: 1.5 },
+            //         { id: "giantBee", count: 1, interval: 1 },
+            //         { id: "bee", count: 10, interval: 0.5 },
+            //         { id: "giantOrc", count: 1, interval: 2 },
+            //         { id: "orc", count: 5, interval: 1 },
+            //         { id: "redFairy", count: 1, interval: 1 },
+            //         { id: "spider", count: 2, interval: 1.5 }
+            //     ],
+            //     reward: 500
+            // }
         ],
     },
     "level3-1": {
@@ -468,7 +468,7 @@ export const LEVEL_WAVES = {
         startDelay: 120,
         music: "forest boss",
         boss: {
-            id: "slimeKing",
+            id: "beeQueen",
             bossStops: [0, 1, 3, 5, 7, 9, 11, 17]
         },
         waves: [
@@ -1874,7 +1874,7 @@ export type LevelId = keyof typeof LEVEL_WAVES;
 
 export const SCENES: Scenes = [
     ["level1", "level1-2"],
-    ["level2", "level2"],
+    ["level2", "level2-2"],
     ["level3", "level3"],
     ["level4", "level4-2"],
     ["level5", "level5-2"],
@@ -2135,7 +2135,7 @@ export const ENEMIES = {
         }
     },
     beeQueen: {
-        hp: 6000,
+        hp: 1,//6000,
         damage: 99,
         bossMechanic: "shield",
         shieldSprite: "bee shield",
@@ -2422,6 +2422,7 @@ export const TOWERS = {
         anchorOffset: { x: 6 / 32, y: 0 },
         shootOffset: { x: -25, y: 0 },
         projectile: "fireball",
+        shootSound: "fireball",
         canRotate: true,
         source: "starting",
         targetType: "enemy",
@@ -2604,6 +2605,7 @@ export const TOWERS = {
         anchorOffset: { x: -1 / 32, y: -1 / 32 },
         shootOffset: { x: -20, y: 0 },
         projectile: "lightOrb",
+        shootSound: "pew",
         canRotate: true,
         source: "starting",
         targetType: "enemy",
@@ -2628,6 +2630,7 @@ export const TOWERS = {
             critDamage: 200
         },
         element: "Dark",
+        shootSound: "crow",
         gunOffset: { x: 0, y: 0 },
         anchorOffset: { x: 0, y: 0 },
         shootOffset: { x: 0, y: 0 },
@@ -4036,6 +4039,7 @@ export const TOWERS = {
         projectile: null,
         canRotate: false,
         source: "reward",
+        shootSound: "fireball",
         targetType: "enemy",
         footprint: {
             w: 2,
@@ -4146,11 +4150,13 @@ export const HEROES = {
             critDamage: 200
         },
         element: "Normal",
+        placementSound: "archer",
         gunOffset: { x: 0, y: 0 },
         anchorOffset: { x: 9 / 32, y: 9 / 32 },
         shootOffset: { x: 0, y: -5 },
         projectile: "arrow",
         canRotate: true,
+        shootSound: "arrow",
         targetType: "enemy",
         footprint: {
             w: 1,
@@ -4173,6 +4179,8 @@ export const HEROES = {
             critDamage: 200
         },
         element: "Fire",
+        shootSound: "fireball",
+        placementSound: "wizard",
         gunOffset: { x: 0, y: 0 },
         anchorOffset: { x: 20 / 32, y: -18 / 32 },
         shootOffset: { x: -20, y: 10 },
@@ -4192,6 +4200,7 @@ export const HEROES = {
         description: "A melee hero who deals devastating damage at close range",
         gunSprite: "knight",
         baseSprite: "knight base",
+        placementSound: "knight",
         stats: {
             damage: 20,
             range: 1.5,
@@ -4275,6 +4284,7 @@ export const HEROES = {
             critChance: 15,
             critDamage: 250
         },
+        placementSound: "assassin",
         element: "Normal",
         gunOffset: { x: 0, y: 0 },
         anchorOffset: { x: 9 / 32, y: 12 / 32 },
@@ -4303,6 +4313,7 @@ export const HEROES = {
             critDamage: 200
         },
         element: "Normal",
+        placementSound: "merchant",
         gunOffset: { x: 0, y: 0 },
         anchorOffset: { x: 9 / 32, y: 12 / 32 },
         shootOffset: { x: 0, y: -5 },
@@ -4338,6 +4349,7 @@ export const HEROES = {
             critDamage: 200
         },
         element: "Poison",
+        placementSound: "witch",
         gunOffset: { x: 0, y: 0 },
         anchorOffset: { x: 20 / 32, y: -18 / 32 },
         shootOffset: { x: -20, y: 10 },
@@ -4364,6 +4376,7 @@ export const HEROES = {
             critChance: 5,
             critDamage: 200
         },
+        placementSound: "songstress",
         element: "Normal",
         gunOffset: { x: 0, y: 0 },
         anchorOffset: { x: 20 / 32, y: -18 / 32 },
@@ -4411,6 +4424,7 @@ export const HEROES = {
             critChance: 10,
             critDamage: 200
         },
+        placementSound: "necromancer",
         element: "Dark",
         gunOffset: { x: 0, y: 0 },
         anchorOffset: { x: 20 / 32, y: -18 / 32 },

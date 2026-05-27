@@ -6,6 +6,7 @@ import makeUnitCombat from "../utils/makeUnitCombat";
 import makePlaceableOnGrid, { setBlockedTiles } from "../utils/makePlacementOnGrid";
 import { SKILLS } from "../constants";
 import { enemyTargetResolver, pathTargetResolver } from "../utils/targetingHelpers";
+import { playUISound } from "../utils/soundHelpers";
 
 export default function makeHero(k: KAPLAYCtx,
     opts: {
@@ -66,6 +67,7 @@ export default function makeHero(k: KAPLAYCtx,
             element,
             effects: [],
             canRotate,
+            ...("shootSound" in HEROES[heroId] ? { shootSound: HEROES[heroId].shootSound as string } : {}),
             disabledUntil: 0,
             levelUpOffset,
             changeNormalElement: false,
@@ -171,6 +173,8 @@ export default function makeHero(k: KAPLAYCtx,
                         visible: false
                     }
                 }));
+
+                playUISound(k, ((HEROES[heroId]) as { placementSound?: string })?.placementSound ?? "archer");
 
                 if (hero.changeNormalElement) {
                     k.get("tower").forEach(tower => {

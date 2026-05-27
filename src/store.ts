@@ -7,6 +7,7 @@ export const gameStateAtom = atom<GameState>({
     towerButtons: [],
     selectedUI: null,
     waveActive: false,
+    waveNumber: 0,
     nextTowerId: 0,
     health: 15,
     maxHealth: 15,
@@ -168,7 +169,7 @@ export const gameSpeedUIAtom = atom<GameSpeedUI>({
 });
 
 export const heroProgressionAtom = atom<HeroProgression>({
-    unlocked: ["archer"],
+    unlocked: ["archer", "wizard", "knight", "witch", "merchant", "assassin", "songstress", "necromancer"],
     progress: {
         kills: 0,
         towerCoinsSpent: 0,

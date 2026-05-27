@@ -8,7 +8,7 @@ import screenPos from "../utils/screenPos";
 import drawCards from "../utils/drawCards";
 import makeTower from "./Tower";
 import setGameSpeed from "../utils/setGameSpeed";
-import { fadeOutMusic, getMusic } from "../utils/soundHelpers";
+import { fadeOutMusic, getMusic, playUISound } from "../utils/soundHelpers";
 
 export default function makeWaveSpawner(k: KAPLAYCtx, levelId: LevelId, waypoints: Vec2[], opts?: { onWaveEnd?: () => void; onWaveStart?: () => void; }) {
     const level = LEVEL_WAVES[levelId];
@@ -45,7 +45,7 @@ export default function makeWaveSpawner(k: KAPLAYCtx, levelId: LevelId, waypoint
                         bossStops: number[];
                     };
 
-                    const bossInstance = makeEnemy(k, boss.id, waypoints, 0, 1, undefined, boss.bossStops);
+                    const bossInstance = makeEnemy(k, boss.id, waypoints, 0, undefined, boss.bossStops);
                     bossInstance.enterState("idle");
                 }
                 opts?.onWaveStart?.();
@@ -63,7 +63,8 @@ export default function makeWaveSpawner(k: KAPLAYCtx, levelId: LevelId, waypoint
 
                 store.set(gameStateAtom, prev => ({
                     ...prev,
-                    waveActive: spawning
+                    waveActive: spawning,
+                    waveNumber: spawner.waveIndex + 1
                 }));
 
                 (k.get("tower") as TowerGameObj[]).forEach(t => {
@@ -107,6 +108,8 @@ export default function makeWaveSpawner(k: KAPLAYCtx, levelId: LevelId, waypoint
                     
                     const currentMusic = getMusic();
                     if (currentMusic) fadeOutMusic(k, currentMusic);
+
+                    playUISound(k, "level up");
 
                     const complete = k.add([
                         k.pos(k.getCamPos()),
@@ -308,7 +311,7 @@ export default function makeWaveSpawner(k: KAPLAYCtx, levelId: LevelId, waypoint
         while (spawnQueue.length && spawnQueue[0].time <= timer) {
             const spawn = spawnQueue.shift()!;
 
-            makeEnemy(k, spawn.id, waypoints, 0, spawner.waveIndex + 1);
+            makeEnemy(k, spawn.id, waypoints, 0);
         }
 
         if (spawning && spawnQueue.length === 0) {
@@ -452,6 +455,7 @@ export default function makeWaveSpawner(k: KAPLAYCtx, levelId: LevelId, waypoint
 
     nextWaveButton.onHover(() => {
         k.setCursor("pointer");
+        playUISound(k, "ui hover");
         nextWaveButton.color = k.rgb(144, 144, 144); // brighter green
     });
 
@@ -461,6 +465,8 @@ export default function makeWaveSpawner(k: KAPLAYCtx, levelId: LevelId, waypoint
     });
 
     nextWaveButton.onClick(() => {
+        playUISound(k, "start wave");
+
         if (waitingForNextWave && !levelComplete) {
             waitingForNextWave = false;
             spawner.startNextWave();

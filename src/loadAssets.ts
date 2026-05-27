@@ -1194,12 +1194,36 @@ export default function loadAssets(k: KAPLAYCtx) {
     k.loadSprite("slime shield", "/sprites/slime-shield.png");
     k.loadSprite("bee shield", "/sprites/bee-shield.png");
 
+    //sounds
+
+    //ui
     k.loadSound("ui hover", "/sounds/ui/ui-hover.mp3");
     k.loadSound("ui click", "/sounds/ui/ui-click.mp3");
     k.loadSound("ui buy", "/sounds/ui/coins.mp3");
     k.loadSound("ui pop", "/sounds/ui/ui-pop.mp3");
+    k.loadSound("card", "/sounds/ui/card.mp3");
+    k.loadSound("start wave", "/sounds/ui/startWave.mp3");
+    k.loadSound("equip", "/sounds/ui/equip.mp3");
+
+    //towers
     k.loadSound("squish", "/sounds/towers/squish.mp3");
+    k.loadSound("fireball", "/sounds/towers/fireball.mp3");
+    k.loadSound("arrow", "/sounds/towers/arrow.mp3");
+    k.loadSound("pew", "/sounds/towers/pew.mp3");
+    k.loadSound("crow", "/sounds/towers/crow.mp3");
+
+    //heroes
+    k.loadSound("archer", "/sounds/towers/archer.mp3");
+    k.loadSound("wizard", "/sounds/towers/wizard.mp3");
+    k.loadSound("knight", "/sounds/towers/knight.mp3");
+    k.loadSound("assassin", "/sounds/towers/assassin.mp3");
+    k.loadSound("merchant", "/sounds/towers/merchant.mp3");
+    k.loadSound("witch", "/sounds/towers/witch.mp3");
+    k.loadSound("songstress", "/sounds/towers/songstress.mp3");
+    k.loadSound("necromancer", "/sounds/towers/necromancer.mp3");
+
     k.loadSound("boss drums", "/sounds/soundEffects/bossApproach.wav");
+    k.loadSound("level up", "/sounds/soundEffects/nextLevel.mp3");
 
     //music
     k.loadSound("main title", "/sounds/music/main-title.mp3");

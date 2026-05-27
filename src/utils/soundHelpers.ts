@@ -1,6 +1,27 @@
 import type { AudioPlay, KAPLAYCtx } from "kaplay";
 import { audioAtom, store } from "../store";
 
+const SOUND_VOLUMES: Record<string, number> = {
+    "ui pop": 0.4,
+    "equip": 4,
+    "snow biome": 0.7,
+    "fireball": 0.5,
+    "arrow": 0.5,
+    "level up": 0.8,
+    "pew": 0.6,
+    "squish": 3,
+    "crow": 0.5,
+    "archer": 1.5,
+    "knight": 2.5,
+    "wizard": 1,
+    "witch": 0.5,
+    "songstress": 0.5,
+    "merchant": 1.5,
+    "necromancer": 2.5,
+    "assassin": 1.5
+
+};
+
 export function playUISound(
     k: KAPLAYCtx | null,
     sound: string,
@@ -10,11 +31,12 @@ export function playUISound(
 
     if (audioState.muted || !k) return;
 
-    if (sound === "ui pop") volume *= 0.4;
+    const soundVolume = SOUND_VOLUMES[sound] ?? 1;
 
     k.play(sound, {
         volume:
             volume *
+            soundVolume *
             audioState.masterVolume *
             audioState.uiVolume
     });
@@ -29,9 +51,14 @@ export function playSfx(
 
     if (audioState.muted) return;
 
+    const soundVolume = SOUND_VOLUMES[sound] ?? 1;
+    const pitchVariation = k.rand(0.95, 1.05);
+
     k.play(sound, {
         volume:
             volume *
+            soundVolume *
+            pitchVariation *
             audioState.masterVolume *
             audioState.sfxVolume,
         speed: k.rand(0.95, 1.05)
@@ -56,9 +83,12 @@ export async function playMusic(
         await fadeOutMusic(k, oldMusic);
     }
 
+    const soundVolume = SOUND_VOLUMES[sound] ?? 1;
+
     currentMusic = k.play(sound, {
         volume:
             volume *
+            soundVolume *
             audioState.masterVolume *
             audioState.musicVolume,
         loop: true

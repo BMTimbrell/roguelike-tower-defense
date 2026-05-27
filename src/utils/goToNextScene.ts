@@ -1,7 +1,7 @@
 import type { KAPLAYCtx } from "kaplay";
 import type { LevelWaves, MapData, PathTile, Scene, Tile } from "../types";
 import { ENEMIES, type LevelId } from "../constants";
-import { playSfx } from "./soundHelpers";
+import { playUISound } from "./soundHelpers";
 
 export default function goToNextScene(k: KAPLAYCtx, opts: {
     sceneName: Scene,
@@ -14,7 +14,7 @@ export default function goToNextScene(k: KAPLAYCtx, opts: {
     const { sceneName, mapData, tileGrid, pathTiles, wave, level } = opts;
 
     if (level.boss) {
-        playSfx(k, "boss drums");
+        playUISound(k, "boss drums");
         const bossId = level.boss.id;
         const sprite = ENEMIES[bossId].sprite;
 

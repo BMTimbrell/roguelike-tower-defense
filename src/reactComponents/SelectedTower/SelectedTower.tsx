@@ -11,6 +11,7 @@ import Button from "../Button/Button";
 import PriorityButton from "../PriorityButton/PriorityButton";
 import Stats from "../Stats/Stats";
 import calcSellPrice from "../../utils/calcSellPrice";
+import { playUISound } from "../../utils/soundHelpers";
 
 export default function SelectedTower({ tower }: { tower: SelectedTowerUI }) {
     const {
@@ -111,6 +112,8 @@ export default function SelectedTower({ tower }: { tower: SelectedTowerUI }) {
                 ...(prev.selectedUI && "previewRange" in prev.selectedUI ? { previewRange:  prev.selectedUI?.previewRange ?? null }  : {})
             }
         }));
+
+        playUISound(gameState.context, "equip");
 
     }
 

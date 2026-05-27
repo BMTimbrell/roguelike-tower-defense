@@ -261,6 +261,7 @@ export type HeroSkillDef = Omit<HeroSkillDefBase, "requires"> & {
 export type HeroDef = Omit<TowerDef, 'cost' | "farmData" | "source"> & {
     levelUpOffset: { x: number; y: number; };
     songs?: Song[];
+    placementSound?: string;
 };
 export type HeroInstance = UnitInstance & {
     heroId: HeroId;
@@ -485,6 +486,7 @@ export type GameState = {
         damageRequired: number;
     };
     waveActive: boolean;
+    waveNumber: number;
     sceneIndex: number;
     level: number;
     difficulty: "normal" | "hard" | "expert";

@@ -168,8 +168,6 @@ export default function levelTransition(k: KAPLAYCtx) {
 
             rand = level === 6 ? 0 : k.randi();
 
-            rand = 1;
-
             const wave = `level${level}-${rand + 1}` as LevelId;
 
             store.set(rewardsAtom, prev => ({
