@@ -22,7 +22,7 @@ export default function LoadoutPreviewPanel() {
     return (
         <div className={styles.container}>
             <Button onClick={() => setShowTowerLoadout(true)}>
-                <img width={`${map.scale * 32}px`} src={"sprites/tower-icon.png"} />
+                <img width={`${map.iconScale * 32}px`} src={"sprites/tower-icon.png"} />
             </Button>
 
             <div className={styles.deck} onClick={() => {

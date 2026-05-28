@@ -31,7 +31,8 @@ export default function SelectedTower({ tower }: { tower: SelectedTowerUI }) {
     } = tower;
     const [gameState, setGameState] = useAtom(gameStateAtom);
     const [map] = useAtom(mapAtom);
-    const scale = map.scale;
+    const scale = map.fontScale;
+    const iconScale = map.iconScale;
     const selectedUpgrade = gameState.selectedUpgrade;
     const onClick = addUpgradeSlot;
     const isUnlocked = (index: number) => index < unlockedUpgradeSlots;
@@ -171,7 +172,7 @@ export default function SelectedTower({ tower }: { tower: SelectedTowerUI }) {
     return (
         <Popup mode="world" pos={pos}>
             <div className={styles.name}>{name}</div>
-            <Stats stats={stats} element={element} scale={scale} />
+            <Stats stats={stats} element={element} scale={iconScale} />
             <div className={styles.upgrades}>
                 {upgradeSlots.map((slot, index) => (
                     <UpgradeSlot
@@ -189,11 +190,11 @@ export default function SelectedTower({ tower }: { tower: SelectedTowerUI }) {
             </div>
 
             {priority && <>
-                <PriorityButton scale={scale} priority={priority} setPriority={setPriority} /><br />
+                <PriorityButton scale={iconScale} priority={priority} setPriority={setPriority} /><br />
             </>}
 
             <Button onClick={sellTower}>
-                Sell <img style={{ width: `${8 * scale}px`, marginRight: '0.125em' }} src="sprites/coin.png" />{calcSellPrice(cost, unlockedUpgradeSlots)}
+                Sell <img style={{ width: `${8 * iconScale}px`, marginRight: '0.125em' }} src="sprites/coin.png" />{calcSellPrice(cost, unlockedUpgradeSlots)}
             </Button>
         </Popup>
     );

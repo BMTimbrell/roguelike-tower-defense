@@ -10,7 +10,7 @@ export default function TowerUI() {
     return (
         <div className={styles.container}>
             {gameState.towerButtons.map((tower, index) => (
-                <TowerCard key={index} id={tower.id} scale={map.scale} />
+                <TowerCard key={index} id={tower.id} scale={map.fontScale} />
             ))}
         </div>
     );

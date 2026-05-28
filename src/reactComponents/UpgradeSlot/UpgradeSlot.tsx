@@ -20,8 +20,8 @@ export default function UpgradeSlot({ upgrade, selectedUpgrade, unlocked, onClic
     const [popup, setPopup] = useState(false);
     const [pos, setPos] = useState<{ x: number; y: number; } | null>(null);
     const [map] = useAtom(mapAtom);
-    const scale = map.scale;
-    const iconSize = `${16 * scale}px`;
+    const scale = map.fontScale;
+    const iconSize = `${16 * map.iconScale}px`;
 
     return (
         <>

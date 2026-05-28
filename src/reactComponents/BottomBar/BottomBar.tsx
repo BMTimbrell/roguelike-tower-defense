@@ -11,12 +11,13 @@ export function BottomBar() {
     const [map] = useAtom(mapAtom);
     const [gameState] = useAtom(gameStateAtom);
     const { towerButtons, upgrades } = gameState;
+    const fontScale = map.fontScale;
 
     return (
         <div
             style={{
-                bottom: `${map.y}px`,
-                fontSize: `calc(16px * ${map.scale})`
+                bottom: `${0}px`,
+                fontSize: `calc(16px * ${fontScale})`
             }}
             className={styles.container}
         >
@@ -34,7 +35,7 @@ export function BottomBar() {
                             name={t.name}
                             stats={t.stats}
                             description={t.description}
-                            scale={map.scale}
+                            scale={map.fontScale}
                             onClick={t.onClick}
                             cost={t.cost}
                             sprite={t.sprite}

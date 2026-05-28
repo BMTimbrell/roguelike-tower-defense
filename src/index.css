@@ -22,7 +22,7 @@ button {
     font-size: inherit;
 }
 
-@media (max-width: 1200px) {
+@media (max-width: 800px) {
     *,
     *::before,
     *::after {

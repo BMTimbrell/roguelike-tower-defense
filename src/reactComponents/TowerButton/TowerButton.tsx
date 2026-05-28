@@ -1,6 +1,6 @@
 import styles from './TowerButton.module.css';
 import { type MouseEventHandler } from 'react';
-import { challengesAtom, gameStateAtom } from '../../store';
+import { challengesAtom, gameStateAtom, mapAtom } from '../../store';
 import { useAtom } from 'jotai';
 import type { TowerStats, ElementName } from '../../types';
 import CostText from '../CostText/CostText';
@@ -33,6 +33,8 @@ export default function TowerButton(
     }
 ) {
     const [gameState] = useAtom(gameStateAtom);
+    const [map] = useAtom(mapAtom);
+    const iconScale = map.iconScale;
     const [challenges] = useAtom(challengesAtom);
     const popup = useTowerPopup(scale, !!ELEMENTS[element].description);
     const disabled = gameState.gold < cost || (!gameState.challengeManager?.getChallenge() && challenges.visible);
@@ -47,7 +49,7 @@ export default function TowerButton(
                 className={`${styles.button} ${disabled ? styles.disabled : ''}`}
                 onClick={disabled ? () => null : onClick}
             >
-                <img width={`${32 * scale}`} src={`/sprites/${sprite}`} />
+                <img width={`${32 * iconScale}`} src={`/sprites/${sprite}`} />
                 <CostText cost={cost} />
 
                 {TOWERS[id].footprint.w === 2 && <div className={styles.size}>2x2</div>}
@@ -62,7 +64,7 @@ export default function TowerButton(
                     stats={stats}
                     cost={cost}
                     pos={popup.basePos}
-                    scale={scale}
+                    scale={iconScale}
                 />
             }
 

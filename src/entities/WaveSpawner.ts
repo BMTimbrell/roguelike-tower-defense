@@ -3,8 +3,7 @@ import type { EnemyId, LevelId } from "../constants";
 import type { TowerGameObj, Wave } from "../types";
 import { BASE_DRAW_COST, LEVEL_WAVES, MAX_HAND_SIZE, REDUCED_RANGE_TOWERS, ROUND_DRAW_NUM, SEEDS, TILE_SIZE } from "../constants";
 import makeEnemy from "./Enemy";
-import { store, gameStateAtom, challengesAtom, gameSpeedUIAtom } from "../store";
-import screenPos from "../utils/screenPos";
+import { store, gameStateAtom, challengesAtom, gameSpeedUIAtom, mapAtom } from "../store";
 import drawCards from "../utils/drawCards";
 import makeTower from "./Tower";
 import setGameSpeed from "../utils/setGameSpeed";
@@ -19,6 +18,8 @@ export default function makeWaveSpawner(k: KAPLAYCtx, levelId: LevelId, waypoint
     let enemyDeadCheck = true;
     let levelComplete = false;
     let waitingForNextWave = true;
+
+    let scale = store.get(mapAtom).iconScale;
 
     function buildQueue(wave: Wave) {
         const queue = [];
@@ -47,6 +48,26 @@ export default function makeWaveSpawner(k: KAPLAYCtx, levelId: LevelId, waypoint
 
                     const bossInstance = makeEnemy(k, boss.id, waypoints, 0, undefined, boss.bossStops);
                     bossInstance.enterState("idle");
+
+                    if (bossInstance && bossInstance.boss) {
+                        const bossStop = bossInstance.path[bossInstance.boss.stopIndexes[bossInstance.boss.currentStopIndex + 1]];
+
+                        if (bossInstance.boss.currentStopIndex + 1 < bossInstance.boss.stopIndexes.length - 2) {
+                            const bossIcon = k.add([
+                                k.sprite("boss icon"),
+                                k.pos(bossStop),
+                                k.anchor("center"),
+                                k.scale(1),
+                                {
+                                    update() {
+                                        bossIcon.scale = k.vec2(1 + Math.sin(k.time() * 3) * 0.1);
+                                    }
+                                },
+                                "boss stop",
+                            ]);
+                        }
+
+                    }
                 }
                 opts?.onWaveStart?.();
             },
@@ -54,6 +75,8 @@ export default function makeWaveSpawner(k: KAPLAYCtx, levelId: LevelId, waypoint
                 if (spawner.waveIndex < 0) {
                     k.get("arrow").forEach(a => k.destroy(a));
                 }
+
+                if (k.get("boss").length) k.get("boss stop").forEach(b => k.destroy(b));
 
                 spawner.waveIndex++;
                 const wave = level.waves[spawner.waveIndex];
@@ -84,6 +107,7 @@ export default function makeWaveSpawner(k: KAPLAYCtx, levelId: LevelId, waypoint
     ]);
 
     spawner.onUpdate(() => {
+        scale = store.get(mapAtom).iconScale;
 
         if (!spawning) {
             // wave complete
@@ -105,18 +129,19 @@ export default function makeWaveSpawner(k: KAPLAYCtx, levelId: LevelId, waypoint
 
                 if (spawner.waveIndex === level.waves.length - 1 || ("boss" in level && !boss && !normalEnemiesAlive)) {
                     levelComplete = true;
-                    
+
                     const currentMusic = getMusic();
                     if (currentMusic) fadeOutMusic(k, currentMusic);
 
                     playUISound(k, "level up");
 
                     const complete = k.add([
-                        k.pos(k.getCamPos()),
+                        k.pos(k.toScreen(k.getCamPos())),
                         k.text("Level Complete!", {
-                            size: 16,
+                            size: 16 * store.get(mapAtom).iconScale,
                             font: "free pixel"
                         }),
+                        k.fixed(),
                         k.stay(),
                         {
                             update() {
@@ -134,6 +159,8 @@ export default function makeWaveSpawner(k: KAPLAYCtx, levelId: LevelId, waypoint
                                 }
                                 if (complete.timer >= 0) complete.scale = complete.scale.add(k.vec2(k.dt() * 5));
                                 else k.destroy(complete);
+
+                                complete.pos = k.toScreen(k.getCamPos());
                             },
                             timer: 1.5
                         },
@@ -143,6 +170,26 @@ export default function makeWaveSpawner(k: KAPLAYCtx, levelId: LevelId, waypoint
                         k.z(999999),
                     ]);
                     return;
+                }
+
+                if (boss) {
+                    const bossStop = boss.path[boss.boss.stopIndexes[boss.boss.currentStopIndex + 1]];
+
+                    if (boss.boss.currentStopIndex + 1 < boss.boss.stopIndexes.length - 2) {
+                        const bossIcon = k.add([
+                            k.sprite("boss icon"),
+                            k.pos(bossStop),
+                            k.anchor("center"),
+                            k.scale(1),
+                            {
+                                update() {
+                                    bossIcon.scale = k.vec2(1 + Math.sin(k.time() * 3) * 0.1);
+                                }
+                            },
+                            "boss stop",
+                        ]);
+                    }
+
                 }
 
                 enemyDeadCheck = false;
@@ -163,12 +210,14 @@ export default function makeWaveSpawner(k: KAPLAYCtx, levelId: LevelId, waypoint
 
                     offsets.forEach(([x, y]) => {
                         const outline = k.add([
-                            k.pos(k.getCamPos().x + x, k.getCamPos().y + y),
+                            k.pos(k.toScreen(k.vec2(k.getCamPos().x + x, k.getCamPos().y + y))),
                             k.text(`Reward: +${reward}`, {
-                                font: "free pixel"
+                                font: "free pixel",
+                                size: 32 * scale
                             }),
                             k.color("#000000"),
                             k.opacity(1),
+                            k.fixed(),
                             "textOutline",
                             k.anchor("center"),
                             {
@@ -189,12 +238,14 @@ export default function makeWaveSpawner(k: KAPLAYCtx, levelId: LevelId, waypoint
                     });
 
                     const rewardText = k.add([
-                        k.pos(k.getCamPos()),
+                        k.pos(k.toScreen(k.getCamPos())),
                         k.text(`Reward: +${reward}`, {
-                            font: "free pixel"
+                            font: "free pixel",
+                            size: 32 * scale
                         }),
                         k.opacity(1),
                         k.anchor("center"),
+                        k.fixed(),
                         {
                             time: 0,
                             update() {
@@ -301,6 +352,7 @@ export default function makeWaveSpawner(k: KAPLAYCtx, levelId: LevelId, waypoint
                         }
                     }
                 });
+
             }
 
             return;
@@ -321,7 +373,13 @@ export default function makeWaveSpawner(k: KAPLAYCtx, levelId: LevelId, waypoint
 
     });
 
-    const waveTextPos = k.vec2(20, 15);
+    let waveTextPos = k.vec2(20 * scale, 15 * scale);
+    let buttonPos = k.vec2(waveTextPos).add(k.vec2(160 * scale, 10 * scale));
+
+    k.onUpdate(() => {
+        waveTextPos = k.vec2(20 * scale, 15 * scale);
+        buttonPos = k.vec2(waveTextPos).add(k.vec2(160 * scale, 10 * scale));
+    });
 
     const offsets = [
         [-1, 0],
@@ -332,12 +390,13 @@ export default function makeWaveSpawner(k: KAPLAYCtx, levelId: LevelId, waypoint
 
     offsets.forEach(([x, y]) => {
         const outline = k.add([
-            k.pos(waveTextPos.x + x, waveTextPos.y + y),
+            k.pos(waveTextPos.x + x * scale, waveTextPos.y + y * scale),
             k.text("", {
-                size: 20,
+                size: 20 * scale,
                 font: "free pixel"
             }),
             k.color("#000000"),
+            k.fixed(),
             k.z(999),
             {
                 update() {
@@ -353,12 +412,11 @@ export default function makeWaveSpawner(k: KAPLAYCtx, levelId: LevelId, waypoint
                         textStr = `Wave: ${spawner.waveIndex + 1}/${level.waves.length}`;
                     }
 
-                    outline.use(k.text(textStr, {
-                        size: 20,
-                        font: "free pixel"
-                    }));
+                    outline.text = textStr;
 
-                    outline.pos = screenPos(k, waveTextPos).add(x, y);
+                    outline.pos = waveTextPos.add(x * scale, y * scale);
+
+                    outline.textSize = 20 * scale;
                 }
             }
         ]);
@@ -368,9 +426,10 @@ export default function makeWaveSpawner(k: KAPLAYCtx, levelId: LevelId, waypoint
         k.pos(waveTextPos),
         k.color('#FFFFFF'),
         k.text("", {
-            size: 20,
+            size: 20 * scale,
             font: "free pixel"
         }),
+        k.fixed(),
         k.z(999),
         {
             update() {
@@ -386,23 +445,21 @@ export default function makeWaveSpawner(k: KAPLAYCtx, levelId: LevelId, waypoint
                     textStr = `Wave: ${spawner.waveIndex + 1}/${level.waves.length}`;
                 }
 
-                waveText.use(k.text(textStr, {
-                    size: 20,
-                    font: "free pixel"
-                }));
+                waveText.text = textStr;
 
-                waveText.pos = screenPos(k, waveTextPos);
+                waveText.pos = waveTextPos;
+
+                waveText.textSize = 20 * scale;
             }
         }
     ]);
 
-    const buttonPos = k.vec2(waveTextPos).add(k.vec2(160, 10));
-
     const nextWaveButton = k.add([
-        k.rect(100, 25, { radius: 2 }),
+        k.rect(100 * scale, 25 * scale, { radius: 2 * scale }),
         k.pos(buttonPos),
         k.anchor("center"),
         k.area(),
+        k.fixed(),
         k.color(85, 85, 85),
         k.z(1000),
         {
@@ -412,15 +469,18 @@ export default function makeWaveSpawner(k: KAPLAYCtx, levelId: LevelId, waypoint
                         !store.get(gameStateAtom).challengeManager?.getChallenge() &&
                         store.get(challengesAtom).visible
                     );
-                nextWaveButton.pos = screenPos(k, buttonPos);
+                nextWaveButton.pos = buttonPos;
+                nextWaveButton.width = 100 * scale;
+                nextWaveButton.height = 25 * scale;
             }
         }
     ]);
 
     const outline = k.add([
-        k.rect(100, 25, { radius: 2, fill: false }),
+        k.rect(100 * scale, 25 * scale, { radius: 2 * scale, fill: false }),
         k.pos(buttonPos),
         k.anchor("center"),
+        k.fixed(),
         k.opacity(0.5),
         k.z(1001),
         k.outline(1, k.rgb(255, 255, 255)),
@@ -431,14 +491,17 @@ export default function makeWaveSpawner(k: KAPLAYCtx, levelId: LevelId, waypoint
                         !store.get(gameStateAtom).challengeManager?.getChallenge() &&
                         store.get(challengesAtom).visible
                     );
-                outline.pos = screenPos(k, buttonPos);
+                outline.pos = buttonPos;
+                outline.width = 100 * scale;
+                outline.height = 25 * scale;
             }
         }
     ]);
 
     const buttonText = k.add([
-        k.text("Start Wave", { size: 16, font: "free pixel" }),
+        k.text("Start Wave", { size: 16 * scale, font: "free pixel" }),
         k.pos(buttonPos.x, buttonPos.y),
+        k.fixed(),
         k.anchor("center"),
         k.z(1001),
         {
@@ -448,7 +511,9 @@ export default function makeWaveSpawner(k: KAPLAYCtx, levelId: LevelId, waypoint
                         !store.get(gameStateAtom).challengeManager?.getChallenge() &&
                         store.get(challengesAtom).visible
                     );
-                buttonText.pos = screenPos(k, k.vec2(buttonPos.x, buttonPos.y));
+                buttonText.pos = k.vec2(buttonPos.x, buttonPos.y);
+
+                buttonText.textSize = 16 * scale;
             }
         }
     ]);

@@ -10,7 +10,7 @@ import UpgradeCard from "../UpgradeCard/UpgradeCard";
 export default function Upgrades({ upgrades }: { upgrades: Upgrade[] }) {
     const [gameState, setGameState] = useAtom(gameStateAtom);
     const [map] = useAtom(mapAtom);
-    const scale = map.scale;
+    const fontScale = map.fontScale;
     const [popupPos, setPopupPos] = useState<{ x: number; y: number; } | null>(null);
     const containerRef = useRef<HTMLDivElement>(null);
     const [overlap, setOverlap] = useState(0);
@@ -74,7 +74,7 @@ export default function Upgrades({ upgrades }: { upgrades: Upgrade[] }) {
 
     useLayoutEffect(() => {
         calculateOverlap();
-    }, [upgrades, map.scale]);
+    }, [upgrades, map.fontScale, map.iconScale]);
 
     return (
         <div
@@ -87,12 +87,12 @@ export default function Upgrades({ upgrades }: { upgrades: Upgrade[] }) {
                     key={`${index}${gameState.reroll.rerollCount}`}
                     popup={<UpgradePopup upgrade={upgrade} pos={popupPos} />}
                     setPopupPos={setPopupPos}
-                    scale={scale}
+                    scale={fontScale}
                     {...(upgrade?.animationDelay ? { animationDelay: upgrade.animationDelay } : {})}
                     classNames={[gameState.selectedUpgrade === upgrade ? styles.selected : '']}
                     handleClick={() => handleClick(upgrade)}
                 >
-                    <UpgradeCard upgrade={upgrade} scale={scale} />
+                    <UpgradeCard upgrade={upgrade} scale={fontScale} />
                 </Card>
             ))}
         </div>

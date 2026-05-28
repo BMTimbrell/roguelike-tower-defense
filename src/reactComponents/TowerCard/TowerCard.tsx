@@ -4,10 +4,14 @@ import DescriptionPopup from "../DescriptionPopup/DescriptionPopup";
 import styles from './TowerCard.module.css';
 import TowerPopup from "../TowerPopup/TowerPopup";
 import { createPortal } from "react-dom";
+import { useAtom } from "jotai";
+import { mapAtom } from "../../store";
 
 export default function TowerCard({ id, scale }: { id: TowerId; scale: number; }) {
     const { element, name, description, stats, cost, sprite } = TOWERS[id];
     const popup = useTowerPopup(scale, !!ELEMENTS[element].description);
+    const [map] = useAtom(mapAtom);
+    const iconScale = map.iconScale;
 
     return (
         <>
@@ -19,7 +23,7 @@ export default function TowerCard({ id, scale }: { id: TowerId; scale: number; }
                     {name}
                 </div>
                 <div>
-                    <img width={`${scale * 32}px`} src={`sprites/${sprite}`} />
+                    <img width={`${iconScale * 32}px`} src={`sprites/${sprite}`} />
                 </div>
                 {TOWERS[id].footprint.w === 2 && <div className={styles.size}>2x2</div>}
             </div>
@@ -33,7 +37,7 @@ export default function TowerCard({ id, scale }: { id: TowerId; scale: number; }
                     stats={stats}
                     cost={cost}
                     pos={popup.basePos}
-                    scale={scale}
+                    scale={iconScale}
                 />,
                 document.body
             )}

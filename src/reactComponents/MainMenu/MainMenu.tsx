@@ -15,9 +15,9 @@ export default function MainMenu() {
     const [, setMenu] = useAtom(mainMenuAtom)
     const [map] = useAtom(mapAtom);
     const [gameState] = useAtom(gameStateAtom);
-    const scale = map.scale;
+    const fontScale = map.fontScale;
     const header = showSettings && <div style={{
-        fontSize: `${16 * scale * 1.2}px`, marginBottom: "0.5em",
+        fontSize: `${16 * fontScale * 1.2}px`, marginBottom: "0.5em",
         textAlign: "center"
     }} className={styles.heading}>Settings</div>;
 
@@ -27,7 +27,7 @@ export default function MainMenu() {
 
     return (
         <>
-            <div className={styles.container} style={{ fontSize: `${16 * scale}px` }}>
+            <div className={styles.container} style={{ fontSize: `${16 * fontScale}px` }}>
                 {!showDifficulty && (<>
                     <Button 
                         onClick={() => {
@@ -58,7 +58,7 @@ export default function MainMenu() {
             </div>
 
             <Modal header={header} isOpen={showSettings} onClose={() => setShowSettings(false)}>
-                <div style={{ fontSize: `${16 * scale}px` }}>
+                <div style={{ fontSize: `${16 * fontScale}px` }}>
                     <Settings />
                 </div>
             </Modal>

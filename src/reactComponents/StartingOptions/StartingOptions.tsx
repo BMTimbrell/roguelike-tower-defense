@@ -10,11 +10,11 @@ export default function StartingOptions() {
     const addLoadout = startingOptions.addLoadout;
     const [gameState] = useAtom(gameStateAtom);
     const [map] = useAtom(mapAtom);
-    const scale = map.scale;
+    const fontScale = map.fontScale;
     const options = startingOptions.options;
 
     return (
-        <div className={styles.container} style={{ fontSize: `${16 * scale}px` }}>
+        <div className={styles.container} style={{ fontSize: `${16 * fontScale}px` }}>
             <div className={styles.heading}>Pick a Loadout</div>
 
             <div className={styles.options}>
@@ -27,13 +27,13 @@ export default function StartingOptions() {
                     >
                         <div className={styles.towers}>
                             {o.ids.map((i, index) => (
-                                <TowerCard key={index} id={i} scale={scale} />
+                                <TowerCard key={index} id={i} scale={fontScale} />
                             ))}
                         </div>
 
                         <div className={styles.upgrades}>
                             {o.upgrades.map((u, index) => (
-                                <UpgradeCard key={index} upgrade={u} scale={scale} showPopup={true} popupOffset={{ x: 0, y: 25 }} />
+                                <UpgradeCard key={index} upgrade={u} scale={fontScale} showPopup={true} popupOffset={{ x: 0, y: 25 }} />
                             ))}
                         </div>
                     </div>

@@ -1,5 +1,5 @@
 import { useAtom } from "jotai";
-import { gameStateAtom, mapAtom } from "../../store";
+import { mapAtom } from "../../store";
 import type { SelectedHeroUI } from "../../types";
 import Popup from "../Popup/Popup";
 import PriorityButton from "../PriorityButton/PriorityButton";
@@ -21,7 +21,7 @@ export default function SelectedHero({ hero }: { hero: SelectedHeroUI }) {
     } = hero;
 
     const [map] = useAtom(mapAtom);
-    const scale = map.scale;
+    const iconScale = map.iconScale;
     const skills = [...new Set(SKILLS.filter(s => skillIds.includes(s.id)))];
 
     return (
@@ -32,12 +32,12 @@ export default function SelectedHero({ hero }: { hero: SelectedHeroUI }) {
             </div>
             <div className={styles.skills}> Skills:
                 {skills.map((s, index) => (
-                    <SkillIcon key={index} src={s.icon} scale={scale} description={s.description} />
+                    <SkillIcon key={index} src={s.icon} scale={iconScale} description={s.description} />
                 ))}
             </div>
-            <Stats stats={stats} element={element} scale={scale} /> <br />
+            <Stats stats={stats} element={element} scale={iconScale} /> <br />
             {priority && <>
-                <PriorityButton scale={scale} priority={priority} setPriority={setPriority} /><br />
+                <PriorityButton scale={iconScale} priority={priority} setPriority={setPriority} /><br />
             </>}
         </Popup>
     );

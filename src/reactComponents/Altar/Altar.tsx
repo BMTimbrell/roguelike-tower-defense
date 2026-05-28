@@ -13,7 +13,8 @@ export default function Altar() {
     const [altar, setAltar] = useAtom(altarAtom);
     const [shop] = useAtom(shopAtom);
     const [map] = useAtom(mapAtom);
-    const scale = map.scale;
+    const fontScale = map.fontScale;
+    const iconScale = map.iconScale;
     const [gameState, setGameState] = useAtom(gameStateAtom);
     const towerCoins = gameState.towerCoins;
     const healCost = Math.round((gameState.maxHealth - gameState.health) * 2.5);
@@ -23,13 +24,13 @@ export default function Altar() {
     const [showRCModal, setShowRCModal] = useState(false);
 
     return (
-        <div className={styles.container} style={{ fontSize: `${16 * scale}px` }}>
+        <div className={styles.container} style={{ fontSize: `${16 * fontScale}px` }}>
             <div className={styles.heading}>Altar</div>
 
             <div className={styles.stats}>
-                <div className={styles.health}><img width={22 * scale} src="/sprites/heart.png" />{gameState.health}/{gameState.maxHealth}</div>
+                <div className={styles.health}><img width={22 * iconScale} src="/sprites/heart.png" />{gameState.health}/{gameState.maxHealth}</div>
                 <div className={styles["tower-coins"]}>
-                    <img width={17 * scale} src="sprites/tower-coin.png" />
+                    <img width={17 * iconScale} src="sprites/tower-coin.png" />
                     <div>{gameState.towerCoins}</div>
                 </div>
             </div>
@@ -49,7 +50,7 @@ export default function Altar() {
                 >
                     <div className={styles["sub-heading"]}>Blessing of Restoration</div>
                     <div>Restore HP</div>
-                    <div className={styles.cost}><img width={17 * scale} src={'/sprites/tower-coin.png'} />
+                    <div className={styles.cost}><img width={17 * iconScale} src={'/sprites/tower-coin.png'} />
                         <div className={`${healCost > towerCoins ? styles["cant-afford"] : ''}`}>{healCost}</div>
                     </div>
                 </div>
@@ -76,7 +77,7 @@ export default function Altar() {
                     <div>+5 Max HP</div>
 
                     <div className={styles["choice-footer"]}>
-                        <div className={styles.cost}><img width={17 * scale} src={'/sprites/tower-coin.png'} />
+                        <div className={styles.cost}><img width={17 * iconScale} src={'/sprites/tower-coin.png'} />
                             <div className={`${maxHPCost > towerCoins ? styles["cant-afford"] : ''}`}>{maxHPCost}</div>
                         </div>
                         <div>Uses: {altar.remainingUses.maxHP}</div>
@@ -92,7 +93,7 @@ export default function Altar() {
                     <div>Remove Card</div>
 
                     <div className={styles["choice-footer"]}>
-                        <div className={styles.cost}><img width={17 * scale} src={'/sprites/tower-coin.png'} />
+                        <div className={styles.cost}><img width={17 * iconScale} src={'/sprites/tower-coin.png'} />
                             <div className={`${removeCardCost > towerCoins ? styles["cant-afford"] : ''}`}>{removeCardCost}</div>
                         </div>
                         <div>Uses: {altar.remainingUses.removeCard}</div>
@@ -122,7 +123,7 @@ export default function Altar() {
                     <div>Level Up</div>
 
                     <div className={styles["choice-footer"]}>
-                        <div className={styles.cost}><img width={17 * scale} src={'/sprites/tower-coin.png'} />
+                        <div className={styles.cost}><img width={17 * iconScale} src={'/sprites/tower-coin.png'} />
                             <div className={`${levelUpCost > towerCoins ? styles["cant-afford"] : ''}`}>{levelUpCost}</div>
                         </div>
                         <div>Uses: {altar.remainingUses.levelUp}</div>
@@ -137,7 +138,7 @@ export default function Altar() {
                     {gameState.deck.cards.map((card, index) => (
                         <Card
                             key={index}
-                            scale={map.scale}
+                            scale={map.fontScale}
                             handleClick={() => {
                                 setGameState(prev => ({
                                     ...prev,
@@ -157,7 +158,7 @@ export default function Altar() {
                                 setShowRCModal(false);
                             }}
                         >
-                            <UpgradeCard upgrade={card} scale={scale} />
+                            <UpgradeCard upgrade={card} scale={fontScale} />
                         </Card>
                     ))}
                 </div>

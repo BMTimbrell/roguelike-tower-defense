@@ -10,7 +10,8 @@ export default function HeroButton({ sprite, onClick, charge }: {
     charge: number;
 }) {
     const [map] = useAtom(mapAtom);
-    const scale = map.scale;
+    const fontScale = map.fontScale;
+    const iconScale = map.iconScale;
     const isReady = charge >= 1;
     return (
         <>
@@ -18,13 +19,13 @@ export default function HeroButton({ sprite, onClick, charge }: {
                 onClick={onClick}
                 classNames={[styles.button]}
                 style={{
-                    fontSize: `calc(16px * ${scale})`,
+                    fontSize: `calc(16px * ${fontScale})`,
                     '--charge-percent': `${Math.min(charge, 1) * 100}%`,
                     opacity: isReady ? 1 : 0.5
                 } as React.CSSProperties}
                 disabled={!isReady}
             >
-                <img width={`${32 * scale}px`} src={sprite} />
+                <img width={`${32 * iconScale}px`} src={sprite} />
             </Button>
         </>
     );

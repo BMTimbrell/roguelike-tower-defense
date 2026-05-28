@@ -21,7 +21,7 @@ export default function SelectedFarm({ farm }: { farm: SelectedFarmTowerUI }) {
     } = farm;
 
     const [map] = useAtom(mapAtom);
-    const scale = map.scale;
+    const scale = map.iconScale;
 
     return (
         <Popup mode="world" pos={pos}>

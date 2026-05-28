@@ -9,7 +9,7 @@ export default function Deck({ deck, gold }: { deck: Deck, gold: number }) {
     const [map] = useAtom(mapAtom);
     const [gameState] = useAtom(gameStateAtom);
     const [challenges] = useAtom(challengesAtom);
-    const scale = map.scale;
+    const scale = map.iconScale;
     const cantAfford = deck.drawCost > gold;
     const challengesVisible = !gameState.challengeManager?.getChallenge() && challenges.visible;
 

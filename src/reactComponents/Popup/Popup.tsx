@@ -13,7 +13,8 @@ export default function Popup({ mode, pos, children, pStyle }: {
     const [map] = useAtom(mapAtom);
     const [y, setY] = useState(pos.y);
     const [x, setX] = useState(pos.x);
-    const scale = map.scale;
+    const scale = map.iconScale;
+    const fontScale = map.fontScale;
 
     useLayoutEffect(() => {
         const el = popupRef.current;
@@ -69,7 +70,7 @@ export default function Popup({ mode, pos, children, pStyle }: {
                 '--x': `${x}px`,
                 '--y': `${y}px`,
 
-                fontSize: `calc(16px * ${scale})`,
+                fontSize: `calc(16px * ${fontScale})`,
                 ...pStyle
             } as React.CSSProperties}
         >

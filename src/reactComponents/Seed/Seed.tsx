@@ -10,7 +10,7 @@ import DescriptionPopup from "../DescriptionPopup/DescriptionPopup";
 
 export default function Seed({ s, plantSeed }: { s: SeedId, plantSeed: (id: SeedId) => void }) {
     const [map] = useAtom(mapAtom);
-    const scale = map.scale;
+    const scale = map.fontScale;
     const { element, name, description, stats } = TOWERS[s];
     const popup = useTowerPopup(scale, !!ELEMENTS[element].description);
 

@@ -2,6 +2,8 @@ import styles from './UpgradeCard.module.css';
 import type { Upgrade } from '../../types';
 import UpgradePopup from '../UpgradePopup/UpgradePopup';
 import { useLayoutEffect, useState } from 'react';
+import { useAtom } from 'jotai';
+import { mapAtom } from '../../store';
 
 export default function UpgradeCard({ 
     upgrade, 
@@ -23,6 +25,8 @@ export default function UpgradeCard({
 }) {
     const [popupPos, setPopupPos] = useState<{ x: number; y: number; } | null>(null);
     const [hovered, setHovered] = useState(false);
+    const [map] = useAtom(mapAtom);
+    const iconScale = map.iconScale;
 
     useLayoutEffect(() => {
         if (hovered && setCard) {
@@ -47,7 +51,7 @@ export default function UpgradeCard({
                 onMouseLeave= {() => setHovered(false) }
             >
                 <div className={styles.icon}>
-                    <img width={`${16 * scale}px`} src={upgrade.icon} />
+                    <img width={`${16 * iconScale}px`} src={upgrade.icon} />
                     <div>+{upgrade.amount}{upgrade.percentage ? '%' : ''}</div>
                 </div>
                 <div>Cost: {upgrade.cost}</div>

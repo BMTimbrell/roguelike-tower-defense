@@ -11,7 +11,7 @@ export default function PauseMenu() {
     const [pauseMenu, setPauseMenu] = useAtom(pauseMenuAtom);
     const [gameState] = useAtom(gameStateAtom);
     const [map] = useAtom(mapAtom);
-    const scale = map.scale;
+    const scale = map.fontScale;
     const [showSettings, setShowSettings] = useState(false);
     const header = showSettings && <div style={{ fontSize: `${16 * scale * 1.2}px` }} className={styles.heading}>Settings</div>;
 

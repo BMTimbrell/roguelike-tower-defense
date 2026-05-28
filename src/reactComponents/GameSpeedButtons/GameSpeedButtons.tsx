@@ -8,10 +8,11 @@ export default function GameSpeedButtons() {
     const [gameSpeedUI, setGameSpeedUI] = useAtom(gameSpeedUIAtom);
     const [gameState] = useAtom(gameStateAtom);
     const [map] = useAtom(mapAtom);
-    const scale = map.scale;
+    const fontScale = map.fontScale;
+    const iconScale = map.iconScale;
 
     return (
-        <div style={{ fontSize: `${16 * scale}px` }} className={styles.container}>
+        <div style={{ fontSize: `${16 * fontScale}px` }} className={styles.container}>
             {gameSpeedUI.buttons.map((button, index) => (
                 <Button
                     key={index}
@@ -26,7 +27,7 @@ export default function GameSpeedButtons() {
                     onMouseEnter={() => playUISound(gameState.context, "ui hover")}
                     classNames={[`${gameSpeedUI.activeIndex === index ? styles.active : ''}`]}
                 >
-                    <img width={button.width * scale} src={button.icon} />
+                    <img width={button.width * iconScale} src={button.icon} />
                 </Button>
             ))}
         </div>

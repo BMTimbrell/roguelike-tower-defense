@@ -27,12 +27,12 @@ export default function DeckUI({
                 <Card
                     key={index}
                     setPopupPos={setPopupPos}
-                    scale={map.scale}
+                    scale={map.fontScale}
                     setDeckHovered={setHovered}
                 >
                     <UpgradeCard
                         upgrade={card}
-                        scale={map.scale}
+                        scale={map.fontScale}
                         setCard={setCard}
                     />
                 </Card>

@@ -49,11 +49,8 @@ export const gameStateAtom = atom<GameState>({
 });
 
 export const mapAtom = atom({
-    x: 0,
-    y: 0,
-    height: 0,
-    width: 0,
-    scale: 1
+    iconScale: 1,
+    fontScale: 1
 });
 
 export const rewardsAtom = atom<Rewards>({

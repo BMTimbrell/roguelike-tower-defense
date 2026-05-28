@@ -27,7 +27,7 @@ export const SMALL_DAMAGE_NUMBER_SIZE = 11;
 export const CRIT_DAMAGE_NUMBER_SIZE = 22;
 export const DAMAGE_NUMBER_COLOR = "#fffb00";
 export const CRIT_DAMAGE_NUMBER_COLOR = "#ff0000";
-export const CHARGE_DAMAGE_REQUIRED = 1;
+export const CHARGE_DAMAGE_REQUIRED = 80;
 export const CHILL_PERCENT = 6;
 export const MAX_CHILL_STACKS = 5;
 export const ICE_DAMAGE_PER_STACK = 10;
@@ -210,13 +210,13 @@ export const LEVEL_WAVES = {
                 ],
                 reward: 50
             },
-            // {
-            //     spawns: [
-            //         { id: "skeleton", count: 3, interval: 1 },
-            //         { id: "slime", count: 5, interval: 0.75 }
-            //     ],
-            //     reward: 100
-            // },
+            {
+                spawns: [
+                    { id: "skeleton", count: 3, interval: 1 },
+                    { id: "slime", count: 5, interval: 0.75 }
+                ],
+                reward: 100
+            },
             // {
             //     spawns: [
             //         { id: "armouredSkeleton", count: 1, interval: 1 },
@@ -263,13 +263,13 @@ export const LEVEL_WAVES = {
                 ],
                 reward: 50
             },
-            // {
-            //     spawns: [
-            //         { id: "orc", count: 1, interval: 1.5 },
-            //         { id: "bee", count: 5, interval: 1 }
-            //     ],
-            //     reward: 100
-            // },
+            {
+                spawns: [
+                    { id: "orc", count: 1, interval: 1.5 },
+                    { id: "bee", count: 5, interval: 1 }
+                ],
+                reward: 100
+            },
             // {
             //     spawns: [
             //         { id: "armouredOrc", count: 1, interval: 1.5 },
@@ -2390,6 +2390,7 @@ export const TOWERS = {
             critDamage: 200
         },
         element: "Normal",
+        shootSound: "gunshot",
         gunOffset: { x: 2, y: 0 },
         anchorOffset: { x: 4 / 32, y: 0 },
         shootOffset: { x: -20, y: 0 },
@@ -2521,6 +2522,7 @@ export const TOWERS = {
             critDamage: 200
         },
         element: "Electric",
+        shootSound: "zap",
         gunOffset: { x: 0, y: 0 },
         anchorOffset: { x: 0, y: 0 },
         shootOffset: { x: 0, y: 0 },
@@ -2552,6 +2554,7 @@ export const TOWERS = {
         sprite: "volt-dart-tower-sprite.png",
         description: "Shoots a dart that sticks to enemies, dealing electric shocks every second for 3 hits",
         cost: 70,
+        shootSound: "gunshot",
         stats: {
             damage: 4,
             range: 4,
@@ -2671,6 +2674,7 @@ export const TOWERS = {
             critDamage: 200
         },
         element: "Fire",
+        shootSound: "cannon",
         gunOffset: { x: -1, y: 0 },
         anchorOffset: { x: -2 / 32, y: 0 },
         shootOffset: { x: -20, y: 0 },
@@ -2843,6 +2847,7 @@ export const TOWERS = {
         sprite: "time-tower-sprite.png",
         description: "Fire rate decreases with time",
         cost: 60,
+        shootSound: "gunshot",
         stats: {
             damage: 4,
             range: 3,
@@ -2888,6 +2893,7 @@ export const TOWERS = {
             critDamage: 200
         },
         element: "Poison",
+        shootSound: "squish",
         gunOffset: { x: 0, y: 0 },
         anchorOffset: { x: 0, y: 0 },
         shootOffset: { x: -20, y: 0 },
@@ -2917,6 +2923,7 @@ export const TOWERS = {
             critDamage: 200
         },
         element: "Normal",
+        shootSound: "gunshot",
         gunOffset: { x: 2, y: 0 },
         anchorOffset: { x: 4 / 32, y: 0 },
         shootOffset: { x: -20, y: 0 },
@@ -3105,6 +3112,7 @@ export const TOWERS = {
             critDamage: 200
         },
         element: "Ice",
+        shootSound: "cannon",
         gunOffset: { x: 5, y: -1 },
         anchorOffset: { x: 10 / 64, y: -2 / 64 },
         shootOffset: { x: -40, y: 0 },
@@ -3179,6 +3187,7 @@ export const TOWERS = {
             critChance: 5,
             critDamage: 200
         },
+        shootSound: "cannon",
         element: "Poison",
         gunOffset: { x: 5, y: -1 },
         anchorOffset: { x: 10 / 64, y: -2 / 64 },
@@ -3216,6 +3225,7 @@ export const TOWERS = {
             critDamage: 200
         },
         element: "Light",
+        shootSound: "blast",
         gunOffset: { x: 10, y: -1 },
         anchorOffset: { x: 20 / 64, y: -2 / 64 },
         shootOffset: { x: -40, y: 0 },
@@ -3249,6 +3259,7 @@ export const TOWERS = {
             critDamage: 200
         },
         element: "Light",
+        shootSound: "blast",
         gunOffset: { x: 5, y: -1 },
         anchorOffset: { x: 10 / 64, y: -2 / 64 },
         shootOffset: { x: -40, y: 1 },
@@ -3282,6 +3293,7 @@ export const TOWERS = {
             critDamage: 200
         },
         element: "Electric",
+        shootSound: "zap",
         gunOffset: { x: 0, y: 0 },
         anchorOffset: { x: 0, y: 0 },
         shootOffset: { x: 0, y: 0 },
@@ -3316,6 +3328,7 @@ export const TOWERS = {
             critDamage: 200
         },
         element: "Poison",
+        shootSound: "bees",
         gunOffset: { x: 0, y: 0 },
         anchorOffset: { x: 0, y: 0 },
         shootOffset: { x: 0, y: 0 },
@@ -3356,6 +3369,7 @@ export const TOWERS = {
             critDamage: 200
         },
         element: "Electric",
+        shootSound: "thunder",
         gunOffset: { x: 10, y: -1 },
         anchorOffset: { x: 20 / 64, y: -2 / 64 },
         shootOffset: { x: -40, y: 0 },
@@ -3389,6 +3403,7 @@ export const TOWERS = {
             critDamage: 200
         },
         element: "Ice",
+        shootSound: "arrow",
         gunOffset: { x: 0, y: 0 },
         anchorOffset: { x: 0, y: 0 },
         shootOffset: { x: 0, y: 0 },
@@ -3467,6 +3482,7 @@ export const TOWERS = {
             critDamage: 200
         },
         element: "Normal",
+        shootSound: "gunshot",
         gunOffset: { x: 5, y: 0 },
         anchorOffset: { x: 10 / 64, y: 0 },
         shootOffset: { x: -40, y: 0 },
@@ -3604,6 +3620,7 @@ export const TOWERS = {
             critDamage: 200
         },
         element: "Fire",
+        shootSound: "arrow",
         gunOffset: { x: 0, y: 0 },
         anchorOffset: { x: 0, y: 0 },
         shootOffset: { x: -20, y: 0 },
@@ -3706,6 +3723,7 @@ export const TOWERS = {
         projectile: null,
         canRotate: true,
         source: "reward",
+        shootSound: "zap",
         targetType: "enemy",
         footprint: {
             w: 2,
@@ -3812,6 +3830,7 @@ export const TOWERS = {
             critDamage: 200
         },
         element: "Electric",
+        shootSound: "zap",
         gunOffset: { x: 7, y: -1 },
         anchorOffset: { x: 14 / 64, y: -2 / 64 },
         shootOffset: { x: -40, y: 0 },
@@ -3995,6 +4014,7 @@ export const TOWERS = {
             critDamage: 200
         },
         element: "Normal",
+        shootSound: "gunshot",
         gunOffset: { x: 10, y: 0 },
         anchorOffset: { x: 20 / 64, y: 0 },
         shootOffset: { x: -40, y: 0 },
@@ -4097,6 +4117,7 @@ export const TOWERS = {
         sprite: "solar-lance-tower-sprite.png",
         description: "Fires a continuous beam that grows stronger over time. Overheats if fired too long",
         cost: 250,
+        shootSound: "beam",
         stats: {
             damage: 1,
             range: 4,
@@ -4370,7 +4391,7 @@ export const HEROES = {
         gunSprite: "hammer tower",
         baseSprite: "songstress base",
         stats: {
-            damage: 5,
+            damage: 2,
             range: 3.5,
             fireInterval: 1.5,
             critChance: 5,
@@ -4646,7 +4667,8 @@ export const PROJECTILES = {
         sprite: "bomb",
         homing: true,
         speed: 200,
-        splashRadius: 1.2
+        splashRadius: 1.2,
+        impactSound: "explosion"
     },
     electricDart: {
         sprite: "electric dart",

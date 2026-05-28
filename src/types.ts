@@ -79,6 +79,7 @@ export type ProjectileDef = {
     anim?: string;
     noRotate?: boolean;
     splitDamage?: boolean;
+    impactSound?: string;
 };
 
 export type RandomProjectiles = {

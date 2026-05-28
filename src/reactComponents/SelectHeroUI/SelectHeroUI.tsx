@@ -12,11 +12,12 @@ export default function SelectHeroUI() {
     const [map] = useAtom(mapAtom);
     const [heroProgression] = useAtom(heroProgressionAtom);
     const [showDetails, setShowDetails] = useState<HeroId | null>(null);
-    const scale = map.scale;
+    const fontScale = map.fontScale;
+    const iconScale = map.iconScale;
     const unlockedHeroes = heroProgression.unlocked;
 
     return (
-        <div className={styles.container} style={{ fontSize: `${16 * scale}px` }}>
+        <div className={styles.container} style={{ fontSize: `${16 * fontScale}px` }}>
             <div className={styles.heading}>Pick a Hero</div>
 
             <div className={styles["hero-container"]}>
@@ -43,9 +44,9 @@ export default function SelectHeroUI() {
                                     {HEROES[id].name}
                                 </div>
 
-                                {!unlocked && <img className={styles.padlock} width={`${32 * scale}px`} src="/sprites/lock.png" />}
+                                {!unlocked && <img className={styles.padlock} width={`${32 * iconScale}px`} src="/sprites/lock.png" />}
 
-                                <img width={scale * 32} src={`sprites/${HEROES[id].sprite}`} />
+                                <img width={iconScale * 32} src={`sprites/${HEROES[id].sprite}`} />
                             </div>
                         );
                     })}
@@ -68,7 +69,7 @@ export default function SelectHeroUI() {
                                     <Stats
                                         stats={HEROES[showDetails].stats}
                                         element={HEROES[showDetails].element}
-                                        scale={scale}
+                                        scale={iconScale}
                                     />
                                 </>
                             ) : (

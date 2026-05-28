@@ -7,6 +7,7 @@ import hurtEnemy from '../utils/hurtEnemy';
 import getBuffValue from '../utils/getBuffValue';
 import { gameStateAtom, store } from '../store';
 import makeAttachedEntity from './AttachedEntity';
+import { playSfx } from '../utils/soundHelpers';
 
 export default function makeProjectile(k: KAPLAYCtx, opts: {
     id: ProjectileId;
@@ -75,6 +76,11 @@ export default function makeProjectile(k: KAPLAYCtx, opts: {
             ]);
             animSprite.animSpeed = store.get(gameStateAtom).timeScale;
             animSprite.onAnimEnd(() => k.destroy(animSprite));
+        }
+
+        const impactSound = (PROJECTILES[id] as { impactSound: string }).impactSound;
+        if (impactSound) {
+            playSfx(k, impactSound);
         }
     });
 

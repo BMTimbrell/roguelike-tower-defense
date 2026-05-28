@@ -8,7 +8,8 @@ export default function Difficulty({ onClick }: { onClick: React.MouseEventHandl
     const hardUnlocked = true;
     const expertUnlocked = false;
     const [map] = useAtom(mapAtom);
-    const scale = map.scale;
+    const scale = map.fontScale;
+    const iconScale = map.iconScale;
 
     const onMouseEnter = () => {
         playUISound(gameState.context, "ui hover");
@@ -45,7 +46,7 @@ export default function Difficulty({ onClick }: { onClick: React.MouseEventHandl
                         }));
                     }}
                 >
-                    <div className={styles.heading}>Hard {!hardUnlocked && <img width={`${16 * scale}`} src="/sprites/lock.png" />}</div>
+                    <div className={styles.heading}>Hard {!hardUnlocked && <img width={`${16 * iconScale}`} src="/sprites/lock.png" />}</div>
                     <div>For experienced players who already understand the game's systems. Enemies have more health, making combat more demanding and less forgiving.</div>
                     {!hardUnlocked && (
                         <div className={styles.unlockText}>

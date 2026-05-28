@@ -1,24 +1,25 @@
 import type { KAPLAYCtx } from "kaplay";
-import { store, gameStateAtom } from "../store";
-import screenPos from "./screenPos";
+import { store, gameStateAtom, mapAtom } from "../store";
 
 export default function showLevelStats(k: KAPLAYCtx) {
-
-    const heartPos = k.vec2(18, 39);
+    let scale = store.get(mapAtom).iconScale;
+    let fontSize = 20 * scale;
+    let heartPos = k.vec2(18 * scale, 39 * scale);
+    let healthTextPos = heartPos.add(k.vec2(23 * scale, 0 * scale));
 
     const heart = k.add([
         k.sprite("heart"),
-        k.scale(2),
+        k.scale(2 * scale),
         k.pos(heartPos),
+        k.fixed(),
         k.z(999),
         {
             update() {
-                heart.pos = screenPos(k, heartPos);
+                heart.scale = k.vec2(2 * scale);
+                heart.pos = heartPos;
             }
         }
     ]);
-
-    const healthTextPos = heartPos.add(k.vec2(23, 0));
 
     const offsets = [
         [-1, 0],
@@ -29,20 +30,19 @@ export default function showLevelStats(k: KAPLAYCtx) {
 
     offsets.map(([x, y]) => {
         const outline = k.add([
-            k.pos(healthTextPos.x + x, healthTextPos.y + y),
+            k.pos(healthTextPos.x + x * scale, healthTextPos.y + y * scale),
             k.color('#000000'),
             k.text('' + store.get(gameStateAtom).health, {
-                size: 20,
+                size: fontSize,
                 font: "free pixel"
             }),
+            k.fixed(),
             k.z(999),
             {
                 update() {
-                    outline.use(k.text('' + store.get(gameStateAtom).health + '/' + store.get(gameStateAtom).maxHealth, {
-                        size: 20,
-                        font: "free pixel"
-                    }));
-                    outline.pos = screenPos(k, k.vec2(healthTextPos.x + x, healthTextPos.y + y));
+                    outline.text = '' + store.get(gameStateAtom).health + '/' + store.get(gameStateAtom).maxHealth;
+                    outline.textSize = fontSize;
+                    outline.pos = k.vec2(healthTextPos.x + x * scale, healthTextPos.y + y * scale);
                 }
             }
         ]);
@@ -53,53 +53,54 @@ export default function showLevelStats(k: KAPLAYCtx) {
         k.pos(healthTextPos),
         k.color('#FFFFFF'),
         k.text('' + store.get(gameStateAtom).health, {
-            size: 20,
+            size: fontSize,
             font: "free pixel"
         }),
         k.z(999),
+        k.fixed(),
         {
             update() {
-                healthText.use(k.text('' + store.get(gameStateAtom).health + '/' + store.get(gameStateAtom).maxHealth, {
-                    size: 20,
-                    font: "free pixel"
-                }));
-                healthText.pos = screenPos(k, healthTextPos);
+                healthText.text = '' + store.get(gameStateAtom).health + '/' + store.get(gameStateAtom).maxHealth;
+                healthText.textSize = fontSize;
+                healthText.pos = healthTextPos;
             }
         }
     ]);
 
-    const goldPos = k.vec2(21, 60);
+    let goldPos = k.vec2(21 * scale, 60 *scale);
 
     const gold = k.add([
         k.sprite("gold"),
-        k.scale(2),
+        k.scale(2 * scale),
         k.pos(goldPos),
         k.z(999),
+        k.fixed(),
         {
             update() {
-                gold.pos = screenPos(k, goldPos);
+                gold.scale = k.vec2(2 * scale);
+                gold.pos = goldPos
             }
         }
     ]);
 
-    const goldTextPos = gold.pos.add(k.vec2(20, -1));
+    
+    let goldTextPos = gold.pos.add(k.vec2(20 * scale, -1 * scale));
 
     offsets.map(([x, y]) => {
         const outline = k.add([
-            k.pos(goldTextPos.x + x, goldTextPos.y + y),
+            k.pos(goldTextPos.x + x * scale, goldTextPos.y + y * scale),
             k.color('#000000'),
             k.text('' + store.get(gameStateAtom).gold, {
-                size: 20,
+                size: fontSize,
                 font: "free pixel"
             }),
             k.z(999),
+            k.fixed(),
             {
                 update() {
-                    outline.use(k.text('' + store.get(gameStateAtom).gold, {
-                        size: 20,
-                        font: "free pixel"
-                    }));
-                    outline.pos = screenPos(k, k.vec2(goldTextPos.x + x, goldTextPos.y + y));
+                    outline.text = '' + store.get(gameStateAtom).gold;
+                    outline.textSize = fontSize;
+                    outline.pos = k.vec2(goldTextPos.x + x * scale, goldTextPos.y + y * scale);
                 }
             }
         ]);
@@ -110,18 +111,30 @@ export default function showLevelStats(k: KAPLAYCtx) {
         k.pos(goldTextPos),
         k.color('#FFFFFF'),
         k.text('' + store.get(gameStateAtom).gold, {
-            size: 20,
+            size: fontSize,
             font: "free pixel"
         }),
         k.z(999),
+        k.fixed(),
         {
             update() {
-                goldText.use(k.text('' + store.get(gameStateAtom).gold, {
-                    size: 20,
-                    font: "free pixel"
-                }));
-                goldText.pos = screenPos(k, goldTextPos);
+                goldText.text = '' + store.get(gameStateAtom).gold;
+                goldText.textSize = fontSize;
+                goldText.pos = goldTextPos;
+
             }
         }
     ]);
+
+    k.onUpdate(() => {
+        scale = store.get(mapAtom).iconScale;
+        fontSize = 20 * scale;
+
+        heartPos = k.vec2(18 * scale, 39 * scale);
+        healthTextPos = heartPos.add(k.vec2(23 * scale, 0 * scale));
+
+        goldPos = k.vec2(21 * scale, 60 *scale);
+        goldTextPos = gold.pos.add(k.vec2(20 * scale, -1 * scale));
+    });
+
 }

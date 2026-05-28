@@ -21,7 +21,8 @@ export default function Rewards() {
             <div className={styles.heading}>Choose an Upgrade</div> :
             <div className={styles.heading}>Choose a Tower</div>;
 
-    const scale = map.scale;
+    const fontScale = map.fontScale;
+    const iconScale = map.iconScale;
     const cardValue = gameState.sceneIndex > 3 ? 3 : 2;
 
     const skills = useMemo(
@@ -69,15 +70,15 @@ export default function Rewards() {
     return (
         <div 
             className={styles.container}
-            style={{ fontSize: `${16 * scale}px` }}
+            style={{ fontSize: `${16 * fontScale}px` }}
         >
             {heading}
             <div className={styles["card-container"]}>
                 {rewards.show[rewards.rewardIndex] === "skills" && rewardSkills.map((s, index) => (
-                    <Card key={index} animationDelay={setCardAnimationDelay(index)} handleClick={() => rewards.addSkill(s.id)} scale={scale}>
+                    <Card key={index} animationDelay={setCardAnimationDelay(index)} handleClick={() => rewards.addSkill(s.id)} scale={fontScale}>
                         <div className={styles["card-contents"]}>
                             <div className={styles.name}>
-                                <img width={`${32 * scale}`} src={s.icon} />
+                                <img width={`${32 * iconScale}`} src={s.icon} />
                                 {s.name}
                             </div>
                             <div>
@@ -105,12 +106,12 @@ export default function Rewards() {
                                 rewardIndex: prev.rewardIndex + 1
                             }));
                          }}
-                        scale={scale}
+                        scale={fontScale}
                         popup={<UpgradePopup upgrade={u} pos={popupPos} />}
                         setPopupPos={setPopupPos}
                     >
                         <div className={styles["card-contents"]}>
-                            <UpgradeCard key={index} upgrade={u} scale={scale} />
+                            <UpgradeCard key={index} upgrade={u} scale={fontScale} />
                         </div>
                     </Card>
                 ))}
@@ -122,10 +123,10 @@ export default function Rewards() {
                         handleClick={() => {
                             rewards.addTower(Object.keys(t)[0] as TowerId);
                          }}
-                        scale={scale}
+                        scale={fontScale}
                     >
                         <div className={styles["card-contents"]}>
-                            <TowerCard key={index} id={Object.keys(t)[0] as TowerId} scale={scale} />
+                            <TowerCard key={index} id={Object.keys(t)[0] as TowerId} scale={fontScale} />
                         </div>
                     </Card>
                 ))}

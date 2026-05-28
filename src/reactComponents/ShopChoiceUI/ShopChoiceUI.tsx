@@ -8,7 +8,7 @@ export default function ShopChoiceUI() {
     const buttons = shopChoiceUI.buttons;
 
     const [map] = useAtom(mapAtom);
-    const scale = map.scale;
+    const scale = map.fontScale;
 
     return (
         <div style={{ fontSize: `${16 * scale}px`}} className={styles.container}>

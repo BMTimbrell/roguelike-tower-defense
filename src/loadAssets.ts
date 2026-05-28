@@ -1121,6 +1121,7 @@ export default function loadAssets(k: KAPLAYCtx) {
     });
     k.loadSprite("entrance arrow", "/sprites/green-arrow.png");
     k.loadSprite("exit arrow", "/sprites/red-arrow.png");
+    k.loadSprite("boss icon", "/sprites/boss-icon.png");
     k.loadSprite("snow", "/sprites/snow.png");
     k.loadSprite("lava tile", "/sprites/lava-tile.png");
     k.loadSprite("stinger", "/sprites/bee-stinger.png");
@@ -1211,6 +1212,14 @@ export default function loadAssets(k: KAPLAYCtx) {
     k.loadSound("arrow", "/sounds/towers/arrow.mp3");
     k.loadSound("pew", "/sounds/towers/pew.mp3");
     k.loadSound("crow", "/sounds/towers/crow.mp3");
+    k.loadSound("gunshot", "/sounds/towers/gunshot.mp3");
+    k.loadSound("blast", "/sounds/towers/blast.mp3");
+    k.loadSound("beam", "/sounds/towers/beam.mp3");
+    k.loadSound("zap", "/sounds/towers/zap.mp3");
+    k.loadSound("thunder", "/sounds/towers/thunder.mp3");
+    k.loadSound("bees", "/sounds/towers/bees.mp3");
+    k.loadSound("cannon", "/sounds/towers/cannon.mp3");
+    k.loadSound("explosion", "/sounds/towers/explosion.mp3");
 
     //heroes
     k.loadSound("archer", "/sounds/towers/archer.mp3");
