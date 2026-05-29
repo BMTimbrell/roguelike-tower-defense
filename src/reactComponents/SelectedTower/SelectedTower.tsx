@@ -170,7 +170,7 @@ export default function SelectedTower({ tower }: { tower: SelectedTowerUI }) {
     }, [selectedUpgrade, unlockedUpgradeSlots, stats.range, upgradeSlots, name]);
 
     return (
-        <Popup mode="world" pos={pos}>
+        <Popup mode="screen" pos={pos}>
             <div className={styles.name}>{name}</div>
             <Stats stats={stats} element={element} scale={iconScale} />
             <div className={styles.upgrades}>

@@ -162,6 +162,19 @@ export default function makeLevelScene(k: KAPLAYCtx, sceneName: Scene) {
             maxY = scrollHeight - viewH / 2;
         });
 
+        k.onScroll(delta => {
+            zoom -= delta.y * 0.001;
+            zoom = k.clamp(zoom, 1, 3);
+            k.setCamScale(k.vec2(zoom));
+
+            viewW = k.width() / zoom;
+            viewH = k.height() / zoom;
+            minX = viewW / 2;
+            minY = viewH / 2 - 3 * TILE_SIZE;
+            maxX = mapWorldWidth - viewW / 2;
+            maxY = scrollHeight - viewH / 2;
+        });
+
         const cursor = k.add([
             "cursor",
             k.pos(k.toWorld(k.mousePos())),
@@ -521,7 +534,7 @@ export default function makeLevelScene(k: KAPLAYCtx, sceneName: Scene) {
                         ...prev,
                         activeIndex: i,
                     }));
-                    
+
                     setGameSpeed(k, i + 1);
                 }
             });

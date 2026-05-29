@@ -15,7 +15,7 @@ export default function setTowerUI(k: KAPLAYCtx, type: "combat" | "farm", tower:
             selectedUI: {
                 ...(prev.selectedUI && "previewRange" in prev.selectedUI ? { previewRange:  prev.selectedUI?.previewRange ?? null }  : {}),
                 towerId: tower.instanceId,
-                pos: tower.screenPos().scale(1 / k.getCamScale().x, 1 / k.getCamScale().y),
+                pos: tower.screenPos(),
                 priority: tower.priority,
                 name: tower.name,
                 stats: {
@@ -103,7 +103,7 @@ export default function setTowerUI(k: KAPLAYCtx, type: "combat" | "farm", tower:
     } else if (type === "farm") {
         const farmTowerUI = {
             towerId: tower.instanceId,
-            pos: tower.screenPos().scale(1 / k.getCamScale().x, 1 / k.getCamScale().y),
+            pos: tower.screenPos(),
             name: tower.name,
             cost: tower.cost,
             element: tower.element,

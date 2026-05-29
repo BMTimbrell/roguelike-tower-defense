@@ -230,7 +230,7 @@ export default function makeHero(k: KAPLAYCtx,
                     ...prev,
                     selectedUI: {
                         heroId: hero.heroId,
-                        pos: hero.screenPos().scale(1 / k.getCamScale().x, 1 / k.getCamScale().y),
+                        pos: hero.screenPos(),
                         priority: hero.priority,
                         name: hero.name,
                         stats: hero.stats,

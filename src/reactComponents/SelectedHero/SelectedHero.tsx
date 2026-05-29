@@ -25,7 +25,7 @@ export default function SelectedHero({ hero }: { hero: SelectedHeroUI }) {
     const skills = [...new Set(SKILLS.filter(s => skillIds.includes(s.id)))];
 
     return (
-        <Popup mode="world" pos={pos}>
+        <Popup mode="screen" pos={pos}>
             <div className={styles.name}>
                 <div>{name}</div>
                 <div className={styles.level}>Level {level}</div>

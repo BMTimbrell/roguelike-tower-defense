@@ -41,7 +41,7 @@ export default function Seed({ s, plantSeed }: { s: SeedId, plantSeed: (id: Seed
                     stats={stats}
                     cost={0}
                     pos={popup.basePos}
-                    scale={scale}
+                    scale={map.iconScale}
                 />
             )}
 
