@@ -15,7 +15,7 @@ import getBuffValue from '../utils/getBuffValue';
 import isButtonDown from '../utils/isButtonDown';
 import { waitScaled } from '../utils/timerFunctions';
 import makeProjectile from './Projectile';
-import { playUISound } from '../utils/soundHelpers';
+import { playSfx, playUISound } from '../utils/soundHelpers';
 
 export default function makeTower(
     k: KAPLAYCtx,
@@ -252,6 +252,8 @@ export default function makeTower(
                                 isCrit,
                                 element: tower.element
                             });
+
+                            playSfx(k, "smash");
                         }
                     });
 
@@ -353,6 +355,8 @@ export default function makeTower(
                             k.vec2(-15, 0),
                             phoenix.angle * Math.PI / 180
                         );
+
+                        playSfx(k, TOWERS[towerId]?.shootSound);
 
                         makeProjectile(k, {
                             id: "fireball",

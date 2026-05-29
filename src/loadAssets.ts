@@ -1220,6 +1220,19 @@ export default function loadAssets(k: KAPLAYCtx) {
     k.loadSound("bees", "/sounds/towers/bees.mp3");
     k.loadSound("cannon", "/sounds/towers/cannon.mp3");
     k.loadSound("explosion", "/sounds/towers/explosion.mp3");
+    k.loadSound("twinkle", "/sounds/towers/twinkle.mp3");
+    k.loadSound("holy", "/sounds/towers/holy.mp3");
+    k.loadSound("flamethrower", "/sounds/towers/flamethrower.mp3");
+    k.loadSound("ice magic", "/sounds/towers/iceMagic.mp3");
+    k.loadSound("blizzard", "/sounds/towers/blizzard.mp3");
+    k.loadSound("pacman", "/sounds/towers/pacman.mp3");
+    k.loadSound("dark magic", "/sounds/towers/darkMagic.mp3");
+    k.loadSound("ghosts", "/sounds/towers/ghosts.mp3");
+    k.loadSound("smash", "/sounds/towers/smash.mp3");
+    k.loadSound("icicle", "/sounds/towers/icicle.mp3");
+    k.loadSound("soft shoot", "/sounds/towers/softShoot.mp3");
+    k.loadSound("glass smash", "/sounds/towers/glassSmash.mp3");
+    k.loadSound("splat", "/sounds/towers/splat.mp3");
 
     //heroes
     k.loadSound("archer", "/sounds/towers/archer.mp3");
@@ -1233,6 +1246,7 @@ export default function loadAssets(k: KAPLAYCtx) {
 
     k.loadSound("boss drums", "/sounds/soundEffects/bossApproach.wav");
     k.loadSound("level up", "/sounds/soundEffects/nextLevel.mp3");
+    k.loadSound("challenge complete", "/sounds/soundEffects/challengeComplete.mp3");
 
     //music
     k.loadSound("main title", "/sounds/music/main-title.mp3");

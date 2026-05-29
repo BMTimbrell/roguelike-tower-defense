@@ -212,6 +212,7 @@ export type Summon = {
     attackSpeedMult: number;
     speed: number;
     maxAttacks: number;
+    shootSound?: string;
 };
 
 export type TowerInstance = UnitInstance & {
@@ -695,6 +696,7 @@ export type ProjectileBehavior = {
         interval: number;
         offset: number;
         infectionLevel?: number;
+        sound?: string;
     };
 };
 

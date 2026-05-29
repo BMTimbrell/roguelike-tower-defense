@@ -4,6 +4,7 @@ import hurtEnemy from "../utils/hurtEnemy";
 import calcDamage from "../utils/calcDamage";
 import { CURSE_CRIT, PROJECTILES, TILE_SIZE, type ProjectileId } from "../constants";
 import { gameStateAtom, store } from "../store";
+import { playSfx } from "../utils/soundHelpers";
 
 export default function makePathEntity(
     k: KAPLAYCtx,
@@ -65,6 +66,9 @@ export default function makePathEntity(
 
                         enemies.forEach(e => {
                             if (!e.invincible && pathEntity?.pos.dist(e.pos) < 10) {
+                                const impactSound = (PROJECTILES[projectileId] as { impactSound?: string })?.impactSound;
+                                if (impactSound) playSfx(k, impactSound);
+
                                 if (splashRadius) {
                                     enemies.forEach(enemy => {
                                         if (pathEntity?.pos.dist(enemy.pos) < splashRadius) {

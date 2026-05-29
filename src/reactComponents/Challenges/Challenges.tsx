@@ -10,7 +10,7 @@ export default function Challenges() {
     const [challengeActive, setChallengeActive] = useState(false);
     const challengeManager = gameState.challengeManager;
     const [map] = useAtom(mapAtom);
-    const scale = map.scale;
+    const scale = map.fontScale;
     const active = challengeManager?.getChallenge();
 
     return (

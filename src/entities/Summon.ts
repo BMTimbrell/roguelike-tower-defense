@@ -6,6 +6,7 @@ import hurtEnemy from "../utils/hurtEnemy";
 import calcDamage from "../utils/calcDamage";
 import getBuffValue from "../utils/getBuffValue";
 import { gameStateAtom, store } from "../store";
+import { playSfx } from "../utils/soundHelpers";
 
 export default function spawnSummon(k: KAPLAYCtx, ctx: AttackContext, id: SummonId, pos: Vec2) {
     const {
@@ -48,6 +49,10 @@ export default function spawnSummon(k: KAPLAYCtx, ctx: AttackContext, id: Summon
     summon.onStateEnter("attack", ({ enemy }) => {
         summon.angle = dirToRotation(enemy.pos.sub(summon.pos));
         summon.play("attack");
+
+        const shootSound = (SUMMONS[id] as { shootSound?: string }).shootSound;
+
+        if (shootSound) playSfx(k, shootSound);
 
         let bonusDamage = 0;
 

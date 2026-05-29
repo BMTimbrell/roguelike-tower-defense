@@ -17,15 +17,22 @@ const SOUND_VOLUMES: Record<string, number> = {
     "thunder": 0.8,
     "crow": 0.5,
     "cannon": 0.3,
-    "archer": 1.5,
-    "knight": 2.5,
-    "wizard": 1,
+    "archer": 3,
+    "knight": 3.5,
+    "wizard": 1.5,
     "witch": 0.5,
     "songstress": 0.5,
-    "merchant": 1.5,
-    "necromancer": 2.5,
-    "assassin": 1.5
-
+    "merchant": 2.5,
+    "necromancer": 3,
+    "assassin": 2.5,
+    "twinkle": 2,
+    "flamethrower": 0.5,
+    "iceMagic": 2,
+    "smash": 1.5,
+    "zap": 0.7,
+    "soft shoot": 1.5,
+    "splat": 0.5,
+    "ghosts": 2
 };
 
 export function playUISound(

@@ -8,6 +8,7 @@ import makeHero from "../entities/Hero";
 import addTowers from "../utils/addTowers";
 import updateSkills from "../utils/updateSkills";
 import goToNextScene from "../utils/goToNextScene";
+import { playUISound } from "../utils/soundHelpers";
 
 export default function levelTransition(k: KAPLAYCtx) {
     k.scene("levelTransition" satisfies Scene, async (hero: HeroGameObj) => {
@@ -291,6 +292,8 @@ export default function levelTransition(k: KAPLAYCtx) {
                                 k.anchor("center"),
                                 k.pos(coin.pos.add(coin.width + 30, 0))
                             ]);
+
+                            playUISound(k, "challenge complete");
                         }
 
                         challengeManager.setChallenge(null);

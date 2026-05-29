@@ -2,6 +2,7 @@ import type { KAPLAYCtx, Vec2 } from "kaplay";
 import type { ElementName, EnemyGameObj } from "../types";
 import { gameStateAtom, store } from "../store";
 import hurtEnemy from "../utils/hurtEnemy";
+import { playSfx } from "../utils/soundHelpers";
 
 export default function makeAttachedEntity(k: KAPLAYCtx, opts: {
     sprite: string;
@@ -15,10 +16,12 @@ export default function makeAttachedEntity(k: KAPLAYCtx, opts: {
     stickDir: Vec2;
     offset: number;
     infectionLevel?: number;
+    sound?: string;
 }) {
     const { enemy, isCrit, ticks, interval, element, sprite, angle } = opts;
     let damage = opts.damage;
     let infectionLevel = opts.infectionLevel;
+    const sound = opts?.sound;
 
     let timer = interval;
     let remaining = ticks;
@@ -76,6 +79,7 @@ export default function makeAttachedEntity(k: KAPLAYCtx, opts: {
             remaining--;
 
             entity.play("damage");
+            if (sound) playSfx(k, sound);
         }
     });
 }

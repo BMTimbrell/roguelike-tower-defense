@@ -13,6 +13,7 @@ import spawnSummon from "./entities/Summon";
 import hurtEnemy from "./utils/hurtEnemy";
 import { waitScaled } from "./utils/timerFunctions";
 import { lifespan } from "./kaplayComponents/lifespan";
+import { playSfx } from "./utils/soundHelpers";
 
 export const VIRTUAL_WIDTH = 800;
 export const VIRTUAL_HEIGHT = 600;
@@ -2488,6 +2489,7 @@ export const TOWERS = {
             critDamage: 200
         },
         element: "Ice",
+        shootSound: "ice magic",
         gunOffset: { x: 0, y: 0 },
         anchorOffset: { x: 0, y: 0 },
         shootOffset: { x: 0, y: 0 },
@@ -2581,7 +2583,8 @@ export const TOWERS = {
                     projectile.behaviors.attach = {
                         ticks: 3,
                         interval: 1,
-                        offset: -8
+                        offset: -8,
+                        sound: "zap"
                     };
                 });
             }
@@ -2744,6 +2747,7 @@ export const TOWERS = {
             critDamage: 200
         },
         element: "Dark",
+        shootSound: "dark magic",
         gunOffset: { x: 0, y: 0 },
         anchorOffset: { x: 0, y: 0 },
         shootOffset: { x: 0, y: 0 },
@@ -2785,6 +2789,7 @@ export const TOWERS = {
             critDamage: 200
         },
         element: "Fire",
+        shootSound: "flamethrower",
         gunOffset: { x: 0, y: 0 },
         anchorOffset: { x: 0, y: 0 },
         shootOffset: { x: 0, y: 0 },
@@ -2819,6 +2824,7 @@ export const TOWERS = {
             critDamage: 200
         },
         element: "Light",
+        shootSound: "twinkle",
         gunOffset: { x: 0, y: 0 },
         anchorOffset: { x: 0, y: 0 },
         shootOffset: { x: 0, y: 0 },
@@ -2993,7 +2999,8 @@ export const TOWERS = {
                     attach: {
                         ticks: 3,
                         interval: 1,
-                        offset: -8
+                        offset: -8,
+                        sound: "zap"
                     }
                 }
             }
@@ -3022,6 +3029,7 @@ export const TOWERS = {
             critDamage: 200
         },
         element: "Normal",
+        shootSound: "smash",
         gunOffset: { x: 0, y: 0 },
         anchorOffset: { x: 0, y: 0 },
         shootOffset: { x: 0, y: 0 },
@@ -3088,6 +3096,7 @@ export const TOWERS = {
         anchorOffset: { x: 4 / 32, y: 0 },
         shootOffset: { x: -20, y: 0 },
         projectile: "icicle",
+        shootSound: "icicle",
         canRotate: true,
         source: "starting",
         targetType: "enemy",
@@ -3112,7 +3121,7 @@ export const TOWERS = {
             critDamage: 200
         },
         element: "Ice",
-        shootSound: "cannon",
+        shootSound: "soft shoot",
         gunOffset: { x: 5, y: -1 },
         anchorOffset: { x: 10 / 64, y: -2 / 64 },
         shootOffset: { x: -40, y: 0 },
@@ -3149,6 +3158,7 @@ export const TOWERS = {
             critDamage: 200
         },
         element: "Dark",
+        shootSound: "dark magic",
         gunOffset: { x: 5, y: -1 },
         anchorOffset: { x: 10 / 64, y: -2 / 64 },
         shootOffset: { x: -40, y: 0 },
@@ -3441,6 +3451,7 @@ export const TOWERS = {
             critDamage: 200
         },
         element: "Dark",
+        shootSound: "dark magic",
         gunOffset: { x: 0, y: 2 },
         anchorOffset: { x: 0, y: 4 / 64 },
         shootOffset: { x: -25, y: 0 },
@@ -3526,6 +3537,7 @@ export const TOWERS = {
         projectile: null,
         canRotate: false,
         source: "reward",
+        shootSound: "arrow",
         targetType: "enemy",
         melee: {
             meleeHandleSprite: "scythe handle",
@@ -3582,6 +3594,7 @@ export const TOWERS = {
             critDamage: 200
         },
         element: "Light",
+        shootSound: "holy",
         gunOffset: { x: 0, y: 0 },
         anchorOffset: { x: 0, y: 0 },
         shootOffset: { x: 0, y: 0 },
@@ -3650,6 +3663,7 @@ export const TOWERS = {
             critDamage: 200
         },
         element: "Ice",
+        shootSound: "blizzard",
         gunOffset: { x: 10, y: -1 },
         anchorOffset: { x: 20 / 64, y: -2 / 64 },
         shootOffset: { x: -40, y: 0 },
@@ -3683,6 +3697,7 @@ export const TOWERS = {
             critDamage: 200
         },
         element: "Fire",
+        shootSound: "flamethrower",
         gunOffset: { x: 7, y: -1 },
         anchorOffset: { x: 14 / 64, y: -2 / 64 },
         shootOffset: { x: -40, y: 0 },
@@ -3792,6 +3807,7 @@ export const TOWERS = {
             critDamage: 200
         },
         element: "Normal",
+        shootSound: "pacman",
         gunOffset: { x: 5, y: 0 },
         anchorOffset: { x: 10 / 64, y: 0 },
         shootOffset: { x: 0, y: 0 },
@@ -3875,6 +3891,7 @@ export const TOWERS = {
             critDamage: 200
         },
         element: "Poison",
+        shootSound: "soft shoot",
         gunOffset: { x: 5, y: -1 },
         anchorOffset: { x: 10 / 64, y: -2 / 64 },
         shootOffset: { x: -40, y: 0 },
@@ -4082,6 +4099,7 @@ export const TOWERS = {
             critDamage: 200
         },
         element: "Dark",
+        shootSound: "ghosts",
         gunOffset: { x: 0, y: 2 },
         anchorOffset: { x: 0, y: 4 / 64 },
         shootOffset: { x: -25, y: 0 },
@@ -4736,7 +4754,8 @@ export const PROJECTILES = {
         sprite: "sludge bomb",
         homing: true,
         speed: 200,
-        splashRadius: 1.2
+        splashRadius: 1.2,
+        impactSound: "splat"
     },
     bees: {
         sprite: "bees",
@@ -4773,7 +4792,8 @@ export const PROJECTILES = {
         sprite: "mine",
         homing: true,
         speed: 200,
-        splashRadius: 1.2
+        splashRadius: 1.2,
+        impactSound: "explosion"
     },
     stinger: {
         sprite: "stinger",
@@ -4791,6 +4811,7 @@ export const PROJECTILES = {
         sprite: "potion",
         homing: true,
         speed: 300,
+        impactSound: "glass smash",
         splashRadius: 0
     },
     gatlingBullet: {
@@ -5022,6 +5043,8 @@ export const SKILLS = [
 
                     ctx.projectiles[ctx.projectiles.length - 1].element = "Ice";
                     ctx.projectiles[ctx.projectiles.length - 1].id = "iceBlast";
+
+                    playSfx(ctx.context, "ice magic");
                 }
             });
         },
@@ -5036,6 +5059,8 @@ export const SKILLS = [
             hero.effects?.push({
                 firstEffect(ctx) {
                     if (Math.random() < 0.65) return;
+
+                    playSfx(ctx.context, "zap");
 
                     ctx.attackType = "lightning";
                     if (!ctx.lightning) {
@@ -5807,7 +5832,8 @@ export const SUMMONS = {
         damageMult: 1,
         attackSpeedMult: 8,
         speed: 40,
-        maxAttacks: 1
+        maxAttacks: 1,
+        shootSound: "pacman"
     }
 } as const satisfies Record<string, Summon>;
 

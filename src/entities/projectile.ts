@@ -277,7 +277,8 @@ export default function makeProjectile(k: KAPLAYCtx, opts: {
                                 interval: attach.interval,
                                 stickDir: target.pos.sub(projectile.pos).unit(),
                                 offset: attach.offset ?? 0,
-                                ...(attach.infectionLevel ? { infectionLevel: attach.infectionLevel } : {})
+                                ...(attach.infectionLevel ? { infectionLevel: attach.infectionLevel } : {}),
+                                ...(attach.sound ? { sound: attach.sound } : {})
                             });
                             return;
                         }
