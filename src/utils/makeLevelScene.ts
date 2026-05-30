@@ -192,6 +192,7 @@ export default function makeLevelScene(k: KAPLAYCtx, sceneName: Scene) {
             ...prev,
             scene: sceneName,
             gold: LEVEL_WAVES[wave].startingGold,
+            waveNumber: 1,
             bottomBarVisible: true,
             upgrades,
             deck: {

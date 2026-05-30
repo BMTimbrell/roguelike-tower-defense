@@ -1253,5 +1253,5 @@ export default function loadAssets(k: KAPLAYCtx) {
     k.loadSound("forest biome", "/sounds/music/forest-biome.mp3");
     k.loadSound("forest boss", "/sounds/music/first-boss.mp3");
     k.loadSound("snow biome", "/sounds/music/backgroundmusicforvideos-game-minecraft-gaming-background-music-402451.mp3");
-    k.loadSound("snow boss", "/sounds/music/backgroundmusicforvideos-game-minecraft-gaming-background-music-402451.mp3");
+    k.loadSound("snow boss", "/sounds/music/jakob_welik-level-one-8-bit-pixel-warriors-chapter-one-415685.mp3");
 }

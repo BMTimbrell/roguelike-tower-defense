@@ -27,12 +27,13 @@ const SOUND_VOLUMES: Record<string, number> = {
     "assassin": 2.5,
     "twinkle": 2,
     "flamethrower": 0.5,
-    "iceMagic": 2,
+    "ice magic": 2,
     "smash": 1.5,
     "zap": 0.7,
     "soft shoot": 1.5,
     "splat": 0.5,
-    "ghosts": 2
+    "ghosts": 2,
+    "dark magic": 2
 };
 
 export function playUISound(

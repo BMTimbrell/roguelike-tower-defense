@@ -751,6 +751,7 @@ export default function makeUnitCombat(
 
         if (!store.get(gameStateAtom).waveActive) {
             gun.angle = 0;
+            if (activeBeam) destroyBeam();
             return;
         }
 
