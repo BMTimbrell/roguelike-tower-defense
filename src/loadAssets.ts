@@ -1247,6 +1247,7 @@ export default function loadAssets(k: KAPLAYCtx) {
     k.loadSound("boss drums", "/sounds/soundEffects/bossApproach.wav");
     k.loadSound("level up", "/sounds/soundEffects/nextLevel.mp3");
     k.loadSound("challenge complete", "/sounds/soundEffects/challengeComplete.mp3");
+    k.loadSound("challenge failed", "/sounds/soundEffects/challengeFailed.mp3");
 
     //music
     k.loadSound("main title", "/sounds/music/main-title.mp3");

@@ -168,7 +168,7 @@ export default function levelTransition(k: KAPLAYCtx) {
             const level = store.get(gameStateAtom).level;
 
             rand = level === 6 ? 0 : k.randi();
-            rand = 1;
+            rand = 0;
 
             const wave = `level${level}-${rand + 1}` as LevelId;
 
@@ -295,7 +295,7 @@ export default function levelTransition(k: KAPLAYCtx) {
                             ]);
 
                             playUISound(k, "challenge complete");
-                        }
+                        } else playUISound(k, "challenge failed");
 
                         challengeManager.setChallenge(null);
                         await k.wait(2);

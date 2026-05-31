@@ -337,7 +337,6 @@ export default function makeLevelScene(k: KAPLAYCtx, sceneName: Scene) {
                     updateWindDirections((spawner?.waveIndex ?? 0) + 1);
 
                     k.get("chimney").forEach((chimney, index) => {
-                        console.log(spawner?.waveIndex + 1);
                         if (spawner?.waveIndex + 1 === index) chimney.opacity = 1;
                         else chimney.opacity = 0;
                     });
