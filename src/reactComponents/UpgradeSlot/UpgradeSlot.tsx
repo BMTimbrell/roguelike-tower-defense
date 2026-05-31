@@ -36,6 +36,7 @@ export default function UpgradeSlot({ upgrade, selectedUpgrade, unlocked, onClic
                     setPopup(true);
                 }}
                 onMouseLeave={() => setPopup(false)}
+                style={{ fontSize: `${map.iconScale * 16}px` }}
                 className={`${styles.slot} ${!unlocked ? styles.locked : ''} ${highlighted ? styles.highlighted : ''}`}
             >
                 {!unlocked && <div className={styles.cost}>

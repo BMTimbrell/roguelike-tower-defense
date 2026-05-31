@@ -34,10 +34,6 @@
     display: flex;
 }
 
-/* .upgrade img, .highlighted img {
-    width: 1.25em;
-} */
-
 .slot:has(.multi-slot2)::after, 
 .slot:has(.multi-slot3)::after,
 .slot:has(.multi-slot3) + .slot::after {

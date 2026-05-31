@@ -40,6 +40,7 @@ export default function Altar() {
                     className={`${styles.choice} ${healCost > towerCoins || healCost <= 0 ? styles.disabled : ''}`}
                     onClick={() => {
                         if (healCost > towerCoins) return;
+                        playUISound(gameState.context, "blessing");
 
                         setGameState(prev => ({
                             ...prev,
@@ -58,6 +59,7 @@ export default function Altar() {
                     className={`${styles.choice} ${maxHPCost > towerCoins || altar.remainingUses.maxHP <= 0 ? styles.disabled : ''}`}
                     onClick={() => {
                         if (maxHPCost > towerCoins || altar.remainingUses.maxHP <= 0) return;
+                        playUISound(gameState.context, "blessing");
                         setGameState(prev => ({
                             ...prev,
                             health: prev.health + 5,
@@ -86,7 +88,9 @@ export default function Altar() {
                 <div
                     className={`${styles.choice} ${removeCardCost > towerCoins || altar.remainingUses.removeCard <= 0 ? styles.disabled : ''}`}
                     onClick={() => {
-                        if (removeCardCost <= towerCoins && altar.remainingUses.removeCard > 0) setShowRCModal(true)
+                        if (removeCardCost <= towerCoins && altar.remainingUses.removeCard > 0) {
+                            setShowRCModal(true);
+                        }
                     }}
                 >
                     <div className={styles["sub-heading"]}>Blessing of Purification</div>
@@ -108,6 +112,7 @@ export default function Altar() {
                             ...prev,
                             towerCoins: prev.towerCoins - levelUpCost
                         }));
+                        playUISound(gameState.context, "blessing");
                         setAltar(prev => ({
                             ...prev,
                             remainingUses: {
@@ -155,6 +160,7 @@ export default function Altar() {
                                         removeCard: prev.remainingUses.removeCard - 1
                                     }
                                 }));
+                                playUISound(gameState.context, "blessing");
                                 setShowRCModal(false);
                             }}
                         >

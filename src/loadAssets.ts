@@ -1205,6 +1205,7 @@ export default function loadAssets(k: KAPLAYCtx) {
     k.loadSound("card", "/sounds/ui/card.mp3");
     k.loadSound("start wave", "/sounds/ui/startWave.mp3");
     k.loadSound("equip", "/sounds/ui/equip.mp3");
+    k.loadSound("blessing", "/sounds/ui/altar-blessing.mp3");
 
     //towers
     k.loadSound("squish", "/sounds/towers/squish.mp3");
