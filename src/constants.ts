@@ -1713,6 +1713,7 @@ export const ENEMIES = {
         damage: 5,
         hasLargeSoul: true,
         goldDropped: 3,
+        shootSound: "squish",
         speed: 25,
         spawnOnDeath: {
             id: "slime",
@@ -1760,6 +1761,7 @@ export const ENEMIES = {
         hp: 225,
         damage: 5,
         speed: 35,
+        shootSound: "arrow",
         hasLargeSoul: true,
         goldDropped: 3,
         sprite: "giant bee",
@@ -1995,6 +1997,7 @@ export const ENEMIES = {
         goldDropped: 3,
         hasLargeSoul: true,
         speed: 25,
+        shootSound: "ice magic",
         spawnOnDeath: {
             id: "iceSlime",
             amount: 4
@@ -2033,6 +2036,7 @@ export const ENEMIES = {
         goldDropped: 3,
         hasLargeSoul: true,
         speed: 25,
+        shootSound: "arrow",
         sprite: "giant penguin",
         attacker: {
             projectile: "egg",
@@ -4493,7 +4497,8 @@ export const PROJECTILES = {
         homing: true,
         speed: 200,
         splashRadius: 1.2,
-        anim: "crack"
+        anim: "crack",
+        impactSound: "splat"
     },
     present: {
         sprite: "present projectile",

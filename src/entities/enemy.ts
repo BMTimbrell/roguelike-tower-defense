@@ -9,6 +9,7 @@ import makeEnemyProjectile from './EnemyProjectile';
 import { aoeBurst } from '../utils/makeUnitCombat';
 import { waitScaled } from '../utils/timerFunctions';
 import { lifespan } from '../kaplayComponents/lifespan';
+import { playSfx } from '../utils/soundHelpers';
 
 export default function makeEnemy(
     k: KAPLAYCtx,
@@ -99,6 +100,7 @@ export default function makeEnemy(
             ...("spawnIce" in ENEMIES[enemyId] ? { spawnIce: ENEMIES[enemyId].spawnIce as boolean } : {}),
             ...("hasLargeSoul" in ENEMIES[enemyId] ? { hasLargeSoul: ENEMIES[enemyId].hasLargeSoul as boolean } : {}),
             ...("shieldSprite" in ENEMIES[enemyId] ? { shieldSprite: ENEMIES[enemyId].shieldSprite as string } : {}),
+            ...("shootSound" in ENEMIES[enemyId] ? { shootSound: ENEMIES[enemyId].shootSound as string } : {}),
             speedMultipliers: {
                 chill: 1,
                 boost: 1,
@@ -243,6 +245,9 @@ export default function makeEnemy(
             if (!towers.length) break;
 
             const index = k.randi(towers.length);
+
+            if (enemy.shootSound) playSfx(k, enemy.shootSound);
+
             makeEnemyProjectile(k, {
                 id: enemy.attacker!.projectile as ProjectileId,
                 pos: enemy.pos,
@@ -464,6 +469,9 @@ export default function makeEnemy(
                 if (!towers.length) break;
 
                 const index = k.randi(towers.length);
+
+                if (enemy.shootSound) playSfx(k, enemy.shootSound);
+
                 makeEnemyProjectile(k, {
                     id: enemy.attacker!.projectile as ProjectileId,
                     pos: enemy.pos,

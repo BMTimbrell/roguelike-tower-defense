@@ -302,6 +302,7 @@ export type EnemyGameObj = GameObj<
         amount: number;
         range: number;
     };
+    shootSound?: string;
     healTickRate?: number;
     spawnOnDeath?: {
         id: "slime" |
@@ -577,6 +578,7 @@ export type EnemyConfig = {
         amount: number;
         offset?: number;
     };
+    shootSound?: string;
     attacker?: {
         projectile?: ProjectileId;
         attackRange: number;

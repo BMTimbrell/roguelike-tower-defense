@@ -3,6 +3,7 @@ import { PROJECTILES, TILE_SIZE, type ProjectileId } from "../constants";
 import type { HeroGameObj, TowerGameObj } from "../types";
 import makeFloatingText from "./FloatingText";
 import { gameStateAtom, store } from "../store";
+import { playSfx } from "../utils/soundHelpers";
 
 export default function makeEnemyProjectile(k: KAPLAYCtx, opts: {
     id: ProjectileId;
@@ -71,6 +72,12 @@ export default function makeEnemyProjectile(k: KAPLAYCtx, opts: {
                     size: 12,
                     pos: targetPos
                 });
+            }
+
+            const impactSound = (PROJECTILES[id] as { impactSound: string }).impactSound;
+
+            if (impactSound) {
+                playSfx(k, impactSound);
             }
 
             k.destroy(projectile);
