@@ -1669,7 +1669,7 @@ export const SCENES: Scenes = [
     ["level1", "level1-2"],
     ["level2", "level2-2"],
     ["level3", "level3"],
-    ["level4", "level4"],
+    ["level4", "level4-2"],
     ["level5", "level5-2"],
     ["level6", "level6"]
 ];
@@ -1713,6 +1713,7 @@ export const ENEMIES = {
         damage: 5,
         hasLargeSoul: true,
         goldDropped: 3,
+        deathSound: "monster death3",
         shootSound: "squish",
         speed: 25,
         spawnOnDeath: {
@@ -1730,6 +1731,7 @@ export const ENEMIES = {
     giantSkeleton: {
         hp: 500,
         damage: 5,
+        deathSound: "skeleton death",
         goldDropped: 4,
         speed: 25,
         hasLargeSoul: true,
@@ -1763,6 +1765,7 @@ export const ENEMIES = {
         speed: 35,
         shootSound: "arrow",
         hasLargeSoul: true,
+        deathSound: "monster death3",
         goldDropped: 3,
         sprite: "giant bee",
         attacker: {
@@ -1776,6 +1779,7 @@ export const ENEMIES = {
         hp: 700,
         hasLargeSoul: true,
         goldDropped: 4,
+        deathSound: "monster death2",
         damage: 5,
         speed: 25,
         sprite: "giant orc"
@@ -1847,6 +1851,7 @@ export const ENEMIES = {
         goldDropped: 5,
         hasLargeSoul: true,
         damage: 5,
+        deathSound: "skeleton death",
         speed: 25,
         sprite: "giant armoured skeleton"
     },
@@ -1854,6 +1859,7 @@ export const ENEMIES = {
         hp: 1000,
         armour: 140,
         goldDropped: 5,
+        deathSound: "monster death2",
         hasLargeSoul: true,
         damage: 5,
         speed: 25,
@@ -1863,6 +1869,7 @@ export const ENEMIES = {
         hp: 1250,
         damage: 5,
         speed: 25,
+        deathSound: "monster death",
         hasLargeSoul: true,
         goldDropped: 5,
         sprite: "giant ghost",
@@ -1872,6 +1879,7 @@ export const ENEMIES = {
     giantSpider: {
         hp: 1250,
         damage: 5,
+        deathSound: "monster death",
         hasLargeSoul: true,
         goldDropped: 5,
         speed: 25,
@@ -1885,6 +1893,7 @@ export const ENEMIES = {
         hp: 300,
         armour: 600,
         hasLargeSoul: true,
+        deathSound: "monster death3",
         goldDropped: 5,
         damage: 5,
         speed: 25,
@@ -1899,6 +1908,7 @@ export const ENEMIES = {
         damage: 5,
         hasLargeSoul: true,
         goldDropped: 5,
+        deathSound: "wolf death",
         speed: 40,
         sprite: "giant wolf",
         speedBooster: {
@@ -1910,9 +1920,12 @@ export const ENEMIES = {
         hp: 6500,
         damage: 99,
         goldDropped: 50,
+        shootSound: "squish",
         bossMechanic: "shield",
         shieldSprite: "slime shield",
+        shieldSound: "squish",
         shieldHp: 650,
+        deathSound: "monster death3",
         speed: 20,
         sprite: "slime king",
         checkpointTimer: 12,
@@ -1935,6 +1948,9 @@ export const ENEMIES = {
         bossMechanic: "shield",
         shieldSprite: "bee shield",
         shieldHp: 500,
+        shieldSound: "bees",
+        deathSound: "monster death3",
+        shootSound: "bees",
         goldDropped: 50,
         checkpointTimer: 10,
         speed: 25,
@@ -1996,6 +2012,7 @@ export const ENEMIES = {
         damage: 5,
         goldDropped: 3,
         hasLargeSoul: true,
+        deathSound: "monster death3",
         speed: 25,
         shootSound: "ice magic",
         spawnOnDeath: {
@@ -2013,6 +2030,7 @@ export const ENEMIES = {
     giantPolarBear: {
         hp: 700,
         goldDropped: 4,
+        deathSound: "polar bear death",
         hasLargeSoul: true,
         damage: 5,
         speed: 30,
@@ -2023,6 +2041,7 @@ export const ENEMIES = {
         damage: 5,
         goldDropped: 5,
         hasLargeSoul: true,
+        deathSound: "fairy death",
         speed: 30,
         sprite: "giant fairy",
         healer: {
@@ -2036,6 +2055,7 @@ export const ENEMIES = {
         goldDropped: 3,
         hasLargeSoul: true,
         speed: 25,
+        deathSound: "penguin death",
         shootSound: "arrow",
         sprite: "giant penguin",
         attacker: {
@@ -2068,6 +2088,7 @@ export const ENEMIES = {
         hp: 1400,
         damage: 5,
         hasLargeSoul: true,
+        deathSound: "fairy death",
         speed: 30,
         goldDropped: 6,
         sprite: "giant red fairy",
@@ -2083,6 +2104,8 @@ export const ENEMIES = {
         speed: 20,
         sprite: "evil santa",
         bossMechanic: "escape",
+        shootSound: "arrow",
+        deathSound: "santa death",
         isBoss: true,
         checkpointTimer: 12,
         attacker: {
@@ -2154,6 +2177,7 @@ export const ENEMIES = {
         hp: 700,
         damage: 10,
         goldDropped: 5,
+        deathSound: "polar bear death",
         speed: 30,
         sprite: "giant polar bear jockey",
         spawnOnDeath: {
@@ -4504,6 +4528,7 @@ export const PROJECTILES = {
         sprite: "present projectile",
         homing: true,
         speed: 200,
+        impactSound: "explosion",
         splashRadius: 1.2,
         anim: "explode"
     },

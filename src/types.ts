@@ -563,6 +563,7 @@ export type EnemyConfig = {
         amount: number;
         range: number;
     };
+    deathSound?: string;
     spawnOnDeath?: {
         id: "slime" |
         "spiderling" |
@@ -579,6 +580,7 @@ export type EnemyConfig = {
         offset?: number;
     };
     shootSound?: string;
+    shieldSound?: string;
     attacker?: {
         projectile?: ProjectileId;
         attackRange: number;

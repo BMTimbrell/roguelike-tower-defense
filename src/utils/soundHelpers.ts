@@ -32,7 +32,12 @@ const SOUND_VOLUMES: Record<string, number> = {
     "zap": 0.7,
     "soft shoot": 1.5,
     "splat": 0.5,
-    "ghosts": 2
+    "ghosts": 2,
+    "santa death": 5,
+    "penguin death": 2,
+    "wolf death": 0.35,
+    "monster death1": 2,
+    "monster death2": 0.5
 };
 
 export function playUISound(

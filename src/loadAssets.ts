@@ -12,7 +12,7 @@ export default function loadAssets(k: KAPLAYCtx) {
     k.loadSprite("level5", "/sprites/level5.png");
     k.loadSprite("level5-2", "/sprites/level5-2.png");
     k.loadSprite("level6", "/sprites/level6.png");
-    k.loadSprite("tree", "/sprites/tree.png");
+    k.loadSprite("tree", "/sprites/tree2.png");
     k.loadSprite("gold", "/sprites/coin.png");
     k.loadSprite("heart", "/sprites/heart.png");
     k.loadSprite("basic tower", "/sprites/basic-tower.png", {
@@ -1244,6 +1244,17 @@ export default function loadAssets(k: KAPLAYCtx) {
     k.loadSound("witch", "/sounds/towers/witch.mp3");
     k.loadSound("songstress", "/sounds/towers/songstress.mp3");
     k.loadSound("necromancer", "/sounds/towers/necromancer.mp3");
+
+    // enemies
+    k.loadSound("monster death", "/sounds/enemies/monster-death.mp3");
+    k.loadSound("monster death2", "/sounds/enemies/monster-death2.mp3");
+    k.loadSound("monster death3", "/sounds/enemies/monster-death3.mp3");
+    k.loadSound("skeleton death", "/sounds/enemies/skeleton-death.mp3");
+    k.loadSound("fairy death", "/sounds/enemies/fairy-death.mp3");
+    k.loadSound("santa death", "/sounds/enemies/santa-death.mp3");
+    k.loadSound("penguin death", "/sounds/enemies/penguin-death.mp3");
+    k.loadSound("wolf death", "/sounds/enemies/wolf-death.mp3");
+    k.loadSound("polar bear death", "/sounds/enemies/polar-bear-death.mp3");
 
     k.loadSound("boss drums", "/sounds/soundEffects/bossApproach.wav");
     k.loadSound("level up", "/sounds/soundEffects/nextLevel.mp3");

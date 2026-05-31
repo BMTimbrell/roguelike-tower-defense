@@ -286,6 +286,10 @@ export default function makeEnemy(
         enemy.play("idle");
         enemy.shieldHp = enemy.maxShieldHp;
 
+        const shieldSound = (ENEMIES[enemyId] as { shieldSound: string }).shieldSound;
+
+        if (shieldSound) playSfx(k, shieldSound);
+
         enemy.statuses.forEach(s => {
             if (enemy.has(s)) enemy.unuse(s);
         });
@@ -640,6 +644,9 @@ export default function makeEnemy(
 
     enemy.onDeath(() => {
         if (enemy.isDying) return;
+
+        const deathSound = (ENEMIES[enemyId] as { deathSound: string }).deathSound;
+        if (deathSound) playSfx(k, deathSound);
 
         k.trigger("enemyDeath", "ghost", { pos: enemy.pos, enemy, soulClaimed: false });
 
