@@ -640,6 +640,10 @@ export default function makeEnemy(
         enemy.onDeath(() => {
             k.destroy(boostRing);
         });
+        
+        enemy.onDestroy(() => {
+            k.destroy(boostRing);
+        })
     }
 
     enemy.onDeath(() => {

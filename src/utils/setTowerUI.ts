@@ -20,13 +20,14 @@ export default function setTowerUI(k: KAPLAYCtx, type: "combat" | "farm", tower:
                 name: tower.name,
                 stats: {
                     ...tower.stats,
-                    ...(tower.timeData || tower.charge ? {
+                    ...(tower.timeData || tower.charge || tower.overheat?.current ? {
                         fireInterval: tower.stats.fireInterval *
                             (tower.timeData?.timeScaling.interval ? tower.timeData.timeMultiplier : 1) *
                             (1 - (tower.charge?.currentCharge ?? 0)),
                         damage: Math.round(
                             tower.stats.damage + (tower.timeData?.timeScaling.damage ? 
-                                tower.timeData.timeMultiplier ** tower.timeData.timeScaling.damagePow - 1 : 0)
+                                tower.timeData.timeMultiplier ** tower.timeData.timeScaling.damagePow - 1 : 
+                                tower.overheat?.current ? tower.overheat.current * 0.3 : 0)
                         )
                     } : {})
                 },

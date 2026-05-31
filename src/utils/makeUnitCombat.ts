@@ -586,8 +586,6 @@ export default function makeUnitCombat(
             ) {
                 const heat = opts.owner.overheat;
 
-                // const t = heat.current / heat.max;
-
                 bonusDamage = heat.current * 0.3;
             }
 

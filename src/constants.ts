@@ -3955,7 +3955,7 @@ export const TOWERS = {
         gunSprite: "solar lance tower",
         baseSprite: "solar lance tower base",
         sprite: "solar-lance-tower-sprite.png",
-        description: "Fires a continuous beam that grows stronger over time. Overheats if fired too long",
+        description: "Fires a continuous beam that gains bonus damage over time. Overheats if fired too long",
         cost: 250,
         shootSound: "beam",
         stats: {
