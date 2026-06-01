@@ -22,11 +22,12 @@ export default function Popup({ mode, pos, children, pStyle }: {
         if (!el) return;
 
         const rect = el.getBoundingClientRect();
-        const padding = TILE_SIZE * 2 * fontScale;
+        const verticalPadding = TILE_SIZE * 2 * fontScale;
+        const horizontalPadding = 8;
 
         if (mode === "world") {
-            if (pos.y * scale + rect.height > window.innerHeight - padding) {
-                setY(window.innerHeight - rect.height - padding);
+            if (pos.y * scale + rect.height > window.innerHeight - verticalPadding) {
+                setY(window.innerHeight - rect.height - verticalPadding);
 
             } else if (pos.y < 0) {
                 setY(0);
@@ -34,8 +35,8 @@ export default function Popup({ mode, pos, children, pStyle }: {
                 setY(pos.y * scale);
             }
 
-            if (pos.x * scale + rect.width > window.innerWidth - padding) {
-                setX(window.innerWidth - rect.width - padding);
+            if (pos.x * scale + rect.width > window.innerWidth - horizontalPadding) {
+                setX(window.innerWidth - rect.width - horizontalPadding);
             } else if (pos.x < 0) {
                 setX(0);
             } else {
@@ -44,8 +45,8 @@ export default function Popup({ mode, pos, children, pStyle }: {
             return;
         }
 
-        if (pos.y + rect.height > window.innerHeight - padding) {
-            setY(window.innerHeight - rect.height - padding);
+        if (pos.y + rect.height > window.innerHeight - verticalPadding) {
+            setY(window.innerHeight - rect.height - verticalPadding);
 
         } else if (pos.y < 0) {
             setY(0);
@@ -53,8 +54,8 @@ export default function Popup({ mode, pos, children, pStyle }: {
             setY(pos.y);
         }
 
-        if (pos.x + rect.width > window.innerWidth - padding) {
-            setX(window.innerWidth - rect.width - padding);
+        if (pos.x + rect.width > window.innerWidth - horizontalPadding) {
+            setX(window.innerWidth - rect.width - horizontalPadding);
         } else if (pos.x < 0) {
             setX(0);
         } else {
