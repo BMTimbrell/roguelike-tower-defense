@@ -31,7 +31,6 @@ export default function SelectedTower({ tower }: { tower: SelectedTowerUI }) {
     } = tower;
     const [gameState, setGameState] = useAtom(gameStateAtom);
     const [map] = useAtom(mapAtom);
-    const scale = map.fontScale;
     const iconScale = map.iconScale;
     const selectedUpgrade = gameState.selectedUpgrade;
     const onClick = addUpgradeSlot;

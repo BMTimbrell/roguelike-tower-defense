@@ -193,6 +193,8 @@ export default function makeEnemy(
     });
 
     enemy.onStateEnter("stunned", () => {
+        playSfx(k, "dizzy");
+
         enemy.stunResistanceTimer = enemy.stunResistanceDuration;
         enemy.stunResistance = true;
         enemy.play("idle");
@@ -650,7 +652,7 @@ export default function makeEnemy(
         if (enemy.isDying) return;
 
         const deathSound = (ENEMIES[enemyId] as { deathSound: string }).deathSound;
-        if (deathSound) playSfx(k, deathSound);
+        if (deathSound) playSfx(k, deathSound, enemy.boss || enemy.hasLargeSoul ? 1 : 0.3);
 
         k.trigger("enemyDeath", "ghost", { pos: enemy.pos, enemy, soulClaimed: false });
 
@@ -757,6 +759,8 @@ function spawnPresent(k: KAPLAYCtx, pos: Vec2, enemiesToSpawn: {
     waitScaled(k, 5, () => {
 
         present.play("open");
+
+        playSfx(k, "present tear");
 
         enemiesToSpawn.forEach(group => {
             const mid = group.amount / 2;

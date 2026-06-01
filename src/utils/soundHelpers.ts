@@ -13,7 +13,7 @@ const SOUND_VOLUMES: Record<string, number> = {
     "beam": 0.5,
     "blast": 0.5,
     "squish": 3,
-    "explosion": 0.3,
+    "explosion": 0.5,
     "thunder": 0.8,
     "crow": 0.5,
     "cannon": 0.3,
@@ -33,11 +33,15 @@ const SOUND_VOLUMES: Record<string, number> = {
     "soft shoot": 1.5,
     "splat": 0.5,
     "ghosts": 2,
-    "santa death": 5,
+    "santa death": 6,
     "penguin death": 2,
-    "wolf death": 0.35,
-    "monster death1": 2,
-    "monster death2": 0.5
+    "polar bear death": 2,
+    "wolf death": 0.4,
+    "monster death": 2,
+    "monster death3": 0.6,
+    "present tear": 2,
+    "dizzy": 4,
+    "fairy death2": 3.2
 };
 
 export function playUISound(

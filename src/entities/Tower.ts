@@ -504,6 +504,30 @@ export default function makeTower(
             );
         }
 
+        if (tower.overheat) {
+            const heat = tower.overheat;
+
+            if (!combat.isFiring() || tower.state === "disabled") heat.current -= heat.decayPerSecond * k.dt() * timeScale;
+
+            heat.current = k.clamp(
+                heat.current,
+                0,
+                heat.max
+            );
+
+            if (heat.current >= heat.max) {
+                heat.overheated = true;
+            }
+
+            if (
+                heat.overheated &&
+                heat.current <= heat.recoveryThreshold
+            ) {
+                heat.overheated = false;
+            }
+        }
+
+        // disabled by enemy
         if (tower.state === "disabled") return;
 
         if (tower.timeData) {

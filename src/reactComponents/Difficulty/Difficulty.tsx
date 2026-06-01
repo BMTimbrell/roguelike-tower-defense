@@ -69,7 +69,7 @@ export default function Difficulty({ onClick }: { onClick: React.MouseEventHandl
                     }}
                 >
                     <div className={styles.heading}>Expert {!expertUnlocked && <img width={`${16 * scale}`} src="/sprites/lock.png" />}</div>
-                    <div>For veteran players who have mastered the game's systems. Bosses have more health, and enemies gain additional speed in later waves, creating a relentless late-game challenge.</div>
+                    <div>For veteran players who have mastered the game's systems. Bosses have more health, and the player starts with less health, making every mistake more costly.</div>
                     {!expertUnlocked && (
                         <div className={styles.unlockText}>
                             Unlock by beating the game on Hard.

@@ -2,6 +2,7 @@ import React, { useRef, useLayoutEffect, useState } from "react";
 import styles from './Popup.module.css';
 import { mapAtom } from '../../store';
 import { useAtom } from 'jotai';
+import { TILE_SIZE } from "../../constants";
 
 export default function Popup({ mode, pos, children, pStyle }: {
     mode: "world" | "screen";
@@ -21,7 +22,7 @@ export default function Popup({ mode, pos, children, pStyle }: {
         if (!el) return;
 
         const rect = el.getBoundingClientRect();
-        const padding = 8;
+        const padding = TILE_SIZE * 2 * fontScale;
 
         if (mode === "world") {
             if (pos.y * scale + rect.height > window.innerHeight - padding) {

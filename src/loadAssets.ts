@@ -1251,6 +1251,7 @@ export default function loadAssets(k: KAPLAYCtx) {
     k.loadSound("monster death3", "/sounds/enemies/monster-death3.mp3");
     k.loadSound("skeleton death", "/sounds/enemies/skeleton-death.mp3");
     k.loadSound("fairy death", "/sounds/enemies/fairy-death.mp3");
+    k.loadSound("fairy death2", "/sounds/enemies/fairy-death2.mp3");
     k.loadSound("santa death", "/sounds/enemies/santa-death.mp3");
     k.loadSound("penguin death", "/sounds/enemies/penguin-death.mp3");
     k.loadSound("wolf death", "/sounds/enemies/wolf-death.mp3");
@@ -1260,6 +1261,8 @@ export default function loadAssets(k: KAPLAYCtx) {
     k.loadSound("level up", "/sounds/soundEffects/nextLevel.mp3");
     k.loadSound("challenge complete", "/sounds/soundEffects/challengeComplete.mp3");
     k.loadSound("challenge failed", "/sounds/soundEffects/challengeFailed.mp3");
+    k.loadSound("present tear", "/sounds/soundEffects/present-tear.mp3");
+    k.loadSound("dizzy", "/sounds/soundEffects/dizzy.mp3");
 
     //music
     k.loadSound("main title", "/sounds/music/main-title.mp3");

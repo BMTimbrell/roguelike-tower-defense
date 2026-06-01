@@ -207,7 +207,7 @@ export const LEVEL_WAVES = {
         waves: [
             {
                 spawns: [
-                    { id: "slime", count: 5, interval: 1 }
+                    { id: "slime", count: 5, interval: 1 },
                 ],
                 reward: 50
             },
@@ -1680,12 +1680,14 @@ export const ENEMIES = {
         damage: 1,
         goldDropped: 1,
         speed: 50,
+        deathSound: "monster death3",
         sprite: "slime"
     },
     skeleton: {
         hp: 35,
         damage: 1,
         goldDropped: 1,
+        deathSound: "skeleton death",
         speed: 50,
         sprite: "skeleton"
     },
@@ -1695,6 +1697,7 @@ export const ENEMIES = {
         armour: 30,
         damage: 1,
         speed: 50,
+        deathSound: "skeleton death",
         sprite: "armoured skeleton"
     },
     fairy: {
@@ -1706,7 +1709,8 @@ export const ENEMIES = {
         healer: {
             amount: 10,
             range: 2
-        }
+        },
+        deathSound: "fairy death2"
     },
     giantSlime: {
         hp: 300,
@@ -1742,12 +1746,14 @@ export const ENEMIES = {
         damage: 1,
         goldDropped: 1,
         speed: 75,
-        sprite: "bee"
+        sprite: "bee",
+        deathSound: "monster death3",
     },
     orc: {
         hp: 50,
         damage: 1,
         goldDropped: 1,
+        deathSound: "monster death2",
         speed: 50,
         sprite: "orc"
     },
@@ -1755,6 +1761,7 @@ export const ENEMIES = {
         hp: 60,
         armour: 50,
         goldDropped: 2,
+        deathSound: "monster death2",
         damage: 1,
         speed: 50,
         sprite: "armoured orc"
@@ -1791,6 +1798,7 @@ export const ENEMIES = {
         speed: 50,
         sprite: "ghost",
         invincibleDuration: 2,
+        deathSound: "monster death",
         invincibleCooldown: 5
     },
     redFairy: {
@@ -1802,12 +1810,14 @@ export const ENEMIES = {
         healer: {
             amount: 20,
             range: 2
-        }
+        },
+        deathSound: "fairy death2"
     },
     spider: {
         hp: 100,
         damage: 4,
         goldDropped: 2,
+        deathSound: "monster death",
         speed: 50,
         sprite: "spider",
         spawnOnDeath: {
@@ -1819,6 +1829,7 @@ export const ENEMIES = {
         hp: 10,
         damage: 1,
         goldDropped: 1,
+        deathSound: "monster death",
         speed: 75,
         sprite: "spiderling"
     },
@@ -1828,6 +1839,7 @@ export const ENEMIES = {
         goldDropped: 2,
         speed: 90,
         sprite: "wolf",
+        deathSound: "wolf death",
         speedBooster: {
             amount: 1.3,
             range: 2
@@ -1836,6 +1848,7 @@ export const ENEMIES = {
     armouredSlime: {
         hp: 10,
         goldDropped: 2,
+        deathSound: "monster death3",
         armour: 100,
         damage: 1,
         speed: 40,
@@ -1971,6 +1984,7 @@ export const ENEMIES = {
         hp: 15,
         damage: 1,
         goldDropped: 1,
+        deathSound: "monster death3",
         speed: 50,
         spawnIce: true,
         sprite: "ice slime"
@@ -1997,6 +2011,7 @@ export const ENEMIES = {
         hp: 20,
         damage: 1,
         goldDropped: 1,
+        deathSound: "penguin death",
         speed: 50,
         sprite: "penguin"
     },
@@ -2005,6 +2020,7 @@ export const ENEMIES = {
         damage: 1,
         goldDropped: 1,
         speed: 60,
+        deathSound: "polar bear death",
         sprite: "polar bear"
     },
     giantIceSlime: {
@@ -2167,6 +2183,7 @@ export const ENEMIES = {
         damage: 2,
         goldDropped: 1,
         speed: 60,
+        deathSound: "polar bear death",
         sprite: "polar bear jockey",
         spawnOnDeath: {
             id: "penguin",
@@ -3863,7 +3880,7 @@ export const TOWERS = {
             firstEffect(ctx) {
                 ctx.projectiles.forEach(projectile => {
                     projectile.behaviors ??= {};
-                    projectile.behaviors.distanceScaling ??= -0.12;
+                    projectile.behaviors.distanceScaling ??= -0.123;
                     projectile.behaviors.distanceScalingCap ??= 0.8;
                 });
             }

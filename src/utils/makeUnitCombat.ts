@@ -723,6 +723,9 @@ export default function makeUnitCombat(
         }
     }
 
+    // for ramp up beam
+    let isFiring = false;
+
     function update() {
         const dt = k.dt() * store.get(gameStateAtom).timeScale;
         const fireRateBuff = getBuffValue(opts.owner as TowerGameObj, "fireRate");
@@ -855,26 +858,10 @@ export default function makeUnitCombat(
             }
 
             if (wantsToFire && !heat.overheated) {
+                isFiring = true;
                 heat.current += heat.gainPerSecond * dt;
             } else {
-                heat.current -= heat.decayPerSecond * dt;
-            }
-
-            heat.current = k.clamp(
-                heat.current,
-                0,
-                heat.max
-            );
-
-            if (heat.current >= heat.max) {
-                heat.overheated = true;
-            }
-
-            if (
-                heat.overheated &&
-                heat.current <= heat.recoveryThreshold
-            ) {
-                heat.overheated = false;
+                isFiring = false;
             }
         }
     }
@@ -918,6 +905,7 @@ export default function makeUnitCombat(
         meleeHandle,
         meleeHead,
         rangeCircle,
+        isFiring: () => isFiring,
         update,
         destroy() {
             opts.owner.activeProjectile && k.destroy(opts.owner.activeProjectile);
