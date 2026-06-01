@@ -122,10 +122,15 @@ export async function playMusic(
 }
 
 export async function fadeOutMusic(music: AudioPlay) {
+    const startVolume = music.volume;
+    const duration = 750;
+    const steps = 15;
 
-    while (music.volume > 0) {
-        music.volume -= 0.03;
-        await sleep(50);
+    for (let i = 0; i < steps; i++) {
+        const t = (i + 1) / steps;
+        music.volume = startVolume * (1 - t);
+
+        await sleep(duration / steps);
     }
 
     music.stop();
