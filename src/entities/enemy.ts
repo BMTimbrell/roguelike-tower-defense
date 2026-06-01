@@ -195,8 +195,9 @@ export default function makeEnemy(
     enemy.onStateEnter("stunned", () => {
         playSfx(k, "dizzy");
 
-        enemy.stunResistanceTimer = enemy.stunResistanceDuration;
         enemy.stunResistance = true;
+        enemy.stunResistanceTimer = enemy.stunResistanceDuration;
+
         enemy.play("idle");
         const dizzyEffect = k.add([
             k.sprite("dizzy", { anim: "dizzy" }),
@@ -208,7 +209,7 @@ export default function makeEnemy(
         waitScaled(k, STUN_DURATION, () => {
             k.destroy(dizzyEffect);
             if (enemy?.boss?.reachedStopIndex) enemy.enterState("attack");
-            enemy.enterState("move");
+            else enemy.enterState("move");
         });
     });
 
@@ -652,7 +653,7 @@ export default function makeEnemy(
         if (enemy.isDying) return;
 
         const deathSound = (ENEMIES[enemyId] as { deathSound: string }).deathSound;
-        if (deathSound) playSfx(k, deathSound, enemy.boss || enemy.hasLargeSoul ? 1 : 0.3);
+        if (deathSound) playSfx(k, deathSound, enemy.boss || enemy.hasLargeSoul ? 1 : 0.5);
 
         k.trigger("enemyDeath", "ghost", { pos: enemy.pos, enemy, soulClaimed: false });
 

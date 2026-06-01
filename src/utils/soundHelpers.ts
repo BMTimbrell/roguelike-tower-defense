@@ -8,7 +8,7 @@ const SOUND_VOLUMES: Record<string, number> = {
     "fireball": 0.5,
     "arrow": 0.5,
     "gunshot": 1.5,
-    "level up": 0.8,
+    "level up": 0.5,
     "pew": 0.6,
     "beam": 0.5,
     "blast": 0.5,
@@ -33,21 +33,21 @@ const SOUND_VOLUMES: Record<string, number> = {
     "soft shoot": 1.5,
     "splat": 0.5,
     "ghosts": 2,
-    "santa death": 6,
+    "santa death": 8,
     "penguin death": 2,
-    "polar bear death": 2,
+    "polar bear death": 1.5,
     "wolf death": 0.4,
     "monster death": 2,
     "monster death3": 0.6,
     "present tear": 2,
     "dizzy": 4,
-    "fairy death2": 3.2
+    "fairy death2": 4
 };
 
 export function playUISound(
     k: KAPLAYCtx | null,
     sound: string,
-    volume = 2
+    volume = 1
 ) {
     const audioState = store.get(audioAtom);
 
@@ -88,11 +88,12 @@ export function playSfx(
 }
 
 let currentMusic: null | AudioPlay = null;
+let musicVolume = 1;
 
 export async function playMusic(
     k: KAPLAYCtx,
     sound: string,
-    volume = 1
+    volume = 0.7
 ): Promise<AudioPlay | null> {
     const audioState = store.get(audioAtom);
 
@@ -102,15 +103,16 @@ export async function playMusic(
         const oldMusic = currentMusic;
         currentMusic = null;
 
-        await fadeOutMusic(k, oldMusic);
+        await fadeOutMusic(oldMusic);
     }
 
     const soundVolume = SOUND_VOLUMES[sound] ?? 1;
 
+    musicVolume = volume * soundVolume;
+
     currentMusic = k.play(sound, {
         volume:
-            volume *
-            soundVolume *
+            musicVolume *
             audioState.masterVolume *
             audioState.musicVolume,
         loop: true
@@ -119,9 +121,9 @@ export async function playMusic(
     return currentMusic;
 }
 
-export async function fadeOutMusic(k: KAPLAYCtx, music: AudioPlay) {
-    const t = k.time();
-    while (music.volume > 0 || t < 0.75) {
+export async function fadeOutMusic(music: AudioPlay) {
+
+    while (music.volume > 0) {
         music.volume -= 0.03;
         await sleep(50);
     }
@@ -135,4 +137,15 @@ export function getMusic() {
 
 function sleep(ms: number) {
     return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+export function updateMusicVolume() {
+    const audioState = store.get(audioAtom);
+
+    if (!currentMusic) return;
+
+    currentMusic.volume =
+        musicVolume *
+        audioState.masterVolume *
+        audioState.musicVolume;
 }

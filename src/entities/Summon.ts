@@ -89,6 +89,7 @@ export default function spawnSummon(k: KAPLAYCtx, ctx: AttackContext, id: Summon
         summon.attacks++;
 
         if (
+            !enemy.stunResistance &&
             name === "Zombie" && 
             ctx.attacker.hasZombieBuff && 
             Math.random() < 0.3 && !enemy.isDying &&

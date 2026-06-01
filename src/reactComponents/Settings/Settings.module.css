@@ -1,6 +1,6 @@
-.settings-container .button-container {
+/* .settings-container .button-container {
     margin-bottom: 0.5em;
-}
+} */
 
 .toggle-container {
     display: flex;
@@ -11,6 +11,7 @@
 .settings-container {
     display: flex;
     flex-direction: column;
+    gap: 0.5em;
     user-select: none;
 }
 
@@ -47,3 +48,18 @@
     flex-direction: column;
     gap: 0.5em;
 }
+
+.slider-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5em;
+}
+
+.slider-container input[type="range"] {
+    width: 50%;
+}
+/* 
+.volume-container {
+    margin-bottom: 0.5em;
+} */

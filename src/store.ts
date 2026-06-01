@@ -182,8 +182,8 @@ export const heroProgressionAtom = atom<HeroProgression>({
 export const audioAtom = atom<AudioState>({
     masterVolume: 1,
     sfxVolume: 1,
-    musicVolume: 0.7,
-    uiVolume: 0.5,
+    musicVolume: 1,
+    uiVolume: 1,
     muted: false
 });
 

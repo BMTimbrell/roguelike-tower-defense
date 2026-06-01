@@ -1,10 +1,12 @@
 import { useEffect, useState } from "react";
 import { useAtom } from "jotai";
-import { controlsAtom, gameStateAtom } from "../../store";
+import { audioAtom, controlsAtom, gameStateAtom } from "../../store";
 import styles from "./Settings.module.css";
+import { updateMusicVolume } from "../../utils/soundHelpers";
 
 export default function Settings() {
     const [gameState, setGameState] = useAtom(gameStateAtom);
+    const [audio, setAudio] = useAtom(audioAtom);
     type SelectedKey = {
         action: string;
         type: "keyboard" | "mouse";
@@ -65,6 +67,79 @@ export default function Settings() {
 
     return (
         <div className={styles["settings-container"]}>
+
+            <div className={styles["volume-container"]}>
+
+                <div className={styles["slider-container"]}>
+                    <label htmlFor="masterVolume">
+                        Master Volume
+                    </label>
+
+                    <input
+                        id="masterVolume"
+                        type="range"
+                        min="0"
+                        max="1"
+                        step="0.01"
+                        value={audio.masterVolume}
+                        onChange={(e) => {
+                            setAudio(prev => ({
+                                ...prev,
+                                masterVolume: Number(e.target.value)
+                            }));
+
+                            updateMusicVolume();
+                        }}
+                    />
+                </div>
+
+                <div className={styles["slider-container"]}>
+                    <label htmlFor="musicVolume">
+                        Music Volume
+                    </label>
+
+                    <input
+                        id="musicVolume"
+                        type="range"
+                        min="0"
+                        max="1"
+                        step="0.01"
+                        value={audio.musicVolume}
+                        onChange={(e) => {
+                            setAudio(prev => ({
+                                ...prev,
+                                musicVolume: Number(e.target.value)
+                            }));
+
+                            updateMusicVolume();
+                        }}
+                    />
+                </div>
+
+                <div className={styles["slider-container"]}>
+                    <label htmlFor="sfxVolume">
+                        SFX Volume
+                    </label>
+
+                    <input
+                        id="sfxVolume"
+                        type="range"
+                        min="0"
+                        max="1"
+                        step="0.01"
+                        value={audio.sfxVolume}
+                        onChange={(e) => {
+                            setAudio(prev => ({
+                                ...prev,
+                                sfxVolume: Number(e.target.value),
+                                uiVolume: Number(e.target.value)
+                            }));
+                        }}
+                    />
+                </div>
+            </div>
+
+
             <div className={styles["button-container"]}>
                 {actions.map((action, index) => (
                     <div key={index} className={styles["key-container"]}>
@@ -83,6 +158,10 @@ export default function Settings() {
                         </div>
                     </div>
                 ))}
+
+            </div>
+
+            <div>
                 <div className={styles["toggle-container"]}>
                     <label htmlFor="screenScroll">Move camera at screen edges</label>
                     <input

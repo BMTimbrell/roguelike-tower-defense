@@ -2196,6 +2196,7 @@ export const ENEMIES = {
         goldDropped: 5,
         deathSound: "polar bear death",
         speed: 30,
+        hasLargeSoul: true,
         sprite: "giant polar bear jockey",
         spawnOnDeath: {
             id: "giantPenguin",

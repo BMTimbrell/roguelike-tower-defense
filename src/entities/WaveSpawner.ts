@@ -131,7 +131,7 @@ export default function makeWaveSpawner(k: KAPLAYCtx, levelId: LevelId, waypoint
                     levelComplete = true;
 
                     const currentMusic = getMusic();
-                    if (currentMusic) fadeOutMusic(k, currentMusic);
+                    if (currentMusic) fadeOutMusic(currentMusic);
 
                     playUISound(k, "level up");
 
