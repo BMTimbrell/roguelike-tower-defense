@@ -16,3 +16,8 @@
 .container * {
     pointer-events: all;
 }
+.title {
+    font-size: 2em;
+    color: white;
+    margin-bottom: 1em;
+}

@@ -33,7 +33,10 @@ export default function MainMenu() {
     return (
         <>
             <div className={styles.container} style={{ fontSize: `${16 * fontScale}px` }}>
+
                 {!showDifficulty && (<>
+                    <div className={styles.title}>A Roguelike Tower Defense</div>
+
                     <Button 
                         onClick={() => {
                             playUISound(gameState.context, "ui click");

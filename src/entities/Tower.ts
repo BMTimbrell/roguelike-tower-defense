@@ -507,7 +507,8 @@ export default function makeTower(
         if (tower.overheat) {
             const heat = tower.overheat;
 
-            if (!combat.isFiring() || tower.state === "disabled") heat.current -= heat.decayPerSecond * k.dt() * timeScale;
+            if (!combat.isFiring() || tower.state === "disabled" || !store.get(gameStateAtom).waveActive) 
+                heat.current -= heat.decayPerSecond * k.dt() * timeScale;
 
             heat.current = k.clamp(
                 heat.current,

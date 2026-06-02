@@ -135,6 +135,8 @@ export default function makeWaveSpawner(k: KAPLAYCtx, levelId: LevelId, waypoint
 
                     playUISound(k, "level up");
 
+                    let transitioning = false;
+
                     const complete = k.add([
                         k.pos(k.toScreen(k.getCamPos())),
                         k.text("Level Complete!", {
@@ -153,10 +155,12 @@ export default function makeWaveSpawner(k: KAPLAYCtx, levelId: LevelId, waypoint
                                 }));
 
                                 complete.timer -= k.dt();
-                                if (complete.timer <= 1) {
+
+                                if (complete.timer <= 1 && !transitioning) {
                                     k.go("levelTransition", store.get(gameStateAtom).hero);
-                                    complete.pos = k.getCamPos();
+                                    transitioning = true;
                                 }
+
                                 if (complete.timer >= 0) complete.scale = complete.scale.add(k.vec2(k.dt() * 5));
                                 else k.destroy(complete);
 

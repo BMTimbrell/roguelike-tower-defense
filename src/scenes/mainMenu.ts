@@ -9,6 +9,7 @@ import generateDeck from "../utils/generateDeck";
 import generateMap from "../utils/generateMap";
 import makeHero from "../entities/Hero";
 import { playMusic } from "../utils/soundHelpers";
+import { ChallengeManager } from "../utils/challengeHelpers";
 
 export default function mainMenu(k: KAPLAYCtx) {
     let music: AudioPlay | null = null;
@@ -49,50 +50,78 @@ export default function mainMenu(k: KAPLAYCtx) {
         store.set(gameStateAtom, prev => ({
             ...prev,
             timeScale: 1,
-            scene: "mainMenu"
+            scene: "mainMenu",
+            towerCoins: 0,
+            challengeManager: new ChallengeManager(),
+            sceneIndex: 0,
+            level: 1,
+            health: 15,
+            maxHealth: 15,
+            waveNumber: 0,
+            shops: ["shop", "altar"],
+            heroCharge: {
+                charge: 0,
+                damageDealt: 0,
+                damageRequired: 0
+            },
+            deck: {
+                cards: [],
+                drawCard: () => { },
+                drawCost: 10
+            }
+        }));
+
+        store.set(altarAtom, prev => ({
+            ...prev,
+            visible: false,
+            remainingUses: {
+                maxHP: 3,
+                removeCard: 3,
+                levelUp: 1
+            },
         }));
 
         store.set(selectHeroUIAtom, prev => ({
-            ...prev,
-            addHero: (id: HeroId) => {
-                const hero = makeHero(
-                    k,
-                    {
-                        heroId: id,
-                        pos: k.toWorld(k.mousePos()),
-                        tileGrid,
-                        pathTiles,
-                        level: 1
-                    }
-                );
-
-                store.set(gameStateAtom, prev => ({
-                    ...prev,
-                    heroButton: {
-                        ...prev.heroButton,
-                        onClick: () => {
-                            if (k.get("hero")[0]) k.destroy(k.get("hero")[0]);
-                            else k.add(hero);
+                ...prev,
+                addHero: (id: HeroId) => {
+                    const hero = makeHero(
+                        k,
+                        {
+                            heroId: id,
+                            pos: k.toWorld(k.mousePos()),
+                            tileGrid,
+                            pathTiles,
+                            level: 1
                         }
-                    },
-                    hero,
-                    heroCharge: {
-                        ...prev.heroCharge,
-                        damageRequired: CHARGE_DAMAGE_REQUIRED
-                    }
-                }));
+                    );
 
-                store.set(selectHeroUIAtom, prev => ({
-                    ...prev,
-                    visible: false
-                }));
+                    store.set(gameStateAtom, prev => ({
+                        ...prev,
+                        heroButton: {
+                            ...prev.heroButton,
+                            onClick: () => {
+                                if (k.get("hero")[0]) k.destroy(k.get("hero")[0]);
+                                else k.add(hero);
+                            }
+                        },
+                        hero,
+                        heroCharge: {
+                            ...prev.heroCharge,
+                            damageRequired: CHARGE_DAMAGE_REQUIRED
+                        }
+                    }));
 
-                store.set(startingOptionsAtom, prev => ({
-                    ...prev,
-                    visible: true
-                }))
-            }
-        }));
+                    store.set(selectHeroUIAtom, prev => ({
+                        ...prev,
+                        visible: false
+                    }));
+
+                    store.set(startingOptionsAtom, prev => ({
+                        ...prev,
+                        visible: true
+                    }))
+                }
+            }));
 
         const options: { ids: TowerId[]; upgrades: Upgrade[] }[] = [];
 

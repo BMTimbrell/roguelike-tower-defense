@@ -63,7 +63,7 @@ export default function Difficulty({ onClick, onBackClick }: { onClick: React.Mo
 
                 <div
                     className={`${styles.difficulty} ${!expertUnlocked ? styles.locked : ""}`}
-                    onMouseEnter={onMouseEnter}
+                    onMouseEnter={expertUnlocked ? onMouseEnter : undefined}
                     onClick={(e) => {
                         if (!expertUnlocked) return;
 
