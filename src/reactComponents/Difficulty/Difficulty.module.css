@@ -20,10 +20,10 @@
 .heading {
     font-size: 1.2em;
     color: white;
-    margin-bottom: 1em;
-    display: flex;
+    /* margin-bottom: 1em; */
+    /* display: flex;
     align-items: center;
-    gap: 0.5em;
+    gap: 0.5em; */
 }
 
 .locked {
@@ -39,4 +39,21 @@
     margin-top: 1em;
     font-size: 0.9em;
     color: white;
+}
+
+.header {
+    display: flex;
+    justify-content: center;
+    position: relative;
+    width: 100%;
+    margin-bottom: 1em;
+}
+
+.back-button {
+    position: absolute;
+    left: 0.5em;
+    font-size: 1.25em;
+    padding-inline: 0.5em;
+    top: 50%;
+    transform: translateY(-50%);
 }

@@ -65,6 +65,37 @@ export default function Settings() {
         };
     });
 
+    const [isFullscreen, setIsFullscreen] = useState(
+        !!document.fullscreenElement
+    );
+
+    useEffect(() => {
+        const handleFullscreenChange = () => {
+            setIsFullscreen(!!document.fullscreenElement);
+        };
+
+        document.addEventListener("fullscreenchange", handleFullscreenChange);
+
+        return () => {
+            document.removeEventListener(
+                "fullscreenchange",
+                handleFullscreenChange
+            );
+        };
+    }, []);
+
+    const toggleFullscreen = async () => {
+        try {
+            if (!document.fullscreenElement) {
+                await document.documentElement.requestFullscreen();
+            } else {
+                await document.exitFullscreen();
+            }
+        } catch (err) {
+            console.error("Failed to toggle fullscreen:", err);
+        }
+    };
+
     return (
         <div className={styles["settings-container"]}>
 
@@ -176,6 +207,7 @@ export default function Settings() {
                         }}
                     />
                 </div>
+
                 <div className={styles["toggle-container"]}>
                     <label htmlFor="showDamageNumbers">Show damage numbers</label>
                     <input
@@ -190,7 +222,18 @@ export default function Settings() {
                         }}
                     />
                 </div>
+                
+                <div className={styles["toggle-container"]}>
+                    <label htmlFor="fullscreen">Fullscreen</label>
+                    <input
+                        id="fullscreen"
+                        type="checkbox"
+                        checked={isFullscreen}
+                        onChange={toggleFullscreen}
+                    />
+                </div>
             </div>
+
         </div>
     );
 }

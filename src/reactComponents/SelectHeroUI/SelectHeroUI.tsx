@@ -75,7 +75,7 @@ export default function SelectHeroUI() {
                             ) : (
                                 <>
                                     <div className={styles.description}>
-                                        Unlock by beating Glacier Peak on Hard.
+                                        Locked in demo.
                                     </div>
                                 </>
                             )}

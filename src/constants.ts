@@ -1829,7 +1829,7 @@ export const ENEMIES = {
         hp: 10,
         damage: 1,
         goldDropped: 1,
-        deathSound: "monster death",
+        deathSound: "monster death3",
         speed: 75,
         sprite: "spiderling"
     },
@@ -3932,7 +3932,7 @@ export const TOWERS = {
         description: "Harvests souls from fallen enemies. When fully charged, unleashes a swarm of ghosts at nearby enemies",
         cost: 250,
         stats: {
-            damage: 14,
+            damage: 13,
             range: 4,
             fireInterval: 900,
             critChance: 5,

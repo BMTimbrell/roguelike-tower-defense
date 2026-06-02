@@ -166,7 +166,7 @@ export const gameSpeedUIAtom = atom<GameSpeedUI>({
 });
 
 export const heroProgressionAtom = atom<HeroProgression>({
-    unlocked: ["archer", "wizard", "knight", "witch", "merchant", "assassin", "songstress", "necromancer"],
+    unlocked: ["archer", "wizard"],
     progress: {
         kills: 0,
         towerCoinsSpent: 0,

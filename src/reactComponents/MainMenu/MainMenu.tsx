@@ -25,6 +25,11 @@ export default function MainMenu() {
         playUISound(gameState.context, "ui hover");
     }
 
+    const handleBackClick = () => {
+        playUISound(gameState.context, "ui click");
+        setShowDifficulty(false);
+    };
+
     return (
         <>
             <div className={styles.container} style={{ fontSize: `${16 * fontScale}px` }}>
@@ -53,7 +58,8 @@ export default function MainMenu() {
                         setSelectHeroUI(prev => ({ ...prev, visible: true }));
                         setMenu(prev => ({ ...prev, visible: false })); 
                         playUISound(gameState.context, "ui click");
-                    }} 
+                    }}
+                    onBackClick={handleBackClick} 
                 />}
             </div>
 

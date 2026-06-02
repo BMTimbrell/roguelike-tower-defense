@@ -1123,7 +1123,7 @@ export default function loadAssets(k: KAPLAYCtx) {
     k.loadSprite("exit arrow", "/sprites/red-arrow.png");
     k.loadSprite("boss icon", "/sprites/boss-icon.png");
     k.loadSprite("snow", "/sprites/snow.png");
-    k.loadSprite("lava tile", "/sprites/lava-tile.png");
+    k.loadSprite("lava tile", "/sprites/lava3.png");
     k.loadSprite("stinger", "/sprites/bee-stinger.png");
     k.loadSprite("bee projectile", "/sprites/bee-projectile.png");
     k.loadShader(

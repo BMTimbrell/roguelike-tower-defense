@@ -2,8 +2,9 @@ import { useAtom } from 'jotai';
 import styles from './Difficulty.module.css';
 import { gameStateAtom, mapAtom } from '../../store';
 import { playUISound } from '../../utils/soundHelpers';
+import Button from '../Button/Button';
 
-export default function Difficulty({ onClick }: { onClick: React.MouseEventHandler<HTMLDivElement> }) {
+export default function Difficulty({ onClick, onBackClick }: { onClick: React.MouseEventHandler<HTMLDivElement>; onBackClick: React.MouseEventHandler<HTMLButtonElement> }) {
     const [gameState, setGameState] = useAtom(gameStateAtom);
     const hardUnlocked = true;
     const expertUnlocked = false;
@@ -16,8 +17,12 @@ export default function Difficulty({ onClick }: { onClick: React.MouseEventHandl
     };
 
     return (
-        <>
-            <div className={styles.heading}>Choose a Difficulty</div>
+        <> 
+            <div className={styles.header}>
+                <Button onMouseEnter={onMouseEnter} onClick={onBackClick} classNames={[styles["back-button"]]}>←</Button>
+                <div className={styles.heading}>Choose a Difficulty</div>
+            </div>
+
             <div className={styles["difficulty-container"]}>
                 <div
                     className={styles.difficulty}
@@ -35,6 +40,7 @@ export default function Difficulty({ onClick }: { onClick: React.MouseEventHandl
                 </div>
                 <div
                     className={`${styles.difficulty} ${!hardUnlocked ? styles.locked : ""}`}
+                    onMouseEnter={onMouseEnter}
                     onClick={(e) => {
                         if (!hardUnlocked) return;
 
@@ -57,6 +63,7 @@ export default function Difficulty({ onClick }: { onClick: React.MouseEventHandl
 
                 <div
                     className={`${styles.difficulty} ${!expertUnlocked ? styles.locked : ""}`}
+                    onMouseEnter={onMouseEnter}
                     onClick={(e) => {
                         if (!expertUnlocked) return;
 
@@ -72,7 +79,7 @@ export default function Difficulty({ onClick }: { onClick: React.MouseEventHandl
                     <div>For veteran players who have mastered the game's systems. Bosses have more health, and the player starts with less health, making every mistake more costly.</div>
                     {!expertUnlocked && (
                         <div className={styles.unlockText}>
-                            Unlock by beating the game on Hard.
+                            Locked in demo.
                         </div>
                     )}
                 </div>
