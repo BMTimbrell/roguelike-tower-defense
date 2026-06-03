@@ -378,6 +378,7 @@ export type Upgrade = {
     used?: boolean;
     icon?: string;
     animationDelay?: number;
+    markedForDeletion?: boolean;
 };
 
 export type USlot = {

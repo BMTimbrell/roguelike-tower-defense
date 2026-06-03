@@ -3,11 +3,6 @@ import kaplay from "kaplay";
 export default function makeKaplayCtx() {
     return kaplay({
         global: false,
-        // scale: 2,
-        // width: VIRTUAL_WIDTH,
-        // height: VIRTUAL_HEIGHT,
-        // stretch: true,
-        // letterbox: true,
         buttons: {
             cancel: {
                 mouse: "right"
@@ -76,7 +71,7 @@ export default function makeKaplayCtx() {
                 keyboard: "q"
             }
         },
-        debug: true,
+        debug: false,
         canvas: document.querySelector<HTMLCanvasElement>("#game") ?? undefined
     });
 }

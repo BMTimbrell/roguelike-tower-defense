@@ -2,7 +2,7 @@ import type { Upgrade } from "../../types";
 import styles from "./Upgrades.module.css";
 import { gameStateAtom, mapAtom } from '../../store';
 import { useAtom } from 'jotai';
-import { useState, useRef, useLayoutEffect, useEffect } from 'react';
+import { useState, useRef, useLayoutEffect } from 'react';
 import UpgradePopup from "../UpgradePopup/UpgradePopup";
 import Card from "../Card/Card";
 import UpgradeCard from "../UpgradeCard/UpgradeCard";
@@ -21,6 +21,24 @@ export default function Upgrades({ upgrades }: { upgrades: Upgrade[] }) {
             selectedUpgrade: upgrade
         }));
     };
+
+    const handleRightClick = (e: React.MouseEvent<HTMLDivElement>, upgrade: Upgrade) => {
+        if (e.button === 2) {
+            upgrade.markedForDeletion = !upgrade.markedForDeletion;
+            handleClick(upgrade);
+        }
+    };
+
+    document.addEventListener('contextmenu', function(e) {
+        e.preventDefault();
+    });
+
+    const removeUpgrade = (upgrade: Upgrade) => {
+        setGameState(prev => ({
+            ...prev,
+            upgrades: prev.upgrades.filter(u => u !== upgrade)
+        }));
+    }
 
     const calculateOverlap = () => {
         const el = containerRef.current;
@@ -85,14 +103,15 @@ export default function Upgrades({ upgrades }: { upgrades: Upgrade[] }) {
             {upgrades.map((upgrade, index) => (
                 <Card
                     key={`${index}${gameState.reroll.rerollCount}`}
-                    popup={<UpgradePopup upgrade={upgrade} pos={popupPos} />}
+                    popup={!upgrade.markedForDeletion ? <UpgradePopup upgrade={upgrade} pos={popupPos} /> : undefined}
                     setPopupPos={setPopupPos}
                     scale={fontScale}
                     {...(upgrade?.animationDelay ? { animationDelay: upgrade.animationDelay } : {})}
-                    classNames={[gameState.selectedUpgrade === upgrade ? styles.selected : '']}
-                    handleClick={() => handleClick(upgrade)}
+                    classNames={[gameState.selectedUpgrade === upgrade ? styles.selected : '', upgrade.markedForDeletion ? styles["marked-for-deletion"] : '']}
+                    handleRightClick={(e) => handleRightClick(e, upgrade)}
+                    handleClick={() => upgrade.markedForDeletion ? removeUpgrade(upgrade) : handleClick(upgrade)}
                 >
-                    <UpgradeCard upgrade={upgrade} scale={fontScale} />
+                    {upgrade.markedForDeletion ? "Remove" : <UpgradeCard upgrade={upgrade} scale={fontScale} />}
                 </Card>
             ))}
         </div>

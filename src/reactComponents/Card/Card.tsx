@@ -4,7 +4,7 @@ import { gameStateAtom } from "../../store";
 import { useAtom } from "jotai";
 import { playUISound } from "../../utils/soundHelpers";
 
-export default function Card({ children, popup, setPopupPos, handleClick, scale, classNames, animationDelay, setDeckHovered }: {
+export default function Card({ children, popup, setPopupPos, handleClick, handleRightClick, scale, classNames, animationDelay, setDeckHovered }: {
     children: React.ReactNode;
     animationDelay?: number;
     popup?: JSX.Element;
@@ -13,6 +13,7 @@ export default function Card({ children, popup, setPopupPos, handleClick, scale,
         y: number;
     } | null>>;
     handleClick?: MouseEventHandler<HTMLDivElement>;
+    handleRightClick?: MouseEventHandler<HTMLDivElement>;
     scale: number;
     classNames?: string[];
     setDeckHovered?: React.Dispatch<React.SetStateAction<boolean>>;
@@ -25,6 +26,7 @@ export default function Card({ children, popup, setPopupPos, handleClick, scale,
             <div className={styles["card-wrap"]}>
                 <div
                     onClick={handleClick}
+                    onMouseDown={handleRightClick}
                     onMouseEnter={e => {
                         playUISound(gameState.context, "ui pop");
                         const rect = (e.currentTarget as HTMLDivElement).getBoundingClientRect();
