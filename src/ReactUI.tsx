@@ -53,7 +53,7 @@ export default function ReactUI() {
 
     return (
         <>
-            {!nonLevelScenes.includes(gameState.scene) && <BottomBar />}
+            {!nonLevelScenes.includes(gameState.scene) && !gameState.hideUI && <BottomBar />}
 
             {selectHeroUI.visible && <SelectHeroUI />}
 
@@ -75,7 +75,7 @@ export default function ReactUI() {
 
             {mainMenu.visible && <MainMenu />}
 
-            {gameSpeedUI.visible && <GameSpeedButtons />}
+            {gameSpeedUI.visible && !gameState.hideUI && <GameSpeedButtons />}
         </>
     );
 }

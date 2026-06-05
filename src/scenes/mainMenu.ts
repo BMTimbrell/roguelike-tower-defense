@@ -23,7 +23,7 @@ export default function mainMenu(k: KAPLAYCtx) {
         });
 
         let rand = k.randi();
-        const sceneName = rand === 1 ? "level1" : "level1-2";
+        const sceneName = rand === 1 ? "level1" : "level1";
         const { mapData, tileGrid, pathTiles } = await generateMap(k, `data/${sceneName}.json`);
 
         initCam(k);
@@ -128,7 +128,7 @@ export default function mainMenu(k: KAPLAYCtx) {
         for (let i = 0; i < 3; i++) options.push({ ids: generateTowerOptions(), upgrades: generateDeck(k) });
 
         rand = k.randi();
-        const waveId = rand === 1 ? "level1-1" : "level1-2";
+        const waveId = rand === 1 ? "level1-1" : "level1-1";
 
         store.set(startingOptionsAtom, prev => ({
             ...prev,

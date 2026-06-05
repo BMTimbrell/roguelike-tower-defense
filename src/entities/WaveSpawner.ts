@@ -400,6 +400,7 @@ export default function makeWaveSpawner(k: KAPLAYCtx, levelId: LevelId, waypoint
                 font: "free pixel"
             }),
             k.color("#000000"),
+            k.opacity(store.get(gameStateAtom).hideUI ? 0 : 1),
             k.fixed(),
             k.z(999),
             {
@@ -421,10 +422,12 @@ export default function makeWaveSpawner(k: KAPLAYCtx, levelId: LevelId, waypoint
                     outline.pos = waveTextPos.add(x * scale, y * scale);
 
                     outline.textSize = 20 * scale;
+                    outline.opacity = store.get(gameStateAtom).hideUI ? 0 : 1;
                 }
             }
         ]);
     });
+    let opacity = store.get(gameStateAtom).hideUI ? 0 : 1;
 
     const waveText = k.add([
         k.pos(waveTextPos),
@@ -433,6 +436,7 @@ export default function makeWaveSpawner(k: KAPLAYCtx, levelId: LevelId, waypoint
             size: 20 * scale,
             font: "free pixel"
         }),
+        k.opacity(opacity),
         k.fixed(),
         k.z(999),
         {
@@ -454,6 +458,8 @@ export default function makeWaveSpawner(k: KAPLAYCtx, levelId: LevelId, waypoint
                 waveText.pos = waveTextPos;
 
                 waveText.textSize = 20 * scale;
+
+                waveText.opacity = store.get(gameStateAtom).hideUI ? 0 : 1;
             }
         }
     ]);

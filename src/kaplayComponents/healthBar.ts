@@ -62,6 +62,7 @@ export default function healthBar(k: KAPLAYCtx, duration: number, opts?: { isBos
                 width: this.width,
                 height: barHeight,
                 pos: hbBarPos,
+                opacity: store.get(gameStateAtom).hideUI ? 0 : 1,
                 color: k.Color.fromHex("#707070"),
                 radius: 2
             });
@@ -70,6 +71,7 @@ export default function healthBar(k: KAPLAYCtx, duration: number, opts?: { isBos
             k.drawRect({
                 width: hpWidth,
                 height: barHeight,
+                opacity: store.get(gameStateAtom).hideUI ? 0 : 1,
                 pos: hbBarPos,
                 color: k.Color.fromHex("#5ba675"),
                 radius: 2
@@ -79,6 +81,7 @@ export default function healthBar(k: KAPLAYCtx, duration: number, opts?: { isBos
             k.drawRect({
                 width: armourWidth,
                 height: barHeight,
+                opacity: store.get(gameStateAtom).hideUI ? 0 : 1,
                 pos: hbBarPos.add(hpWidth, 0),
                 color: k.Color.fromHex("#e5c84b"),
                 radius: 2
@@ -88,6 +91,7 @@ export default function healthBar(k: KAPLAYCtx, duration: number, opts?: { isBos
             k.drawRect({
                 width: this.width,
                 height: barHeight,
+                opacity: store.get(gameStateAtom).hideUI ? 0 : 1,
                 pos: hbBarPos,
                 outline: { color: k.Color.fromHex("#000000"), width: 1 },
                 fill: false,

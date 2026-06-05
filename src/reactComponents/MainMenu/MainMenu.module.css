@@ -11,11 +11,14 @@
     padding: 4em 0.5em;
     pointer-events: none;
     overflow-y: auto;
+    /* background-image: url('/sprites/background.png');
+    background-position: center; */
 }
 
 .container * {
     pointer-events: all;
 }
+
 .title {
     font-size: 2em;
     color: white;

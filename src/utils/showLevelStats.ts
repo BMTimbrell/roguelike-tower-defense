@@ -7,16 +7,20 @@ export default function showLevelStats(k: KAPLAYCtx) {
     let heartPos = k.vec2(18 * scale, 39 * scale);
     let healthTextPos = heartPos.add(k.vec2(23 * scale, 0 * scale));
 
+    let opacity = store.get(gameStateAtom).hideUI ? 0 : 1;
+
     const heart = k.add([
         k.sprite("heart"),
         k.scale(2 * scale),
         k.pos(heartPos),
         k.fixed(),
+        k.opacity(opacity),
         k.z(999),
         {
             update() {
                 heart.scale = k.vec2(2 * scale);
                 heart.pos = heartPos;
+                heart.opacity = opacity;
             }
         }
     ]);
@@ -36,6 +40,7 @@ export default function showLevelStats(k: KAPLAYCtx) {
                 size: fontSize,
                 font: "free pixel"
             }),
+            k.opacity(opacity),
             k.fixed(),
             k.z(999),
             {
@@ -43,6 +48,7 @@ export default function showLevelStats(k: KAPLAYCtx) {
                     outline.text = '' + store.get(gameStateAtom).health + '/' + store.get(gameStateAtom).maxHealth;
                     outline.textSize = fontSize;
                     outline.pos = k.vec2(healthTextPos.x + x * scale, healthTextPos.y + y * scale);
+                    outline.opacity = opacity;
                 }
             }
         ]);
@@ -57,12 +63,14 @@ export default function showLevelStats(k: KAPLAYCtx) {
             font: "free pixel"
         }),
         k.z(999),
+        k.opacity(opacity),
         k.fixed(),
         {
             update() {
                 healthText.text = '' + store.get(gameStateAtom).health + '/' + store.get(gameStateAtom).maxHealth;
                 healthText.textSize = fontSize;
                 healthText.pos = healthTextPos;
+                healthText.opacity = opacity;
             }
         }
     ]);
@@ -75,10 +83,12 @@ export default function showLevelStats(k: KAPLAYCtx) {
         k.pos(goldPos),
         k.z(999),
         k.fixed(),
+        k.opacity(opacity),
         {
             update() {
                 gold.scale = k.vec2(2 * scale);
-                gold.pos = goldPos
+                gold.pos = goldPos;
+                gold.opacity = opacity;
             }
         }
     ]);
@@ -94,6 +104,7 @@ export default function showLevelStats(k: KAPLAYCtx) {
                 size: fontSize,
                 font: "free pixel"
             }),
+            k.opacity(opacity),
             k.z(999),
             k.fixed(),
             {
@@ -101,6 +112,7 @@ export default function showLevelStats(k: KAPLAYCtx) {
                     outline.text = '' + store.get(gameStateAtom).gold;
                     outline.textSize = fontSize;
                     outline.pos = k.vec2(goldTextPos.x + x * scale, goldTextPos.y + y * scale);
+                    outline.opacity = opacity;
                 }
             }
         ]);
@@ -115,13 +127,14 @@ export default function showLevelStats(k: KAPLAYCtx) {
             font: "free pixel"
         }),
         k.z(999),
+        k.opacity(opacity),
         k.fixed(),
         {
             update() {
                 goldText.text = '' + store.get(gameStateAtom).gold;
                 goldText.textSize = fontSize;
                 goldText.pos = goldTextPos;
-
+                goldText.opacity = opacity;
             }
         }
     ]);
@@ -135,6 +148,7 @@ export default function showLevelStats(k: KAPLAYCtx) {
 
         goldPos = k.vec2(21 * scale, 60 *scale);
         goldTextPos = gold.pos.add(k.vec2(20 * scale, -1 * scale));
+        opacity = store.get(gameStateAtom).hideUI ? 0 : 1;
     });
 
 }

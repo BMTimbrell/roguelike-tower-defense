@@ -179,10 +179,6 @@ export function pathTargetResolver(
 
         if (inRange.length === 0) return null;
 
-        // const best = inRange.reduce((a, b) =>
-        //     (a.tile.pathIndex ?? 0) > (b.tile.pathIndex ?? 0) ? a : b
-        // );
-
         let tile: PathTile;
 
         if (mode === "nearest") {

@@ -1,6 +1,6 @@
 import { type MouseEventHandler } from "react";
 import { TILE_SIZE, type EnemyId, type HeroId, type ProjectileId, type SkillId, type TowerId } from "./constants";
-import type { Vec2, GameObj, KAPLAYCtx, HealthComp, SpriteComp, StateComp, TimerComp, RotateComp, PosComp, ZComp, OpacityComp, ButtonBinding, MouseButton, Key } from "kaplay";
+import type { Vec2, GameObj, KAPLAYCtx, HealthComp, SpriteComp, StateComp, RotateComp, PosComp, ZComp, OpacityComp, ButtonBinding, MouseButton, Key } from "kaplay";
 import { frostAoeBurst } from "./utils/makeUnitCombat";
 import type { StatusEffectComp } from "./kaplayComponents/statusEffect";
 import type { ChallengeManager } from "./utils/challengeHelpers";
@@ -472,6 +472,7 @@ export type Scenes = Scene[][];
 
 export type GameState = {
     context: KAPLAYCtx | null;
+    hideUI: boolean;
     towerButtons: TowerButton[];
     nextTowerId: number;
     selectedUI: SelectedUI;

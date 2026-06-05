@@ -6,7 +6,6 @@ import generateFog from "./generateFog";
 import drawCards from "./drawCards";
 import { challengesAtom, controlsAtom, gameSpeedUIAtom, gameStateAtom, pauseMenuAtom, store } from "../store";
 import makeFloatingText from "../entities/FloatingText";
-import getCamViewRect from "./getCamViewRect";
 import { LEVEL_WAVES, MAX_HAND_SIZE, ROUND_DRAW_NUM, TILE_SIZE, type LevelId } from "../constants";
 import reroll from "./reroll";
 import { addSelectTowerListener } from "../entities/Tower";
@@ -38,31 +37,19 @@ export default function makeLevelScene(k: KAPLAYCtx, sceneName: Scene) {
         let zoom = initCam(k);
 
         let dragActive = false;
-        // let lastTouchPos: Vec2 | null = null;
+
+        k.onKeyPress("l", () => {
+            store.set(gameStateAtom, prev => ({
+                ...prev,
+                hideUI: !store.get(gameStateAtom).hideUI
+            }));
+        });
 
         // ---- Mouse ----
         onAction(k, "scroll", {
             onPress: () => dragActive = true,
             onRelease: () => dragActive = false,
         });
-
-        // ---- Touch ----
-        // k.onTouchStart(pos => {
-        //     dragActive = true;
-        //     lastTouchPos = pos;
-        // })
-
-        // k.onTouchEnd(() => {
-        //     dragActive = false;
-        //     lastTouchPos = null;
-        // });
-
-        // k.onTouchMove(pos => {
-        //     if (!dragActive || !lastTouchPos) return;
-        //     const d = pos.sub(lastTouchPos);
-        //     k.setCamPos(k.getCamPos().sub(d));
-        //     lastTouchPos = pos;
-        // });
 
         playMusic(k, LEVEL_WAVES[wave].music);
 
