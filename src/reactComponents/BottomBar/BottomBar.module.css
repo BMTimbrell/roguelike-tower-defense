@@ -28,7 +28,7 @@
     display: flex;
     gap: 0.25em;
     flex-wrap: wrap;
-    max-width: calc(7 * 3em);
+    max-width: calc(6 * 3em);
 }
 
 .right-container {

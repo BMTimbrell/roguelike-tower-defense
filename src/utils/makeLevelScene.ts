@@ -17,6 +17,7 @@ import isButtonDown from "./isButtonDown";
 import onAction from "./onAction";
 import setGameSpeed from "./setGameSpeed";
 import { playMusic } from "./soundHelpers";
+import healthBar from "../kaplayComponents/healthBar";
 
 export default function makeLevelScene(k: KAPLAYCtx, sceneName: Scene) {
 
@@ -402,6 +403,14 @@ export default function makeLevelScene(k: KAPLAYCtx, sceneName: Scene) {
             }
         }
 
+        // k.onHover("enemy", enemy => {
+        //     enemy.onHover(() => {
+        //         if (!enemy.has("healthBar") && !enemy.isDying) {
+        //             enemy.use(healthBar(k, 0.5));
+        //         }
+        //     });
+        // });
+
         const windZones: GameObj[] = mapData.layers
             .find(layer => layer.name === "Wind")
             ?.objects
@@ -536,5 +545,4 @@ export default function makeLevelScene(k: KAPLAYCtx, sceneName: Scene) {
         }
 
     });
-
 }

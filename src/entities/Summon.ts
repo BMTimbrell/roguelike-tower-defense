@@ -22,6 +22,7 @@ export default function spawnSummon(k: KAPLAYCtx, ctx: AttackContext, id: Summon
         k.sprite(sprite),
         k.pos(pos),
         k.rotate(0),
+        k.z(999),
         k.anchor("center"),
         name,
         "summon",

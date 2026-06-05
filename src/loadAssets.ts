@@ -1234,6 +1234,7 @@ export default function loadAssets(k: KAPLAYCtx) {
     k.loadSound("soft shoot", "/sounds/towers/softShoot.mp3");
     k.loadSound("glass smash", "/sounds/towers/glassSmash.mp3");
     k.loadSound("splat", "/sounds/towers/splat.mp3");
+    k.loadSound("scythe slash", "/sounds/towers/scythe-slash.mp3");
 
     //heroes
     k.loadSound("archer", "/sounds/towers/archer.mp3");

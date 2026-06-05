@@ -25,11 +25,18 @@ export default function Upgrades({ upgrades }: { upgrades: Upgrade[] }) {
     const handleRightClick = (e: React.MouseEvent<HTMLDivElement>, upgrade: Upgrade) => {
         if (e.button === 2) {
             upgrade.markedForDeletion = !upgrade.markedForDeletion;
-            handleClick(upgrade);
+            // handleClick(upgrade);
         }
     };
 
     const removeUpgrade = (upgrade: Upgrade) => {
+        if (gameState.selectedUpgrade === upgrade) {
+            setGameState(prev => ({
+                ...prev,
+                selectedUpgrade: null
+            }));
+        }
+
         setGameState(prev => ({
             ...prev,
             upgrades: prev.upgrades.filter(u => u !== upgrade)

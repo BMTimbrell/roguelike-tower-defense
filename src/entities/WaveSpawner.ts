@@ -52,7 +52,7 @@ export default function makeWaveSpawner(k: KAPLAYCtx, levelId: LevelId, waypoint
                     if (bossInstance && bossInstance.boss) {
                         const bossStop = bossInstance.path[bossInstance.boss.stopIndexes[bossInstance.boss.currentStopIndex + 1]];
 
-                        if (bossInstance.boss.currentStopIndex + 1 < bossInstance.boss.stopIndexes.length - 2) {
+                        if (bossInstance.boss.currentStopIndex + 1 < bossInstance.boss.stopIndexes.length - 1) {
                             const bossIcon = k.add([
                                 k.sprite("boss icon"),
                                 k.pos(bossStop),
@@ -179,7 +179,7 @@ export default function makeWaveSpawner(k: KAPLAYCtx, levelId: LevelId, waypoint
                 if (boss) {
                     const bossStop = boss.path[boss.boss.stopIndexes[boss.boss.currentStopIndex + 1]];
 
-                    if (boss.boss.currentStopIndex + 1 < boss.boss.stopIndexes.length - 2) {
+                    if (boss.boss.currentStopIndex + 1 < boss.boss.stopIndexes.length - 1) {
                         const bossIcon = k.add([
                             k.sprite("boss icon"),
                             k.pos(bossStop),
