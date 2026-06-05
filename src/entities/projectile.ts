@@ -209,7 +209,7 @@ export default function makeProjectile(k: KAPLAYCtx, opts: {
                 }
 
                 if (attackTimer !== null) attackTimer -= k.dt() * timeScale;
-                if (!target.isDying && (behaviors?.persistent?.state !== "attached" || (attackTimer !== null && attackTimer <= 0))) {
+                if (!target.isDying && !target.invincible && (behaviors?.persistent?.state !== "attached" || (attackTimer !== null && attackTimer <= 0))) {
                     if (behaviors?.persistent) {
                         const owner = behaviors.persistent.owner;
                         const damageMult = 1 + getBuffValue(owner, "damage");

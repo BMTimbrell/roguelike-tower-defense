@@ -12,7 +12,7 @@ export function selectTarget(
     if (!tower.priority) {
         const enemiesInRange = enemies.filter(e => {
             const dist = e.pos.dist(origin);
-            return dist <= tower.stats.range * TILE_SIZE + TOWER_RANGE_TOLERANCE;
+            return dist <= tower.stats.range * TILE_SIZE + TOWER_RANGE_TOLERANCE && !e.invincible && !e.isDying;
         });
 
         if (!enemiesInRange.length) return null;
@@ -25,7 +25,7 @@ export function selectTarget(
     let bestDist = 0;
 
     for (const e of enemies) {
-        if (e.invincible) continue;
+        if (e.invincible || e.isDying) continue;
 
         const dist = e.pos.dist(origin);
 
