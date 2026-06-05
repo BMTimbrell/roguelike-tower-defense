@@ -2,7 +2,7 @@ import type { Upgrade } from "../../types";
 import styles from "./Upgrades.module.css";
 import { gameStateAtom, mapAtom } from '../../store';
 import { useAtom } from 'jotai';
-import { useState, useRef, useLayoutEffect } from 'react';
+import { useState, useRef, useLayoutEffect, useEffect } from 'react';
 import UpgradePopup from "../UpgradePopup/UpgradePopup";
 import Card from "../Card/Card";
 import UpgradeCard from "../UpgradeCard/UpgradeCard";
@@ -29,10 +29,6 @@ export default function Upgrades({ upgrades }: { upgrades: Upgrade[] }) {
         }
     };
 
-    document.addEventListener('contextmenu', function(e) {
-        e.preventDefault();
-    });
-
     const removeUpgrade = (upgrade: Upgrade) => {
         setGameState(prev => ({
             ...prev,
@@ -51,9 +47,6 @@ export default function Upgrades({ upgrades }: { upgrades: Upgrade[] }) {
             return;
         }
 
-        // temporarily disable overlap so we measure natural layout
-        el.style.setProperty("--overlap", "0px");
-
         const style = window.getComputedStyle(el);
         const gap = parseFloat(style.columnGap);
 
@@ -69,12 +62,11 @@ export default function Upgrades({ upgrades }: { upgrades: Upgrade[] }) {
         const totalWidthWithGap = cardsWidth + gap * gaps;
         const overflow = totalWidthWithGap - containerWidth;
 
-        if (overflow <= 0) {
-            setOverlap(0);
-            return;
-        }
-
-        setOverlap(overflow / gaps);
+        setOverlap(
+            overflow > 0
+                ? overflow / gaps
+                : 0
+        );
     };
 
     useLayoutEffect(() => {
@@ -92,7 +84,30 @@ export default function Upgrades({ upgrades }: { upgrades: Upgrade[] }) {
 
     useLayoutEffect(() => {
         calculateOverlap();
+
+        const maxDelay = Math.max(
+            0,
+            ...upgrades.map(u => u.animationDelay ?? 0)
+        );
+
+        const timeout = setTimeout(
+            calculateOverlap,
+            maxDelay + 600
+        );
+
+        return () => clearTimeout(timeout);
     }, [upgrades, map.fontScale, map.iconScale]);
+
+    useEffect(() => {
+        const handler = (e: MouseEvent) => e.preventDefault();
+
+        document.addEventListener("contextmenu", handler);
+
+        return () => {
+            document.removeEventListener("contextmenu", handler);
+        };
+    }, []);
+
 
     return (
         <div

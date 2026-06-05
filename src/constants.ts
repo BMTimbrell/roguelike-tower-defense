@@ -201,7 +201,7 @@ export const UPGRADES: Upgrade[] = [{
 
 export const LEVEL_WAVES = {
     "level1-1": {
-        startingGold: 100,
+        startingGold: 500,
         startDelay: 120,
         music: "forest biome",
         waves: [
@@ -254,7 +254,7 @@ export const LEVEL_WAVES = {
     },
 
     "level1-2": {
-        startingGold: 100,
+        startingGold: 500,
         startDelay: 120,
         music: "forest biome",
         waves: [

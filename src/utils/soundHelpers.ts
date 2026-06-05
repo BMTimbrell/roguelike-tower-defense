@@ -39,7 +39,6 @@ const SOUND_VOLUMES: Record<string, number> = {
     "wolf death": 0.4,
     "monster death": 2,
     "monster death3": 0.6,
-    "present tear": 2,
     "dizzy": 4,
     "fairy death2": 4
 };

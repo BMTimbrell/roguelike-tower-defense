@@ -439,7 +439,17 @@ export type SelectedHeroUI = SelectedUnitUI & {
 
 export type SelectedUI = SelectedTowerUI | SelectedHeroUI | SelectedFarmTowerUI | null;
 
+type rect = {
+    left: number;
+    right: number;
+    top: number;
+    bottom: number;
+    width: number;
+    height: number;
+};
+
 export type Deck = {
+    pos?: rect;
     cards: Upgrade[];
     drawCard: () => void;
     drawCost: number;

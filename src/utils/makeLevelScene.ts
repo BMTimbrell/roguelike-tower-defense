@@ -199,12 +199,20 @@ export default function makeLevelScene(k: KAPLAYCtx, sceneName: Scene) {
                 ...prev.deck,
                 drawCard: () => {
                     if (store.get(gameStateAtom).upgrades.length >= MAX_HAND_SIZE) {
-                        makeFloatingText(k, {
-                            text: "Hand is full",
-                            color: '#FF0000',
-                            pos: k.vec2(getCamViewRect(k).right - TILE_SIZE * 4, getCamViewRect(k).bottom - TILE_SIZE * 3.5),
-                            size: 16
-                        });
+                        const deckRect = store.get(gameStateAtom).deck.pos;
+
+                        if (deckRect) {
+
+                            makeFloatingText(k, {
+                                text: "Hand is full",
+                                color: '#FF0000',
+                                pos: k.vec2(deckRect.left - 10,
+                                    deckRect.top - 60),
+                                fixed: true,
+                                size: k.width() > 1800 ? 32 : k.width() > 1400 ? 20 : 16
+                            });
+                        }
+
                         return;
                     }
                     const card = drawCards(k, store.get(gameStateAtom).deck.cards, 1)[0];
