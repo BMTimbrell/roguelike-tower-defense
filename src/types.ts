@@ -714,6 +714,10 @@ export type ProjectileBehavior = {
         infectionLevel?: number;
         sound?: string;
     };
+    splash?: {
+        radius: number;
+        damageMult: number;
+    };
 };
 
 export type Rewards = {

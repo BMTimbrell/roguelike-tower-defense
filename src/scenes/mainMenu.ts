@@ -68,7 +68,8 @@ export default function mainMenu(k: KAPLAYCtx) {
                 cards: [],
                 drawCard: () => { },
                 drawCost: 10
-            }
+            },
+            selectedUpgrade: null
         }));
 
         store.set(altarAtom, prev => ({

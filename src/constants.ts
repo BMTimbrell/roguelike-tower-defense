@@ -3374,7 +3374,7 @@ export const TOWERS = {
         shootOffset: { x: 0, y: 0 },
         projectile: null,
         canRotate: false,
-        source: "starting",
+        source: "reward",
         shootSound: "scythe slash",
         targetType: "enemy",
         melee: {
@@ -3932,7 +3932,7 @@ export const TOWERS = {
         description: "Harvests souls from fallen enemies. When fully charged, unleashes a swarm of ghosts at nearby enemies",
         cost: 250,
         stats: {
-            damage: 13,
+            damage: 14,
             range: 4,
             fireInterval: 900,
             critChance: 5,
@@ -4918,10 +4918,10 @@ export const SKILLS = [
         icon: "sprites/lightning-strike-icon2.png"
     },
     {
-        id: "fireball-bounce",
+        id: "wizard-fireball-bounce",
         heroIds: ["wizard"],
         name: "Fireball Bounce",
-        description: "Fireballs have a 40% chance to bounce to nearby enemies",
+        description: "Fireballs have a 35% chance to bounce to nearby enemies",
         apply(hero) {
             hero.effects?.push({
                 secondEffect(ctx) {
@@ -4929,7 +4929,7 @@ export const SKILLS = [
                     fireball.behaviors ??= {};
                     fireball.behaviors.bounces ??= 8;
                     fireball.behaviors.bounceRange ??= 4 * TILE_SIZE;
-                    fireball.behaviors.bounceChance ??= 0.40;
+                    fireball.behaviors.bounceChance ??= 0.35;
                 }
             });
         },
@@ -4980,6 +4980,25 @@ export const SKILLS = [
             });
         },
         icon: "sprites/ice-blast-icon.png"
+    },
+    {
+        id: "wizard-fireball-explosive",
+        heroIds: ["wizard"],
+        name: "Explosive Fireballs",
+        description: "Fireballs deal 50% splash damage",
+        apply(hero) {
+            hero.effects?.push({
+                secondEffect(ctx) {
+                    const fireball = ctx.projectiles[0];
+                    fireball.behaviors ??= {};
+                    fireball.behaviors.splash ??= {
+                        radius: 1,
+                        damageMult: 0.5
+                    };
+                }
+            });
+        },
+        icon: "sprites/explosive-fireball-icon.png"
     },
     {
         id: "damage+40%",

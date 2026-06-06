@@ -252,9 +252,10 @@ export default function makeProjectile(k: KAPLAYCtx, opts: {
 
                         } else {
                             enemies.forEach(e => {
+                                const damageMult = e !== target && behaviors?.splash?.damageMult ? behaviors.splash.damageMult : 1;
                                 hurtEnemy(k, {
                                     target: e,
-                                    damage,
+                                    damage: Math.round(damage * damageMult),
                                     isCrit: crit ?? false,
                                     element
                                 });

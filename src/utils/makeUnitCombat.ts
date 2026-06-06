@@ -663,6 +663,11 @@ export default function makeUnitCombat(
                     opts.owner.fireIntervalBoostTimer = 1;
                 }
 
+                const splashRadius = p.behaviors?.splash?.radius ?? PROJECTILES[p.id].splashRadius * (
+                    opts.owner.timeData?.timeScaling?.damage ? 
+                    opts.owner.timeData.timeMultiplier : 1
+                );
+
                 const projectile = makeProjectile(k, {
                     id: p.id,
                     pos: ctx.origin.add(spawnOffset),
@@ -675,7 +680,7 @@ export default function makeUnitCombat(
                     homingDelay,
                     turnSpeed: p.turnSpeed,
                     behaviors: p?.behaviors,
-                    splashRadius: PROJECTILES[p.id].splashRadius * (opts.owner.timeData?.timeScaling?.damage ? opts.owner.timeData.timeMultiplier : 1),
+                    splashRadius,
                     scale: (opts.owner.timeData?.timeScaling?.damage ? opts.owner.timeData.timeMultiplier : 1)
                 });
 

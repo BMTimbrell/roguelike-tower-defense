@@ -33,7 +33,8 @@ export default function levelTransition(k: KAPLAYCtx) {
             deck: {
                 ...prev.deck,
                 drawCost: BASE_DRAW_COST
-            }
+            },
+            selectedUpgrade: null
         }));
 
         store.set(challengesAtom, prev => ({
