@@ -15,5 +15,9 @@
 
 .button:disabled {
     cursor: default;
-    background-color: var(--btn-hover-color);
+    opacity: 0.7;
+}
+
+.button:disabled:hover {
+    background-color: var(--card-color);
 }

@@ -7,6 +7,7 @@ import Button from "../Button/Button";
 import styles from "./MainMenu.module.css";
 import Difficulty from "../Difficulty/Difficulty";
 import { playUISound } from "../../utils/soundHelpers";
+import goToNextScene from "../../utils/goToNextScene";
 
 export default function MainMenu() {
     const [showSettings, setShowSettings] = useState(false);
@@ -36,6 +37,31 @@ export default function MainMenu() {
 
                 {!showDifficulty && (<>
                     <div className={styles.title}>A Roguelike Tower Defense</div>
+
+                    <Button 
+                        onClick={() => {
+                            playUISound(gameState.context, "ui click");
+                            const k = gameState.context;
+                            const saveData = localStorage.getItem("saveData");
+                            if (!saveData || !k) return;
+
+                            const jsonData = JSON.parse(saveData);
+                            setMenu(prev => ({ ...prev, visible: false })); 
+                            goToNextScene(k, {
+                                sceneName: jsonData.scene,
+                                mapData: jsonData.mapData,
+                                tileGrid: jsonData.tileGrid,
+                                pathTiles: jsonData.pathTiles,
+                                wave: jsonData.wave,
+                                level: jsonData.level
+                            });
+                            
+                        }}
+                        disabled={!localStorage.getItem("saveData")}
+                        onMouseEnter={onHover}
+                    >
+                        Continue Game
+                    </Button>
 
                     <Button 
                         onClick={() => {

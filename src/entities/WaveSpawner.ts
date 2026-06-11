@@ -66,7 +66,6 @@ export default function makeWaveSpawner(k: KAPLAYCtx, levelId: LevelId, waypoint
                                 "boss stop",
                             ]);
                         }
-
                     }
                 }
                 opts?.onWaveStart?.();

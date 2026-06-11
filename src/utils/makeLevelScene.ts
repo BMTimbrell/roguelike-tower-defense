@@ -17,11 +17,10 @@ import isButtonDown from "./isButtonDown";
 import onAction from "./onAction";
 import setGameSpeed from "./setGameSpeed";
 import { playMusic } from "./soundHelpers";
-import healthBar from "../kaplayComponents/healthBar";
 
 export default function makeLevelScene(k: KAPLAYCtx, sceneName: Scene) {
 
-    k.scene(sceneName, async ({ mapData, tileGrid, wave }: { mapData: MapData, tileGrid: Tile[][], pathTiles: PathTile[], wave: LevelId }) => {
+    k.scene(sceneName, async ({ mapData, tileGrid, wave, pathTiles }: { mapData: MapData, tileGrid: Tile[][], wave: LevelId, pathTiles: PathTile[] }) => {
 
         k.add([
             k.sprite(sceneName),
@@ -39,12 +38,12 @@ export default function makeLevelScene(k: KAPLAYCtx, sceneName: Scene) {
 
         let dragActive = false;
 
-        k.onKeyPress("l", () => {
-            store.set(gameStateAtom, prev => ({
-                ...prev,
-                hideUI: !store.get(gameStateAtom).hideUI
-            }));
-        });
+        // k.onKeyPress("l", () => {
+        //     store.set(gameStateAtom, prev => ({
+        //         ...prev,
+        //         hideUI: !store.get(gameStateAtom).hideUI
+        //     }));
+        // });
 
         // ---- Mouse ----
         onAction(k, "scroll", {
@@ -233,6 +232,33 @@ export default function makeLevelScene(k: KAPLAYCtx, sceneName: Scene) {
         if (hero) {
             updateSkills(hero);
         }
+
+        // local storage
+        localStorage.setItem("saveData", JSON.stringify({
+            deck: store.get(gameStateAtom).deck.cards,
+            scene: sceneName,
+            towerCoins: store.get(gameStateAtom).towerCoins,
+            hero: {
+                id: store.get(gameStateAtom).hero?.heroId ?? "archer",
+                level: store.get(gameStateAtom).hero?.level ?? 1,
+                skills: store.get(gameStateAtom).hero?.skillIds ?? []
+            },
+            sceneIndex: store.get(gameStateAtom).sceneIndex,
+            level: store.get(gameStateAtom).level,
+            health: store.get(gameStateAtom).health,
+            maxHealth: store.get(gameStateAtom).maxHealth,
+            shops: store.get(gameStateAtom).shops,
+            heroCharge: store.get(gameStateAtom).heroCharge,
+            difficulty: store.get(gameStateAtom).difficulty,
+            camMoveAtEdge: store.get(gameStateAtom).camMoveAtEdge,
+            showDamageNumbers: store.get(gameStateAtom).showDamageNumbers,
+            nextTowerId: store.get(gameStateAtom).nextTowerId,
+            towerButtons: store.get(gameStateAtom).towerButtons.map(tb => tb.id),
+            mapData,
+            tileGrid,
+            wave,
+            pathTiles
+        }));
 
         addSelectTowerListener(k);
         makeLavaManager(k);

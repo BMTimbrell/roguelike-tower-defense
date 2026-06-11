@@ -10,6 +10,7 @@ import generateMap from "../utils/generateMap";
 import makeHero from "../entities/Hero";
 import { playMusic } from "../utils/soundHelpers";
 import { ChallengeManager } from "../utils/challengeHelpers";
+import updateSkills from "../utils/updateSkills";
 
 export default function mainMenu(k: KAPLAYCtx) {
     let music: AudioPlay | null = null;
@@ -47,30 +48,60 @@ export default function mainMenu(k: KAPLAYCtx) {
             visible: true
         }));
 
-        store.set(gameStateAtom, prev => ({
-            ...prev,
-            timeScale: 1,
-            scene: "mainMenu",
-            towerCoins: 0,
-            challengeManager: new ChallengeManager(),
-            sceneIndex: 0,
-            level: 1,
-            health: 15,
-            maxHealth: 15,
-            waveNumber: 0,
-            shops: ["shop", "altar"],
-            heroCharge: {
-                charge: 0,
-                damageDealt: 0,
-                damageRequired: 0
-            },
-            deck: {
-                cards: [],
-                drawCard: () => { },
-                drawCost: 10
-            },
-            selectedUpgrade: null
-        }));
+        const saveData = localStorage.getItem("saveData");
+
+        if (saveData) {
+            const jsonData = JSON.parse(saveData);
+            let hero = makeHero(
+                k,
+                {
+                    heroId: jsonData.hero.id,
+                    pos: k.toWorld(k.mousePos()),
+                    tileGrid: jsonData.tileGrid,
+                    pathTiles: jsonData.pathTiles,
+                    level: jsonData.hero.level
+                }
+            );
+
+            hero.skillIds = jsonData.hero.skills;
+
+            updateSkills(hero);
+
+            store.set(gameStateAtom, prev => ({
+                ...prev,
+                timeScale: 1,
+                scene: "mainMenu",
+                towerCoins: jsonData.towerCoins,
+                sceneIndex: jsonData.sceneIndex,
+                level: jsonData.level,
+                health: jsonData.health,
+                maxHealth: jsonData.maxHealth,
+                waveNumber: 0,
+                shops: jsonData.shops,
+                waveActive: false,
+                heroCharge: jsonData.heroCharge,
+                deck: {
+                    drawCard: () => { },
+                    drawCost: 10,
+                    cards: jsonData.deck
+                },
+                selectedUpgrade: null,
+                difficulty: jsonData.difficulty,
+                challengeManager: new ChallengeManager(),
+                camMoveAtEdge: jsonData.camMoveAtEdge,
+                showDamageNumbers: jsonData.showDamageNumbers,
+                nextTowerId: jsonData.nextTowerId,
+                towerButtons: addTowers(k, jsonData.towerButtons, jsonData.tileGrid, jsonData.pathTiles),
+                hero,
+                heroButton: {
+                    ...prev.heroButton,
+                    onClick: () => {
+                        if (k.get("hero")[0]) k.destroy(k.get("hero")[0]);
+                        else k.add(hero);
+                    }
+                }
+            }));
+        }
 
         store.set(altarAtom, prev => ({
             ...prev,
@@ -83,46 +114,47 @@ export default function mainMenu(k: KAPLAYCtx) {
         }));
 
         store.set(selectHeroUIAtom, prev => ({
-                ...prev,
-                addHero: (id: HeroId) => {
-                    const hero = makeHero(
-                        k,
-                        {
-                            heroId: id,
-                            pos: k.toWorld(k.mousePos()),
-                            tileGrid,
-                            pathTiles,
-                            level: 1
+            ...prev,
+            addHero: (id: HeroId) => {
+                const hero = makeHero(
+                    k,
+                    {
+                        heroId: id,
+                        pos: k.toWorld(k.mousePos()),
+                        tileGrid,
+                        pathTiles,
+                        level: 1
+                    }
+                );
+
+                store.set(gameStateAtom, prev => ({
+                    ...prev,
+                    heroButton: {
+                        ...prev.heroButton,
+                        onClick: () => {
+                            if (k.get("hero")[0]) k.destroy(k.get("hero")[0]);
+                            else k.add(hero);
                         }
-                    );
+                    },
+                    hero,
+                    heroCharge: {
+                        damageDealt: 0,
+                        charge: 0,
+                        damageRequired: CHARGE_DAMAGE_REQUIRED
+                    }
+                }));
 
-                    store.set(gameStateAtom, prev => ({
-                        ...prev,
-                        heroButton: {
-                            ...prev.heroButton,
-                            onClick: () => {
-                                if (k.get("hero")[0]) k.destroy(k.get("hero")[0]);
-                                else k.add(hero);
-                            }
-                        },
-                        hero,
-                        heroCharge: {
-                            ...prev.heroCharge,
-                            damageRequired: CHARGE_DAMAGE_REQUIRED
-                        }
-                    }));
+                store.set(selectHeroUIAtom, prev => ({
+                    ...prev,
+                    visible: false
+                }));
 
-                    store.set(selectHeroUIAtom, prev => ({
-                        ...prev,
-                        visible: false
-                    }));
-
-                    store.set(startingOptionsAtom, prev => ({
-                        ...prev,
-                        visible: true
-                    }))
-                }
-            }));
+                store.set(startingOptionsAtom, prev => ({
+                    ...prev,
+                    visible: true
+                }))
+            }
+        }));
 
         const options: { ids: TowerId[]; upgrades: Upgrade[] }[] = [];
 
@@ -135,18 +167,33 @@ export default function mainMenu(k: KAPLAYCtx) {
             ...prev,
             options,
             addLoadout: (ids, upgrades) => {
+
                 store.set(gameStateAtom, prev => ({
                     ...prev,
                     towerButtons: addTowers(k, ids, tileGrid, pathTiles),
                     deck: {
-                        ...prev.deck,
+                        drawCard: () => { },
+                        drawCost: 10,
                         cards: upgrades
-                    }
+                    },
+                    timeScale: 1,
+                    scene: "mainMenu",
+                    towerCoins: 0,
+                    challengeManager: new ChallengeManager(),
+                    sceneIndex: 0,
+                    level: 1,
+                    health: 15,
+                    maxHealth: 15,
+                    waveNumber: 0,
+                    shops: ["shop", "altar"],
+                    selectedUpgrade: null
                 }));
+
                 store.set(startingOptionsAtom, prev => ({
                     ...prev,
                     visible: false
                 }));
+
                 k.go(sceneName satisfies Scene, { mapData, tileGrid, pathTiles, wave: waveId });
             }
         }));

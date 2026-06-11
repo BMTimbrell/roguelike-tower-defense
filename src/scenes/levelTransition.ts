@@ -68,6 +68,8 @@ export default function levelTransition(k: KAPLAYCtx) {
                     k.z(999999),
                 ]);
 
+                localStorage.removeItem("saveData");
+
                 const buttonPos = k.getCamPos().add(k.vec2(0, 50));
 
                 const mainMenuButton = k.add([
