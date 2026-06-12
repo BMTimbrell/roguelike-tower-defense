@@ -15,7 +15,7 @@ export default function MainMenu() {
     const [, setSelectHeroUI] = useAtom(selectHeroUIAtom);
     const [, setMenu] = useAtom(mainMenuAtom)
     const [map] = useAtom(mapAtom);
-    const [gameState] = useAtom(gameStateAtom);
+    const [gameState, setGameState] = useAtom(gameStateAtom);
     const fontScale = map.fontScale;
     const header = showSettings && <div style={{
         fontSize: `${16 * fontScale * 1.2}px`, marginBottom: "0.5em",
@@ -38,7 +38,7 @@ export default function MainMenu() {
                 {!showDifficulty && (<>
                     <div className={styles.title}>A Roguelike Tower Defense</div>
 
-                    <Button 
+                    {localStorage.getItem("saveData") && JSON.parse(localStorage.getItem("saveData") as string)?.towerButtons && <Button 
                         onClick={() => {
                             playUISound(gameState.context, "ui click");
                             const k = gameState.context;
@@ -46,7 +46,14 @@ export default function MainMenu() {
                             if (!saveData || !k) return;
 
                             const jsonData = JSON.parse(saveData);
-                            setMenu(prev => ({ ...prev, visible: false })); 
+                            if (!jsonData) return;
+                            
+                            setMenu(prev => ({ ...prev, visible: false }));
+                            setGameState(prev => ({
+                                ...prev,
+                                scene: jsonData.scene
+                            }));
+                            
                             goToNextScene(k, {
                                 sceneName: jsonData.scene,
                                 mapData: jsonData.mapData,
@@ -61,7 +68,7 @@ export default function MainMenu() {
                         onMouseEnter={onHover}
                     >
                         Continue Game
-                    </Button>
+                    </Button>}
 
                     <Button 
                         onClick={() => {

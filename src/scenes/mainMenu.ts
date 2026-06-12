@@ -32,6 +32,11 @@ export default function mainMenu(k: KAPLAYCtx) {
             initCam(k);
         });
 
+        store.set(gameStateAtom, prev => ({
+            ...prev,
+            scene: "mainMenu"
+        }));
+
         store.set(gameSpeedUIAtom, prev => ({
             ...prev,
             visible: false,
@@ -49,9 +54,18 @@ export default function mainMenu(k: KAPLAYCtx) {
         }));
 
         const saveData = localStorage.getItem("saveData");
+        let jsonData = null;
+        if (saveData) jsonData = JSON.parse(saveData);
 
-        if (saveData) {
-            const jsonData = JSON.parse(saveData);
+        if (jsonData) {
+            store.set(gameStateAtom, prev => ({
+                ...prev,
+                camMoveAtEdge: jsonData.camMoveAtEdge,
+                showDamageNumbers: jsonData.showDamageNumbers
+                
+            }));
+        }
+        if (jsonData?.towerButtons) {
             let hero = makeHero(
                 k,
                 {
@@ -70,7 +84,6 @@ export default function mainMenu(k: KAPLAYCtx) {
             store.set(gameStateAtom, prev => ({
                 ...prev,
                 timeScale: 1,
-                scene: "mainMenu",
                 towerCoins: jsonData.towerCoins,
                 sceneIndex: jsonData.sceneIndex,
                 level: jsonData.level,
@@ -88,8 +101,6 @@ export default function mainMenu(k: KAPLAYCtx) {
                 selectedUpgrade: null,
                 difficulty: jsonData.difficulty,
                 challengeManager: new ChallengeManager(),
-                camMoveAtEdge: jsonData.camMoveAtEdge,
-                showDamageNumbers: jsonData.showDamageNumbers,
                 nextTowerId: jsonData.nextTowerId,
                 towerButtons: addTowers(k, jsonData.towerButtons, jsonData.tileGrid, jsonData.pathTiles),
                 hero,

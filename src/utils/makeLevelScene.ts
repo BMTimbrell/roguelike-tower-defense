@@ -234,6 +234,15 @@ export default function makeLevelScene(k: KAPLAYCtx, sceneName: Scene) {
         }
 
         // local storage
+        let buttons = null;
+        let volumes = null;
+        const saveData = localStorage.getItem("saveData");
+
+        if (saveData) {
+            buttons = JSON.parse(saveData)?.buttons;
+            volumes = JSON.parse(saveData)?.volumes;
+        }
+
         localStorage.setItem("saveData", JSON.stringify({
             deck: store.get(gameStateAtom).deck.cards,
             scene: sceneName,
@@ -257,7 +266,9 @@ export default function makeLevelScene(k: KAPLAYCtx, sceneName: Scene) {
             mapData,
             tileGrid,
             wave,
-            pathTiles
+            pathTiles,
+            ...(buttons ? { buttons } : {}),
+            ...(volumes ? { volumes } : {})
         }));
 
         addSelectTowerListener(k);

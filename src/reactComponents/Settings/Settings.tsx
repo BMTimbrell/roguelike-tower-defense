@@ -40,20 +40,79 @@ export default function Settings() {
             const key = e.key === " " ? "space" : e.key === "ArrowLeft" ? "left" : e.key === "ArrowRight" ? "right" : e.key === "ArrowUp" ? "up" : e.key === "ArrowDown" ? "down" : e.key;
             controls.setButton(selectedKey.action, key.toLowerCase(), "keyboard");
             setSelectedKey(null);
+
+            let jsonData = null;
+            if (localStorage.getItem("saveData")) jsonData = JSON.parse(localStorage.getItem("saveData") as string);
+
+            if (jsonData) localStorage.setItem("saveData", JSON.stringify({
+                ...jsonData,
+                buttons: {
+                    ...jsonData.buttons,
+                    [selectedKey.action]: {
+                        ...jsonData.buttons[selectedKey.action],
+                        keyboard: key
+                    }
+                }
+            }));
         }
         if (selectedKey && selectedKey.type === "mouse") {
             controls.setButton(selectedKey.action, "", "mouse");
             setSelectedKey(null);
+
+            let jsonData = null;
+            if (localStorage.getItem("saveData")) jsonData = JSON.parse(localStorage.getItem("saveData") as string);
+
+            if (jsonData) localStorage.setItem("saveData", JSON.stringify({
+                ...jsonData,
+                buttons: {
+                    ...jsonData.buttons,
+                    [selectedKey.action]: {
+                        ...jsonData.buttons[selectedKey.action],
+                        mouse: null
+                    }
+                }
+            }));
         }
-    }
+    };
 
     const handleMouseDown = (e: MouseEvent) => {
         if (selectedKey && selectedKey.type === "mouse") {
             const button = e.button === 0 ? "left" : e.button === 1 ? "middle" : e.button === 2 ? "right" : e.button === 3 ? "back" : e.button === 4 ? "forward" : "";
             controls.setButton(selectedKey.action, button, "mouse");
             setSelectedKey(null);
+
+            let jsonData = null;
+            if (localStorage.getItem("saveData")) jsonData = JSON.parse(localStorage.getItem("saveData") as string);
+
+            if (jsonData) localStorage.setItem("saveData", JSON.stringify({
+                ...jsonData,
+                buttons: {
+                    ...jsonData.buttons,
+                    [selectedKey.action]: {
+                        ...jsonData.buttons[selectedKey.action],
+                        mouse: button
+                    }
+                }
+            }));
         }
-    }
+    };
+
+    const updateSavedVolume = () => {
+        let jsonData = null;
+        if (localStorage.getItem("saveData")) jsonData = JSON.parse(localStorage.getItem("saveData") as string);
+
+        if (jsonData) {
+            localStorage.setItem("saveData", JSON.stringify({
+                ...jsonData,
+                volumes: {
+                    masterVolume: audio.masterVolume,
+                    sfxVolume: audio.sfxVolume,
+                    musicVolume: audio.musicVolume,
+                    uiVolume: audio.uiVolume
+                }
+            }));
+        }
+    };
 
     useEffect(() => {
         document.addEventListener("keydown", handleKeyDown);
@@ -120,6 +179,7 @@ export default function Settings() {
                             }));
 
                             updateMusicVolume();
+                            updateSavedVolume();
                         }}
                     />
                 </div>
@@ -143,6 +203,7 @@ export default function Settings() {
                             }));
 
                             updateMusicVolume();
+                            updateSavedVolume();
                         }}
                     />
                 </div>
@@ -165,6 +226,7 @@ export default function Settings() {
                                 sfxVolume: Number(e.target.value),
                                 uiVolume: Number(e.target.value)
                             }));
+                            updateSavedVolume();
                         }}
                     />
                 </div>
@@ -204,6 +266,13 @@ export default function Settings() {
                                 ...prev,
                                 camMoveAtEdge: e.target.checked
                             }));
+
+                            if (localStorage.getItem("saveData")) localStorage.setItem("saveData", JSON.stringify({
+                                ...JSON.parse(localStorage.getItem("saveData") as string),
+                                camMoveAtEdge: e.target.checked
+                            })); else localStorage.setItem("saveData", JSON.stringify({
+                                camMoveAtEdge: e.target.checked
+                            }));
                         }}
                     />
                 </div>
@@ -219,10 +288,17 @@ export default function Settings() {
                                 ...prev,
                                 showDamageNumbers: e.target.checked
                             }));
+
+                            if (localStorage.getItem("saveData")) localStorage.setItem("saveData", JSON.stringify({
+                                ...JSON.parse(localStorage.getItem("saveData") as string),
+                                showDamageNumbers: e.target.checked
+                            })); else localStorage.setItem("saveData", JSON.stringify({
+                                showDamageNumbers: e.target.checked
+                            }));
                         }}
                     />
                 </div>
-                
+
                 <div className={styles["toggle-container"]}>
                     <label htmlFor="fullscreen">Fullscreen</label>
                     <input
