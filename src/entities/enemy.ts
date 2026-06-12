@@ -437,6 +437,13 @@ export default function makeEnemy(
                     ...prev,
                     health: prev.health - enemy.damage
                 }));
+
+                if (store.get(gameStateAtom).health <= 0) {
+                    store.set(gameStateAtom, prev => ({
+                        ...prev,
+                        gameOver: true
+                    }));
+                }
             }
             return;
         }
@@ -464,6 +471,13 @@ export default function makeEnemy(
                     ...prev,
                     health: prev.health - enemy.damage
                 }));
+
+                if (store.get(gameStateAtom).health <= 0) {
+                    store.set(gameStateAtom, prev => ({
+                        ...prev,
+                        gameOver: true
+                    }));
+                }
             }
         }
 

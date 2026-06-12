@@ -68,7 +68,21 @@ export default function levelTransition(k: KAPLAYCtx) {
                     k.z(999999),
                 ]);
 
-                localStorage.removeItem("saveData");
+                // reset local storage
+                let buttons = null;
+                let volumes = null;
+                const saveData = localStorage.getItem("saveData");
+
+                if (saveData) {
+                    buttons = JSON.parse(saveData)?.buttons;
+                    volumes = JSON.parse(saveData)?.volumes;
+                }
+                localStorage.setItem("saveData", JSON.stringify({
+                    camMoveAtEdge: store.get(gameStateAtom).camMoveAtEdge,
+                    showDamageNumbers: store.get(gameStateAtom).showDamageNumbers,
+                    ...(buttons ? { buttons } : {}),
+                    ...(volumes ? { volumes } : {})
+                }));
 
                 const buttonPos = k.getCamPos().add(k.vec2(0, 50));
 

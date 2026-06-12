@@ -16,6 +16,7 @@ export const gameStateAtom = atom<GameState>({
     maxTowerUpgrades: 5,
     upgrades: [],
     sceneIndex: 0,
+    gameOver: false,
     level: 1,
     deck: {
         cards: [],

@@ -34,7 +34,8 @@ export default function mainMenu(k: KAPLAYCtx) {
 
         store.set(gameStateAtom, prev => ({
             ...prev,
-            scene: "mainMenu"
+            scene: "mainMenu",
+            gameOver: false
         }));
 
         store.set(gameSpeedUIAtom, prev => ({
@@ -65,6 +66,7 @@ export default function mainMenu(k: KAPLAYCtx) {
                 
             }));
         }
+
         if (jsonData?.towerButtons) {
             let hero = makeHero(
                 k,

@@ -76,7 +76,7 @@ export default function Difficulty({ onClick, onBackClick }: { onClick: React.Mo
                     }}
                 >
                     <div className={styles.heading}>Expert {!expertUnlocked && <img width={`${16 * scale}`} src="/sprites/lock.png" />}</div>
-                    <div>For veteran players who have mastered the game's systems. Bosses have more health, and the player starts with less health, making every mistake more costly.</div>
+                    <div>For veteran players who have mastered the game's systems.</div>
                     {!expertUnlocked && (
                         <div className={styles.unlockText}>
                             Locked in demo.

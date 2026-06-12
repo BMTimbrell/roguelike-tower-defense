@@ -511,6 +511,7 @@ export type GameState = {
     camMoveAtEdge: boolean;
     showDamageNumbers: boolean;
     timeScale: number;
+    gameOver: boolean;
 };
 
 export type ShopChoiceButtons = {

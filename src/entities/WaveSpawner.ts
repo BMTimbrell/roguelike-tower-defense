@@ -18,6 +18,7 @@ export default function makeWaveSpawner(k: KAPLAYCtx, levelId: LevelId, waypoint
     let enemyDeadCheck = true;
     let levelComplete = false;
     let waitingForNextWave = true;
+    let gameOverCheck = true;
 
     let scale = store.get(mapAtom).iconScale;
 
@@ -107,6 +108,126 @@ export default function makeWaveSpawner(k: KAPLAYCtx, levelId: LevelId, waypoint
 
     spawner.onUpdate(() => {
         scale = store.get(mapAtom).iconScale;
+
+        if (store.get(gameStateAtom).gameOver) {
+            if (gameOverCheck) {
+                gameOverCheck = false;
+
+                const gameOverText = k.add([
+                    k.pos(k.toScreen(k.getCamPos())),
+                    k.text("Game Over!", {
+                        size: 16 * store.get(mapAtom).iconScale,
+                        font: "free pixel"
+                    }),
+                    k.fixed(),
+                    {
+                        update() {
+                            setGameSpeed(k, 1);
+                            store.set(gameSpeedUIAtom, prev => ({
+                                ...prev,
+                                visible: false,
+                                activeIndex: 0
+                            }));
+
+                            gameOverText.timer -= k.dt();
+
+
+                            if (gameOverText.timer >= 0) gameOverText.scale = gameOverText.scale.add(k.vec2(k.dt() * 3));
+
+                            gameOverText.pos = k.toScreen(k.getCamPos());
+                        },
+                        timer: 1.5
+                    },
+                    k.anchor("center"),
+                    k.scale(store.get(mapAtom).fontScale),
+                    k.color("#FFFFFF"),
+                    k.z(999999),
+                ]);
+
+                // reset local storage
+                let buttons = null;
+                let volumes = null;
+                const saveData = localStorage.getItem("saveData");
+
+                if (saveData) {
+                    buttons = JSON.parse(saveData)?.buttons;
+                    volumes = JSON.parse(saveData)?.volumes;
+                }
+                localStorage.setItem("saveData", JSON.stringify({
+                    camMoveAtEdge: store.get(gameStateAtom).camMoveAtEdge,
+                    showDamageNumbers: store.get(gameStateAtom).showDamageNumbers,
+                    ...(buttons ? { buttons } : {}),
+                    ...(volumes ? { volumes } : {})
+                }));
+
+                k.wait(0.5, () => {
+                    const buttonPos = gameOverText.pos.add(0, 110);
+
+                    const mainMenuButton = k.add([
+                        k.rect(100, 25, { radius: 2 }),
+                        k.pos(buttonPos),
+                        k.anchor("center"),
+                        k.area(),
+                        k.fixed(),
+                        k.scale(store.get(mapAtom).fontScale),
+                        k.color(85, 85, 85),
+                        {
+                            update() {
+                                mainMenuButton.pos = gameOverText.pos.add(0, 110);
+                            }
+                        },
+                        k.z(1000)
+                    ]);
+
+                    const outline = k.add([
+                        k.rect(100, 25, { radius: 2, fill: false }),
+                        k.pos(buttonPos),
+                        k.anchor("center"),
+                        k.fixed(),
+                        k.scale(store.get(mapAtom).fontScale),
+                        k.opacity(0.5),
+                        k.z(1001),
+                        {
+                            update() {
+                                outline.pos = gameOverText.pos.add(0, 110);
+                            }
+                        },
+                        k.outline(1, k.rgb(255, 255, 255))
+                    ]);
+
+                    const buttonText = k.add([
+                        k.text("Main Menu", { size: 16, font: "free pixel" }),
+                        k.pos(buttonPos.x, buttonPos.y),
+                        k.scale(store.get(mapAtom).fontScale),
+                        k.fixed(),
+                        {
+                            update() {
+                                buttonText.pos = gameOverText.pos.add(0, 110);
+                            }
+                        },
+                        k.anchor("center"),
+                        k.z(1001)
+                    ]);
+
+                    mainMenuButton.onHover(() => {
+                        k.setCursor("pointer");
+                        mainMenuButton.color = k.rgb(144, 144, 144); // brighter green
+                    });
+
+                    mainMenuButton.onHoverEnd(() => {
+                        k.setCursor("default");
+                        mainMenuButton.color = k.rgb(85, 85, 85); // original color
+                    });
+
+                    mainMenuButton.onClick(() => {
+                        k.go("mainMenu");
+                    });
+                });
+
+            }
+
+            return;
+        }
 
         if (!spawning) {
             // wave complete
@@ -473,7 +594,7 @@ export default function makeWaveSpawner(k: KAPLAYCtx, levelId: LevelId, waypoint
         k.z(1000),
         {
             update() {
-                nextWaveButton.hidden = (!waitingForNextWave || levelComplete) ||
+                nextWaveButton.hidden = (!waitingForNextWave || levelComplete || store.get(gameStateAtom).gameOver) ||
                     (
                         !store.get(gameStateAtom).challengeManager?.getChallenge() &&
                         store.get(challengesAtom).visible
@@ -495,7 +616,7 @@ export default function makeWaveSpawner(k: KAPLAYCtx, levelId: LevelId, waypoint
         k.outline(1, k.rgb(255, 255, 255)),
         {
             update() {
-                outline.hidden = (!waitingForNextWave || levelComplete) ||
+                outline.hidden = (!waitingForNextWave || levelComplete || store.get(gameStateAtom).gameOver) ||
                     (
                         !store.get(gameStateAtom).challengeManager?.getChallenge() &&
                         store.get(challengesAtom).visible
@@ -515,7 +636,7 @@ export default function makeWaveSpawner(k: KAPLAYCtx, levelId: LevelId, waypoint
         k.z(1001),
         {
             update() {
-                buttonText.hidden = (!waitingForNextWave || levelComplete) ||
+                buttonText.hidden = (!waitingForNextWave || levelComplete || store.get(gameStateAtom).gameOver) ||
                     (
                         !store.get(gameStateAtom).challengeManager?.getChallenge() &&
                         store.get(challengesAtom).visible
