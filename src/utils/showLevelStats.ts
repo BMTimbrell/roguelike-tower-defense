@@ -148,7 +148,7 @@ export default function showLevelStats(k: KAPLAYCtx) {
 
         goldPos = k.vec2(21 * scale, 60 *scale);
         goldTextPos = gold.pos.add(k.vec2(20 * scale, -1 * scale));
-        opacity = store.get(gameStateAtom).hideUI ? 0 : 1;
+        opacity = store.get(gameStateAtom).hideUI || store.get(gameStateAtom).gameOver ? 0 : 1;
     });
 
 }

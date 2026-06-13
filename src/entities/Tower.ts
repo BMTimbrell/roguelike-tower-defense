@@ -253,7 +253,7 @@ export default function makeTower(
                                 element: tower.element
                             });
 
-                            playSfx(k, "smash");
+                            playSfx(k, "smash", 1, enemy.pos);
                         }
                     });
 
@@ -356,7 +356,7 @@ export default function makeTower(
                             phoenix.angle * Math.PI / 180
                         );
 
-                        playSfx(k, TOWERS[towerId]?.shootSound);
+                        playSfx(k, TOWERS[towerId]?.shootSound, 1, phoenix.pos);
 
                         makeProjectile(k, {
                             id: "fireball",

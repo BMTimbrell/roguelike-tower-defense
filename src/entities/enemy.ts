@@ -193,7 +193,7 @@ export default function makeEnemy(
     });
 
     enemy.onStateEnter("stunned", () => {
-        playSfx(k, "dizzy");
+        playSfx(k, "dizzy", 1, enemy.pos);
 
         enemy.stunResistance = true;
         enemy.stunResistanceTimer = enemy.stunResistanceDuration;
@@ -249,7 +249,7 @@ export default function makeEnemy(
 
             const index = k.randi(towers.length);
 
-            if (enemy.shootSound) playSfx(k, enemy.shootSound);
+            if (enemy.shootSound) playSfx(k, enemy.shootSound, 1, enemy.pos);
 
             makeEnemyProjectile(k, {
                 id: enemy.attacker!.projectile as ProjectileId,
@@ -291,7 +291,7 @@ export default function makeEnemy(
 
         const shieldSound = (ENEMIES[enemyId] as { shieldSound: string }).shieldSound;
 
-        if (shieldSound) playSfx(k, shieldSound);
+        if (shieldSound) playSfx(k, shieldSound, 1, enemy.pos);
 
         enemy.statuses.forEach(s => {
             if (enemy.has(s)) enemy.unuse(s);
@@ -491,7 +491,7 @@ export default function makeEnemy(
 
                 const index = k.randi(towers.length);
 
-                if (enemy.shootSound) playSfx(k, enemy.shootSound);
+                if (enemy.shootSound) playSfx(k, enemy.shootSound, 2, enemy.pos);
 
                 makeEnemyProjectile(k, {
                     id: enemy.attacker!.projectile as ProjectileId,
@@ -667,7 +667,7 @@ export default function makeEnemy(
         if (enemy.isDying) return;
 
         const deathSound = (ENEMIES[enemyId] as { deathSound: string }).deathSound;
-        if (deathSound) playSfx(k, deathSound, enemy.boss || enemy.hasLargeSoul ? 1 : 0.5);
+        if (deathSound) playSfx(k, deathSound, enemy.boss || enemy.hasLargeSoul ? 1 : 0.5, enemy.pos);
 
         k.trigger("enemyDeath", "ghost", { pos: enemy.pos, enemy, soulClaimed: false });
 
@@ -775,7 +775,7 @@ function spawnPresent(k: KAPLAYCtx, pos: Vec2, enemiesToSpawn: {
 
         present.play("open");
 
-        playSfx(k, "present tear");
+        playSfx(k, "present tear", 1.5, present.pos);
 
         enemiesToSpawn.forEach(group => {
             const mid = group.amount / 2;

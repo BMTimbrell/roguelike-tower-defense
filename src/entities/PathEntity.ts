@@ -67,7 +67,7 @@ export default function makePathEntity(
                         enemies.forEach(e => {
                             if (!e.invincible && pathEntity?.pos.dist(e.pos) < 10) {
                                 const impactSound = (PROJECTILES[projectileId] as { impactSound?: string })?.impactSound;
-                                if (impactSound) playSfx(k, impactSound);
+                                if (impactSound) playSfx(k, impactSound, 1, entity.pos);
 
                                 if (splashRadius) {
                                     enemies.forEach(enemy => {

@@ -493,7 +493,7 @@ export default function makeUnitCombat(
     });
 
     function shoot(target: AttackTarget) {
-        if (opts.owner.shootSound) playSfx(k, opts.owner.shootSound, 0.7);
+        if (opts.owner.shootSound) playSfx(k, opts.owner.shootSound, 0.7, gun.pos);
         
         if (target.type === "enemy") {
             let enemy = target.enemy;

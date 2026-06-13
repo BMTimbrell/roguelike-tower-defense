@@ -79,7 +79,7 @@ export default function makeAttachedEntity(k: KAPLAYCtx, opts: {
             remaining--;
 
             entity.play("damage");
-            if (sound) playSfx(k, sound);
+            if (sound) playSfx(k, sound, 1, entity.pos);
         }
     });
 }

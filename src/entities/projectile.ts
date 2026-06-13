@@ -80,7 +80,7 @@ export default function makeProjectile(k: KAPLAYCtx, opts: {
 
         const impactSound = (PROJECTILES[id] as { impactSound: string }).impactSound;
         if (impactSound) {
-            playSfx(k, impactSound);
+            playSfx(k, impactSound, 1, projectile.pos);
         }
     });
 

@@ -11,7 +11,8 @@
     padding: 4em 0.5em;
     pointer-events: none;
     overflow-y: auto;
-    /* background-image: url('/sprites/background.png');
+    /* background-image: url('/sprites/capsule-art.png');
+    background-repeat: no-repeat;
     background-position: center; */
 }
 

@@ -1,4 +1,4 @@
-import type { AudioPlay, KAPLAYCtx } from "kaplay";
+import type { AudioPlay, KAPLAYCtx, Vec2 } from "kaplay";
 import { audioAtom, store } from "../store";
 
 const SOUND_VOLUMES: Record<string, number> = {
@@ -66,11 +66,52 @@ export function playUISound(
 export function playSfx(
     k: KAPLAYCtx,
     sound: string,
-    volume = 1
+    volume = 1,
+    position?: Vec2
 ) {
     const audioState = store.get(audioAtom);
 
     if (audioState.muted) return;
+
+    let distanceMultiplier = 1;
+
+    if (position) {
+        const camPos = k.getCamPos();
+
+        const viewportWidth = k.width() / k.getCamScale().x;
+        const viewportHeight = k.height() / k.getCamScale().x;
+
+        const dx = Math.abs(position.x - camPos.x);
+        const dy = Math.abs(position.y - camPos.y);
+
+        const halfWidth = viewportWidth / 2;
+        const halfHeight = viewportHeight / 2;
+
+        const isVisible =
+            dx < halfWidth &&
+            dy < halfHeight;
+
+        if (!isVisible) {
+            const offscreenX = Math.max(0, dx - halfWidth);
+            const offscreenY = Math.max(0, dy - halfHeight);
+
+            const offscreenDistance = Math.sqrt(
+                offscreenX * offscreenX +
+                offscreenY * offscreenY
+            );
+
+            const fadeDistance = 200;
+
+            distanceMultiplier = Math.max(
+                0,
+                1 - offscreenDistance / fadeDistance
+            );
+
+            if (distanceMultiplier < 0.05) {
+                return;
+            }
+        }
+    }
 
     const soundVolume = SOUND_VOLUMES[sound] ?? 1;
     const pitchVariation = k.rand(0.95, 1.05);
@@ -78,6 +119,7 @@ export function playSfx(
     k.play(sound, {
         volume:
             volume *
+            distanceMultiplier *
             soundVolume *
             pitchVariation *
             audioState.masterVolume *

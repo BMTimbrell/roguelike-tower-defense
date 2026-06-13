@@ -120,6 +120,11 @@ export default function makeWaveSpawner(k: KAPLAYCtx, levelId: LevelId, waypoint
                         font: "free pixel"
                     }),
                     k.fixed(),
+                    k.color(
+                        ...([4, 5, 6].includes(store.get(gameStateAtom).level)
+                            ? ([255, 0, 0] as [number, number, number])
+                            : ([255, 255, 255] as [number, number, number]))
+                    ),
                     {
                         update() {
                             setGameSpeed(k, 1);
@@ -140,7 +145,6 @@ export default function makeWaveSpawner(k: KAPLAYCtx, levelId: LevelId, waypoint
                     },
                     k.anchor("center"),
                     k.scale(store.get(mapAtom).fontScale),
-                    k.color("#FFFFFF"),
                     k.z(999999),
                 ]);
 
@@ -373,7 +377,7 @@ export default function makeWaveSpawner(k: KAPLAYCtx, levelId: LevelId, waypoint
                         {
                             time: 0,
                             update() {
-                                rewardText.time += k.dt() * store.get(gameStateAtom).timeScale;
+                                rewardText.time += k.dt();
                                 const t = Math.min(rewardText.time / duration, 1);
 
                                 const eased = 1 - Math.pow(t, 3);
@@ -542,12 +546,12 @@ export default function makeWaveSpawner(k: KAPLAYCtx, levelId: LevelId, waypoint
                     outline.pos = waveTextPos.add(x * scale, y * scale);
 
                     outline.textSize = 20 * scale;
-                    outline.opacity = store.get(gameStateAtom).hideUI ? 0 : 1;
+                    outline.opacity = store.get(gameStateAtom).hideUI || store.get(gameStateAtom).gameOver ? 0 : 1;
                 }
             }
         ]);
     });
-    let opacity = store.get(gameStateAtom).hideUI ? 0 : 1;
+    let opacity = store.get(gameStateAtom).hideUI || store.get(gameStateAtom).gameOver ? 0 : 1;
 
     const waveText = k.add([
         k.pos(waveTextPos),
@@ -579,7 +583,7 @@ export default function makeWaveSpawner(k: KAPLAYCtx, levelId: LevelId, waypoint
 
                 waveText.textSize = 20 * scale;
 
-                waveText.opacity = store.get(gameStateAtom).hideUI ? 0 : 1;
+                waveText.opacity = store.get(gameStateAtom).hideUI || store.get(gameStateAtom).gameOver ? 0 : 1;
             }
         }
     ]);

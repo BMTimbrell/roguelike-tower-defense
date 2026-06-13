@@ -53,7 +53,7 @@ export default function spawnSummon(k: KAPLAYCtx, ctx: AttackContext, id: Summon
 
         const shootSound = (SUMMONS[id] as { shootSound?: string }).shootSound;
 
-        if (shootSound) playSfx(k, shootSound);
+        if (shootSound) playSfx(k, shootSound, 1, summon.pos);
 
         let bonusDamage = 0;
 
