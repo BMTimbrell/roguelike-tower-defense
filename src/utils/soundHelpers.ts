@@ -100,7 +100,7 @@ export function playSfx(
                 offscreenY * offscreenY
             );
 
-            const fadeDistance = 200;
+            const fadeDistance = 300;
 
             distanceMultiplier = Math.max(
                 0,

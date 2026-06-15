@@ -36,7 +36,7 @@ export default function MainMenu() {
             <div className={styles.container} style={{ fontSize: `${16 * fontScale}px` }}>
 
                 {!showDifficulty && (<>
-                    <div className={styles.title}>A Roguelike Tower Defense</div>
+                    <div className={styles.title}><img width={`${462 * fontScale}px`} src="sprites/librarylogo.png" /></div>
 
                     {localStorage.getItem("saveData") && JSON.parse(localStorage.getItem("saveData") as string)?.towerButtons && <Button 
                         onClick={() => {

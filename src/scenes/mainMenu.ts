@@ -17,11 +17,11 @@ export default function mainMenu(k: KAPLAYCtx) {
 
     k.scene("mainMenu" satisfies Scene, async () => {
 
-        k.onClick(async () => {
-            if (!music) {
-                music = await playMusic(k, "main title");
-            }
-        });
+        if (!music) {
+            playMusic(k, "main title").then(m => {
+                music = m;
+            });
+        }
 
         let rand = k.randi();
         const sceneName = rand === 1 ? "level1" : "level1-2";
@@ -63,7 +63,7 @@ export default function mainMenu(k: KAPLAYCtx) {
                 ...prev,
                 camMoveAtEdge: jsonData.camMoveAtEdge,
                 showDamageNumbers: jsonData.showDamageNumbers
-                
+
             }));
         }
 
