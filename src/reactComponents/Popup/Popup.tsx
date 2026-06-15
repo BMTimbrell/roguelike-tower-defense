@@ -1,6 +1,6 @@
 import React, { useRef, useLayoutEffect, useState } from "react";
 import styles from './Popup.module.css';
-import { mapAtom } from '../../store';
+import { gameStateAtom, mapAtom } from '../../store';
 import { useAtom } from 'jotai';
 import { TILE_SIZE } from "../../constants";
 
@@ -12,6 +12,7 @@ export default function Popup({ mode, pos, children, pStyle }: {
 }) {
     const popupRef = useRef<HTMLDivElement | null>(null);
     const [map] = useAtom(mapAtom);
+    const [gameState] = useAtom(gameStateAtom);
     const [y, setY] = useState(pos.y);
     const [x, setX] = useState(pos.x);
     const scale = map.iconScale;
@@ -22,7 +23,9 @@ export default function Popup({ mode, pos, children, pStyle }: {
         if (!el) return;
 
         const rect = el.getBoundingClientRect();
-        const verticalPadding = TILE_SIZE * 2 * fontScale;
+        const verticalPadding = TILE_SIZE * ((
+            gameState.towerButtons.length > 6 || (gameState.towerButtons.length === 6 && !gameState.context?.get("hero").length)) ? 4 : 2
+        ) * fontScale;
         const horizontalPadding = 8;
 
         if (mode === "world") {

@@ -5,10 +5,11 @@
     user-select: none;
     position: absolute;
     width: 100%;
-    height: 100dvh;
-    justify-content: center;
+    min-height: 100dvh;
+    justify-content: flex-start;
     gap: 1em;
-    padding: 4em 0.5em;
+    padding-inline: 0.5em;
+    padding-top: 10dvh;
     overflow-y: auto;
     background-image: url("/sprites/main-background.png");
     background-position: center;
@@ -18,4 +19,10 @@
     font-size: 2em;
     color: white;
     margin-bottom: 1em;
+}
+
+@media (max-height: 800px) {
+    .container {
+        padding-top: 5dvh;
+    }
 }

@@ -17,14 +17,37 @@ export function useTowerPopup(scale: number, hasElementPopup: boolean) {
         const popupRect = popupRef.current.getBoundingClientRect();
         const padding = 20 * scale;
 
+        let baseX = triggerRect.x;
+        const baseY = triggerRect.y - popupRect.height - padding;
+
+        // Estimate width of element popup
+        const elementWidth = 300;
+
+        const totalWidth =
+            popupRect.width +
+            padding +
+            elementWidth;
+
+        // Shift both popups left if they would overflow
+        if (baseX + totalWidth > window.innerWidth) {
+            baseX =
+                window.innerWidth -
+                totalWidth -
+                padding;
+        }
+
+        if (baseX < padding) {
+            baseX = padding;
+        }
+
         setBasePos({
-            x: triggerRect.x,
-            y: triggerRect.y - popupRect.height - padding,
+            x: baseX,
+            y: baseY,
         });
 
         setElementPos({
-            x: triggerRect.x + popupRect.width + padding,
-            y: triggerRect.y - popupRect.height - padding,
+            x: baseX + popupRect.width + padding,
+            y: baseY,
         });
     }, [showBase, scale]);
 

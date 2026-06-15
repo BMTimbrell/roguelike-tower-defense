@@ -19,10 +19,10 @@ export default function StartingOptions() {
 
             <div className={styles.options}>
                 {options.map((o, index) => (
-                    <div 
+                    <div
                         onClick={() => addLoadout(o.ids, o.upgrades)}
                         onMouseEnter={() => playUISound(gameState.context, "ui pop")}
-                        className={styles.option} 
+                        className={styles.option}
                         key={index}
                     >
                         <div className={styles.towers}>

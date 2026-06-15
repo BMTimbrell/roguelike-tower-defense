@@ -1,3 +1,11 @@
+.container {
+    position: absolute;
+    display: flex;
+    height: calc(100dvh - 20dvh);
+    flex-direction: column;
+    padding-top: 20dvh;
+}
+
 .difficulty-container {
     display: flex;
     gap: 1em;
@@ -56,4 +64,10 @@
     padding-inline: 0.5em;
     top: 50%;
     transform: translateY(-50%);
+}
+
+@media (max-height: 1000px) {
+    .container {
+        padding-top: 5vh;
+    }
 }

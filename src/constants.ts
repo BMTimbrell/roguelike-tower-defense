@@ -297,7 +297,7 @@ export const LEVEL_WAVES = {
             //         { id: "bee", count: 5, interval: 0.5 },
             //         { id: "armouredOrc", count: 3, interval: 2 },
             //         { id: "fairy", count: 1, interval: 1 },
-            //         { id: "orc", count: 2, interval: 1 },
+            //         { id: "orc", count: 3, interval: 1 },
             //         { id: "bee", count: 5, interval: 0.5 },
             //     ],
             //     reward: 0
@@ -456,7 +456,7 @@ export const LEVEL_WAVES = {
             //         { id: "giantBee", count: 1, interval: 1 },
             //         { id: "bee", count: 10, interval: 0.5 },
             //         { id: "giantOrc", count: 1, interval: 2 },
-            //         { id: "orc", count: 5, interval: 1 },
+            //         { id: "orc", count: 6, interval: 1 },
             //         { id: "redFairy", count: 1, interval: 1 },
             //         { id: "spider", count: 2, interval: 1.5 }
             //     ],

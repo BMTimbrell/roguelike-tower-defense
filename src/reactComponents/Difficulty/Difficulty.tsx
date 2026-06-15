@@ -17,7 +17,7 @@ export default function Difficulty({ onClick, onBackClick }: { onClick: React.Mo
     };
 
     return (
-        <> 
+        <div className={styles.container}> 
             <div className={styles.header}>
                 <Button onMouseEnter={onMouseEnter} onClick={onBackClick} classNames={[styles["back-button"]]}>←</Button>
                 <div className={styles.heading}>Choose a Difficulty</div>
@@ -85,6 +85,6 @@ export default function Difficulty({ onClick, onBackClick }: { onClick: React.Mo
                 </div>
 
             </div>
-        </>
+        </div>
     );
 }
