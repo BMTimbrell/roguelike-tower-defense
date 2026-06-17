@@ -25,7 +25,7 @@ export function BottomBar() {
                 <div className={styles["tower-container"]}>
                     {gameState.heroButton.visible && gameState.hero && <HeroButton
                         onClick={() => { gameState.heroButton.onClick() }}
-                        sprite={`/sprites/${HEROES[gameState.hero.heroId].sprite}`}
+                        sprite={`sprites/${HEROES[gameState.hero.heroId].sprite}`}
                         charge={gameState.heroCharge.charge}
                     />}
                     {towerButtons.map((t, index) => (

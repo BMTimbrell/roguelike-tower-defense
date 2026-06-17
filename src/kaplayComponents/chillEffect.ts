@@ -1,6 +1,6 @@
-import type { KAPLAYCtx, Comp, GameObj } from "kaplay";
+import type { KAPLAYCtx, Comp } from "kaplay";
 import type { EnemyGameObj, StatusEffectResult } from "../types";
-import type { StatusEffect, StatusEffectComp } from "./statusEffect";
+import type { StatusEffect } from "./statusEffect";
 import { CHILL_PERCENT, MAX_CHILL_STACKS } from "../constants";
 import { updateSpeed } from "../entities/Enemy";
 import { gameStateAtom, store } from "../store";

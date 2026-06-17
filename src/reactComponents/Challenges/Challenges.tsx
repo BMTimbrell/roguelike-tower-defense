@@ -29,7 +29,7 @@ export default function Challenges() {
                             onMouseEnter={() => playUISound(gameState.context, "ui hover")}
                         >
                             <div>{challenge.description}</div>
-                            <div className={styles.reward}>Reward: {challenge.reward}<img width={`${17 * scale}px`} src="/sprites/tower-coin.png" /></div>
+                            <div className={styles.reward}>Reward: {challenge.reward}<img width={`${17 * scale}px`} src="sprites/tower-coin.png" /></div>
                         </div>
                     ))}
                 </div>

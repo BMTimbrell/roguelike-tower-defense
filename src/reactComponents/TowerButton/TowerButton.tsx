@@ -49,7 +49,7 @@ export default function TowerButton(
                 className={`${styles.button} ${disabled ? styles.disabled : ''}`}
                 onClick={disabled ? () => null : onClick}
             >
-                <img width={`${32 * iconScale}`} src={`/sprites/${sprite}`} />
+                <img width={`${32 * iconScale}`} src={`sprites/${sprite}`} />
                 <CostText cost={cost} />
 
                 {TOWERS[id].footprint.w === 2 && <div className={styles.size}>2x2</div>}

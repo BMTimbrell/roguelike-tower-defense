@@ -44,7 +44,7 @@ export default function SelectHeroUI() {
                                     {HEROES[id].name}
                                 </div>
 
-                                {!unlocked && <img className={styles.padlock} width={`${32 * iconScale}px`} src="/sprites/lock.png" />}
+                                {!unlocked && <img className={styles.padlock} width={`${32 * iconScale}px`} src="sprites/lock.png" />}
 
                                 <img width={iconScale * 32} src={`sprites/${HEROES[id].sprite}`} />
                             </div>

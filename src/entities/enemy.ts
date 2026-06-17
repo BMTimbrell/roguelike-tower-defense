@@ -144,6 +144,12 @@ export default function makeEnemy(
         }
     });
 
+    enemy.onCollide("cursor", () => {
+        if (!enemy.has("healthBar")) {
+            enemy.use(healthBar(k, 0.3));
+        }
+    });
+
     enemy.onAnimEnd(anim => {
         if (anim === "die") {
             k.destroy(enemy);

@@ -52,7 +52,7 @@ export default function Difficulty({ onClick, onBackClick }: { onClick: React.Mo
                         }));
                     }}
                 >
-                    <div className={styles.heading}>Hard {!hardUnlocked && <img width={`${16 * iconScale}`} src="/sprites/lock.png" />}</div>
+                    <div className={styles.heading}>Hard {!hardUnlocked && <img width={`${16 * iconScale}`} src="sprites/lock.png" />}</div>
                     <div>For experienced players who already understand the game's systems. Enemies have more health and armour, making combat more demanding and less forgiving.</div>
                     {!hardUnlocked && (
                         <div className={styles.unlockText}>
@@ -75,7 +75,7 @@ export default function Difficulty({ onClick, onBackClick }: { onClick: React.Mo
                         }));
                     }}
                 >
-                    <div className={styles.heading}>Expert {!expertUnlocked && <img width={`${16 * scale}`} src="/sprites/lock.png" />}</div>
+                    <div className={styles.heading}>Expert {!expertUnlocked && <img width={`${16 * scale}`} src="sprites/lock.png" />}</div>
                     <div>For veteran players who have mastered the game's systems.</div>
                     {!expertUnlocked && (
                         <div className={styles.unlockText}>

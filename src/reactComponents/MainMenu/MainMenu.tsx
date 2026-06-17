@@ -88,6 +88,16 @@ export default function MainMenu() {
                     >
                         Settings
                     </Button>
+                    <a href="https://store.steampowered.com/app/4851710/A_Roguelike_Tower_Defense" target="_blank">
+                        <Button 
+                            onClick={() => {
+                                playUISound(gameState.context, "ui click");
+                            }}
+                            onMouseEnter={onHover}
+                        >
+                            Wishlist
+                        </Button>
+                    </a>
                 </>)}
                 {showDifficulty && <Difficulty 
                     onClick={ ()=> { 
