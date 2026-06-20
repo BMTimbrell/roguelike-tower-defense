@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Modal from "../Modal/Modal";
 import { gameStateAtom, mainMenuAtom, mapAtom, selectHeroUIAtom } from "../../store";
 import { useAtom } from "jotai";
@@ -8,6 +8,10 @@ import styles from "./MainMenu.module.css";
 import Difficulty from "../Difficulty/Difficulty";
 import { playUISound } from "../../utils/soundHelpers";
 import goToNextScene from "../../utils/goToNextScene";
+import { getSave } from "../../platform/save";
+import type { SaveData } from "../../types";
+import { isDesktop } from "../../platform/platform";
+import { IS_DEMO } from "../../constants";
 
 export default function MainMenu() {
     const [showSettings, setShowSettings] = useState(false);
@@ -15,6 +19,7 @@ export default function MainMenu() {
     const [, setSelectHeroUI] = useAtom(selectHeroUIAtom);
     const [, setMenu] = useAtom(mainMenuAtom)
     const [map] = useAtom(mapAtom);
+    const [save, setSave] = useState<SaveData | null>(null);
     const [gameState, setGameState] = useAtom(gameStateAtom);
     const fontScale = map.fontScale;
     const header = showSettings && <div style={{
@@ -31,6 +36,15 @@ export default function MainMenu() {
         setShowDifficulty(false);
     };
 
+    useEffect(() => {
+        async function load() {
+            const save = await getSave();
+            setSave(save);
+        }
+
+        load();
+    }, []);
+
     return (
         <>
             <div className={styles.container} style={{ fontSize: `${16 * fontScale}px` }}>
@@ -38,31 +52,27 @@ export default function MainMenu() {
                 {!showDifficulty && (<>
                     <div className={styles.title}><img width={`${462 * fontScale}px`} src="sprites/librarylogo.png" /></div>
 
-                    {localStorage.getItem("saveData") && JSON.parse(localStorage.getItem("saveData") as string)?.towerButtons && <Button 
+                    {save?.run && <Button
                         onClick={() => {
                             playUISound(gameState.context, "ui click");
                             const k = gameState.context;
-                            const saveData = localStorage.getItem("saveData");
+                            const saveData = save.run
                             if (!saveData || !k) return;
 
-                            const jsonData = JSON.parse(saveData);
-                            if (!jsonData) return;
-                            
                             setMenu(prev => ({ ...prev, visible: false }));
                             setGameState(prev => ({
                                 ...prev,
-                                scene: jsonData.scene
+                                scene: saveData.scene
                             }));
-                            
+
                             goToNextScene(k, {
-                                sceneName: jsonData.scene,
-                                mapData: jsonData.mapData,
-                                tileGrid: jsonData.tileGrid,
-                                pathTiles: jsonData.pathTiles,
-                                wave: jsonData.wave,
-                                level: jsonData.level
+                                sceneName: saveData.scene,
+                                mapData: saveData.mapData,
+                                tileGrid: saveData.tileGrid,
+                                pathTiles: saveData.pathTiles,
+                                wave: saveData.wave
                             });
-                            
+
                         }}
                         disabled={!localStorage.getItem("saveData")}
                         onMouseEnter={onHover}
@@ -70,7 +80,7 @@ export default function MainMenu() {
                         Continue Game
                     </Button>}
 
-                    <Button 
+                    <Button
                         onClick={() => {
                             playUISound(gameState.context, "ui click");
                             setShowDifficulty(true);
@@ -79,7 +89,7 @@ export default function MainMenu() {
                     >
                         New Game
                     </Button>
-                    <Button 
+                    <Button
                         onClick={() => {
                             setShowSettings(true);
                             playUISound(gameState.context, "ui click");
@@ -88,24 +98,35 @@ export default function MainMenu() {
                     >
                         Settings
                     </Button>
-                    <a href="https://store.steampowered.com/app/4851710/A_Roguelike_Tower_Defense" target="_blank">
-                        <Button 
+                    {IS_DEMO && <a href="https://store.steampowered.com/app/4851710/A_Roguelike_Tower_Defense" target="_blank">
+                        <Button
                             onClick={() => {
                                 playUISound(gameState.context, "ui click");
                             }}
                             onMouseEnter={onHover}
                         >
-                            Wishlist
+                            Wishlist on Steam
                         </Button>
-                    </a>
+                    </a>}
+                    {isDesktop() && 
+                        <Button
+                            onClick={() => {
+                                playUISound(gameState.context, "ui click");
+                                window.platform?.quitGame();
+                            }}
+                            onMouseEnter={onHover}
+                        >
+                            Quit
+                        </Button>
+                    }
                 </>)}
-                {showDifficulty && <Difficulty 
-                    onClick={ ()=> { 
+                {showDifficulty && <Difficulty
+                    onClick={() => {
                         setSelectHeroUI(prev => ({ ...prev, visible: true }));
-                        setMenu(prev => ({ ...prev, visible: false })); 
+                        setMenu(prev => ({ ...prev, visible: false }));
                         playUISound(gameState.context, "ui click");
                     }}
-                    onBackClick={handleBackClick} 
+                    onBackClick={handleBackClick}
                 />}
             </div>
 

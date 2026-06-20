@@ -3,13 +3,16 @@ import { useAtom } from "jotai";
 import { audioAtom, controlsAtom, gameStateAtom } from "../../store";
 import styles from "./Settings.module.css";
 import { updateMusicVolume } from "../../utils/soundHelpers";
+import { getSave, saveSettings } from "../../platform/save";
+import type { Key, MouseButton } from "kaplay";
+import { isDesktop } from "../../platform/platform";
 
 export default function Settings() {
     const [gameState, setGameState] = useAtom(gameStateAtom);
     const [audio, setAudio] = useAtom(audioAtom);
     type SelectedKey = {
         action: string;
-        type: "keyboard" | "mouse";
+        type: MouseButton | Key;
     };
     const [controls] = useAtom(controlsAtom);
     const [selectedKey, setSelectedKey] = useState<null | SelectedKey>(null);
@@ -35,83 +38,80 @@ export default function Settings() {
         { name: "card10", description: "Card 10" }
     ];
 
-    const handleKeyDown = (e: KeyboardEvent) => {
+    const handleKeyDown = async (e: KeyboardEvent) => {
+        const save = await getSave();
+        if (!save) return;
+
         if (selectedKey && selectedKey.type === "keyboard") {
             const key = e.key === " " ? "space" : e.key === "ArrowLeft" ? "left" : e.key === "ArrowRight" ? "right" : e.key === "ArrowUp" ? "up" : e.key === "ArrowDown" ? "down" : e.key;
             controls.setButton(selectedKey.action, key.toLowerCase(), "keyboard");
             setSelectedKey(null);
 
-            let jsonData = null;
-            if (localStorage.getItem("saveData")) jsonData = JSON.parse(localStorage.getItem("saveData") as string);
-
-            if (jsonData) localStorage.setItem("saveData", JSON.stringify({
-                ...jsonData,
+            await saveSettings({
+                ...save.settings,
                 buttons: {
-                    ...jsonData.buttons,
+                    ...save.settings.buttons,
                     [selectedKey.action]: {
-                        ...jsonData.buttons[selectedKey.action],
+                        ...save.settings.buttons[selectedKey.action],
                         keyboard: key
                     }
                 }
-            }));
+            });
+
         }
+
         if (selectedKey && selectedKey.type === "mouse") {
             controls.setButton(selectedKey.action, "", "mouse");
             setSelectedKey(null);
 
-            let jsonData = null;
-            if (localStorage.getItem("saveData")) jsonData = JSON.parse(localStorage.getItem("saveData") as string);
-
-            if (jsonData) localStorage.setItem("saveData", JSON.stringify({
-                ...jsonData,
+            await saveSettings({
+                ...save.settings,
                 buttons: {
-                    ...jsonData.buttons,
+                    ...save.settings.buttons,
                     [selectedKey.action]: {
-                        ...jsonData.buttons[selectedKey.action],
-                        mouse: null
+                        ...save.settings.buttons[selectedKey.action],
+                        mouse: undefined
                     }
                 }
-            }));
+            });
         }
     };
 
-    const handleMouseDown = (e: MouseEvent) => {
+    const handleMouseDown = async (e: MouseEvent) => {
         if (selectedKey && selectedKey.type === "mouse") {
             const button = e.button === 0 ? "left" : e.button === 1 ? "middle" : e.button === 2 ? "right" : e.button === 3 ? "back" : e.button === 4 ? "forward" : "";
             controls.setButton(selectedKey.action, button, "mouse");
             setSelectedKey(null);
 
-            let jsonData = null;
-            if (localStorage.getItem("saveData")) jsonData = JSON.parse(localStorage.getItem("saveData") as string);
+            const save = await getSave();
+            if (!save) return;
 
-            if (jsonData) localStorage.setItem("saveData", JSON.stringify({
-                ...jsonData,
+            await saveSettings({
+                ...save.settings,
                 buttons: {
-                    ...jsonData.buttons,
+                    ...save.settings.buttons,
                     [selectedKey.action]: {
-                        ...jsonData.buttons[selectedKey.action],
-                        mouse: button
+                        ...save.settings.buttons[selectedKey.action],
+                        mouse: button || undefined
                     }
                 }
-            }));
+            });
         }
     };
 
-    const updateSavedVolume = () => {
-        let jsonData = null;
-        if (localStorage.getItem("saveData")) jsonData = JSON.parse(localStorage.getItem("saveData") as string);
+    const updateSavedVolume = async () => {
+        const save = await getSave();
+        if (!save) return;
 
-        if (jsonData) {
-            localStorage.setItem("saveData", JSON.stringify({
-                ...jsonData,
-                volumes: {
-                    masterVolume: audio.masterVolume,
-                    sfxVolume: audio.sfxVolume,
-                    musicVolume: audio.musicVolume,
-                    uiVolume: audio.uiVolume
-                }
-            }));
-        }
+        await saveSettings({
+            ...save.settings,
+            volumes: {
+                masterVolume: audio.masterVolume,
+                sfxVolume: audio.sfxVolume,
+                musicVolume: audio.musicVolume,
+                uiVolume: audio.uiVolume
+            }
+        });
     };
 
     useEffect(() => {
@@ -125,7 +125,7 @@ export default function Settings() {
     });
 
     const [isFullscreen, setIsFullscreen] = useState(
-        !!document.fullscreenElement
+        isDesktop() ? false : !!document.fullscreenElement
     );
 
     useEffect(() => {
@@ -143,7 +143,36 @@ export default function Settings() {
         };
     }, []);
 
+    useEffect(() => {
+        async function init() {
+            if (isDesktop()) {
+                const fs = await window.platform?.isFullscreen?.();
+                setIsFullscreen(!!fs);
+            }
+        }
+
+        init();
+    }, []);
+
     const toggleFullscreen = async () => {
+
+        if (isDesktop()) {
+            const next = !isFullscreen;
+
+            window.platform?.setFullscreen(next);
+            setIsFullscreen(next);
+
+            const save = await getSave();
+            if (!save) return;
+
+            await saveSettings({
+                ...save.settings,
+                fullscreen: next
+            });
+
+            return;
+        }
+
         try {
             if (!document.fullscreenElement) {
                 await document.documentElement.requestFullscreen();
@@ -151,7 +180,7 @@ export default function Settings() {
                 await document.exitFullscreen();
             }
         } catch (err) {
-            console.error("Failed to toggle fullscreen:", err);
+            console.error(err);
         }
     };
 
@@ -261,18 +290,21 @@ export default function Settings() {
                         id="screenScroll"
                         type="checkbox"
                         checked={gameState.camMoveAtEdge}
-                        onChange={(e) => {
+                        onChange={async (e) => {
+                            const checked = e.target.checked;
+
                             setGameState(prev => ({
                                 ...prev,
-                                camMoveAtEdge: e.target.checked
+                                camMoveAtEdge: checked
                             }));
 
-                            if (localStorage.getItem("saveData")) localStorage.setItem("saveData", JSON.stringify({
-                                ...JSON.parse(localStorage.getItem("saveData") as string),
-                                camMoveAtEdge: e.target.checked
-                            })); else localStorage.setItem("saveData", JSON.stringify({
-                                camMoveAtEdge: e.target.checked
-                            }));
+                            const save = await getSave();
+                            if (!save) return;
+
+                            await saveSettings({
+                                ...save.settings,
+                                camMoveAtEdge: checked
+                            });
                         }}
                     />
                 </div>
@@ -283,18 +315,21 @@ export default function Settings() {
                         id="showDamageNumbers"
                         type="checkbox"
                         checked={gameState.showDamageNumbers}
-                        onChange={(e) => {
+                        onChange={async (e) => {
+                            const checked = e.target.checked;
+
                             setGameState(prev => ({
                                 ...prev,
-                                showDamageNumbers: e.target.checked
+                                showDamageNumbers: checked
                             }));
 
-                            if (localStorage.getItem("saveData")) localStorage.setItem("saveData", JSON.stringify({
-                                ...JSON.parse(localStorage.getItem("saveData") as string),
-                                showDamageNumbers: e.target.checked
-                            })); else localStorage.setItem("saveData", JSON.stringify({
-                                showDamageNumbers: e.target.checked
-                            }));
+                            const save = await getSave();
+                            if (!save) return;
+
+                            await saveSettings({
+                                ...save.settings,
+                                showDamageNumbers: checked
+                            });
                         }}
                     />
                 </div>

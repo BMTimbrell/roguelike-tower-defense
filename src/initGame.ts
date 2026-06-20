@@ -15,8 +15,9 @@ import level5_2 from './scenes/level5-2';
 import level6 from './scenes/level6';
 import { audioAtom, controlsAtom, gameStateAtom, store } from './store';
 import type { MouseButton } from 'kaplay';
+import { DEFAULT_SETTINGS, getSave, saveSettings } from './platform/save';
 
-export default function initGame() {
+export default async function initGame() {
     // focus back on canvas when clicking on html elements
     window.addEventListener("click", () => document.querySelector<HTMLCanvasElement>('#game')?.focus());
 
@@ -54,84 +55,10 @@ export default function initGame() {
 
     k.go("mainMenu" satisfies Scene);
 
-    const saveData = localStorage.getItem("saveData");
+    const saveData = await getSave();
 
-    if (!saveData) {
-        // default settings
-        localStorage.setItem("saveData", JSON.stringify({
-            buttons: {
-                cancel: {
-                    mouse: "right"
-                },
-                scroll: {
-                    mouse: "middle"
-                },
-                camLeft: {
-                    keyboard: "a"
-                },
-                camRight: {
-                    keyboard: "d"
-                },
-                camUp: {
-                    keyboard: "w"
-                },
-                camDown: {
-                    keyboard: "s"
-                },
-                pause: {
-                    keyboard: "escape"
-                },
-                speed1x: {
-                    keyboard: "z"
-                },
-                speed2x: {
-                    keyboard: "x"
-                },
-                speed3x: {
-                    keyboard: "c"
-                },
-                card1: {
-                    keyboard: "1"
-                },
-                card2: {
-                    keyboard: "2"
-                },
-                card3: {
-                    keyboard: "3"
-                },
-                card4: {
-                    keyboard: "4"
-                },
-                card5: {
-                    keyboard: "5"
-                },
-                card6: {
-                    keyboard: "6"
-                },
-                card7: {
-                    keyboard: "7"
-                },
-                card8: {
-                    keyboard: "8"
-                },
-                card9: {
-                    keyboard: "9"
-                },
-                card10: {
-                    keyboard: "10"
-                },
-                zoomIn: {
-                    keyboard: "e"
-                },
-                zoomOut: {
-                    keyboard: "q"
-                }
-            },
-            camMoveAtEdge: true,
-            showDamageNumbers: true
-        }));
-    } else if (saveData && JSON.parse(saveData)?.buttons) {
-        const buttons = JSON.parse(saveData).buttons;
+    if (saveData) {
+        const buttons = saveData.settings.buttons;
 
         for (const action in buttons) {
             if (buttons[action].mouse) {
@@ -148,10 +75,10 @@ export default function initGame() {
                 );
             }
         }
-    }
+    } else await saveSettings(DEFAULT_SETTINGS);
 
-    if (saveData && JSON.parse(saveData)?.volumes) {
-        const volumes = JSON.parse(saveData).volumes;
+    if (saveData) {
+        const volumes = saveData.settings.volumes;
         const { masterVolume, sfxVolume, musicVolume, uiVolume } = volumes;
 
         store.set(audioAtom, prev => ({

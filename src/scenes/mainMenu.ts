@@ -11,6 +11,7 @@ import makeHero from "../entities/Hero";
 import { playMusic } from "../utils/soundHelpers";
 import { ChallengeManager } from "../utils/challengeHelpers";
 import updateSkills from "../utils/updateSkills";
+import { getSave } from "../platform/save";
 
 export default function mainMenu(k: KAPLAYCtx) {
     let music: AudioPlay | null = null;
@@ -54,57 +55,59 @@ export default function mainMenu(k: KAPLAYCtx) {
             visible: true
         }));
 
-        const saveData = localStorage.getItem("saveData");
-        let jsonData = null;
-        if (saveData) jsonData = JSON.parse(saveData);
+        const saveData = await getSave();
 
-        if (jsonData) {
+        if (saveData?.settings) {
+            const settings = saveData.settings;
+
             store.set(gameStateAtom, prev => ({
                 ...prev,
-                camMoveAtEdge: jsonData.camMoveAtEdge,
-                showDamageNumbers: jsonData.showDamageNumbers
+                camMoveAtEdge: settings.camMoveAtEdge,
+                showDamageNumbers: settings.showDamageNumbers
 
             }));
         }
 
-        if (jsonData?.towerButtons) {
+        if (saveData?.run) {
+            const runData = saveData.run;
+
             let hero = makeHero(
                 k,
                 {
-                    heroId: jsonData.hero.id,
+                    heroId: runData.hero.id,
                     pos: k.toWorld(k.mousePos()),
-                    tileGrid: jsonData.tileGrid,
-                    pathTiles: jsonData.pathTiles,
-                    level: jsonData.hero.level
+                    tileGrid: runData.tileGrid,
+                    pathTiles: runData.pathTiles,
+                    level: runData.hero.level
                 }
             );
 
-            hero.skillIds = jsonData.hero.skills;
+            hero.skillIds = runData.hero.skills;
 
             updateSkills(hero);
 
             store.set(gameStateAtom, prev => ({
                 ...prev,
                 timeScale: 1,
-                towerCoins: jsonData.towerCoins,
-                sceneIndex: jsonData.sceneIndex,
-                level: jsonData.level,
-                health: jsonData.health,
-                maxHealth: jsonData.maxHealth,
+                towerCoins: runData.towerCoins,
+                sceneIndex: runData.sceneIndex,
+                level: runData.level,
+                health: runData.health,
+                maxHealth: runData.maxHealth,
                 waveNumber: 0,
-                shops: jsonData.shops,
+                shops: runData.shops,
                 waveActive: false,
-                heroCharge: jsonData.heroCharge,
+                heroCharge: runData.heroCharge,
                 deck: {
                     drawCard: () => { },
                     drawCost: 10,
-                    cards: jsonData.deck
+                    cards: runData.deck
                 },
                 selectedUpgrade: null,
-                difficulty: jsonData.difficulty,
+                difficulty: runData.difficulty,
                 challengeManager: new ChallengeManager(),
-                nextTowerId: jsonData.nextTowerId,
-                towerButtons: addTowers(k, jsonData.towerButtons, jsonData.tileGrid, jsonData.pathTiles),
+                nextTowerId: runData.nextTowerId,
+                towerButtons: addTowers(k, runData.towerButtons, runData.tileGrid, runData.pathTiles),
                 hero,
                 heroButton: {
                     ...prev.heroButton,

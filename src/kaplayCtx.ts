@@ -63,12 +63,6 @@ export default function makeKaplayCtx() {
             },
             card10: {
                 keyboard: "10"
-            },
-            zoomIn: {
-                keyboard: "e"
-            },
-            zoomOut: {
-                keyboard: "q"
             }
         },
         debug: false,

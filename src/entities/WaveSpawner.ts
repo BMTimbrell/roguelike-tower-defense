@@ -8,6 +8,7 @@ import drawCards from "../utils/drawCards";
 import makeTower from "./Tower";
 import setGameSpeed from "../utils/setGameSpeed";
 import { fadeOutMusic, getMusic, playUISound } from "../utils/soundHelpers";
+import { saveRun } from "../platform/save";
 
 export default function makeWaveSpawner(k: KAPLAYCtx, levelId: LevelId, waypoints: Vec2[], opts?: { onWaveEnd?: () => void; onWaveStart?: () => void; }) {
     const level = LEVEL_WAVES[levelId];
@@ -106,7 +107,7 @@ export default function makeWaveSpawner(k: KAPLAYCtx, levelId: LevelId, waypoint
         }
     ]);
 
-    spawner.onUpdate(() => {
+    spawner.onUpdate(async () => {
         scale = store.get(mapAtom).iconScale;
 
         if (store.get(gameStateAtom).gameOver) {
@@ -149,20 +150,22 @@ export default function makeWaveSpawner(k: KAPLAYCtx, levelId: LevelId, waypoint
                 ]);
 
                 // reset local storage
-                let buttons = null;
-                let volumes = null;
-                const saveData = localStorage.getItem("saveData");
+                // let buttons = null;
+                // let volumes = null;
+                // const saveData = localStorage.getItem("saveData");
 
-                if (saveData) {
-                    buttons = JSON.parse(saveData)?.buttons;
-                    volumes = JSON.parse(saveData)?.volumes;
-                }
-                localStorage.setItem("saveData", JSON.stringify({
-                    camMoveAtEdge: store.get(gameStateAtom).camMoveAtEdge,
-                    showDamageNumbers: store.get(gameStateAtom).showDamageNumbers,
-                    ...(buttons ? { buttons } : {}),
-                    ...(volumes ? { volumes } : {})
-                }));
+                // if (saveData) {
+                //     buttons = JSON.parse(saveData)?.buttons;
+                //     volumes = JSON.parse(saveData)?.volumes;
+                // }
+                // localStorage.setItem("saveData", JSON.stringify({
+                //     camMoveAtEdge: store.get(gameStateAtom).camMoveAtEdge,
+                //     showDamageNumbers: store.get(gameStateAtom).showDamageNumbers,
+                //     ...(buttons ? { buttons } : {}),
+                //     ...(volumes ? { volumes } : {})
+                // }));
+
+                await saveRun(undefined);
 
                 k.wait(0.5, () => {
                     const buttonPos = gameOverText.pos.add(0, 110);

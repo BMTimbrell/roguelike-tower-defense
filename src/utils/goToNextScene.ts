@@ -9,11 +9,11 @@ export default function goToNextScene(k: KAPLAYCtx, opts: {
     tileGrid: Tile[][],
     pathTiles: PathTile[],
     wave: LevelId,
-    level: LevelWaves
+    level?: LevelWaves
 }) {
     const { sceneName, mapData, tileGrid, pathTiles, wave, level } = opts;
 
-    if (level.boss) {
+    if (level?.boss) {
         playUISound(k, "boss drums");
         const bossId = level.boss.id;
         const sprite = ENEMIES[bossId].sprite;

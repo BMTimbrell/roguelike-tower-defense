@@ -1,5 +1,5 @@
 import { type MouseEventHandler } from "react";
-import { TILE_SIZE, type EnemyId, type HeroId, type ProjectileId, type SkillId, type TowerId } from "./constants";
+import { TILE_SIZE, type EnemyId, type HeroId, type LevelId, type ProjectileId, type SkillId, type TowerId } from "./constants";
 import type { Vec2, GameObj, KAPLAYCtx, HealthComp, SpriteComp, StateComp, RotateComp, PosComp, ZComp, OpacityComp, ButtonBinding, MouseButton, Key, AreaComp } from "kaplay";
 import { frostAoeBurst } from "./utils/makeUnitCombat";
 import type { StatusEffectComp } from "./kaplayComponents/statusEffect";
@@ -749,14 +749,14 @@ export type AttackTarget =
 
 export type TargetResolver = () => AttackTarget | null;
 
-export type AttackType = "projectile" | 
-    "lightning" | 
-    "sniper_laser" | 
-    "piercing_laser" | 
-    "cone" | 
-    "aoe" | 
-    "melee" | 
-    "thunder" | 
+export type AttackType = "projectile" |
+    "lightning" |
+    "sniper_laser" |
+    "piercing_laser" |
+    "cone" |
+    "aoe" |
+    "melee" |
+    "thunder" |
     "blizzard" |
     "ramp_laser";
 
@@ -869,4 +869,59 @@ export type AudioState = {
     musicVolume: number;
     uiVolume: number;
     muted: boolean;
+};
+
+export type SettingsSave = {
+    volumes: {
+        masterVolume: number,
+        sfxVolume: number,
+        musicVolume: number,
+        uiVolume: number
+    },
+    camMoveAtEdge: boolean;
+    showDamageNumbers: boolean;
+    buttons: Record<string, { mouse?: MouseButton, keyboard?: Key }>;
+    fullscreen?: boolean;
+};
+
+export type MetaSave = {
+    unlockedHeroes: HeroId[];
+};
+
+export type RunSave = {
+    deck: Upgrade[];
+    scene: Scene;
+    towerCoins: number;
+    hero: {
+        id: HeroId;
+        level: number;
+        skills: SkillId[];
+    };
+    sceneIndex: number;
+    level: number;
+    health: number;
+    maxHealth: number;
+    shops: ("shop" | "altar")[];
+    heroCharge: {
+        damageDealt: number;
+        charge: number;
+        damageRequired: number;
+    };
+    difficulty: "normal" | "hard" | "expert";
+    nextTowerId: number;
+    towerButtons: TowerId[];
+    mapData: MapData;
+    tileGrid: Tile[][];
+    wave: LevelId;
+    pathTiles: PathTile[];
+};
+
+export type SaveData = {
+    version: number;
+
+    settings: SettingsSave;
+
+    meta: MetaSave;
+
+    run?: RunSave;
 };
