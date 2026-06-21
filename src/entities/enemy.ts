@@ -401,7 +401,7 @@ export default function makeEnemy(
 
         if (enemy.attacker && attackTimer > 0) attackTimer -= k.dt() * timeScale;
 
-        enemy.z = enemy.pos.y + enemy.pos.x * 0.0001 * (dir.x > 0 ? 1 : -1);
+        enemy.z = enemy.pos.y + enemy.height * 0.5;
 
         // boss
         if (enemy.boss && enemy.boss.stopIndexes.length) {

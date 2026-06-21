@@ -4,31 +4,109 @@ import { calcUpgradeCost } from "./calcUpgradeCost";
 import type { SelectedFarmTowerUI, SelectedTowerUI, TargetPriority, TowerGameObj, Upgrade } from "../types";
 import calcFireInterval from "./calcFireInterval";
 import calcSellPrice from "./calcSellPrice";
-import { SEEDS } from "../constants";
+import { SCYTHE_MAX_KILL_STACKS, SEEDS } from "../constants";
 import { rebuildLava } from "./lavaHelpers";
 import { playUISound } from "./soundHelpers";
 
 export default function setTowerUI(k: KAPLAYCtx, type: "combat" | "farm", tower: TowerGameObj) {
     if (type === "combat") {
+        const baseDamage = tower.stats.damage;
+
+        let bonusDamage = 0;
+
+        // each modifier becomes a named source
+        const sources: { name: string; value: number }[] = [];
+
+        // ----------------------
+        // Time scaling
+        // ----------------------
+        if (tower.timeData?.timeScaling.damage) {
+            const value =
+                Math.pow(
+                    tower.timeData.timeMultiplier,
+                    tower.timeData.timeScaling.damagePow
+                ) - 1;
+
+            bonusDamage += value;
+            
+            sources.push({
+                name: "time scaling",
+                value
+            });
+        }
+
+        // ----------------------
+        // Overheat
+        // ----------------------
+        if (tower.overheat?.current) {
+            const value = tower.overheat.current * 0.3;
+
+            bonusDamage += value;
+
+            sources.push({
+                name: "overheat",
+                value
+            });
+        }
+
+        // ----------------------
+        // Battery (if exists)
+        // ----------------------
+        if (tower.battery) {
+            const value = tower.battery.charge * 0.42;
+
+            bonusDamage += value;
+  
+            sources.push({
+                name: "battery",
+                value
+            });
+        }
+
+        // ----------------------
+        // Kill stacks (scythe)
+        // ----------------------
+        if (tower.killStacks) {
+            const value = Math.min(tower.killStacks, SCYTHE_MAX_KILL_STACKS);
+
+            bonusDamage += value;
+
+            sources.push({
+                name: "stacks",
+                value
+            });
+        }
+
+        // ----------------------
+        // FINAL DAMAGE (what enemies actually receive)
+        // ----------------------
+        const damageValue = Math.round(baseDamage + bonusDamage);
+
+        // ----------------------
+        // UI LABEL
+        // ----------------------
+        const damageLabel =
+            sources.length > 0 && damageValue > baseDamage
+                ? `${damageValue} (${baseDamage} base + ${sources
+                    .map(s => s.name)
+                    .join(" + ")})`
+                : `${damageValue}`;
+
         store.set(gameStateAtom, prev => ({
             ...prev,
             selectedUI: {
-                ...(prev.selectedUI && "previewRange" in prev.selectedUI ? { previewRange:  prev.selectedUI?.previewRange ?? null }  : {}),
+                ...(prev.selectedUI && "previewRange" in prev.selectedUI ? { previewRange: prev.selectedUI?.previewRange ?? null } : {}),
                 towerId: tower.instanceId,
                 pos: tower.screenPos(),
                 priority: tower.priority,
                 name: tower.name,
                 stats: {
                     ...tower.stats,
-                    ...(tower.timeData || tower.charge || tower.overheat?.current ? {
+                    ...(tower.timeData || tower.charge || tower.overheat?.current || tower.killStacks || tower.battery ? {
                         fireInterval: tower.stats.fireInterval *
                             (tower.timeData?.timeScaling.interval ? tower.timeData.timeMultiplier : 1) *
                             (1 - (tower.charge?.currentCharge ?? 0)),
-                        damage: Math.round(
-                            tower.stats.damage + (tower.timeData?.timeScaling.damage ? 
-                                tower.timeData.timeMultiplier ** tower.timeData.timeScaling.damagePow - 1 : 
-                                tower.overheat?.current ? tower.overheat.current * 0.3 : 0)
-                        )
+                        damage: damageLabel
                     } : {})
                 },
                 cost: tower.cost,

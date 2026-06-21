@@ -12,6 +12,10 @@ import { getSave } from "../../platform/save";
 import type { SaveData } from "../../types";
 import { isDesktop } from "../../platform/platform";
 import { IS_DEMO } from "../../constants";
+import updateSkills from "../../utils/updateSkills";
+import { ChallengeManager } from "../../utils/challengeHelpers";
+import makeHero from "../../entities/Hero";
+import addTowers from "../../utils/addTowers";
 
 export default function MainMenu() {
     const [showSettings, setShowSettings] = useState(false);
@@ -59,10 +63,52 @@ export default function MainMenu() {
                             const saveData = save.run
                             if (!saveData || !k) return;
 
+                            let hero = makeHero(
+                                k,
+                                {
+                                    heroId: saveData.hero.id,
+                                    pos: k.toWorld(k.mousePos()),
+                                    tileGrid: saveData.tileGrid,
+                                    pathTiles: saveData.pathTiles,
+                                    level: saveData.hero.level
+                                }
+                            );
+
+                            hero.skillIds = saveData.hero.skills;
+
+                            updateSkills(hero);
+
                             setMenu(prev => ({ ...prev, visible: false }));
                             setGameState(prev => ({
                                 ...prev,
-                                scene: saveData.scene
+                                timeScale: 1,
+                                towerCoins: saveData.towerCoins,
+                                sceneIndex: saveData.sceneIndex,
+                                level: saveData.level,
+                                health: saveData.health,
+                                maxHealth: saveData.maxHealth,
+                                waveNumber: 0,
+                                shops: saveData.shops,
+                                waveActive: false,
+                                heroCharge: saveData.heroCharge,
+                                deck: {
+                                    drawCard: () => { },
+                                    drawCost: 10,
+                                    cards: saveData.deck
+                                },
+                                selectedUpgrade: null,
+                                difficulty: saveData.difficulty,
+                                challengeManager: new ChallengeManager(),
+                                nextTowerId: saveData.nextTowerId,
+                                towerButtons: addTowers(k, saveData.towerButtons, saveData.tileGrid, saveData.pathTiles),
+                                hero,
+                                heroButton: {
+                                    ...prev.heroButton,
+                                    onClick: () => {
+                                        if (k.get("hero")[0]) k.destroy(k.get("hero")[0]);
+                                        else k.add(hero);
+                                    }
+                                }
                             }));
 
                             goToNextScene(k, {
@@ -74,7 +120,6 @@ export default function MainMenu() {
                             });
 
                         }}
-                        disabled={!localStorage.getItem("saveData")}
                         onMouseEnter={onHover}
                     >
                         Continue Game
@@ -108,7 +153,7 @@ export default function MainMenu() {
                             Wishlist on Steam
                         </Button>
                     </a>}
-                    {isDesktop() && 
+                    {isDesktop() &&
                         <Button
                             onClick={() => {
                                 playUISound(gameState.context, "ui click");

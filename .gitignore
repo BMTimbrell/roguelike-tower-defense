@@ -25,3 +25,4 @@ dist-ssr
 
 .env.demo
 .env.full
+.env

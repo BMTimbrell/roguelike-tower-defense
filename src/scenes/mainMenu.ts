@@ -10,7 +10,6 @@ import generateMap from "../utils/generateMap";
 import makeHero from "../entities/Hero";
 import { playMusic } from "../utils/soundHelpers";
 import { ChallengeManager } from "../utils/challengeHelpers";
-import updateSkills from "../utils/updateSkills";
 import { getSave } from "../platform/save";
 
 export default function mainMenu(k: KAPLAYCtx) {
@@ -68,56 +67,56 @@ export default function mainMenu(k: KAPLAYCtx) {
             }));
         }
 
-        if (saveData?.run) {
-            const runData = saveData.run;
+        // if (saveData?.run) {
+        //     const runData = saveData.run;
 
-            let hero = makeHero(
-                k,
-                {
-                    heroId: runData.hero.id,
-                    pos: k.toWorld(k.mousePos()),
-                    tileGrid: runData.tileGrid,
-                    pathTiles: runData.pathTiles,
-                    level: runData.hero.level
-                }
-            );
+        //     let hero = makeHero(
+        //         k,
+        //         {
+        //             heroId: runData.hero.id,
+        //             pos: k.toWorld(k.mousePos()),
+        //             tileGrid: runData.tileGrid,
+        //             pathTiles: runData.pathTiles,
+        //             level: runData.hero.level
+        //         }
+        //     );
 
-            hero.skillIds = runData.hero.skills;
+        //     hero.skillIds = runData.hero.skills;
 
-            updateSkills(hero);
+        //     updateSkills(hero);
 
-            store.set(gameStateAtom, prev => ({
-                ...prev,
-                timeScale: 1,
-                towerCoins: runData.towerCoins,
-                sceneIndex: runData.sceneIndex,
-                level: runData.level,
-                health: runData.health,
-                maxHealth: runData.maxHealth,
-                waveNumber: 0,
-                shops: runData.shops,
-                waveActive: false,
-                heroCharge: runData.heroCharge,
-                deck: {
-                    drawCard: () => { },
-                    drawCost: 10,
-                    cards: runData.deck
-                },
-                selectedUpgrade: null,
-                difficulty: runData.difficulty,
-                challengeManager: new ChallengeManager(),
-                nextTowerId: runData.nextTowerId,
-                towerButtons: addTowers(k, runData.towerButtons, runData.tileGrid, runData.pathTiles),
-                hero,
-                heroButton: {
-                    ...prev.heroButton,
-                    onClick: () => {
-                        if (k.get("hero")[0]) k.destroy(k.get("hero")[0]);
-                        else k.add(hero);
-                    }
-                }
-            }));
-        }
+        //     store.set(gameStateAtom, prev => ({
+        //         ...prev,
+        //         timeScale: 1,
+        //         towerCoins: runData.towerCoins,
+        //         sceneIndex: runData.sceneIndex,
+        //         level: runData.level,
+        //         health: runData.health,
+        //         maxHealth: runData.maxHealth,
+        //         waveNumber: 0,
+        //         shops: runData.shops,
+        //         waveActive: false,
+        //         heroCharge: runData.heroCharge,
+        //         deck: {
+        //             drawCard: () => { },
+        //             drawCost: 10,
+        //             cards: runData.deck
+        //         },
+        //         selectedUpgrade: null,
+        //         difficulty: runData.difficulty,
+        //         challengeManager: new ChallengeManager(),
+        //         nextTowerId: runData.nextTowerId,
+        //         towerButtons: addTowers(k, runData.towerButtons, runData.tileGrid, runData.pathTiles),
+        //         hero,
+        //         heroButton: {
+        //             ...prev.heroButton,
+        //             onClick: () => {
+        //                 if (k.get("hero")[0]) k.destroy(k.get("hero")[0]);
+        //                 else k.add(hero);
+        //             }
+        //         }
+        //     }));
+        // }
 
         store.set(altarAtom, prev => ({
             ...prev,

@@ -1,7 +1,8 @@
 {
-  "name": "package",
+  "name": "a-roguelike-tower-defense",
   "private": true,
-  "version": "0.0.0",
+  "version": "0.1.0",
+  "main": "dist-electron/main.js",
   "type": "module",
   "scripts": {
     "dev": "vite --mode full",
@@ -11,19 +12,27 @@
     "build:demo": "vite build --mode demo && npm run build:electron",
     "lint": "eslint .",
     "preview": "vite preview",
-    "electron": "electron dist-electron/main.js"
+    "electron": "electron dist-electron/main.js",
+    "dist:win": "vite build --mode full && npm run build:electron && electron-builder --win",
+    "dist:mac": "vite build --mode full && npm run build:electron && electron-builder --mac",
+    "dist:linux": "vite build --mode full && npm run build:electron && electron-builder --linux",
+    "dist:win:demo": "vite build --mode demo && npm run build:electron && electron-builder --win",
+    "dist:mac:demo": "vite build --mode demo && npm run build:electron && electron-builder --mac",
+    "dist:linux:demo": "vite build --mode demo && npm run build:electron && electron-builder --linux"
   },
   "dependencies": {
     "jotai": "^2.13.1",
     "kaplay": "^3001.0.19",
     "react": "^19.1.1",
-    "react-dom": "^19.1.1"
+    "react-dom": "^19.1.1",
+    "steamworks.js": "^0.4.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.33.0",
     "@types/react": "^19.1.10",
     "@types/react-dom": "^19.1.7",
     "@vitejs/plugin-react": "^5.0.0",
+    "cross-env": "^10.1.0",
     "electron": "^41.7.1",
     "electron-builder": "^26.15.3",
     "eslint": "^9.33.0",
@@ -33,5 +42,33 @@
     "typescript": "~5.8.3",
     "typescript-eslint": "^8.39.1",
     "vite": "^7.1.2"
+  },
+  "build": {
+    "appId": "com.arogueliketowerdefense.game",
+    "productName": "A Roguelike Tower Defense",
+    "directories": {
+      "output": "release"
+    },
+    "extraResources": [
+      {
+        "from": "build/icon.ico",
+        "to": "icon.ico"
+      }
+    ],
+    "icon": "build/icon",
+    "files": [
+      "dist/**/*",
+      "dist-electron/**/*"
+    ],
+    "win": {
+      "target": "nsis",
+      "icon": "build/icon.ico"
+    },
+    "mac": {
+      "target": "dmg"
+    },
+    "linux": {
+      "target": "AppImage"
+    }
   }
 }

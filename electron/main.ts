@@ -2,7 +2,9 @@ import { app, BrowserWindow, ipcMain } from "electron";
 import path from "path";
 import { fileURLToPath } from "url";
 import fs from "fs/promises";
+import steamworks from "steamworks.js";
 
+const client = steamworks.init(4851710);
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
@@ -18,7 +20,8 @@ async function createWindow() {
             preload: path.join(__dirname, "preload.mjs"),
             contextIsolation: true,
             sandbox: false
-        }
+        },
+        icon: path.join(process.resourcesPath, "icon.ico")
     });
     win.setMenu(null);
 
@@ -47,10 +50,16 @@ async function loadSettings() {
 
 ipcMain.handle("save-game", async (_, data: string) => {
     await fs.writeFile(savePath, data, "utf8");
+    client.cloud.writeFile("save.json", data);
 });
 
 ipcMain.handle("load-game", async () => {
     try {
+        if (client.cloud.fileExists("save.json")) {
+            const buf = client.cloud.readFile("save.json");
+            return buf.toString();
+        }
+
         return await fs.readFile(savePath, "utf8");
     } catch {
         return null;
