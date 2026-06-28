@@ -1,6 +1,6 @@
 import type { Key, MouseButton } from "kaplay";
-import type { HeroId, LevelId, SkillId, TowerId } from "../constants";
-import type { MapData, MetaSave, PathTile, RunSave, SaveData, Scene, SettingsSave, Tile, Upgrade } from "../types";
+import { CURRENT_SAVE_VERSION, type HeroId, type LevelId, type SkillId, type TowerId } from "../constants";
+import type { MapData, MetaSave, PathTile, RunSave, SaveData, SaveDataV1, SaveDataV2, Scene, SettingsSave, Tile, Upgrade } from "../types";
 import { isDesktop } from "./platform";
 
 export async function getSave(): Promise<SaveData | null> {
@@ -11,21 +11,15 @@ export async function getSave(): Promise<SaveData | null> {
     } else {
         raw = localStorage.getItem("saveData");
     }
+
     if (!raw) return null;
 
     try {
-        const data: unknown = JSON.parse(raw);
+        const parsed: unknown = JSON.parse(raw);
 
-        // OLD SAVE (no version yet)
-        if (
-            typeof data === "object" &&
-            data !== null &&
-            !("version" in data)
-        ) {
-            return migrateV0ToV1(data as LegacySaveData);
-        }
+        const save = migrate(parsed);
 
-        if (isSaveData(data)) return data;
+        if (isSaveData(save)) return save;
         return null;
     } catch {
         return null;
@@ -54,13 +48,14 @@ export async function saveRun(
 
 function createDefaultSave() {
     return {
-        version: 1,
+        version: CURRENT_SAVE_VERSION,
         settings: {
             ...DEFAULT_SETTINGS,
             ...(isDesktop() ? { fullscreen: true } : {})
         },
         meta: {
-            unlockedHeroes: ["archer", "wizard"] satisfies HeroId[]
+            unlockedHeroes: ["archer", "wizard"] satisfies HeroId[],
+            seenTutorials: {}
         }
     };
 }
@@ -85,7 +80,7 @@ export async function saveMeta(
     await writeSave(save);
 }
 
-function migrateV0ToV1(old: LegacySaveData): SaveData {
+function migrateV0ToV1(old: LegacySaveData): SaveDataV1 {
     return {
         version: 1,
         settings: {
@@ -117,6 +112,47 @@ function migrateV0ToV1(old: LegacySaveData): SaveData {
         } : {}),
         meta: {
             unlockedHeroes: ["archer", "wizard"]
+        }
+    };
+}
+
+function migrate(save: any): SaveData {
+    // V0 → V1
+    if (
+        typeof save === "object" &&
+        save !== null &&
+        !("version" in save)
+    ) {
+        save = migrateV0ToV1(save as LegacySaveData);
+    }
+
+    // V1 → V2 → V3 → ...
+    while (save.version < CURRENT_SAVE_VERSION) {
+        switch (save.version) {
+            case 1:
+                save = migrateV1ToV2(save);
+                break;
+
+            default:
+                throw new Error(
+                    `Unknown save version ${save.version}`
+                );
+        }
+    }
+
+    return save;
+}
+
+function migrateV1ToV2(save: SaveDataV1): SaveDataV2 {
+    return {
+        ...save,
+        version: 2,
+        settings: {
+            ...save.settings
+        },
+        meta: {
+            ...save.meta,
+            seenTutorials: {}
         }
     };
 }

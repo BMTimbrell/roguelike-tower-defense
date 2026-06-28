@@ -1,0 +1,37 @@
+.container {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5em;
+    align-items: center;
+}
+
+.title {
+    font-size: 1.2em;
+}
+
+.text {
+    font-size: 1em;
+    max-width: 600px;
+}
+
+.image-container {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.25em;
+}
+
+.arrow-button {
+    font-size: 1.25em;
+    padding-inline: 0.5em;
+}
+
+.right-arrow-button {
+    margin-left: auto;
+}
+
+.footer {
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+}

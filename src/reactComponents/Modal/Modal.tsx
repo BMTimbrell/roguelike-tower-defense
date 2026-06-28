@@ -6,18 +6,20 @@ export default function Modal({
     children,
     onClose,
     footer,
-    header
+    header,
+    disableCloseOnClick
 }: {
     children: React.ReactNode;
     isOpen: boolean;
     onClose: MouseEventHandler<HTMLDivElement>;
     footer?: React.ReactNode;
     header?: React.ReactNode;
+    disableCloseOnClick?: boolean;
 }) {
     return (
         <div
             className={`${styles["modal-overlay"]} ${isOpen ? styles.active : ""}`}
-            onClick={onClose}
+            onClick={!disableCloseOnClick ? onClose : () => {}}
         >
             <div
                 className={styles.modal}

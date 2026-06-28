@@ -1,4 +1,4 @@
-import { contextBridge, ipcRenderer } from "electron";
+import { contextBridge, ipcRenderer, shell } from "electron";
 
 contextBridge.exposeInMainWorld("platform", {
     isDesktop: true,
@@ -14,5 +14,7 @@ contextBridge.exposeInMainWorld("platform", {
     setFullscreen: (value: boolean) =>
         ipcRenderer.send("set-fullscreen", value),
 
-    isFullscreen: () => ipcRenderer.invoke("is-fullscreen")
+    isFullscreen: () => ipcRenderer.invoke("is-fullscreen"),
+
+    openExternal: (url: string) => shell.openExternal(url)
 });

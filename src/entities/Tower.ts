@@ -1,7 +1,7 @@
 import type { KAPLAYCtx, Vec2 } from 'kaplay';
 import { CURSE_CRIT, ELEMENTS, REDUCED_RANGE_TOWERS, TILE_SIZE, type TowerId } from '../constants';
 import type { TowerGameObj, UnitEffects, TowerDef, SeedId, Tile, PathTile, RandomProjectiles, TimeData, ContinuousEffect, Charge, BuffType, Battery, EnemyGameObj, ElementName, Overheat } from '../types';
-import { store, gameStateAtom, controlsAtom } from '../store';
+import { store, gameStateAtom, controlsAtom, cachedSaveAtom } from '../store';
 import { calcUpgradeCost } from '../utils/calcUpgradeCost';
 import { TOWERS } from '../constants';
 import makePlaceableOnGrid, { setBlockedTiles } from '../utils/makePlacementOnGrid';
@@ -16,6 +16,8 @@ import isButtonDown from '../utils/isButtonDown';
 import { waitScaled } from '../utils/timerFunctions';
 import makeProjectile from './Projectile';
 import { playSfx, playUISound } from '../utils/soundHelpers';
+import { getSave } from '../platform/save';
+import { tryShowTutorial } from '../utils/tutorialHelpers';
 
 export default function makeTower(
     k: KAPLAYCtx,
@@ -179,6 +181,12 @@ export default function makeTower(
             }));
 
             playUISound(k, "ui buy");
+
+            // upgrade tutorial
+            const save = store.get(cachedSaveAtom);
+            if (save) {
+                tryShowTutorial("towerUpgrade", save);
+            }
 
             // build tower challenge
             const challengeManager = store.get(gameStateAtom).challengeManager;
@@ -507,7 +515,7 @@ export default function makeTower(
         if (tower.overheat) {
             const heat = tower.overheat;
 
-            if (!combat.isFiring() || tower.state === "disabled" || !store.get(gameStateAtom).waveActive) 
+            if (!combat.isFiring() || tower.state === "disabled" || !store.get(gameStateAtom).waveActive)
                 heat.current -= heat.decayPerSecond * k.dt() * timeScale;
 
             heat.current = k.clamp(

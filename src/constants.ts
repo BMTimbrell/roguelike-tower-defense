@@ -17,6 +17,7 @@ import { playSfx } from "./utils/soundHelpers";
 
 export const IS_DEMO =
     import.meta.env.VITE_BUILD_TYPE === "demo";
+export const CURRENT_SAVE_VERSION = 2;
 export const TILE_SIZE = 32;
 export const TOWER_RANGE_TOLERANCE = 5;
 export const MAX_TOWER_UPGRADES = 5;
@@ -53,6 +54,51 @@ export const REDUCED_RANGE_TOWERS = [
 export const BASE_REROLL_COST = 5;
 export const BASE_DRAW_COST = 10;
 export const LEVEL_REWARDS = [20, 20, 30, 25, 25];
+export const TUTORIAL_VERSIONS = {
+    towerUpgrade: 1,
+    heroCharge: 1,
+    armour: 1
+};
+export type TutorialStep = {
+    title?: string;
+    text: string;
+    images?: string[];
+};
+export const TUTORIALS = {
+    towerUpgrade: {
+        steps: [
+            {
+                title: "Upgrade Towers",
+                text: "Spend coins to unlock upgrade slots.",
+                images: ["unlock-upgrade-slot.png"]
+            },
+            {
+                title: "Upgrade Towers",
+                text: "Select an upgrade card to highlight it in the slot, and click on the highlighted slot to add the upgrade to the tower.",
+                images: ["select-card.png", "highlight-slot.png", "add-card-to-slot.png"]
+            }
+        ]
+    },
+    heroCharge: {
+        steps: [
+            {
+                title: "Place Hero",
+                text: "Dealing damage to enemies gains hero charge. Max hero charge is required before you can place your hero. The higher level your hero, the more damage will be required before you can place him.",
+                images: ["hero-charge-progress.png", "hero-charge-complete.png"]
+            }
+        ]
+    },
+    armour: {
+        steps: [
+            {
+                title: "Armoured Enemies",
+                text: "The yellow section on an enemy's health bar represents its armour. Armour takes 50% damage from regular damage sources but critical hits ignore the armour's damage reduction.",
+                images: ["armoured-enemy.png"]
+            }
+        ]
+    }
+
+};
 
 export const UPGRADES: Upgrade[] = [{
     stat: "damage",

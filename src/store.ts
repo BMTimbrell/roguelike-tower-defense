@@ -1,5 +1,5 @@
 import { atom, createStore } from "jotai";
-import { type startingHeroUI, type GameState, type Rewards, type StartingOptions, type ShopChoiceButtons, type Shop, type Altar, type ChallengeDef, type PauseMenu, type Controls, type MainMenu, type GameSpeedUI, type HeroProgression, type AudioState } from "./types";
+import { type startingHeroUI, type GameState, type Rewards, type StartingOptions, type ShopChoiceButtons, type Shop, type Altar, type ChallengeDef, type PauseMenu, type Controls, type MainMenu, type GameSpeedUI, type HeroProgression, type AudioState, type TutorialId, type SaveData } from "./types";
 import { ChallengeManager } from "./utils/challengeHelpers";
 
 export const gameStateAtom = atom<GameState>({
@@ -188,5 +188,9 @@ export const audioAtom = atom<AudioState>({
     uiVolume: 1,
     muted: false
 });
+
+export const cachedSaveAtom = atom<SaveData | null>(null);
+
+export const activeTutorialAtom = atom<TutorialId | null>(null);
 
 export const store = createStore();

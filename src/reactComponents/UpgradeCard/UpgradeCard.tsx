@@ -54,7 +54,7 @@ export default function UpgradeCard({
                     <img width={`${16 * iconScale}px`} src={upgrade.icon} />
                     <div>+{upgrade.amount}{upgrade.percentage ? '%' : ''}</div>
                 </div>
-                <div>Cost: {upgrade.cost}</div>
+                <div>Slots: {upgrade.cost}</div>
             </div>
 
             {showPopup && hovered && <UpgradePopup upgrade={upgrade} pos={popupPos} />}

@@ -1,5 +1,5 @@
 import { useAtom } from 'jotai';
-import { altarAtom, challengesAtom, gameSpeedUIAtom, gameStateAtom, mainMenuAtom, rewardsAtom, selectHeroUIAtom, shopAtom, shopChoiceUIAtom, startingOptionsAtom } from './store';
+import { activeTutorialAtom, altarAtom, challengesAtom, gameSpeedUIAtom, gameStateAtom, mainMenuAtom, rewardsAtom, selectHeroUIAtom, shopAtom, shopChoiceUIAtom, startingOptionsAtom } from './store';
 import { BottomBar } from "./reactComponents/BottomBar/BottomBar";
 import SelectedTower from "./reactComponents/SelectedTower/SelectedTower";
 import SelectedHero from './reactComponents/SelectedHero/SelectedHero';
@@ -16,6 +16,7 @@ import Challenges from './reactComponents/Challenges/Challenges';
 import PauseMenu from './reactComponents/PauseMenu/PauseMenu';
 import MainMenu from './reactComponents/MainMenu/MainMenu';
 import GameSpeedButtons from './reactComponents/GameSpeedButtons/GameSpeedButtons';
+import TutorialModal from './reactComponents/TutorialModal/TutorialModal';
 
 export default function ReactUI() {
     const [gameState] = useAtom(gameStateAtom);
@@ -31,6 +32,7 @@ export default function ReactUI() {
     const [challenges] = useAtom(challengesAtom);
     const [mainMenu] = useAtom(mainMenuAtom);
     const [gameSpeedUI] = useAtom(gameSpeedUIAtom);
+    const [activeTutorial] = useAtom(activeTutorialAtom);
 
     if (selectedUI) {
         selectedTower = "plantedSeed" in selectedUI
@@ -76,6 +78,8 @@ export default function ReactUI() {
             {mainMenu.visible && <MainMenu />}
 
             {gameSpeedUI.visible && !gameState.hideUI && <GameSpeedButtons />}
+
+            {activeTutorial && <TutorialModal />}
         </>
     );
 }

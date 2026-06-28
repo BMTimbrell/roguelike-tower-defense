@@ -3,6 +3,7 @@ import kaplay from "kaplay";
 export default function makeKaplayCtx() {
     return kaplay({
         global: false,
+        loadingScreen: false,
         buttons: {
             cancel: {
                 mouse: "right"

@@ -1,5 +1,5 @@
 import { type KAPLAYCtx, type Vec2, type GameObj } from 'kaplay';
-import { store, gameStateAtom } from '../store';
+import { store, gameStateAtom, cachedSaveAtom } from '../store';
 import type { EnemyId, ProjectileId } from '../constants';
 import { ENEMIES, HARD_HEALTH_MULT, STUN_DURATION, TILE_SIZE, TOWER_RANGE_TOLERANCE } from '../constants';
 import healthBar from '../kaplayComponents/healthBar';
@@ -10,6 +10,8 @@ import { aoeBurst } from '../utils/makeUnitCombat';
 import { waitScaled } from '../utils/timerFunctions';
 import { lifespan } from '../kaplayComponents/lifespan';
 import { playSfx } from '../utils/soundHelpers';
+import { getSave } from '../platform/save';
+import { tryShowTutorial } from '../utils/tutorialHelpers';
 
 export default function makeEnemy(
     k: KAPLAYCtx,
@@ -118,6 +120,14 @@ export default function makeEnemy(
 
     enemy.animSpeed = store.get(gameStateAtom).timeScale;
 
+    if (enemy.armour > 1) {
+        // upgrade tutorial
+        const save = store.get(cachedSaveAtom);
+        if (save) {
+            tryShowTutorial("armour", save);
+        }
+    }
+
     if (enemy.boss) enemy.use(healthBar(k, 1, { isBoss: true }));
 
     enemy.onHurt(amount => {
@@ -136,6 +146,14 @@ export default function makeEnemy(
                 charge: Math.min((damageDealt) / prev.heroCharge.damageRequired / (difficulty === "hard" ? HARD_HEALTH_MULT : 1), 1)
             }
         }));
+
+        // hero charge tutorial
+        if (store.get(gameStateAtom).heroCharge.charge >= 1) {
+            const save = store.get(cachedSaveAtom);
+            if (save) {
+                tryShowTutorial("heroCharge", save);
+            }
+        }
 
         if (enemy.isDying) return;
 
@@ -663,7 +681,7 @@ export default function makeEnemy(
         enemy.onDeath(() => {
             k.destroy(boostRing);
         });
-        
+
         enemy.onDestroy(() => {
             k.destroy(boostRing);
         })
@@ -687,7 +705,7 @@ export default function makeEnemy(
             const mid = enemy.spawnOnDeath.amount / 2;
 
             for (let i = 0; i < enemy.spawnOnDeath.amount; i++) {
-                const posOffset = (i - mid) *  (enemy.spawnOnDeath.offset ?? 12);
+                const posOffset = (i - mid) * (enemy.spawnOnDeath.offset ?? 12);
                 const posOffsetX = Math.abs(dir.x) > 0.5 ? posOffset : 0;
                 const posOffsetY = Math.abs(dir.y) > 0.5 ? posOffset : 0;
 

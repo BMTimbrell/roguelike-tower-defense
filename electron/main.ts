@@ -4,7 +4,7 @@ import { fileURLToPath } from "url";
 import fs from "fs/promises";
 import steamworks from "steamworks.js";
 
-const client = steamworks.init(4851710);
+const client = steamworks.init(4877630);
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 

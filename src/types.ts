@@ -884,8 +884,17 @@ export type SettingsSave = {
     fullscreen?: boolean;
 };
 
+export type TutorialId =
+    | "towerUpgrade"
+    | "armour"
+    | "heroCharge";
+
+export type SeenTutorials =
+    Partial<Record<TutorialId, number>>;
+
 export type MetaSave = {
     unlockedHeroes: HeroId[];
+    seenTutorials: SeenTutorials;
 };
 
 export type RunSave = {
@@ -925,3 +934,9 @@ export type SaveData = {
 
     run?: RunSave;
 };
+
+export type SaveDataV1 = Omit<SaveData, "meta"> & {
+    meta: Omit<MetaSave, "seenTutorials">;
+};
+
+export type SaveDataV2 = SaveData;

@@ -11,7 +11,7 @@ export default function Button({ style, onClick, onMouseEnter, onMouseDown, disa
     classNames?: string[];
 }) {
     return (
-        <button onMouseEnter={onMouseEnter} onMouseDown={onMouseDown} disabled={disabled} className={`${styles.button} ${classNames?.map(c => c)}`} style={style} onClick={onClick}>
+        <button onMouseEnter={onMouseEnter} onMouseDown={onMouseDown} disabled={disabled} className={[styles.button, ...(classNames ?? [])].join(" ")} style={style} onClick={onClick}>
             {children}
         </button>
     );

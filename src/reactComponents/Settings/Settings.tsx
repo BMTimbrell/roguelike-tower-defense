@@ -2,10 +2,11 @@ import { useEffect, useState } from "react";
 import { useAtom } from "jotai";
 import { audioAtom, controlsAtom, gameStateAtom } from "../../store";
 import styles from "./Settings.module.css";
-import { updateMusicVolume } from "../../utils/soundHelpers";
-import { getSave, saveSettings } from "../../platform/save";
+import { playUISound, updateMusicVolume } from "../../utils/soundHelpers";
+import { getSave, saveMeta, saveSettings } from "../../platform/save";
 import type { Key, MouseButton } from "kaplay";
 import { isDesktop } from "../../platform/platform";
+import Button from "../Button/Button";
 
 export default function Settings() {
     const [gameState, setGameState] = useAtom(gameStateAtom);
@@ -343,6 +344,22 @@ export default function Settings() {
                         onChange={toggleFullscreen}
                     />
                 </div>
+
+            </div>
+            
+            <div>
+                <Button 
+                onMouseEnter={() => playUISound(gameState.context, "ui hover")}
+                    onClick={async () => {
+                        const save = await getSave();
+                        if (!save) return;
+
+                        playUISound(gameState.context, "ui click");
+
+                        save.meta.seenTutorials = {};
+                        await saveMeta(save.meta);
+                    }}
+                >Reset Tutorials</Button>
             </div>
 
         </div>

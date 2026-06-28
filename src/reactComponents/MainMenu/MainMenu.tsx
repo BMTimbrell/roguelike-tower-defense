@@ -143,7 +143,8 @@ export default function MainMenu() {
                     >
                         Settings
                     </Button>
-                    {IS_DEMO && <a href="https://store.steampowered.com/app/4851710/A_Roguelike_Tower_Defense" target="_blank">
+
+                    {IS_DEMO && !isDesktop() && <a href="https://store.steampowered.com/app/4851710/A_Roguelike_Tower_Defense" target="_blank">
                         <Button
                             onClick={() => {
                                 playUISound(gameState.context, "ui click");
@@ -153,6 +154,21 @@ export default function MainMenu() {
                             Wishlist on Steam
                         </Button>
                     </a>}
+
+                    {isDesktop() && IS_DEMO && (
+                        <Button
+                            onClick={() => {
+                                playUISound(gameState.context, "ui click");
+                                window.platform?.openExternal(
+                                    "https://store.steampowered.com/app/4851710/A_Roguelike_Tower_Defense"
+                                );
+                            }}
+                            onMouseEnter={onHover}
+                        >
+                            Wishlist on Steam
+                        </Button>
+                    )}
+
                     {isDesktop() &&
                         <Button
                             onClick={() => {

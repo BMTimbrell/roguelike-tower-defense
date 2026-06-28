@@ -4,7 +4,7 @@ import showLevelStats from "./showLevelStats";
 import initCam from "./initCam";
 import generateFog from "./generateFog";
 import drawCards from "./drawCards";
-import { challengesAtom, controlsAtom, gameSpeedUIAtom, gameStateAtom, pauseMenuAtom, store } from "../store";
+import { cachedSaveAtom, challengesAtom, controlsAtom, gameSpeedUIAtom, gameStateAtom, pauseMenuAtom, store } from "../store";
 import makeFloatingText from "../entities/FloatingText";
 import { LEVEL_WAVES, MAX_HAND_SIZE, ROUND_DRAW_NUM, TILE_SIZE, type LevelId } from "../constants";
 import reroll from "./reroll";
@@ -17,7 +17,7 @@ import isButtonDown from "./isButtonDown";
 import onAction from "./onAction";
 import setGameSpeed from "./setGameSpeed";
 import { playMusic } from "./soundHelpers";
-import { saveRun } from "../platform/save";
+import { getSave, saveRun } from "../platform/save";
 
 export default function makeLevelScene(k: KAPLAYCtx, sceneName: Scene) {
 
@@ -234,16 +234,6 @@ export default function makeLevelScene(k: KAPLAYCtx, sceneName: Scene) {
             updateSkills(hero);
         }
 
-        // local storage
-        // let buttons = null;
-        // let volumes = null;
-        // const saveData = await getSave();
-
-        // if (saveData) {
-        //     buttons = JSON.parse(saveData)?.buttons;
-        //     volumes = JSON.parse(saveData)?.volumes;
-        // }
-
         await saveRun({
             deck: store.get(gameStateAtom).deck.cards,
             scene: sceneName,
@@ -268,36 +258,15 @@ export default function makeLevelScene(k: KAPLAYCtx, sceneName: Scene) {
             pathTiles
         });
 
-        // localStorage.setItem("saveData", JSON.stringify({
-        //     deck: store.get(gameStateAtom).deck.cards,
-        //     scene: sceneName,
-        //     towerCoins: store.get(gameStateAtom).towerCoins,
-        //     hero: {
-        //         id: store.get(gameStateAtom).hero?.heroId ?? "archer",
-        //         level: store.get(gameStateAtom).hero?.level ?? 1,
-        //         skills: store.get(gameStateAtom).hero?.skillIds ?? []
-        //     },
-        //     sceneIndex: store.get(gameStateAtom).sceneIndex,
-        //     level: store.get(gameStateAtom).level,
-        //     health: store.get(gameStateAtom).health,
-        //     maxHealth: store.get(gameStateAtom).maxHealth,
-        //     shops: store.get(gameStateAtom).shops,
-        //     heroCharge: store.get(gameStateAtom).heroCharge,
-        //     difficulty: store.get(gameStateAtom).difficulty,
-        //     camMoveAtEdge: store.get(gameStateAtom).camMoveAtEdge,
-        //     showDamageNumbers: store.get(gameStateAtom).showDamageNumbers,
-        //     nextTowerId: store.get(gameStateAtom).nextTowerId,
-        //     towerButtons: store.get(gameStateAtom).towerButtons.map(tb => tb.id),
-        //     mapData,
-        //     tileGrid,
-        //     wave,
-        //     pathTiles,
-        //     ...(buttons ? { buttons } : {}),
-        //     ...(volumes ? { volumes } : {})
-        // }));
-
         addSelectTowerListener(k);
         makeLavaManager(k);
+
+
+        const save = await getSave();
+        if (save) {
+            store.set(cachedSaveAtom, save);
+        }
+
 
         // Waypoints for enemies
         const waypoints = mapData.layers
@@ -464,14 +433,6 @@ export default function makeLevelScene(k: KAPLAYCtx, sceneName: Scene) {
                 }
             }
         }
-
-        // k.onHover("enemy", enemy => {
-        //     enemy.onHover(() => {
-        //         if (!enemy.has("healthBar") && !enemy.isDying) {
-        //             enemy.use(healthBar(k, 0.5));
-        //         }
-        //     });
-        // });
 
         const windZones: GameObj[] = mapData.layers
             .find(layer => layer.name === "Wind")

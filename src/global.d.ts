@@ -9,6 +9,7 @@ declare global {
             quitGame: () => void;
             setFullscreen(isFullscreen: boolean): void;
             isFullscreen(): boolean;
+            openExternal(url: string): void;
         };
     }
 }
