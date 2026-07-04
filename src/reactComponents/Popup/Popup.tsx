@@ -23,34 +23,22 @@ export default function Popup({ mode, pos, children, pStyle }: {
         if (!el) return;
 
         const rect = el.getBoundingClientRect();
-        const verticalPadding = TILE_SIZE * ((
-            gameState.towerButtons.length > 6 || (gameState.towerButtons.length === 6 && !gameState.context?.get("hero").length)) ? 4 : 2
-        ) * fontScale;
+        const verticalPadding =
+            mode === "world"
+                ? TILE_SIZE * (
+                    (
+                        gameState.towerButtons.length > 6 ||
+                        (
+                            gameState.towerButtons.length === 6 &&
+                            !gameState.context?.get("hero").length
+                        )
+                    ) ? 4 : 2
+                ) * fontScale
+                : 0;
         const horizontalPadding = 8;
-
-        if (mode === "world") {
-            if (pos.y * scale + rect.height > window.innerHeight - verticalPadding) {
-                setY(window.innerHeight - rect.height - verticalPadding);
-
-            } else if (pos.y < 0) {
-                setY(0);
-            } else {
-                setY(pos.y * scale);
-            }
-
-            if (pos.x * scale + rect.width > window.innerWidth - horizontalPadding) {
-                setX(window.innerWidth - rect.width - horizontalPadding);
-            } else if (pos.x < 0) {
-                setX(0);
-            } else {
-                setX(pos.x * scale);
-            }
-            return;
-        }
 
         if (pos.y + rect.height > window.innerHeight - verticalPadding) {
             setY(window.innerHeight - rect.height - verticalPadding);
-
         } else if (pos.y < 0) {
             setY(0);
         } else {

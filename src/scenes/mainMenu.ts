@@ -2,7 +2,7 @@ import type { AudioPlay, KAPLAYCtx } from "kaplay";
 import { gameStateAtom, store, startingOptionsAtom, selectHeroUIAtom, shopChoiceUIAtom, shopAtom, altarAtom, mainMenuAtom, gameSpeedUIAtom, challengesAtom } from "../store";
 import initCam from "../utils/initCam";
 import type { Scene, Upgrade } from "../types";
-import { CHARGE_DAMAGE_REQUIRED, type HeroId, type TowerId } from "../constants";
+import { CHARGE_DAMAGE_REQUIRED, EXPERT_PLAYER_HEALTH, HARD_PLAYER_HEATLH, NORMAL_PLAYER_HEATLH, type HeroId, type TowerId } from "../constants";
 import generateTowerOptions from "../utils/generateTowerOptions";
 import addTowers from "../utils/addTowers";
 import generateDeck from "../utils/generateDeck";
@@ -182,6 +182,8 @@ export default function mainMenu(k: KAPLAYCtx) {
             ...prev,
             options,
             addLoadout: (ids, upgrades) => {
+                const difficulty = store.get(gameStateAtom).difficulty;
+                const playerHealth = difficulty === "normal" ? NORMAL_PLAYER_HEATLH : difficulty === "hard" ? HARD_PLAYER_HEATLH : EXPERT_PLAYER_HEALTH;
 
                 store.set(gameStateAtom, prev => ({
                     ...prev,
@@ -197,8 +199,8 @@ export default function mainMenu(k: KAPLAYCtx) {
                     challengeManager: new ChallengeManager(),
                     sceneIndex: 0,
                     level: 1,
-                    health: 15,
-                    maxHealth: 15,
+                    health: playerHealth,
+                    maxHealth: playerHealth,
                     waveNumber: 0,
                     shops: ["shop", "altar"],
                     selectedUpgrade: null

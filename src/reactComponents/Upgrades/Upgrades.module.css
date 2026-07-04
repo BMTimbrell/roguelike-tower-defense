@@ -25,3 +25,23 @@
 .marked-for-deletion {
     padding: 0.5em !important;
 }
+
+.icon {
+    display: flex;
+    align-items: center;
+    color: white;
+    text-shadow:
+        -1px -1px 0 black,
+         1px -1px 0 black,
+        -1px  1px 0 black,
+         1px  1px 0 black;
+}
+
+.icon-container {
+    display: flex;
+    position: absolute;
+    gap: 0.25em;
+    left: -50%;
+    bottom: -1.25em;
+    justify-content: space-between;
+}

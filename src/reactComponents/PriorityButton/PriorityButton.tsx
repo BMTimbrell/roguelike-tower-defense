@@ -1,6 +1,7 @@
 import type { TargetPriority } from "../../types";
 import styles from "./PriorityButton.module.css";
 import Button from "../Button/Button";
+import { useState } from "react";
 
 export default function PriorityButton({
     scale,
@@ -14,6 +15,7 @@ export default function PriorityButton({
 
     const priorities: TargetPriority[] = ["Most Progress", "Least Progress", "Highest HP", "Lowest HP", "Closest", "Furthest"];
     let priorityIndex = priorities.findIndex(p => p === priority);
+    const [hovered, setHovered] = useState(false);
 
     const handleRightClick = (e: React.MouseEvent<HTMLButtonElement>) => {
         if (e.button === 2) {
@@ -23,14 +25,34 @@ export default function PriorityButton({
 
     return (
         <Button
-            style={{ marginBottom: "0.5em" }}
+            style={{ marginBottom: "0.5em", position: "relative" }}
             onClick={() => setPriority(priorities[priorityIndex < priorities.length - 1 ? priorityIndex + 1 : 0])}
+            onMouseEnter={() => setHovered(true)}
+            onMouseLeave={() => setHovered(false)}
             onMouseDown={handleRightClick}
         >
             <div className={styles.progress}>
                 <img style={{ width: `${16 * scale}px`, marginRight: '0.125em' }} src="sprites/target2.png" />
                 <div>{priority}</div>
             </div>
+
+            {hovered && (
+                <div className={styles["icon-container"]}>
+                    <div className={styles.icon}>
+                        <img width="32" src="sprites/right-click-icon.png" />
+                        <div>
+                            Previous
+                        </div>
+                    </div>
+
+                    <div className={styles.icon}>
+                        <img width="32" src="sprites/left-click-icon.png" />
+                        <div>
+                            Next
+                        </div>
+                    </div>
+                </div>
+            )}
         </Button>
     );
 }

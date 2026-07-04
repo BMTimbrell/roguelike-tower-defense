@@ -24,7 +24,7 @@ export default function SelectedFarm({ farm }: { farm: SelectedFarmTowerUI }) {
     const scale = map.iconScale;
 
     return (
-        <Popup mode="screen" pos={pos}>
+        <Popup mode="world" pos={pos}>
             <div className={styles.name}>{name}</div>
 
             <div className={styles.seeds}>

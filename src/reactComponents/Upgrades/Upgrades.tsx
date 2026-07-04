@@ -14,6 +14,7 @@ export default function Upgrades({ upgrades }: { upgrades: Upgrade[] }) {
     const [popupPos, setPopupPos] = useState<{ x: number; y: number; } | null>(null);
     const containerRef = useRef<HTMLDivElement>(null);
     const [overlap, setOverlap] = useState(0);
+    const [hoveredUpgrade, setHoveredUpgrade] = useState<Upgrade | null>(null);
 
     const handleClick = (upgrade: Upgrade) => {
         setGameState(prev => ({
@@ -136,8 +137,22 @@ export default function Upgrades({ upgrades }: { upgrades: Upgrade[] }) {
                     classNames={[gameState.selectedUpgrade === upgrade ? styles.selected : '', upgrade.markedForDeletion ? styles["marked-for-deletion"] : '']}
                     handleRightClick={(e) => handleRightClick(e, upgrade)}
                     handleClick={() => upgrade.markedForDeletion ? removeUpgrade(upgrade) : handleClick(upgrade)}
+                    onMouseEnter={() => setHoveredUpgrade(upgrade)}
+                    onMouseLeave={() => setHoveredUpgrade(null)}
                 >
                     {upgrade.markedForDeletion ? "Remove" : <UpgradeCard upgrade={upgrade} scale={fontScale} />}
+                    {hoveredUpgrade === upgrade && !upgrade.markedForDeletion && (
+                        <div style={{ fontSize: `${14 * fontScale}px` }} className={styles["icon-container"]}>
+                            <div className={styles.icon}>
+                                <img width="32" src="sprites/left-click-icon.png" />
+                                <div>Select</div>
+                            </div>
+                            <div  className={styles.icon}>
+                                <img width="32" src="sprites/right-click-icon.png" />
+                                <div>Remove</div>
+                            </div>
+                        </div>
+                    )}
                 </Card>
             ))}
         </div>

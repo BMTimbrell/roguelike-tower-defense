@@ -50,3 +50,30 @@
     align-items: center;
     column-gap: 0.125em;
 }
+
+.icon {
+    display: flex;
+    align-items: center;
+    color: white;
+    text-shadow:
+        -1px -1px 0 black,
+         1px -1px 0 black,
+        -1px  1px 0 black,
+         1px  1px 0 black;
+    position: absolute;
+    left: -50%;
+    top: -2.5em;
+}
+
+@media (max-width: 1400px) {
+    .icon {
+        left: -55%;
+    }
+}
+
+@media (max-width: 800px) {
+        .icon {
+            left: -75%;
+            top: -2.75em;
+        }
+    }

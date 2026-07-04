@@ -8,3 +8,20 @@
     margin-top: -1px;
     margin-left: -1px;
 }
+
+.icon {
+    display: flex;
+    align-items: center;
+    text-shadow:
+        -1px -1px 0 black,
+         1px -1px 0 black,
+        -1px  1px 0 black,
+         1px  1px 0 black;
+}
+
+.icon-container {
+    display: flex;
+    position: absolute;
+    gap: 0.25em;
+    justify-content: space-between;
+}

@@ -15,6 +15,9 @@ import { waitScaled } from "./utils/timerFunctions";
 import { lifespan } from "./kaplayComponents/lifespan";
 import { playSfx } from "./utils/soundHelpers";
 
+export const NORMAL_PLAYER_HEATLH = 20;
+export const HARD_PLAYER_HEATLH = 15;
+export const EXPERT_PLAYER_HEALTH = 10;
 export const IS_DEMO =
     import.meta.env.VITE_BUILD_TYPE === "demo";
 export const CURRENT_SAVE_VERSION = 2;
@@ -43,6 +46,7 @@ export const CURSE_CRIT = 10;
 export const TIME_TOWER_BASE_ANIM_SPEED = 30;
 export const SCYTHE_MAX_KILL_STACKS = 50;
 export const HARD_HEALTH_MULT = 1.2;
+export const HARD_SHIELD_MULT = 1.2;
 export const REDUCED_RANGE_TOWERS = [
     "Chili Pepper Tower",
     "Ice Tower",
@@ -1983,7 +1987,7 @@ export const ENEMIES = {
         bossMechanic: "shield",
         shieldSprite: "slime shield",
         shieldSound: "squish",
-        shieldHp: 650,
+        shieldHp: 540,
         deathSound: "monster death3",
         speed: 20,
         sprite: "slime king",
@@ -2006,7 +2010,7 @@ export const ENEMIES = {
         damage: 99,
         bossMechanic: "shield",
         shieldSprite: "bee shield",
-        shieldHp: 500,
+        shieldHp: 415,
         shieldSound: "bees",
         deathSound: "monster death3",
         shootSound: "bees",
@@ -2666,9 +2670,9 @@ export const TOWERS = {
         description: "Deals fire damage to all enemies in range. This tower receives half the amount from range upgrades and buffs",
         cost: 90,
         stats: {
-            damage: 5,
+            damage: 4,
             range: 2,
-            fireInterval: 2,
+            fireInterval: 1.5,
             critChance: 5,
             critDamage: 200
         },
@@ -4733,41 +4737,41 @@ export const SKILLS = [
     {
         id: "damage+20%",
         heroIds: ["archer", "wizard", "assassin", "merchant", "witch", "songstress", "necromancer"],
-        name: "Damage +20%",
-        description: "Increase damage by 20%",
+        name: "Damage +25%",
+        description: "Increase damage by 25%",
         apply: hero => {
-            hero.stats.damage += Math.round(hero.stats.damage * 0.2);
+            hero.stats.damage += Math.round(hero.stats.damage * 0.25);
         },
         icon: "sprites/damage-icon.png"
     },
     {
         id: "crit-chance+10%",
         heroIds: ["archer", "wizard", "knight", "merchant", "witch", "songstress", "necromancer"],
-        name: "Crit Chance +10%",
-        description: "Increase crit chance by 10%",
+        name: "Crit Chance +15%",
+        description: "Increase crit chance by 15%",
         apply: hero => {
-            hero.stats.critChance += 10;
+            hero.stats.critChance += 15;
         },
         icon: "sprites/critchance-icon.png"
     },
     {
         id: "crit-damage+50%",
         heroIds: ["archer", "wizard", "knight", "merchant", "witch", "songstress", "necromancer"],
-        name: "Crit Damage +50%",
-        description: "Increase crit damage by 50%",
+        name: "Crit Damage +65%",
+        description: "Increase crit damage by 65%",
         apply: hero => {
-            hero.stats.critDamage *= 1.5;
+            hero.stats.critDamage *= 1.65;
         },
         icon: "sprites/critdamage-icon.png"
     },
     {
         id: "fire-rate+20%",
         heroIds: ["archer", "wizard", "knight", "assassin", "merchant", "witch", "songstress", "necromancer"],
-        name: "Fire Rate +20%",
-        description: "Increase fire rate by 20%",
+        name: "Fire Rate +25%",
+        description: "Increase fire rate by 25%",
         apply: hero => {
             const fireInterval = hero.stats.fireInterval;
-            const newFireInterval = calcFireInterval(fireInterval, 20);
+            const newFireInterval = calcFireInterval(fireInterval, 25);
             hero.stats.fireInterval = newFireInterval;
         },
         icon: "sprites/firerate-icon.png"
@@ -5047,12 +5051,12 @@ export const SKILLS = [
         icon: "sprites/explosive-fireball-icon.png"
     },
     {
-        id: "damage+40%",
+        id: "damage+50%",
         heroIds: ["knight"],
-        name: "Damage +40%",
-        description: "Increase damage by 40%",
+        name: "Damage +50%",
+        description: "Increase damage by 50%",
         apply: hero => {
-            hero.stats.damage += Math.round(hero.stats.damage * 0.4);
+            hero.stats.damage += Math.round(hero.stats.damage * 0.5);
         },
         icon: "sprites/damage-icon.png"
     },

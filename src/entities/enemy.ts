@@ -1,7 +1,7 @@
 import { type KAPLAYCtx, type Vec2, type GameObj } from 'kaplay';
 import { store, gameStateAtom, cachedSaveAtom } from '../store';
 import type { EnemyId, ProjectileId } from '../constants';
-import { ENEMIES, HARD_HEALTH_MULT, STUN_DURATION, TILE_SIZE, TOWER_RANGE_TOLERANCE } from '../constants';
+import { ENEMIES, HARD_HEALTH_MULT, HARD_SHIELD_MULT, STUN_DURATION, TILE_SIZE, TOWER_RANGE_TOLERANCE } from '../constants';
 import healthBar from '../kaplayComponents/healthBar';
 import statusEffect from '../kaplayComponents/statusEffect';
 import type { EnemyConfig, EnemyGameObj, presentSpawns, TowerGameObj } from '../types';
@@ -10,7 +10,6 @@ import { aoeBurst } from '../utils/makeUnitCombat';
 import { waitScaled } from '../utils/timerFunctions';
 import { lifespan } from '../kaplayComponents/lifespan';
 import { playSfx } from '../utils/soundHelpers';
-import { getSave } from '../platform/save';
 import { tryShowTutorial } from '../utils/tutorialHelpers';
 
 export default function makeEnemy(
@@ -95,8 +94,8 @@ export default function makeEnemy(
                 checkpointDuration: ENEMIES[enemyId].checkpointTimer as number
             } : {}),
             ...("shieldHp" in ENEMIES[enemyId] ? {
-                shieldHp: ENEMIES[enemyId].shieldHp as number,
-                maxShieldHp: ENEMIES[enemyId].shieldHp as number
+                shieldHp: (ENEMIES[enemyId].shieldHp as number) * (difficulty === "hard" ? HARD_SHIELD_MULT : difficulty === "expert" ? 1.3 : 1),
+                maxShieldHp: (ENEMIES[enemyId].shieldHp as number) * (difficulty === "hard" ? HARD_SHIELD_MULT : difficulty === "expert" ? 1.3 : 1)
             } :
                 {}),
             ...("spawnIce" in ENEMIES[enemyId] ? { spawnIce: ENEMIES[enemyId].spawnIce as boolean } : {}),
@@ -186,7 +185,9 @@ export default function makeEnemy(
                 enemy.checkpointDuration = ENEMIES[enemyId].checkpointTimer as number;
                 enemy.checkpointTimer = enemy.checkpointDuration
             }
-            if ("shieldHp" in ENEMIES[enemyId]) enemy.maxShieldHp = ENEMIES[enemyId].shieldHp as number;
+            if ("shieldHp" in ENEMIES[enemyId]) {
+                enemy.maxShieldHp = (ENEMIES[enemyId].shieldHp as number) * (difficulty === "hard" ? HARD_SHIELD_MULT : difficulty === "expert" ? 1.3 : 1);
+            }
 
             attackTimer = 0;
         }

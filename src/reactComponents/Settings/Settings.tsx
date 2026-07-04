@@ -192,7 +192,7 @@ export default function Settings() {
 
                 <div className={styles["slider-container"]}>
                     <label htmlFor="masterVolume">
-                        Master Volume
+                        Volume
                     </label>
 
                     <input
@@ -216,7 +216,7 @@ export default function Settings() {
 
                 <div className={styles["slider-container"]}>
                     <label htmlFor="musicVolume">
-                        Music Volume
+                        Music
                     </label>
 
                     <input
@@ -240,7 +240,7 @@ export default function Settings() {
 
                 <div className={styles["slider-container"]}>
                     <label htmlFor="sfxVolume">
-                        SFX Volume
+                        SFX
                     </label>
 
                     <input
@@ -359,7 +359,7 @@ export default function Settings() {
                         save.meta.seenTutorials = {};
                         await saveMeta(save.meta);
                     }}
-                >Reset Tutorials</Button>
+                >Reset tutorials</Button>
             </div>
 
         </div>

@@ -15,7 +15,7 @@ export function generateChallenges() {
         const randomDamageType = damageTypes[randomIndex];
         const damageTypeAmount = store.get(gameStateAtom).towerButtons.map(tb => tb.element).filter(dt => dt === randomDamageType).length;
         const difficulty = store.get(gameStateAtom).difficulty;
-        const tier= Math.random() < 0.5 ? "normal" : "hard";
+        const tier = Math.random() < 0.5 ? "normal" : "hard";
         const baseTarget = (tier === "normal" ? 4000 : 8000) * (difficulty === "normal" ? 1 : 1.15);
         const target = Math.round(baseTarget * Math.pow(damageTypeAmount, 0.65));
 
@@ -58,20 +58,20 @@ export function generateChallenges() {
     });
 
     challenges.push({
-        id: "no_draw",
-        description: "Don't draw any cards",
-        type: "restriction",
-        conditions: [
-            {
-                event: "DRAW_CARD",
-                fail: true
-            }
-        ],
-        reward: 30
-    },
+            id: "no_draw",
+            description: "Don't draw any cards",
+            type: "restriction",
+            conditions: [
+                {
+                    event: "DRAW_CARD",
+                    fail: true
+                }
+            ],
+            reward: 30
+        },
         {
             id: "no_build",
-            description: "Don't build any towers during a wave",
+            description: "Don't build any towers during waves",
             type: "restriction",
             conditions: [
                 {
