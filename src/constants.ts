@@ -304,7 +304,7 @@ export const SPELLS: Spell[] = [
         effect: "darkHarvest",
         icon: "sprites/curse-spell-icon.png",
         name: "Dark Harvest",
-        description: "Consume the curses on all cursed enemies, dealing damage equal to 50% of their maximum health (capped at 80 + 20 × wave number)",
+        description: "Consume the curses on all cursed enemies, dealing damage equal to 80% of their maximum health (capped at 80 + 20 × wave number)",
         target: "none"
     },
     {

@@ -143,6 +143,10 @@ export default function makeLevelScene(k: KAPLAYCtx, sceneName: Scene) {
             k.setCamPos(k.vec2(camX, camY));
 
             if (store.get(pauseMenuAtom).visible) {
+                store.set(gameStateAtom, prev => ({
+                    ...prev,
+                    selectedUI: null
+                }));
                 k.get("*").forEach(obj => obj.paused = true);
             }
         });
@@ -188,6 +192,7 @@ export default function makeLevelScene(k: KAPLAYCtx, sceneName: Scene) {
             scene: sceneName,
             gold: LEVEL_WAVES[wave].startingGold,
             waveNumber: 1,
+            selectedUI: null,
             bottomBarVisible: true,
             upgrades,
             luck: 1,

@@ -95,7 +95,7 @@ export function castSpell(k: KAPLAYCtx, spell: Spell, opts?: { target?: Vec2; to
 
                         hurtEnemy(k, {
                             target: enemy,
-                            damage: Math.round(Math.min((enemy.maxHP() || 100) * 0.5, MAX_DAMAGE)),
+                            damage: Math.round(Math.min((enemy.maxHP() || 100) * 0.8, MAX_DAMAGE)),
                             element: "Dark",
                             isCrit: false,
                         });

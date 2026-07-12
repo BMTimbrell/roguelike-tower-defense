@@ -2,19 +2,26 @@ import { useAtom } from "jotai";
 import { activeTutorialAtom, gameStateAtom, mapAtom } from "../../store";
 import Modal from "../Modal/Modal";
 import { TUTORIALS } from "../../constants";
-import { useState } from "react";
+import { useLayoutEffect, useState } from "react";
 import styles from './TutorialModal.module.css';
 import Button from "../Button/Button";
 import { playUISound } from "../../utils/soundHelpers";
 
 export default function TutorialModal() {
     const [activeTutorial, setActiveTutorial] = useAtom(activeTutorialAtom);
-    const [gameState] = useAtom(gameStateAtom);
+    const [gameState, setGameState] = useAtom(gameStateAtom);
     const tutorial = activeTutorial && TUTORIALS[activeTutorial];
     const steps = tutorial?.steps ?? [];
     const [map] = useAtom(mapAtom);
     const fontScale = map.fontScale;
     const [stepIndex, setStepIndex] = useState(0);
+
+    useLayoutEffect(() => {
+        setGameState(prev => ({
+            ...prev,
+            selectedUI: null
+        }));
+    }, []);
 
     return (
         <Modal

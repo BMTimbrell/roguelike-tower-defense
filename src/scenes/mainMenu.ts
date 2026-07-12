@@ -35,6 +35,7 @@ export default function mainMenu(k: KAPLAYCtx) {
         store.set(gameStateAtom, prev => ({
             ...prev,
             scene: "mainMenu",
+            selectedUI: null,
             gameOver: false
         }));
 
