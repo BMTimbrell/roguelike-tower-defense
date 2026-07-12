@@ -63,60 +63,8 @@ export default function mainMenu(k: KAPLAYCtx) {
                 ...prev,
                 camMoveAtEdge: settings.camMoveAtEdge,
                 showDamageNumbers: settings.showDamageNumbers
-
             }));
         }
-
-        // if (saveData?.run) {
-        //     const runData = saveData.run;
-
-        //     let hero = makeHero(
-        //         k,
-        //         {
-        //             heroId: runData.hero.id,
-        //             pos: k.toWorld(k.mousePos()),
-        //             tileGrid: runData.tileGrid,
-        //             pathTiles: runData.pathTiles,
-        //             level: runData.hero.level
-        //         }
-        //     );
-
-        //     hero.skillIds = runData.hero.skills;
-
-        //     updateSkills(hero);
-
-        //     store.set(gameStateAtom, prev => ({
-        //         ...prev,
-        //         timeScale: 1,
-        //         towerCoins: runData.towerCoins,
-        //         sceneIndex: runData.sceneIndex,
-        //         level: runData.level,
-        //         health: runData.health,
-        //         maxHealth: runData.maxHealth,
-        //         waveNumber: 0,
-        //         shops: runData.shops,
-        //         waveActive: false,
-        //         heroCharge: runData.heroCharge,
-        //         deck: {
-        //             drawCard: () => { },
-        //             drawCost: 10,
-        //             cards: runData.deck
-        //         },
-        //         selectedUpgrade: null,
-        //         difficulty: runData.difficulty,
-        //         challengeManager: new ChallengeManager(),
-        //         nextTowerId: runData.nextTowerId,
-        //         towerButtons: addTowers(k, runData.towerButtons, runData.tileGrid, runData.pathTiles),
-        //         hero,
-        //         heroButton: {
-        //             ...prev.heroButton,
-        //             onClick: () => {
-        //                 if (k.get("hero")[0]) k.destroy(k.get("hero")[0]);
-        //                 else k.add(hero);
-        //             }
-        //         }
-        //     }));
-        // }
 
         store.set(altarAtom, prev => ({
             ...prev,
@@ -148,7 +96,13 @@ export default function mainMenu(k: KAPLAYCtx) {
                         ...prev.heroButton,
                         onClick: () => {
                             if (k.get("hero")[0]) k.destroy(k.get("hero")[0]);
-                            else k.add(hero);
+                            else {
+                                store.set(gameStateAtom, prev => ({
+                                    ...prev,
+                                    selectedUpgrade: null
+                                }));
+                                k.add(hero);
+                            }
                         }
                     },
                     hero,
@@ -199,6 +153,7 @@ export default function mainMenu(k: KAPLAYCtx) {
                     challengeManager: new ChallengeManager(),
                     sceneIndex: 0,
                     level: 1,
+                    luck: 1,
                     health: playerHealth,
                     maxHealth: playerHealth,
                     waveNumber: 0,

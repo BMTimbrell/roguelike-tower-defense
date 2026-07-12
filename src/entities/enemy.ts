@@ -11,6 +11,7 @@ import { waitScaled } from '../utils/timerFunctions';
 import { lifespan } from '../kaplayComponents/lifespan';
 import { playSfx } from '../utils/soundHelpers';
 import { tryShowTutorial } from '../utils/tutorialHelpers';
+import makeChest from './makeChest';
 
 export default function makeEnemy(
     k: KAPLAYCtx,
@@ -169,6 +170,16 @@ export default function makeEnemy(
 
     enemy.onAnimEnd(anim => {
         if (anim === "die") {
+            store.set(gameStateAtom, prev => ({
+                ...prev,
+                luck: prev.luck + 0.01
+            }));
+
+            // chance to spawn chest
+            if (Math.random() * 100 < store.get(gameStateAtom).luck) {
+                makeChest(k, enemy.pos);
+                store.get(gameStateAtom).luck--;
+            }
             k.destroy(enemy);
         } else if (anim === "escape") {
             enemy.enterState("hidden");
@@ -460,7 +471,8 @@ export default function makeEnemy(
                 k.destroy(enemy);
                 store.set(gameStateAtom, prev => ({
                     ...prev,
-                    health: prev.health - enemy.damage
+                    health: prev.health - enemy.damage,
+                    luck: prev.luck + enemy.damage
                 }));
 
                 if (store.get(gameStateAtom).health <= 0) {
@@ -494,7 +506,8 @@ export default function makeEnemy(
                 k.destroy(enemy);
                 store.set(gameStateAtom, prev => ({
                     ...prev,
-                    health: prev.health - enemy.damage
+                    health: prev.health - enemy.damage,
+                    luck: prev.luck + enemy.damage
                 }));
 
                 if (store.get(gameStateAtom).health <= 0) {

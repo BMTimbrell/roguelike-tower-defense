@@ -39,7 +39,7 @@ export default function PauseMenu() {
     </div>;
 
     return (
-        <Modal header={header} footer={footer} isOpen={pauseMenu.visible} onClose={onClose}>
+        <Modal header={header} footer={footer} isOpen={pauseMenu.visible} onClose={onClose} disableCloseOnClick={true}>
             <div style={{ fontSize: `${16 * scale}px` }}>
                 {!showSettings ? (
                     <div className={styles.container}>

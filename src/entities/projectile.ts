@@ -1,6 +1,6 @@
 import type { KAPLAYCtx, Vec2, GameObj } from 'kaplay';
 import { CURSE_CRIT, PROJECTILES, TILE_SIZE, type ProjectileId } from '../constants';
-import type { ElementName, EnemyGameObj, ProjectileBehavior, ProjectileDef } from '../types';
+import type { ElementName, EnemyGameObj, ProjectileBehavior, ProjectileDef, TowerGameObj } from '../types';
 import { findNewTarget, isValidTarget, selectBounceTarget, selectTarget, shortestAngleDiff } from '../utils/targetingHelpers';
 import calcDamage from '../utils/calcDamage';
 import hurtEnemy from '../utils/hurtEnemy';
@@ -23,8 +23,9 @@ export default function makeProjectile(k: KAPLAYCtx, opts: {
     turnSpeed?: number;
     behaviors?: ProjectileBehavior;
     scale: number;
+    owner: TowerGameObj;
 }): GameObj {
-    const { pos, id, element, homing, homingDelay, turnSpeed, behaviors, splashRadius, scale } = opts;
+    const { pos, id, element, homing, homingDelay, turnSpeed, behaviors, splashRadius, scale, owner } = opts;
     let crit = opts.crit;
     let { damage, target } = opts;
     const { sprite, speed } = PROJECTILES[id];
@@ -150,11 +151,12 @@ export default function makeProjectile(k: KAPLAYCtx, opts: {
         }
 
         if (behaviors?.persistent?.state === "attached") {
+            if (retargetTimer >= 0.2) retargetTimer = 0.2;
             projectile.pos = target?.pos ?? projectile.pos;
             retargetTimer -= k.dt() * timeScale;
 
             if (behaviors?.persistent && retargetTimer <= 0) {
-                retargetTimer = 0.2;
+                retargetTimer += 0.2;
 
                 const owner = behaviors.persistent.owner;
                 const origin = behaviors.persistent.origin;
@@ -208,7 +210,15 @@ export default function makeProjectile(k: KAPLAYCtx, opts: {
                     behaviors.persistent.state = "attached";
                 }
 
-                if (attackTimer !== null) attackTimer -= k.dt() * timeScale;
+                if (attackTimer !== null) {
+                    const fireRateMultiplier = opts.owner.towerBuffs
+                        .filter(b => b.type === "fireRate")
+                        .reduce((acc, b) => acc * b.multiplier, 1);
+                    const fireRateBuff = getBuffValue(opts.owner, "fireRate");
+                    const interval = ((1 - fireRateBuff) * fireRateMultiplier * opts.owner.stats.fireInterval);
+                    if (attackTimer > interval) attackTimer = interval;
+                    attackTimer -= k.dt() * timeScale;
+                }
                 if (!target.isDying && !target.invincible && (behaviors?.persistent?.state !== "attached" || (attackTimer !== null && attackTimer <= 0))) {
                     if (behaviors?.persistent) {
                         const owner = behaviors.persistent.owner;
@@ -246,7 +256,8 @@ export default function makeProjectile(k: KAPLAYCtx, opts: {
                                         target: e,
                                         damage: finalDamage,
                                         isCrit: crit ?? false,
-                                        element
+                                        element,
+                                        attacker: owner
                                     });
                                 });
 
@@ -257,7 +268,8 @@ export default function makeProjectile(k: KAPLAYCtx, opts: {
                                     target: e,
                                     damage: Math.round(damage * damageMult),
                                     isCrit: crit ?? false,
-                                    element
+                                    element,
+                                    attacker: owner
                                 });
                             });
                         }
@@ -279,7 +291,8 @@ export default function makeProjectile(k: KAPLAYCtx, opts: {
                                 stickDir: target.pos.sub(projectile.pos).unit(),
                                 offset: attach.offset ?? 0,
                                 ...(attach.infectionLevel ? { infectionLevel: attach.infectionLevel } : {}),
-                                ...(attach.sound ? { sound: attach.sound } : {})
+                                ...(attach.sound ? { sound: attach.sound } : {}),
+                                owner
                             });
                             return;
                         }
@@ -288,14 +301,18 @@ export default function makeProjectile(k: KAPLAYCtx, opts: {
                             target,
                             damage,
                             isCrit: crit ?? false,
-                            element
+                            element,
+                            attacker: owner
                         });
 
                     }
 
                     if (attackTimer !== null && behaviors?.persistent?.owner) {
+                        const fireRateMultiplier = opts.owner.towerBuffs
+                            .filter(b => b.type === "fireRate")
+                            .reduce((acc, b) => acc * b.multiplier, 1);
                         const fireRateBuff = getBuffValue(behaviors.persistent.owner, "fireRate");
-                        attackTimer += behaviors.persistent.owner.stats.fireInterval * (1 - fireRateBuff);
+                        attackTimer += (behaviors.persistent.owner.stats.fireInterval * (1 - fireRateBuff) * fireRateMultiplier);
                     }
 
                 }

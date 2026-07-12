@@ -12,6 +12,7 @@ export const gameStateAtom = atom<GameState>({
     health: 15,
     maxHealth: 15,
     hideUI: false,
+    luck: 1,
     gold: 100,
     maxTowerUpgrades: 5,
     upgrades: [],
@@ -24,12 +25,7 @@ export const gameStateAtom = atom<GameState>({
         drawCost: 10
     },
     selectedUpgrade: null,
-    reroll: {
-        cost: 5,
-        baseCost: 5,
-        roll: () => null,
-        rerollCount: 0
-    },
+    handVersion: 0,
     scene: "mainMenu",
     hero: null,
     heroButton: {
@@ -48,6 +44,10 @@ export const gameStateAtom = atom<GameState>({
     camMoveAtEdge: true,
     showDamageNumbers: true,
     timeScale: 1
+});
+
+export const chestAtom = atom({
+    visible: false
 });
 
 export const mapAtom = atom({

@@ -1,5 +1,5 @@
 import type { GameObj, KAPLAYCtx } from "kaplay";
-import type { MapData, PathTile, Scene, Tile } from "../types";
+import type { MapData, PathTile, Scene, Tile, TowerGameObj } from "../types";
 import showLevelStats from "./showLevelStats";
 import initCam from "./initCam";
 import generateFog from "./generateFog";
@@ -7,7 +7,6 @@ import drawCards from "./drawCards";
 import { cachedSaveAtom, challengesAtom, controlsAtom, gameSpeedUIAtom, gameStateAtom, pauseMenuAtom, store } from "../store";
 import makeFloatingText from "../entities/FloatingText";
 import { LEVEL_WAVES, MAX_HAND_SIZE, ROUND_DRAW_NUM, TILE_SIZE, type LevelId } from "../constants";
-import reroll from "./reroll";
 import { addSelectTowerListener } from "../entities/Tower";
 import { makeLavaManager } from "./lavaHelpers";
 import makeWaveSpawner from "../entities/WaveSpawner";
@@ -18,6 +17,7 @@ import onAction from "./onAction";
 import setGameSpeed from "./setGameSpeed";
 import { playMusic } from "./soundHelpers";
 import { getSave, saveRun } from "../platform/save";
+import { castSpell } from "./spellHelpers";
 
 export default function makeLevelScene(k: KAPLAYCtx, sceneName: Scene) {
 
@@ -57,7 +57,14 @@ export default function makeLevelScene(k: KAPLAYCtx, sceneName: Scene) {
         onAction(k, "cancel", {
             onPress: () => {
                 const hero = k.get("hero")[0];
+                const selectedUpgrade = store.get(gameStateAtom).selectedUpgrade;
                 if (hero && !hero.placed) k.destroy(hero);
+                else if (selectedUpgrade && "type" in selectedUpgrade && selectedUpgrade.type === "spell") {
+                    store.set(gameStateAtom, prev => ({
+                        ...prev,
+                        selectedUpgrade: null
+                    }));
+                }
             }
         });
 
@@ -183,6 +190,7 @@ export default function makeLevelScene(k: KAPLAYCtx, sceneName: Scene) {
             waveNumber: 1,
             bottomBarVisible: true,
             upgrades,
+            luck: 1,
             deck: {
                 ...prev.deck,
                 drawCard: () => {
@@ -219,10 +227,7 @@ export default function makeLevelScene(k: KAPLAYCtx, sceneName: Scene) {
                     });
                 },
             },
-            reroll: {
-                ...prev.reroll,
-                roll: () => reroll(k),
-            },
+            handVersion: 0,
             heroButton: {
                 ...prev.heroButton,
                 visible: true
@@ -267,6 +272,30 @@ export default function makeLevelScene(k: KAPLAYCtx, sceneName: Scene) {
             store.set(cachedSaveAtom, save);
         }
 
+        k.onClick(() => {
+            if (!k.isMousePressed("left")) return;
+
+            const spell = store.get(gameStateAtom).selectedUpgrade;
+            if (!spell || !("type" in spell) || spell.type !== "spell" || !store.get(gameStateAtom).waveActive) return;
+
+            if (spell.target === "point") {
+                castSpell(k, spell, { target: k.toWorld(k.mousePos()) });
+                store.set(gameStateAtom, prev => ({
+                    ...prev,
+                    selectedUpgrade: null,
+                    upgrades: prev.upgrades.filter(u => u !== spell),
+                }));
+            } else if (spell.target === "tower") {
+                const tower = (k.get("tower") as TowerGameObj[]).find(t => t.hovered);
+                if (!tower) return; // invalid target
+                castSpell(k, spell, { tower });
+                store.set(gameStateAtom, prev => ({
+                    ...prev,
+                    selectedUpgrade: null,
+                    upgrades: prev.upgrades.filter(u => u !== spell),
+                }));
+            }
+        });
 
         // Waypoints for enemies
         const waypoints = mapData.layers

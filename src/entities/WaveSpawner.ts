@@ -75,7 +75,10 @@ export default function makeWaveSpawner(k: KAPLAYCtx, levelId: LevelId, waypoint
             startNextWave() {
                 if (spawner.waveIndex < 0) {
                     k.get("arrow").forEach(a => k.destroy(a));
-                }
+                } else store.set(gameStateAtom, prev => ({
+                    ...prev,
+                    luck: prev.luck + 1
+                }));
 
                 if (k.get("boss").length) k.get("boss stop").forEach(b => k.destroy(b));
 

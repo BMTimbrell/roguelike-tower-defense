@@ -1,5 +1,5 @@
 import type { GameObj, KAPLAYCtx, Vec2 } from "kaplay";
-import type { ElementName, EnemyGameObj } from "../types";
+import type { ElementName, EnemyGameObj, TowerGameObj } from "../types";
 import hurtEnemy from "../utils/hurtEnemy";
 import calcDamage from "../utils/calcDamage";
 import { CURSE_CRIT, PROJECTILES, TILE_SIZE, type ProjectileId } from "../constants";
@@ -85,7 +85,8 @@ export default function makePathEntity(
                                                 target: enemy,
                                                 damage,
                                                 isCrit,
-                                                element
+                                                element,
+                                                attacker: (k.get("tower") as TowerGameObj[]).find(tower => tower.instanceId === ownerId)
                                             });
                                         }
                                     });
@@ -103,7 +104,8 @@ export default function makePathEntity(
                                         target: e,
                                         damage,
                                         isCrit,
-                                        element
+                                        element,
+                                        attacker: (k.get("tower") as TowerGameObj[]).find(tower => tower.instanceId === ownerId)
                                     });
                                 }
 

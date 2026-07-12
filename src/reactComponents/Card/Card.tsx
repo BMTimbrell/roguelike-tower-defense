@@ -15,7 +15,8 @@ export default function Card({
     animationDelay, 
     setDeckHovered,
     onMouseEnter,
-    onMouseLeave
+    onMouseLeave,
+    noPadding
 }: {
     children: React.ReactNode;
     animationDelay?: number;
@@ -31,6 +32,7 @@ export default function Card({
     setDeckHovered?: React.Dispatch<React.SetStateAction<boolean>>;
     onMouseEnter?: MouseEventHandler<HTMLDivElement>;
     onMouseLeave?: MouseEventHandler<HTMLDivElement>;
+    noPadding?: boolean;
 }) {
     const [hovered, setHovered] = useState(false);
     const [gameState] = useAtom(gameStateAtom);
@@ -48,9 +50,10 @@ export default function Card({
                     onMouseEnter={e => {
                         playUISound(gameState.context, "ui pop");
                         const rect = (e.currentTarget as HTMLDivElement).getBoundingClientRect();
+
                         setPopupPos && setPopupPos({
                             x: rect.x,
-                            y: rect.y - 35 * scale
+                            y: rect.y - (35 * scale * (noPadding ? 0 : 1))
                         });
                         setHovered(true);
                         if (setDeckHovered) setDeckHovered(true);

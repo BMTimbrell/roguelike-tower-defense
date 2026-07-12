@@ -1121,6 +1121,8 @@ export default function loadAssets(k: KAPLAYCtx) {
     });
     k.loadSprite("entrance arrow", "sprites/green-arrow.png");
     k.loadSprite("exit arrow", "sprites/red-arrow.png");
+    k.loadSprite("treasure chest", "sprites/treasure-chest.png");
+    k.loadSprite("blurred circle", "sprites/blurred-circle.png");
     k.loadSprite("boss icon", "sprites/boss-icon.png");
     k.loadSprite("snow", "sprites/snow.png");
     k.loadSprite("lava tile", "sprites/lava3.png");
@@ -1206,6 +1208,11 @@ export default function loadAssets(k: KAPLAYCtx) {
     k.loadSound("start wave", "sounds/ui/startWave.mp3");
     k.loadSound("equip", "sounds/ui/equip.mp3");
     k.loadSound("blessing", "sounds/ui/altar-blessing.mp3");
+    k.loadSound("open chest", "sounds/ui/open-chest.mp3");
+    k.loadSound("electric shock", "sounds/soundEffects/electric-shock.mp3");
+    k.loadSound("roaring fire", "sounds/soundEffects/roaring-fire.mp3");
+    k.loadSound("poison bubbles", "sounds/soundEffects/poison-bubbles.mp3");
+    k.loadSound("flash", "sounds/soundEffects/flash.mp3");
 
     //towers
     k.loadSound("squish", "sounds/towers/squish.mp3");

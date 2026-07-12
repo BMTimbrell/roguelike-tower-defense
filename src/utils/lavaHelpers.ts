@@ -51,7 +51,8 @@ export function makeLavaManager(k: KAPLAYCtx) {
                             target: e,
                             damage,
                             isCrit,
-                            element: "Fire"
+                            element: "Fire",
+                            attacker: tower
                         });
     
                         break;

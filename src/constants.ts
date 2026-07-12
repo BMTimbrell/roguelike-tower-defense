@@ -1,4 +1,4 @@
-import type { Upgrade, LevelWaves, EnemyConfig, TowerDef, ElementDef, ElementName, ProjectileDef, HeroDef, HeroSkillDefBase, TowerGameObj, Seed, Scenes, Summon, EnemyGameObj, ChallengeDef } from "./types";
+import type { Upgrade, LevelWaves, EnemyConfig, TowerDef, ElementDef, ElementName, ProjectileDef, HeroDef, HeroSkillDefBase, TowerGameObj, Seed, Scenes, Summon, EnemyGameObj, ChallengeDef, Spell } from "./types";
 import burnEffect from "./kaplayComponents/burnEffect";
 import calcFireInterval from "./utils/calcFireInterval";
 import poisonEffect from "./kaplayComponents/poisonEffect";
@@ -248,6 +248,82 @@ export const UPGRADES: Upgrade[] = [{
     cost: 3,
     percentage: true
 }] as const;
+
+export const SPELLS: Spell[] = [
+    {
+        type: "spell",
+        effect: "reroll",
+        name: "Reroll",
+        description: "Reroll all cards in your hand",
+        target: "none",
+        icon: "sprites/dice.png"
+    },
+    {
+        type: "spell",
+        effect: "heal",
+        name: "Heal",
+        description: "Heal 1 HP",
+        target: "none",
+        icon: "sprites/heart.png"
+    },
+    {
+        type: "spell",
+        effect: "gold",
+        name: "Gold",
+        target: "auto-consume",
+        icon: "sprites/coin.png",
+        amount: 20,
+        description: ""
+    },
+    {
+        type: "spell",
+        effect: "firestorm",
+        icon: "sprites/burn-spell-icon.png",
+        name: "Firestorm",
+        description: "Deal fire damage equal to 10 × wave number, and burn all enemies in a small area",
+        target: "point"
+    },
+    {
+        type: "spell",
+        effect: "arcticBlast",
+        icon: "sprites/chill-spell-icon.png",
+        name: "Arctic Blast",
+        description: "Deal ice damage equal to 5 × wave number to all enemies in a small area and add 5 chill stacks",
+        target: "point"
+    },
+    {
+        type: "spell",
+        effect: "plagueBomb",
+        name: "Plague Bomb",
+        icon: "sprites/poison-spell-icon.png",
+        description: "Deal poison damage equal to 10 × wave number to all enemies in a small area and add 10 poison stacks (ignores stack limit)",
+        target: "point"
+    },
+    {
+        type: "spell",
+        effect: "darkHarvest",
+        icon: "sprites/curse-spell-icon.png",
+        name: "Dark Harvest",
+        description: "Consume the curses on all cursed enemies, dealing damage equal to 50% of their maximum health (capped at 80 + 20 × wave number)",
+        target: "none"
+    },
+    {
+        type: "spell",
+        effect: "blindingLight",
+        name: "Blinding Light",
+        description: "Blind all enemies on the map for 6 seconds",
+        icon: "sprites/blind-spell-icon.png",
+        target: "none"
+    },
+    {
+        type: "spell",
+        effect: "overcharge",
+        icon: "sprites/charge-spell-icon.png",
+        name: "Overcharge",
+        description: "Double the fire rate of a tower and give it +20% bonus electric damage for 4 seconds",
+        target: "tower"
+    }
+];
 
 export const LEVEL_WAVES = {
     "level1-1": {
@@ -2795,7 +2871,7 @@ export const TOWERS = {
         canRotate: false,
         source: "starting",
         targetType: "point",
-        pathEntityLimit: 30,
+        pathEntityLimit: 50,
         footprint: {
             w: 1,
             h: 1
@@ -3360,7 +3436,7 @@ export const TOWERS = {
                     const hp = ctx.target?.enemy?.hp() ?? 0;
                     const missingHealthPercent = 1 - hp / maxHp;
 
-                    projectile.bonusCrit = 100 * missingHealthPercent * 0.8;
+                    projectile.bonusCrit = 100 * missingHealthPercent * 0.7;
                 });
             }
         }],
@@ -3529,7 +3605,7 @@ export const TOWERS = {
         canRotate: false,
         source: "reward",
         targetType: "point",
-        pathEntityLimit: 30,
+        pathEntityLimit: 50,
         footprint: {
             w: 2,
             h: 2
@@ -4441,8 +4517,7 @@ export const ELEMENTS: Record<ElementName, ElementDef> = {
 
     Light: {
         description: "Light attacks blind enemies, disorienting them. Blinded enemies have a 70% chance to miss tower attacks and suffer 50% longer debuff durations.",
-        applyEffect: (k, { target }) => {
-            const duration = 3;
+        applyEffect: (k, { target, duration = 3 }) => {
 
             const blind = target.has("blind");
 

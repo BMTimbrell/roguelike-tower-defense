@@ -81,6 +81,7 @@ export default function spawnSummon(k: KAPLAYCtx, ctx: AttackContext, id: Summon
             damage: damage,
             element: ctx.element,
             isCrit,
+            attacker: ctx.attacker as TowerGameObj
         });
 
         if (name === "Chomper" && enemy.hp() <= 0) {
@@ -91,8 +92,8 @@ export default function spawnSummon(k: KAPLAYCtx, ctx: AttackContext, id: Summon
 
         if (
             !enemy.stunResistance &&
-            name === "Zombie" && 
-            ctx.attacker.hasZombieBuff && 
+            name === "Zombie" &&
+            ctx.attacker.hasZombieBuff &&
             Math.random() < 0.3 && !enemy.isDying &&
             !(enemy.shieldHp && k.get("shield").length)
         )
@@ -133,6 +134,13 @@ export default function spawnSummon(k: KAPLAYCtx, ctx: AttackContext, id: Summon
             }
         }
 
+        const fireRateMultiplier = ctx.attacker.towerBuffs
+            .filter(b => b.type === "fireRate")
+            .reduce((acc, b) => acc * b.multiplier, 1);
+        const interval = summon.fireInterval * fireRateMultiplier;
+
+        if (summon.attackTimer > interval) summon.attackTimer = interval;
+
         if (summon.attackTimer > 0) {
             summon.attackTimer -= k.dt() * timeScale;
         }
@@ -148,7 +156,7 @@ export default function spawnSummon(k: KAPLAYCtx, ctx: AttackContext, id: Summon
         if (summon.attackTimer <= 0) {
             const enemy = (k.get("enemy") as EnemyGameObj[]).find(e => e.pos.dist(summon.pos) <= TILE_SIZE && !e.invincible);
             if (enemy) {
-                summon.attackTimer += summon.fireInterval;
+                summon.attackTimer += interval;
                 summon.enterState("attack", { enemy });
             }
         }

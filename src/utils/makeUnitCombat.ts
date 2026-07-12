@@ -332,7 +332,7 @@ export default function makeUnitCombat(
                             80 + flash * 100,
                             40
                         );
-                        
+
                         if (gun.getCurAnim()?.name !== "overheated") gun.play("overheated");
                     } else if (ratio > 0.9) {
                         heatBar.color = k.rgb(248, 63, 39);
@@ -494,7 +494,7 @@ export default function makeUnitCombat(
 
     function shoot(target: AttackTarget) {
         if (opts.owner.shootSound) playSfx(k, opts.owner.shootSound, 0.7, gun.pos);
-        
+
         if (target.type === "enemy") {
             let enemy = target.enemy;
             let projectile = {
@@ -664,8 +664,8 @@ export default function makeUnitCombat(
                 }
 
                 const splashRadius = p.behaviors?.splash?.radius ?? PROJECTILES[p.id].splashRadius * (
-                    opts.owner.timeData?.timeScaling?.damage ? 
-                    opts.owner.timeData.timeMultiplier : 1
+                    opts.owner.timeData?.timeScaling?.damage ?
+                        opts.owner.timeData.timeMultiplier : 1
                 );
 
                 const projectile = makeProjectile(k, {
@@ -681,6 +681,7 @@ export default function makeUnitCombat(
                     turnSpeed: p.turnSpeed,
                     behaviors: p?.behaviors,
                     splashRadius,
+                    owner: ctx.attacker as TowerGameObj,
                     scale: (opts.owner.timeData?.timeScaling?.damage ? opts.owner.timeData.timeMultiplier : 1)
                 });
 
@@ -734,11 +735,15 @@ export default function makeUnitCombat(
     function update() {
         const dt = k.dt() * store.get(gameStateAtom).timeScale;
         const fireRateBuff = getBuffValue(opts.owner as TowerGameObj, "fireRate");
+        const fireRateMultiplier = opts.owner.towerBuffs
+            .filter(b => b.type === "fireRate")
+            .reduce((acc, b) => acc * b.multiplier, 1);
         const interval =
             opts.owner.stats.fireInterval *
             (opts.owner.timeData?.timeMultiplier ?? 1)
             * (1 - (opts.owner.charge?.currentCharge ?? 0))
             * (opts.owner.fireIntervalBoostTimer > 0 ? opts.owner.fireIntervalBoost ?? 1 : 1)
+            * (fireRateMultiplier)
             * (1 - fireRateBuff);
 
         if (shootTimer > interval) shootTimer = interval;
@@ -963,7 +968,8 @@ function aoeAttack(k: KAPLAYCtx, ctx: AttackContext, dmg: DamageResult) {
             target: e,
             damage,
             isCrit,
-            element: ctx.element
+            element: ctx.element,
+            attacker: ctx.attacker as TowerGameObj
         });
     });
 }
@@ -1095,6 +1101,7 @@ function lightningAttack(k: KAPLAYCtx, ctx: AttackContext, dmg: DamageResult) {
             damage: finalDamage,
             isCrit,
             element: "Electric",
+            attacker: ctx.attacker as TowerGameObj,
         });
     });
 
@@ -1180,7 +1187,7 @@ function sniperLaserAttack(
     const { damage, isCrit } = dmg;
 
     drawLaser(k, ctx.origin, ctx.target.enemy.pos, 24, 0.04);
-    hurtEnemy(k, { target: ctx.target.enemy, damage, isCrit, element: ctx.element });
+    hurtEnemy(k, { target: ctx.target.enemy, damage, isCrit, element: ctx.element, attacker: ctx.attacker as TowerGameObj });
 }
 
 function piercingLaserAttack(
@@ -1198,7 +1205,7 @@ function piercingLaserAttack(
 
     (k.get("enemy") as EnemyGameObj[]).forEach(e => {
         if (isEnemyOnRay(e, ctx.origin, dir, range, 10)) {
-            hurtEnemy(k, { target: e, damage, isCrit, element: ctx.element });
+            hurtEnemy(k, { target: e, damage, isCrit, element: ctx.element, attacker: ctx.attacker as TowerGameObj });
         }
     });
 }
@@ -1224,7 +1231,7 @@ function thunderAttack(
     });
     (k.get("enemy") as EnemyGameObj[]).forEach(e => {
         if (e.pos.dist(stormCloud.pos) < 1.2 * TILE_SIZE) {
-            hurtEnemy(k, { target: e, damage, isCrit, element: ctx.element });
+            hurtEnemy(k, { target: e, damage, isCrit, element: ctx.element, attacker: ctx.attacker as TowerGameObj });
         }
     });
 }
@@ -1256,7 +1263,7 @@ function blizzardAttack(
 
     (k.get("enemy") as EnemyGameObj[]).forEach(e => {
         if (e.pos.dist(enemy.pos ?? k.vec2(0)) < 2.5 * TILE_SIZE) {
-            hurtEnemy(k, { target: e, damage, isCrit, element: ctx.element });
+            hurtEnemy(k, { target: e, damage, isCrit, element: ctx.element, attacker: ctx.attacker as TowerGameObj });
         }
     });
 }
@@ -1284,7 +1291,8 @@ function coneAttack(k: KAPLAYCtx, ctx: AttackContext, dmg: DamageResult) {
             target: e,
             damage,
             isCrit,
-            element: element
+            element: element,
+            attacker: ctx.attacker as TowerGameObj
         });
     });
 }
@@ -1363,5 +1371,5 @@ function rampLaserAttack(
 
     const { damage, isCrit } = dmg;
 
-    hurtEnemy(k, { target: ctx.target.enemy, damage, isCrit, element: ctx.element });
+    hurtEnemy(k, { target: ctx.target.enemy, damage, isCrit, element: ctx.element, attacker: ctx.attacker as TowerGameObj });
 }

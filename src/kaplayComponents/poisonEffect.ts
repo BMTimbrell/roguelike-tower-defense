@@ -7,24 +7,24 @@ import { gameStateAtom, store } from "../store";
 
 export type PoisonComp = Comp & {
     id: StatusEffect;
-    addPoisonStack: (num: number) => void;
+    addPoisonStack: (num: number, ignoreLimit?: boolean) => void;
     poison: () => StatusEffectResult;
     removeStack: () => number;
 };
 
-export default function poisonEffect(k: KAPLAYCtx, stacks: number): PoisonComp {
+export default function poisonEffect(k: KAPLAYCtx, stacks: number, ignoreLimit = false): PoisonComp {
     const tickRate = 5;
     let tickTimer = 0;
     const maxStacks = MAX_POISON_STACKS + (k.get("hero")[0]?.festeringToxins ? 5 : 0 );
-    stacks = Math.min(stacks, maxStacks);
+    stacks = ignoreLimit ? stacks : Math.min(stacks, maxStacks);
 
     return {
         id: "poison",
 
         require: ["health", "pos", "statusEffect"],
 
-        addPoisonStack(num) {
-            if (stacks < maxStacks) stacks += Math.min(num, maxStacks - stacks);
+        addPoisonStack(num, ignoreLimit = false) {
+            if (ignoreLimit || stacks < maxStacks) stacks += ignoreLimit ? num : Math.min(num, maxStacks - stacks);
         },
 
         poison() {

@@ -59,6 +59,24 @@ export type ElementDef = {
     color: string;
 };
 
+export type TowerBuff =
+    | {
+        type: "bonusDamage";
+        element: ElementName;
+        multiplier: number;
+        timeLeft: number;
+    }
+    | {
+        type: "fireRate";
+        multiplier: number;
+        timeLeft: number;
+    }
+    | {
+        type: "range";
+        multiplier: number;
+        timeLeft: number;
+    };
+
 export type SeedId = "chili" | "starfruit" | "nightshade";
 export type Seed = Record<SeedId, {
     name: "Chili Pepper" | "Starfruit" | "Nightshade";
@@ -186,6 +204,7 @@ export type UnitInstance = {
     pathEntityLimit?: number;
     footprint: Footprint;
     chargeStacks?: Charge;
+    towerBuffs: TowerBuff[];
 };
 
 export type TimeData = {
@@ -382,6 +401,35 @@ export type Upgrade = {
     markedForDeletion?: boolean;
 };
 
+export type SpellName = "Firestorm" | "Plague Bomb" | "Arctic Blast" | "Overcharge" | "Heal" | "Dark Harvest" | "Blinding Light" | "Gold" | "Reroll";
+
+export type Spell = {
+    type: "spell";
+
+    effect:
+        | "firestorm"
+        | "plagueBomb"
+        | "arcticBlast"
+        | "overcharge"
+        | "heal"
+        | "darkHarvest"
+        | "blindingLight"
+        | "gold"
+        | "reroll";
+
+    name: SpellName;
+    description: string;
+    amount?: number;
+    icon?: string;
+    active?: boolean;
+    used?: boolean;
+    animationDelay?: number;
+    target: "point" | "none" | "tower" | "auto-consume";
+    markedForDeletion?: boolean;
+};
+
+export type Card = Upgrade | Spell;
+
 export type USlot = {
     unlocked: boolean;
     upgrade: Upgrade | null;
@@ -477,19 +525,14 @@ export type GameState = {
     towerButtons: TowerButton[];
     nextTowerId: number;
     selectedUI: SelectedUI;
+    luck: number;
     gold: number;
     health: number;
     maxHealth: number;
     maxTowerUpgrades: number;
-    upgrades: Upgrade[];
+    upgrades: Card[];
     deck: Deck;
-    selectedUpgrade: Upgrade | null;
-    reroll: {
-        cost: number;
-        baseCost: number;
-        roll: () => void;
-        rerollCount: number;
-    };
+    selectedUpgrade: Card | null;
     scene: Scene;
     hero: HeroGameObj | null;
     heroButton: {
@@ -501,6 +544,7 @@ export type GameState = {
         charge: number;
         damageRequired: number;
     };
+    handVersion: number;
     waveActive: boolean;
     waveNumber: number;
     sceneIndex: number;
@@ -694,6 +738,7 @@ export type EffectContext = {
     target: GameObj;
     damage: number;
     chance?: number;
+    duration?: number;
 };
 
 export type ProjectileBehavior = {

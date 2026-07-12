@@ -11,6 +11,14 @@ export default function addTowers(k: KAPLAYCtx, towers: TowerId[], tileGrid: Til
         id: t,
         onClick: () => {
             if (k.get("hero")[0] && !k.get("hero")[0].placed) return;
+            const selectedCard = store.get(gameStateAtom).selectedUpgrade;
+            if (selectedCard && "type" in selectedCard && selectedCard.type === "spell") {
+                store.set(gameStateAtom, prev => ({
+                    ...prev,
+                    selectedUpgrade: null
+                }));
+
+            } 
             const unplacedTower = (k.get("tower") as TowerGameObj[]).find(t => !t.placed);
             if (!unplacedTower || unplacedTower.towerId !== t) {
                 makeTower(

@@ -13,8 +13,10 @@ export default function hurtEnemy(k: KAPLAYCtx, opts: {
     ignoreArmour?: boolean;
     attacker?: TowerGameObj;
     statusDamage?: boolean;
+    applyStatusEffects?: boolean;
+    damageFromBuff?: boolean;
 }) {
-    const { target, damage, element, isCrit, attacker, statusDamage, ignoreArmour } = opts;
+    const { target, damage, element, isCrit, attacker, statusDamage, ignoreArmour, applyStatusEffects = true, damageFromBuff = false } = opts;
 
     if (target.invincible) return;
 
@@ -60,10 +62,11 @@ export default function hurtEnemy(k: KAPLAYCtx, opts: {
     }
 
     if (store.get(gameStateAtom).showDamageNumbers) {
+        const offset = damageFromBuff ? k.vec2(k.rand(-6, 6), k.rand(-4, 4)) : k.vec2(0);
         makeFloatingText(k, {
-            pos: target.pos,
+            pos: target.pos.add(offset),
             text: '' + effectiveDamage,
-            size: isCrit ? CRIT_DAMAGE_NUMBER_SIZE : statusDamage ? SMALL_DAMAGE_NUMBER_SIZE : DAMAGE_NUMBER_SIZE,
+            size: isCrit ? CRIT_DAMAGE_NUMBER_SIZE : statusDamage || damageFromBuff ? SMALL_DAMAGE_NUMBER_SIZE : DAMAGE_NUMBER_SIZE,
             color: ELEMENTS[element].color
         });
     }
@@ -75,13 +78,32 @@ export default function hurtEnemy(k: KAPLAYCtx, opts: {
         amount: damage
     });
 
-    if (!statusDamage) ELEMENTS[element].applyEffect?.(k, { target, damage: effectiveDamage });
+    if (!statusDamage) {
+        if (applyStatusEffects) {
+            ELEMENTS[element].applyEffect?.(k, { target, damage: effectiveDamage });
+        }
+
+        if (!damageFromBuff && attacker) {
+            // Bonus elemental damage
+            for (const buff of attacker.towerBuffs) {
+                if (buff.type === "bonusDamage") {
+                    hurtEnemy(k, {
+                        target,
+                        damage: Math.max(1, Math.round(effectiveDamage * buff.multiplier)),
+                        element: buff.element,
+                        damageFromBuff: true,
+                        isCrit: false,
+                    });
+                }
+            }
+        }
+    }
 
     if (
         !target.stunResistance &&
-        attacker?.name === "Hammer Tower" && 
+        attacker?.name === "Hammer Tower" &&
         !target.isDying && Math.random() < effectiveDamage * 0.002 &&
-        !(target.shieldHp && k.get("shield").length) 
+        !(target.shieldHp && k.get("shield").length)
     ) {
         target.enterState("stunned");
     }

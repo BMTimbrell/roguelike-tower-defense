@@ -45,3 +45,8 @@
     bottom: -1.25em;
     justify-content: space-between;
 }
+
+.spell {
+    background-color: #2f6b2f !important;
+    border-color: #6fd66f !important;
+}

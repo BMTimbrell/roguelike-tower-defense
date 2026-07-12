@@ -5,6 +5,7 @@ import { TUTORIALS } from "../../constants";
 import { useState } from "react";
 import styles from './TutorialModal.module.css';
 import Button from "../Button/Button";
+import { playUISound } from "../../utils/soundHelpers";
 
 export default function TutorialModal() {
     const [activeTutorial, setActiveTutorial] = useAtom(activeTutorialAtom);
@@ -41,17 +42,23 @@ export default function TutorialModal() {
                 <div className={styles.footer}>
                     {stepIndex > 0 && (
                         <Button
-                            onClick={() => setStepIndex(prev => prev - 1)}
+                            onClick={() => { 
+                                setStepIndex(prev => prev - 1);
+                                playUISound(gameState.context, "ui click");
+                            }}
+                            onMouseEnter={() => playUISound(gameState.context, "ui hover")}
                             classNames={[styles["arrow-button"]]}
                         >←</Button>
                     )}
                     {stepIndex >= steps.length - 1 ? (
                         <Button
                             onClick={() => {
+                                playUISound(gameState.context, "ui click");
                                 setActiveTutorial(null);
                                 setStepIndex(0);
                                 gameState.context?.get("*").forEach(obj => obj.paused = false);
                             }}
+                            onMouseEnter={() => playUISound(gameState.context, "ui hover")}
                         >
                             Close
                         </Button>
@@ -62,7 +69,9 @@ export default function TutorialModal() {
                                 styles["arrow-button"],
                                 styles["right-arrow-button"],
                             ]}
+                            onMouseEnter={() => playUISound(gameState.context, "ui hover")}
                             onClick={() => {
+                                playUISound(gameState.context, "ui click");
                                 setStepIndex(prev => prev + 1);
                             }}
                         >

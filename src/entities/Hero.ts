@@ -55,6 +55,7 @@ export default function makeHero(k: KAPLAYCtx,
             tileGrid,
             pathTiles,
             targetType,
+            towerBuffs: [],
             stats: { ...stats },
             canReposition: true,
             skillIds: heroId === "merchant" ?
@@ -260,6 +261,17 @@ export default function makeHero(k: KAPLAYCtx,
         const update = hero.onUpdate(() => {
             const timeScale = store.get(gameStateAtom).timeScale;
             if (hero.placed) {
+                // non-song buffs
+                for (let i = hero.towerBuffs.length - 1; i >= 0; i--) {
+                    const buff = hero.towerBuffs[i];
+
+                    buff.timeLeft -= k.dt() * timeScale;
+
+                    if (buff.timeLeft <= 0) {
+                        hero.towerBuffs.splice(i, 1);
+                    }
+                }
+
                 if (hero.disabledTimeLeft > 0) {
                     hero.disabledTimeLeft -= k.dt() * timeScale;
 

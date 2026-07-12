@@ -1,5 +1,5 @@
 import { useAtom } from 'jotai';
-import { activeTutorialAtom, altarAtom, challengesAtom, gameSpeedUIAtom, gameStateAtom, mainMenuAtom, rewardsAtom, selectHeroUIAtom, shopAtom, shopChoiceUIAtom, startingOptionsAtom } from './store';
+import { activeTutorialAtom, altarAtom, challengesAtom, chestAtom, gameSpeedUIAtom, gameStateAtom, mainMenuAtom, rewardsAtom, selectHeroUIAtom, shopAtom, shopChoiceUIAtom, startingOptionsAtom } from './store';
 import { BottomBar } from "./reactComponents/BottomBar/BottomBar";
 import SelectedTower from "./reactComponents/SelectedTower/SelectedTower";
 import SelectedHero from './reactComponents/SelectedHero/SelectedHero';
@@ -17,11 +17,13 @@ import PauseMenu from './reactComponents/PauseMenu/PauseMenu';
 import MainMenu from './reactComponents/MainMenu/MainMenu';
 import GameSpeedButtons from './reactComponents/GameSpeedButtons/GameSpeedButtons';
 import TutorialModal from './reactComponents/TutorialModal/TutorialModal';
+import ChestCards from './reactComponents/ChestCards/ChestCards';
 
 export default function ReactUI() {
     const [gameState] = useAtom(gameStateAtom);
     const [startingOptions] = useAtom(startingOptionsAtom);
     const [rewards] = useAtom(rewardsAtom);
+    const [chestCards] = useAtom(chestAtom);
     const [selectHeroUI] = useAtom(selectHeroUIAtom);
     const selectedUI = gameState.selectedUI;
     let selectedTower: null | JSX.Element = null;
@@ -80,6 +82,8 @@ export default function ReactUI() {
             {gameSpeedUI.visible && !gameState.hideUI && <GameSpeedButtons />}
 
             {activeTutorial && <TutorialModal />}
+
+            {chestCards.visible && <ChestCards />}
         </>
     );
 }

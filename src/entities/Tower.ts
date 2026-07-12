@@ -16,7 +16,6 @@ import isButtonDown from '../utils/isButtonDown';
 import { waitScaled } from '../utils/timerFunctions';
 import makeProjectile from './Projectile';
 import { playSfx, playUISound } from '../utils/soundHelpers';
-import { getSave } from '../platform/save';
 import { tryShowTutorial } from '../utils/tutorialHelpers';
 
 export default function makeTower(
@@ -72,6 +71,7 @@ export default function makeTower(
             pathTiles,
             footprint,
             lastShotTime: 0,
+            towerBuffs: [],
             upgrades: [],
             ...("effects" in TOWERS[towerId] ? { effects: TOWERS[towerId].effects as UnitEffects } : {}),
             ...("shootSound" in TOWERS[towerId] ? { shootSound: TOWERS[towerId].shootSound as string } : {}),
@@ -223,13 +223,16 @@ export default function makeTower(
                     const timeScale = store.get(gameStateAtom).timeScale;
                     orbiter.r = tower.stats.range * TILE_SIZE;
                     const fireRateBuff = getBuffValue(tower, "fireRate");
+                    const fireRateMultiplier = tower.towerBuffs
+                        .filter(b => b.type === "fireRate")
+                        .reduce((acc, b) => acc * b.multiplier, 1);
 
                     if (tower.state === "disabled") {
                         orbiter.speed = 0;
                         return;
                     }
 
-                    orbiter.speed = 2 * Math.PI / ((1 - fireRateBuff) * tower.stats.fireInterval);
+                    orbiter.speed = 2 * Math.PI / (((1 - fireRateBuff) * fireRateMultiplier) * tower.stats.fireInterval);
                     orbiter.angle += orbiter.speed * k.dt() * timeScale;
 
                     const cx = tower.pos.x + (tower.footprint.w * TILE_SIZE) / 2;
@@ -258,7 +261,8 @@ export default function makeTower(
                                 target: enemy,
                                 damage,
                                 isCrit,
-                                element: tower.element
+                                element: tower.element,
+                                attacker: tower
                             });
 
                             playSfx(k, "smash", 1, enemy.pos);
@@ -297,8 +301,11 @@ export default function makeTower(
 
                     // orbit speed
                     const fireRateBuff = getBuffValue(tower, "fireRate");
+                    const fireRateMultiplier = tower.towerBuffs
+                        .filter(b => b.type === "fireRate")
+                        .reduce((acc, b) => acc * b.multiplier, 1);
 
-                    const fireInterval = ((1 - fireRateBuff) * tower.stats.fireInterval);
+                    const fireInterval = (((1 - fireRateBuff) * fireRateMultiplier) * tower.stats.fireInterval);
 
                     phoenix.speed =
                         2 * Math.PI /
@@ -336,7 +343,7 @@ export default function makeTower(
 
                         if (!target) return;
 
-                        phoenix.fireTimer += fireInterval / 12;
+                        phoenix.fireTimer += (fireInterval / 12);
 
                         const damageMult =
                             1 + getBuffValue(tower, "damage");
@@ -377,7 +384,8 @@ export default function makeTower(
                             homing: true,
                             turnSpeed: 6,
                             scale: 1,
-                            splashRadius: 0
+                            splashRadius: 0,
+                            owner: tower as TowerGameObj
                         });
                     }
                 });
@@ -492,6 +500,17 @@ export default function makeTower(
             if (!buffs[type as BuffType]) {
                 k.destroy(tower.buffIcons[type as BuffType]);
                 delete tower.buffIcons[type as BuffType];
+            }
+        }
+
+        // non-song buffs
+        for (let i = tower.towerBuffs.length - 1; i >= 0; i--) {
+            const buff = tower.towerBuffs[i];
+
+            buff.timeLeft -= k.dt() * timeScale;
+
+            if (buff.timeLeft <= 0) {
+                tower.towerBuffs.splice(i, 1);
             }
         }
 

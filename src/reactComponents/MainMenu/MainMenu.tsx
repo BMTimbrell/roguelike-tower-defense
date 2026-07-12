@@ -88,6 +88,7 @@ export default function MainMenu() {
                                 health: saveData.health,
                                 maxHealth: saveData.maxHealth,
                                 waveNumber: 0,
+                                luck: 1,
                                 shops: saveData.shops,
                                 waveActive: false,
                                 heroCharge: saveData.heroCharge,
@@ -106,7 +107,13 @@ export default function MainMenu() {
                                     ...prev.heroButton,
                                     onClick: () => {
                                         if (k.get("hero")[0]) k.destroy(k.get("hero")[0]);
-                                        else k.add(hero);
+                                        else {
+                                            setGameState(prev => ({
+                                                ...prev,
+                                                selectedUpgrade: null
+                                            }));
+                                            k.add(hero);
+                                        }
                                     }
                                 }
                             }));

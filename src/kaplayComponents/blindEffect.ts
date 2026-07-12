@@ -1,4 +1,4 @@
-import type { KAPLAYCtx, Comp, GameObj} from "kaplay";
+import type { KAPLAYCtx, Comp, GameObj } from "kaplay";
 import type { StatusEffectResult } from "../types";
 import type { StatusEffect, StatusEffectComp } from "./statusEffect";
 import { gameStateAtom, store } from "../store";

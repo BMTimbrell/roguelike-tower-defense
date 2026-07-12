@@ -40,7 +40,8 @@ const SOUND_VOLUMES: Record<string, number> = {
     "monster death": 2,
     "monster death3": 0.6,
     "dizzy": 4,
-    "fairy death2": 6
+    "fairy death2": 6,
+    "open chest": 0.5
 };
 
 export function playUISound(

@@ -1,5 +1,5 @@
 import type { KAPLAYCtx, Vec2 } from "kaplay";
-import type { ElementName, EnemyGameObj } from "../types";
+import type { ElementName, EnemyGameObj, TowerGameObj } from "../types";
 import { gameStateAtom, store } from "../store";
 import hurtEnemy from "../utils/hurtEnemy";
 import { playSfx } from "../utils/soundHelpers";
@@ -17,6 +17,7 @@ export default function makeAttachedEntity(k: KAPLAYCtx, opts: {
     offset: number;
     infectionLevel?: number;
     sound?: string;
+    owner: TowerGameObj;
 }) {
     const { enemy, isCrit, ticks, interval, element, sprite, angle } = opts;
     let damage = opts.damage;
@@ -73,7 +74,8 @@ export default function makeAttachedEntity(k: KAPLAYCtx, opts: {
                 target: enemy,
                 damage,
                 isCrit,
-                element
+                element,
+                attacker: opts.owner
             });
 
             remaining--;

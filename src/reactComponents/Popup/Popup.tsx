@@ -8,7 +8,7 @@ export default function Popup({ mode, pos, children, pStyle }: {
     mode: "world" | "screen";
     pos: { x: number; y: number; };
     children: React.ReactNode;
-    pStyle?: React.CSSProperties
+    pStyle?: React.CSSProperties;
 }) {
     const popupRef = useRef<HTMLDivElement | null>(null);
     const [map] = useAtom(mapAtom);
