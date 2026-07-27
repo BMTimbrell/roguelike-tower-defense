@@ -48,3 +48,9 @@
     pointer-events: none;
     text-align: center;
 }
+
+.uses {
+    text-align: center;
+    font-size: 0.875em;
+    margin-top: 1em;
+}

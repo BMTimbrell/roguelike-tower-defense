@@ -89,7 +89,10 @@ export default function makeEnemy(
             invincibleDuration: "invincibleDuration" in ENEMIES[enemyId] ? ENEMIES[enemyId].invincibleDuration as number : 2,
             stunResistance: false,
             stunResistanceDuration: 3,
+            goldDropped: ENEMIES[enemyId].goldDropped,
             stunResistanceTimer: 0,
+            chestValue: ENEMIES[enemyId].chestValue,
+            darkHarvestDamage: 0,
             ...("checkpointTimer" in ENEMIES[enemyId] ? {
                 checkpointTimer: ENEMIES[enemyId].checkpointTimer as number,
                 checkpointDuration: ENEMIES[enemyId].checkpointTimer as number
@@ -170,13 +173,14 @@ export default function makeEnemy(
 
     enemy.onAnimEnd(anim => {
         if (anim === "die") {
+            const luckGain = 0.01 * enemy.goldDropped;
             store.set(gameStateAtom, prev => ({
                 ...prev,
-                luck: prev.luck + 0.01
+                luck: prev.luck + luckGain
             }));
 
             // chance to spawn chest
-            if (Math.random() * 100 < store.get(gameStateAtom).luck) {
+            if (Math.random() * 100 < store.get(gameStateAtom).luck * enemy.chestValue) {
                 makeChest(k, enemy.pos);
                 store.get(gameStateAtom).luck--;
             }
@@ -472,7 +476,7 @@ export default function makeEnemy(
                 store.set(gameStateAtom, prev => ({
                     ...prev,
                     health: prev.health - enemy.damage,
-                    luck: prev.luck + enemy.damage
+                    luck: prev.luck + (enemy.damage * 0.2)
                 }));
 
                 if (store.get(gameStateAtom).health <= 0) {
@@ -507,7 +511,7 @@ export default function makeEnemy(
                 store.set(gameStateAtom, prev => ({
                     ...prev,
                     health: prev.health - enemy.damage,
-                    luck: prev.luck + enemy.damage
+                    luck: prev.luck + enemy.damage * 0.2
                 }));
 
                 if (store.get(gameStateAtom).health <= 0) {
@@ -763,7 +767,7 @@ export default function makeEnemy(
         enemy.isDying = true;
         store.set(gameStateAtom, prev => ({
             ...prev,
-            gold: prev.gold + (enemy.damage * goldBonusMod)
+            gold: prev.gold + (enemy.goldDropped * goldBonusMod)
         }));
         enemy.untag("enemy");
         enemy.unuse("area");

@@ -10,7 +10,7 @@ export default function reroll(k: KAPLAYCtx) {
     const spellCount = oldHand.filter(card => "type" in card && card.type === "spell").length;
     const upgradeCount = oldHand.length - spellCount;
 
-    const upgradeCards = drawCards(k, store.get(gameStateAtom).deck.cards, upgradeCount);
+    const upgradeCards = drawCards(k, store.get(gameStateAtom).deck.cards, upgradeCount, false);
     const spellCards = generateRandomSpells(spellCount, SPELLS);
 
     let upgradeIndex = 0;

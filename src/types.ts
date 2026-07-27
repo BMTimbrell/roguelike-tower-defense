@@ -36,6 +36,10 @@ export type Tile = {
     isPath: boolean;
     pathIndex?: number;
     hasTree?: boolean;
+    hasWater?: boolean;
+    frozen?: boolean;
+    iceSprite?: string;
+    glowObj?: GameObj;
 };
 
 export type PathTile = {
@@ -67,13 +71,17 @@ export type TowerBuff =
         timeLeft: number;
     }
     | {
+        type: "toxicInfusion",
+        timeLeft: 5
+    }
+    | {
         type: "fireRate";
         multiplier: number;
         timeLeft: number;
     }
     | {
         type: "range";
-        multiplier: number;
+        number: number;
         timeLeft: number;
     };
 
@@ -322,6 +330,8 @@ export type EnemyGameObj = GameObj<
         amount: number;
         range: number;
     };
+    goldDropped: number;
+    chestValue: number;
     shootSound?: string;
     healTickRate?: number;
     spawnOnDeath?: {
@@ -374,6 +384,7 @@ export type EnemyGameObj = GameObj<
         presentDropIndex: number;
         bossMechanic?: "escape" | "shield";
     };
+    darkHarvestDamage: number;
     spawnIce?: boolean;
     presentDrops?: {
         segment: number;
@@ -401,14 +412,14 @@ export type Upgrade = {
     markedForDeletion?: boolean;
 };
 
-export type SpellName = "Firestorm" | "Plague Bomb" | "Arctic Blast" | "Overcharge" | "Heal" | "Dark Harvest" | "Blinding Light" | "Gold" | "Reroll";
+export type SpellName = "Firestorm" | "Arctic Blast" | "Overcharge" | "Heal" | "Dark Harvest" | "Blinding Light" | "Gold" | "Reroll" | "Toxic Infusion";
 
 export type Spell = {
     type: "spell";
 
     effect:
         | "firestorm"
-        | "plagueBomb"
+        | "toxicInfusion"
         | "arcticBlast"
         | "overcharge"
         | "heal"
@@ -425,7 +436,9 @@ export type Spell = {
     used?: boolean;
     animationDelay?: number;
     target: "point" | "none" | "tower" | "auto-consume";
+    range?: number;
     markedForDeletion?: boolean;
+    uses?: number;
 };
 
 export type Card = Upgrade | Spell;
@@ -557,6 +570,7 @@ export type GameState = {
     showDamageNumbers: boolean;
     timeScale: number;
     gameOver: boolean;
+    tileGrid: Tile[][];
 };
 
 export type ShopChoiceButtons = {
@@ -667,6 +681,7 @@ export type EnemyConfig = {
     bossMechanic?: "shield" | "escape";
     shieldSprite?: string;
     shieldHp?: number;
+    chestValue: number;
 };
 
 export type presentSpawns =

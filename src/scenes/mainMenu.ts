@@ -1,5 +1,5 @@
 import type { AudioPlay, KAPLAYCtx } from "kaplay";
-import { gameStateAtom, store, startingOptionsAtom, selectHeroUIAtom, shopChoiceUIAtom, shopAtom, altarAtom, mainMenuAtom, gameSpeedUIAtom, challengesAtom } from "../store";
+import { gameStateAtom, store, startingOptionsAtom, selectHeroUIAtom, shopChoiceUIAtom, shopAtom, altarAtom, mainMenuAtom, gameSpeedUIAtom, challengesAtom, chestAtom } from "../store";
 import initCam from "../utils/initCam";
 import type { Scene, Upgrade } from "../types";
 import { CHARGE_DAMAGE_REQUIRED, EXPERT_PLAYER_HEALTH, HARD_PLAYER_HEATLH, NORMAL_PLAYER_HEATLH, type HeroId, type TowerId } from "../constants";
@@ -46,6 +46,11 @@ export default function mainMenu(k: KAPLAYCtx) {
         }));
 
         store.set(challengesAtom, prev => ({
+            ...prev,
+            visible: false
+        }));
+
+        store.set(chestAtom, prev => ({
             ...prev,
             visible: false
         }));

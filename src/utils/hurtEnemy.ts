@@ -4,6 +4,7 @@ import { CRIT_DAMAGE_NUMBER_SIZE, DAMAGE_NUMBER_SIZE, ELEMENTS, SCYTHE_MAX_KILL_
 import type { AttackContext, ElementName, EnemyGameObj, TowerGameObj } from "../types";
 import spawnSummon from "../entities/Summon";
 import { gameStateAtom, store } from "../store";
+import { spawnPoisonCloud } from "./spellHelpers";
 
 export default function hurtEnemy(k: KAPLAYCtx, opts: {
     target: EnemyGameObj;
@@ -15,30 +16,18 @@ export default function hurtEnemy(k: KAPLAYCtx, opts: {
     statusDamage?: boolean;
     applyStatusEffects?: boolean;
     damageFromBuff?: boolean;
+    zIndexBonus?: number;
 }) {
-    const { target, damage, element, isCrit, attacker, statusDamage, ignoreArmour, applyStatusEffects = true, damageFromBuff = false } = opts;
+    const { target, damage, element, isCrit, attacker, statusDamage, ignoreArmour, applyStatusEffects = true, damageFromBuff = false, zIndexBonus = 0 } = opts;
 
     if (target.invincible) return;
 
-    if (attacker?.killStacks !== undefined && attacker.killStacks < SCYTHE_MAX_KILL_STACKS && target.hp() <= damage) {
-        attacker.killStacks++;
-        if (attacker.killStacks === 1) {
-            k.add([
-                k.pos(attacker.pos),
-                k.text("" + attacker.killStacks, {
-                    size: 12,
-                    font: "free pixel"
-                }),
-                k.color(ELEMENTS[element].color),
-                `killStackText${attacker.instanceId}`
-            ]);
-        } else {
-            k.get(`killStackText${attacker.instanceId}`)[0].text = "" + attacker.killStacks;
-        }
-    }
+    const hasDarkHarvest = target.has("darkHarvestMark");
 
-    let remainingDamage = damage;
-    let effectiveDamage = damage;
+    const darkHarvestMarkDamageMult = hasDarkHarvest ? 1.5 : 1;
+
+    let remainingDamage = Math.round(damage * darkHarvestMarkDamageMult);
+    let effectiveDamage = Math.round(damage * darkHarvestMarkDamageMult);
 
     if (target.armour && target.armour > 0 && !ignoreArmour) {
         // crits ignore reduced
@@ -59,6 +48,24 @@ export default function hurtEnemy(k: KAPLAYCtx, opts: {
         if (target.shieldHp < 0) target.hurt(-target.shieldHp);
     } else {
         target.hurt(remainingDamage);
+        if (hasDarkHarvest) target.darkHarvestDamage += effectiveDamage;
+    }
+
+    if (attacker?.killStacks !== undefined && attacker.killStacks < SCYTHE_MAX_KILL_STACKS && target.hp() <= 0) {
+        attacker.killStacks++;
+        if (attacker.killStacks === 1) {
+            k.add([
+                k.pos(attacker.pos),
+                k.text("" + attacker.killStacks, {
+                    size: 12,
+                    font: "free pixel"
+                }),
+                k.color(ELEMENTS[element].color),
+                `killStackText${attacker.instanceId}`
+            ]);
+        } else {
+            k.get(`killStackText${attacker.instanceId}`)[0].text = "" + attacker.killStacks;
+        }
     }
 
     if (store.get(gameStateAtom).showDamageNumbers) {
@@ -67,7 +74,8 @@ export default function hurtEnemy(k: KAPLAYCtx, opts: {
             pos: target.pos.add(offset),
             text: '' + effectiveDamage,
             size: isCrit ? CRIT_DAMAGE_NUMBER_SIZE : statusDamage || damageFromBuff ? SMALL_DAMAGE_NUMBER_SIZE : DAMAGE_NUMBER_SIZE,
-            color: ELEMENTS[element].color
+            color: ELEMENTS[element].color,
+            zIndexBonus
         });
     }
 
@@ -77,6 +85,10 @@ export default function hurtEnemy(k: KAPLAYCtx, opts: {
         damageType: element,
         amount: damage
     });
+
+    if (attacker?.towerBuffs.some(b => b.type === "toxicInfusion")) {
+        spawnPoisonCloud(k, { damage: Math.max(1, Math.round(effectiveDamage * 0.25)), target: target.pos });
+    }
 
     if (!statusDamage) {
         if (applyStatusEffects) {

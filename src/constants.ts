@@ -264,6 +264,7 @@ export const SPELLS: Spell[] = [
         name: "Heal",
         description: "Heal 1 HP",
         target: "none",
+        uses: 1,
         icon: "sprites/heart.png"
     },
     {
@@ -280,7 +281,7 @@ export const SPELLS: Spell[] = [
         effect: "firestorm",
         icon: "sprites/burn-spell-icon.png",
         name: "Firestorm",
-        description: "Deal fire damage equal to 10 × wave number, and burn all enemies in a small area",
+        description: "Deal fire damage and burn all enemies within a 3-tile radius",
         target: "point"
     },
     {
@@ -288,30 +289,31 @@ export const SPELLS: Spell[] = [
         effect: "arcticBlast",
         icon: "sprites/chill-spell-icon.png",
         name: "Arctic Blast",
-        description: "Deal ice damage equal to 5 × wave number to all enemies in a small area and add 5 chill stacks",
+        description: "Deal ice damage to all enemies within a 3-tile radius and add 10 chill stacks",
         target: "point"
     },
     {
         type: "spell",
-        effect: "plagueBomb",
-        name: "Plague Bomb",
+        effect: "toxicInfusion",
+        name: "Toxic Infusion",
         icon: "sprites/poison-spell-icon.png",
-        description: "Deal poison damage equal to 10 × wave number to all enemies in a small area and add 10 poison stacks (ignores stack limit)",
-        target: "point"
+        description: "Infuse a tower with toxic energy for 5 seconds. Its attacks leave behind poisonous clouds",
+        target: "tower"
     },
     {
         type: "spell",
         effect: "darkHarvest",
         icon: "sprites/curse-spell-icon.png",
         name: "Dark Harvest",
-        description: "Consume the curses on all cursed enemies, dealing damage equal to 80% of their maximum health (capped at 80 + 20 × wave number)",
-        target: "none"
+        description: "Mark enemies in a 1-tile radius for 5 seconds. Towers prioritise them, they take 50% more damage, then suffer 40% of the damage taken while marked",
+        target: "point",
+        range: 1
     },
     {
         type: "spell",
         effect: "blindingLight",
         name: "Blinding Light",
-        description: "Blind all enemies on the map for 6 seconds",
+        description: "Blind all enemies on the map for 6 seconds and give all towers +2 range for the duration",
         icon: "sprites/blind-spell-icon.png",
         target: "none"
     },
@@ -320,7 +322,7 @@ export const SPELLS: Spell[] = [
         effect: "overcharge",
         icon: "sprites/charge-spell-icon.png",
         name: "Overcharge",
-        description: "Double the fire rate of a tower and give it +20% bonus electric damage for 4 seconds",
+        description: "Double the fire rate of a tower and give it +20% bonus electric damage for 5 seconds",
         target: "tower"
     }
 ];
@@ -1084,21 +1086,21 @@ export const LEVEL_WAVES = {
                     { id: "armouredOrc", count: 3, interval: 1 },
                     { id: "wolf", count: 1, interval: 1 },
                     { id: "redFairy", count: 1, interval: 1.5 },
-                    { id: "giantPenguin", count: 1, interval: 1 },
+                    { id: "giantPenguin", count: 1, interval: 1.5 },
                     { id: "penguin", count: 5, interval: 0.5 },
-                    { id: "spider", count: 3, interval: 1 },
+                    { id: "spider", count: 3, interval: 1.2 },
                     { id: "giantSpider", count: 1, interval: 2 },
-                    { id: "spider", count: 3, interval: 1 },
+                    { id: "spider", count: 3, interval: 1.2 },
                     { id: "wolf", count: 1, interval: 1 },
                     { id: "fairy", count: 1, interval: 1 },
                     { id: "snowman", count: 5, interval: 0.5 },
                     { id: "giantSnowman", count: 1, interval: 1.5 },
                     { id: "snowman", count: 5, interval: 0.5 },
-                    { id: "giantPenguin", count: 1, interval: 1 },
+                    { id: "giantPenguin", count: 1, interval: 1.5 },
                     { id: "penguin", count: 5, interval: 0.5 },
                     { id: "giantOrc", count: 1, interval: 2 },
                     { id: "orc", count: 5, interval: 0.5 },
-                    { id: "armouredOrc", count: 5, interval: 1 },
+                    { id: "armouredOrc", count: 3, interval: 1 },
                     { id: "redFairy", count: 1, interval: 1 },
                     { id: "wolf", count: 1, interval: 1 }
                 ],
@@ -1805,6 +1807,7 @@ export const ENEMIES = {
         hp: 10,
         damage: 1,
         goldDropped: 1,
+        chestValue: 0.5,
         speed: 50,
         deathSound: "monster death3",
         sprite: "slime"
@@ -1812,6 +1815,7 @@ export const ENEMIES = {
     skeleton: {
         hp: 35,
         damage: 1,
+        chestValue: 0.5,
         goldDropped: 1,
         deathSound: "skeleton death",
         speed: 50,
@@ -1820,6 +1824,7 @@ export const ENEMIES = {
     armouredSkeleton: {
         hp: 40,
         goldDropped: 2,
+        chestValue: 0.75,
         armour: 30,
         damage: 1,
         speed: 50,
@@ -1829,6 +1834,7 @@ export const ENEMIES = {
     fairy: {
         hp: 50,
         damage: 1,
+        chestValue: 0.5,
         goldDropped: 1,
         speed: 60,
         sprite: "fairy",
@@ -1841,6 +1847,7 @@ export const ENEMIES = {
     giantSlime: {
         hp: 300,
         damage: 5,
+        chestValue: 1,
         hasLargeSoul: true,
         goldDropped: 3,
         deathSound: "monster death3",
@@ -1861,6 +1868,7 @@ export const ENEMIES = {
     giantSkeleton: {
         hp: 500,
         damage: 5,
+        chestValue: 1.25,
         deathSound: "skeleton death",
         goldDropped: 4,
         speed: 25,
@@ -1870,6 +1878,7 @@ export const ENEMIES = {
     bee: {
         hp: 8,
         damage: 1,
+        chestValue: 0.5,
         goldDropped: 1,
         speed: 75,
         sprite: "bee",
@@ -1878,6 +1887,7 @@ export const ENEMIES = {
     orc: {
         hp: 50,
         damage: 1,
+        chestValue: 0.5,
         goldDropped: 1,
         deathSound: "monster death2",
         speed: 50,
@@ -1886,6 +1896,7 @@ export const ENEMIES = {
     armouredOrc: {
         hp: 60,
         armour: 50,
+        chestValue: 0.75,
         goldDropped: 2,
         deathSound: "monster death2",
         damage: 1,
@@ -1896,6 +1907,7 @@ export const ENEMIES = {
         hp: 225,
         damage: 5,
         speed: 35,
+        chestValue: 1,
         shootSound: "arrow",
         hasLargeSoul: true,
         deathSound: "monster death3",
@@ -1912,6 +1924,7 @@ export const ENEMIES = {
         hp: 700,
         hasLargeSoul: true,
         goldDropped: 4,
+        chestValue: 1.25,
         deathSound: "monster death2",
         damage: 5,
         speed: 25,
@@ -1920,6 +1933,7 @@ export const ENEMIES = {
     ghost: {
         hp: 100,
         damage: 1,
+        chestValue: 0.75,
         goldDropped: 2,
         speed: 50,
         sprite: "ghost",
@@ -1930,6 +1944,7 @@ export const ENEMIES = {
     redFairy: {
         hp: 120,
         damage: 1,
+        chestValue: 0.75,
         goldDropped: 2,
         speed: 60,
         sprite: "red fairy",
@@ -1941,7 +1956,8 @@ export const ENEMIES = {
     },
     spider: {
         hp: 100,
-        damage: 4,
+        damage: 1,
+        chestValue: 0.75,
         goldDropped: 2,
         deathSound: "monster death",
         speed: 50,
@@ -1954,6 +1970,7 @@ export const ENEMIES = {
     spiderling: {
         hp: 10,
         damage: 1,
+        chestValue: 0.5,
         goldDropped: 1,
         deathSound: "monster death3",
         speed: 75,
@@ -1962,6 +1979,7 @@ export const ENEMIES = {
     wolf: {
         hp: 60,
         damage: 1,
+        chestValue: 0.75,
         goldDropped: 2,
         speed: 90,
         sprite: "wolf",
@@ -1974,6 +1992,7 @@ export const ENEMIES = {
     armouredSlime: {
         hp: 10,
         goldDropped: 2,
+        chestValue: 0.75,
         deathSound: "monster death3",
         armour: 100,
         damage: 1,
@@ -1988,6 +2007,7 @@ export const ENEMIES = {
         hp: 700,
         armour: 100,
         goldDropped: 5,
+        chestValue: 2,
         hasLargeSoul: true,
         damage: 5,
         deathSound: "skeleton death",
@@ -1997,6 +2017,7 @@ export const ENEMIES = {
     giantArmouredOrc: {
         hp: 1000,
         armour: 140,
+        chestValue: 2,
         goldDropped: 5,
         deathSound: "monster death2",
         hasLargeSoul: true,
@@ -2008,6 +2029,7 @@ export const ENEMIES = {
         hp: 1250,
         damage: 5,
         speed: 25,
+        chestValue: 2,
         deathSound: "monster death",
         hasLargeSoul: true,
         goldDropped: 5,
@@ -2018,6 +2040,7 @@ export const ENEMIES = {
     giantSpider: {
         hp: 1250,
         damage: 5,
+        chestValue: 2,
         deathSound: "monster death",
         hasLargeSoul: true,
         goldDropped: 5,
@@ -2034,6 +2057,7 @@ export const ENEMIES = {
         hasLargeSoul: true,
         deathSound: "monster death3",
         goldDropped: 5,
+        chestValue: 2,
         damage: 5,
         speed: 25,
         spawnOnDeath: {
@@ -2046,6 +2070,7 @@ export const ENEMIES = {
         hp: 800,
         damage: 5,
         hasLargeSoul: true,
+        chestValue: 2,
         goldDropped: 5,
         deathSound: "wolf death",
         speed: 40,
@@ -2058,6 +2083,7 @@ export const ENEMIES = {
     slimeKing: {
         hp: 6500,
         damage: 99,
+        chestValue: 5,
         goldDropped: 50,
         shootSound: "squish",
         bossMechanic: "shield",
@@ -2087,6 +2113,7 @@ export const ENEMIES = {
         bossMechanic: "shield",
         shieldSprite: "bee shield",
         shieldHp: 415,
+        chestValue: 5,
         shieldSound: "bees",
         deathSound: "monster death3",
         shootSound: "bees",
@@ -2109,6 +2136,7 @@ export const ENEMIES = {
     iceSlime: {
         hp: 15,
         damage: 1,
+        chestValue: 1,
         goldDropped: 1,
         deathSound: "monster death3",
         speed: 50,
@@ -2119,6 +2147,7 @@ export const ENEMIES = {
         hp: 30,
         damage: 1,
         goldDropped: 1,
+        chestValue: 1,
         speed: 50,
         sprite: "snowman",
         spawnOnDeath: {
@@ -2129,6 +2158,7 @@ export const ENEMIES = {
     snowmanHead: {
         hp: 10,
         damage: 1,
+        chestValue: 1,
         goldDropped: 1,
         speed: 50,
         sprite: "snowman head"
@@ -2137,6 +2167,7 @@ export const ENEMIES = {
         hp: 20,
         damage: 1,
         goldDropped: 1,
+        chestValue: 1,
         deathSound: "penguin death",
         speed: 50,
         sprite: "penguin"
@@ -2145,6 +2176,7 @@ export const ENEMIES = {
         hp: 50,
         damage: 1,
         goldDropped: 1,
+        chestValue: 1,
         speed: 60,
         deathSound: "polar bear death",
         sprite: "polar bear"
@@ -2153,6 +2185,7 @@ export const ENEMIES = {
         hp: 350,
         damage: 5,
         goldDropped: 3,
+        chestValue: 1,
         hasLargeSoul: true,
         deathSound: "monster death3",
         speed: 25,
@@ -2172,6 +2205,7 @@ export const ENEMIES = {
     giantPolarBear: {
         hp: 700,
         goldDropped: 4,
+        chestValue: 1.25,
         deathSound: "polar bear death",
         hasLargeSoul: true,
         damage: 5,
@@ -2182,6 +2216,7 @@ export const ENEMIES = {
         hp: 700,
         damage: 5,
         goldDropped: 5,
+        chestValue: 2,
         hasLargeSoul: true,
         deathSound: "fairy death",
         speed: 30,
@@ -2195,6 +2230,7 @@ export const ENEMIES = {
         hp: 400,
         damage: 5,
         goldDropped: 3,
+        chestValue: 1,
         hasLargeSoul: true,
         speed: 25,
         deathSound: "penguin death",
@@ -2211,6 +2247,7 @@ export const ENEMIES = {
         hp: 500,
         damage: 5,
         goldDropped: 4,
+        chestValue: 1.25,
         hasLargeSoul: true,
         speed: 25,
         sprite: "giant snowman",
@@ -2222,6 +2259,7 @@ export const ENEMIES = {
     giantSnowmanHead: {
         hp: 150,
         damage: 1,
+        chestValue: 0.5,
         goldDropped: 1,
         speed: 25,
         sprite: "giant snowman head"
@@ -2231,6 +2269,7 @@ export const ENEMIES = {
         damage: 5,
         hasLargeSoul: true,
         deathSound: "fairy death",
+        chestValue: 3,
         speed: 30,
         goldDropped: 6,
         sprite: "giant red fairy",
@@ -2241,8 +2280,9 @@ export const ENEMIES = {
     },
     evilSanta: {
         hp: 18000,
-        damage: 50,
-        goldDropped: 100,
+        damage: 99,
+        goldDropped: 50,
+        chestValue: 5,
         speed: 20,
         sprite: "evil santa",
         bossMechanic: "escape",
@@ -2307,6 +2347,7 @@ export const ENEMIES = {
     polarBearJockey: {
         hp: 50,
         damage: 2,
+        chestValue: 0.5,
         goldDropped: 1,
         speed: 60,
         deathSound: "polar bear death",
@@ -2320,6 +2361,7 @@ export const ENEMIES = {
         hp: 700,
         damage: 10,
         goldDropped: 5,
+        chestValue: 2,
         deathSound: "polar bear death",
         speed: 30,
         hasLargeSoul: true,
@@ -2443,7 +2485,7 @@ export const TOWERS = {
         gunSprite: "ice tower",
         baseSprite: "ice tower base",
         sprite: "ice-tower-sprite.png",
-        description: "Emits a frost that damages all enemies in range. This tower receives half the amount from range upgrades and buffs",
+        description: "Emits a frost that damages all enemies in range. This tower receives half the amount from range upgrades",
         cost: 110,
         stats: {
             damage: 2,
@@ -2743,10 +2785,10 @@ export const TOWERS = {
         gunSprite: "chili tower",
         baseSprite: "plant tower base",
         sprite: "basic-tower-sprite.png",
-        description: "Deals fire damage to all enemies in range. This tower receives half the amount from range upgrades and buffs",
+        description: "Deals fire damage to all enemies in range. This tower receives half the amount from range upgrades",
         cost: 90,
         stats: {
-            damage: 4,
+            damage: 5,
             range: 2,
             fireInterval: 1.5,
             critChance: 5,
@@ -2983,7 +3025,7 @@ export const TOWERS = {
         gunSprite: "hammer tower",
         baseSprite: "hammer tower base",
         sprite: "hammer-tower-sprite.png",
-        description: "Smash enemies with a hammer, dealing area damage. Damage dealt converts to stun chance (20%). This tower receives half the amount from range upgrades and buffs",
+        description: "Smash enemies with a hammer, dealing area damage. Damage dealt converts to stun chance (20%). This tower receives half the amount from range upgrades",
         cost: 70,
         stats: {
             damage: 30,
@@ -3485,7 +3527,7 @@ export const TOWERS = {
         gunSprite: "scythe tower",
         baseSprite: "scythe tower base",
         sprite: "scythe-tower-sprite.png",
-        description: `Reap enemies' souls, dealing +1 bonus damage per enemy killed (up to +${SCYTHE_MAX_KILL_STACKS}). This tower receives half the amount from range upgrades and buffs`,
+        description: `Reap enemies' souls, dealing +1 bonus damage per enemy killed (up to +${SCYTHE_MAX_KILL_STACKS}). This tower receives half the amount from range upgrades`,
         cost: 250,
         stats: {
             damage: 30,
@@ -3732,7 +3774,7 @@ export const TOWERS = {
         gunSprite: "lava tower",
         baseSprite: "lava tower base",
         sprite: "lava-tower-sprite.png",
-        description: "Pours lava onto the path. This tower receives half the amount from range upgrades and buffs",
+        description: "Pours lava onto the path. This tower receives half the amount from range upgrades",
         cost: 350,
         stats: {
             damage: 4,
@@ -3899,6 +3941,7 @@ export const TOWERS = {
                                                 damage: Math.round(ctx.damage * 0.25),
                                                 element: ctx.element,
                                                 isCrit: false,
+                                                attacker: ctx.attacker as TowerGameObj
                                             });
                                         }
                                     });
@@ -4177,7 +4220,7 @@ export const HEROES = {
         gunSprite: "wizard",
         baseSprite: "wizard base",
         stats: {
-            damage: 15,
+            damage: 20,
             range: 4,
             fireInterval: 1.5,
             critChance: 10,
@@ -4479,7 +4522,7 @@ export const ELEMENTS: Record<ElementName, ElementDef> = {
             const stacks = 1 + Math.floor(damage / ICE_DAMAGE_PER_STACK);
             const duration = 2;
             if (chill) {
-                target.addChillStack(stacks);
+                target.addChillStack(stacks, MAX_CHILL_STACKS);
                 return;
             }
             target.use(chillEffect(k, duration, stacks));

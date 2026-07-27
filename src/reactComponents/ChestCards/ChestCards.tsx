@@ -50,11 +50,15 @@ export default function ChestCards() {
                     >
                         <SpellCard
                             name={spell.name}
+                            uses={0}
                             icon={spell.icon}
                             iconScale={2}
                         />
                         <div className={styles.description}>
                             {spell.description}
+                        </div>
+                        <div className={styles.uses}>
+                            {spell.uses && "Uses: " + spell.uses}
                         </div>
                     </Card>
                 ))}

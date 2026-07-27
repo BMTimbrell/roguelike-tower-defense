@@ -18,6 +18,7 @@ import setGameSpeed from "./setGameSpeed";
 import { playMusic } from "./soundHelpers";
 import { getSave, saveRun } from "../platform/save";
 import { castSpell } from "./spellHelpers";
+import { freezeTile } from "./freezeTile";
 
 export default function makeLevelScene(k: KAPLAYCtx, sceneName: Scene) {
 
@@ -191,6 +192,7 @@ export default function makeLevelScene(k: KAPLAYCtx, sceneName: Scene) {
             ...prev,
             scene: sceneName,
             gold: LEVEL_WAVES[wave].startingGold,
+            tileGrid,
             waveNumber: 1,
             selectedUI: null,
             bottomBarVisible: true,
@@ -314,18 +316,17 @@ export default function makeLevelScene(k: KAPLAYCtx, sceneName: Scene) {
                 const x = Math.floor(obj.x / TILE_SIZE);
                 const y = Math.floor(obj.y / TILE_SIZE);
                 tileGrid[y][x].blocked = true;
+                tileGrid[y][x].iceSprite = obj.name;
+                tileGrid[y][x].hasWater = true;
                 return {
                     x,
                     y,
-                    used: false,
-                    pending: false,
-                    id: obj.name,
-                    glowObj: null as null | GameObj
+                    pending: false
                 };
             }) ?? [];
 
         function previewIce(count: number) {
-            const available = icePoints.filter(p => !p.used && !p.pending);
+            const available = icePoints.filter(p => !tileGrid[p.y][p.x].frozen && !p.pending);
 
             for (let i = 0; i < count && available.length > 0; i++) {
                 const index = Math.floor(Math.random() * available.length);
@@ -353,35 +354,21 @@ export default function makeLevelScene(k: KAPLAYCtx, sceneName: Scene) {
                     "icePreview"
                 ]);
 
-                point.glowObj = glow;
+                tileGrid[point.y][point.x].glowObj = glow;
             }
         }
 
         function spawnIce() {
-            const pending = icePoints.filter(p => (p.pending) && !p.used);
+            const pending = icePoints.filter(p => (p.pending) && !tileGrid[p.y][p.x].frozen);
 
 
             for (const point of pending) {
-                point.used = true;
                 point.pending = false;
 
-                if (point.glowObj) k.destroy(point.glowObj);
+                const tile = tileGrid[point.y][point.x];
 
-                const ice = k.add([
-                    k.sprite(`ice tile ${point.id}`),
-                    k.pos(point.x * TILE_SIZE + TILE_SIZE / 2, point.y * TILE_SIZE + TILE_SIZE / 2),
-                    k.z(-1),
-                    k.anchor("center"),
-                    k.opacity(0),
-                    "iceTile",
-                    {
-                        add() {
-                            k.tween(0, 1, 2, v => ice.opacity = v, k.easings.easeOutBounce);
-                        }
-                    }
-                ]);
+                freezeTile(k, { tile, x: point.x, y: point.y });
 
-                tileGrid[point.y][point.x].blocked = false;
             }
         }
 
@@ -460,7 +447,8 @@ export default function makeLevelScene(k: KAPLAYCtx, sceneName: Scene) {
                             "tree",
                             {
                                 tileX: x,
-                                tileY: y
+                                tileY: y,
+                                tile
                             }
                         ]);
                     }

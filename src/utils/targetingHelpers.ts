@@ -39,6 +39,18 @@ export function selectTarget(
             continue;
         }
 
+        const priority = getTargetPriority(e);
+        const bestPriority = getTargetPriority(best);
+
+        if (priority !== bestPriority) {
+            if (priority > bestPriority) {
+                best = e;
+                bestDist = dist;
+            }
+            continue;
+        }
+
+
         switch (tower.priority) {
 
             case "Most Progress":
@@ -207,4 +219,9 @@ export function pathTargetResolver(
             pathIndex: tile.tile.pathIndex,
         };
     }
+}
+
+function getTargetPriority(e: EnemyGameObj) {
+    if (e.has("darkHarvestMark")) return 100;
+    return 0;
 }

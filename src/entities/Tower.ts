@@ -411,8 +411,8 @@ export default function makeTower(
                     const heroCenter = hero.pos.add(k.vec2(TILE_SIZE / 2));
 
                     if (towerCenter.dist(heroCenter) <= TILE_SIZE * tower.footprint.w) {
-                        const amount = REDUCED_RANGE_TOWERS.some(name => name === tower.name) ? 0.5 : 1;
-                        tower.stats.range += amount;
+                        // const amount = REDUCED_RANGE_TOWERS.some(name => name === tower.name) ? 0.5 : 1;
+                        tower.stats.range++;
                     }
                 }
             }

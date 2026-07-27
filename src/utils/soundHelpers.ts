@@ -4,7 +4,7 @@ import { audioAtom, store } from "../store";
 const SOUND_VOLUMES: Record<string, number> = {
     "ui pop": 0.4,
     "equip": 4,
-    "snow biome": 0.7,
+    "snow biome": 1,
     "fireball": 0.5,
     "arrow": 0.5,
     "gunshot": 1.5,
@@ -41,7 +41,8 @@ const SOUND_VOLUMES: Record<string, number> = {
     "monster death3": 0.6,
     "dizzy": 4,
     "fairy death2": 6,
-    "open chest": 0.5
+    "open chest": 0.5,
+    "main title": 1.2
 };
 
 export function playUISound(

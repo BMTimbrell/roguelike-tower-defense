@@ -8,6 +8,7 @@ export default function makeFloatingText(k: KAPLAYCtx, opts: {
     pos: Vec2;
     size?: number;
     fixed?: boolean;
+    zIndexBonus?: number;
 }) {
     const { text, pos, color = "#fffb00", size } = opts;
     const life = 0.5;
@@ -32,7 +33,7 @@ export default function makeFloatingText(k: KAPLAYCtx, opts: {
             k.scale(1),
             ...(opts?.fixed ? [k.fixed()] : []),
             "fTextOutline",
-            k.z(999999)
+            k.z(999999 + (opts.zIndexBonus || 0))
         ])
     );
 
@@ -47,7 +48,7 @@ export default function makeFloatingText(k: KAPLAYCtx, opts: {
         ...(opts?.fixed ? [k.fixed()] : []),
         k.opacity(1),
         k.scale(1),
-        k.z(999999)
+        k.z(999999 + (opts.zIndexBonus || 0))
     ]);
 
     let time = 0;

@@ -192,7 +192,7 @@ export default function Settings() {
 
                 <div className={styles["slider-container"]}>
                     <label htmlFor="masterVolume">
-                        Volume
+                        Master Volume
                     </label>
 
                     <input
@@ -216,7 +216,7 @@ export default function Settings() {
 
                 <div className={styles["slider-container"]}>
                     <label htmlFor="musicVolume">
-                        Music
+                        Music Volume
                     </label>
 
                     <input
@@ -240,7 +240,7 @@ export default function Settings() {
 
                 <div className={styles["slider-container"]}>
                     <label htmlFor="sfxVolume">
-                        SFX
+                        SFX Volume
                     </label>
 
                     <input

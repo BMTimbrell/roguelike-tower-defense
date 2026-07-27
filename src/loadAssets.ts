@@ -1090,6 +1090,7 @@ export default function loadAssets(k: KAPLAYCtx) {
     k.loadSprite("chill", "sprites/chill-icon.png");
     k.loadSprite("charge", "sprites/charge-icon.png");
     k.loadSprite("curse", "sprites/curse-icon.png");
+    k.loadSprite("dark harvest mark", "sprites/super-curse-icon.png");
     k.loadSprite("blind", "sprites/blind-icon.png");
     k.loadSprite("frost particle", "sprites/frost-particle.png");
     k.loadSprite("flame particle", "sprites/flame-particle.png");
@@ -1273,9 +1274,9 @@ export default function loadAssets(k: KAPLAYCtx) {
     k.loadSound("dizzy", "sounds/soundEffects/dizzy.mp3");
 
     //music
-    k.loadSound("main title", "sounds/music/main-title.mp3");
+    k.loadSound("main title", "sounds/music/The-Crown-of-Aethelgard.mp3");
     k.loadSound("forest biome", "sounds/music/forest-biome.mp3");
-    k.loadSound("forest boss", "sounds/music/first-boss.mp3");
-    k.loadSound("snow biome", "sounds/music/backgroundmusicforvideos-game-minecraft-gaming-background-music-402451.mp3");
+    k.loadSound("forest boss", "sounds/music/Iron-and-Ash.mp3");
+    k.loadSound("snow biome", "sounds/music/jakob_welik-level-two-8-bit-pixel-warriors-chapter-one-415691.mp3");
     k.loadSound("snow boss", "sounds/music/jakob_welik-level-one-8-bit-pixel-warriors-chapter-one-415685.mp3");
 }

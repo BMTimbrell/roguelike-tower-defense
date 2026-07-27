@@ -75,10 +75,7 @@ export default function makeWaveSpawner(k: KAPLAYCtx, levelId: LevelId, waypoint
             startNextWave() {
                 if (spawner.waveIndex < 0) {
                     k.get("arrow").forEach(a => k.destroy(a));
-                } else store.set(gameStateAtom, prev => ({
-                    ...prev,
-                    luck: prev.luck + 1
-                }));
+                }
 
                 if (k.get("boss").length) k.get("boss stop").forEach(b => k.destroy(b));
 
@@ -87,6 +84,23 @@ export default function makeWaveSpawner(k: KAPLAYCtx, levelId: LevelId, waypoint
                 spawnQueue = buildQueue(wave);
                 timer = 0;
                 spawning = true;
+                const waveNumber = spawner.waveIndex + 1;
+                let luckBonus = 0;
+                if (waveNumber < 5) {
+                    luckBonus = 0;
+                } else if (waveNumber <= 6) {
+                    luckBonus = 1;
+                } else if (waveNumber <= 8) {
+                    luckBonus = 1.5;
+                } else luckBonus = 2;
+
+                if (waveNumber > 1) {
+                    store.set(gameStateAtom, prev => ({
+                        ...prev,
+                        luck: prev.luck + 1 + luckBonus
+                    }));
+                }
+
 
                 store.set(gameStateAtom, prev => ({
                     ...prev,
@@ -456,7 +470,7 @@ export default function makeWaveSpawner(k: KAPLAYCtx, levelId: LevelId, waypoint
                                 const heroCenter = hero.pos.add(k.vec2(TILE_SIZE / 2));
 
                                 if (towerCenter.dist(heroCenter) <= TILE_SIZE * plant.footprint.w) {
-                                    const amount = REDUCED_RANGE_TOWERS.some(name => name === plant.name) ? 0.5 : 1;
+                                    const amount = 1;
                                     plant.stats.range += amount;
                                 }
                             }

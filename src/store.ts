@@ -43,7 +43,8 @@ export const gameStateAtom = atom<GameState>({
     challengeManager: new ChallengeManager(),
     camMoveAtEdge: true,
     showDamageNumbers: true,
-    timeScale: 1
+    timeScale: 1,
+    tileGrid: []
 });
 
 export const chestAtom = atom({

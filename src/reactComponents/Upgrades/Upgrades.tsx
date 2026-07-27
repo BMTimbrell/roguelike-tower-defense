@@ -31,17 +31,18 @@ export default function Upgrades({ cards }: { cards: GameCard[] }) {
         if ("type" in card) {
             if (card.target === "none" || card.target === "auto-consume") {
                 castSpell(gameState.context, card);
-                removeCard(card);
+                if (!card.uses) removeCard(card);
                 setGameState(prev => ({
                     ...prev,
                     selectedUpgrade: null
                 }));
             } else if (card.target === "point") {
+                const range = card.range ?? 3;
                 const k = gameState.context;
                 const rangeCircle = k.add([
                     k.pos(),
                     k.color(110, 220, 255),
-                    k.circle(3 * TILE_SIZE),
+                    k.circle(range * TILE_SIZE),
                     k.outline(1),
                     k.opacity(0.2),
                     "spell range",
@@ -179,7 +180,7 @@ export default function Upgrades({ cards }: { cards: GameCard[] }) {
                     onMouseEnter={() => setHoveredCard(card)}
                     onMouseLeave={() => setHoveredCard(null)}
                 >
-                    {"markedForDeletion" in card && card.markedForDeletion ? "Remove" : !("type" in card) ? <UpgradeCard upgrade={card} scale={fontScale} /> : <SpellCard icon={card.icon} iconScale={1} />}
+                    {"markedForDeletion" in card && card.markedForDeletion ? "Remove" : !("type" in card) ? <UpgradeCard upgrade={card} scale={fontScale} /> : <SpellCard icon={card.icon} uses={card.uses ?? 0} iconScale={1} />}
                     {hoveredCard === card && !card.markedForDeletion && (
                         <div style={{ fontSize: `${14 * fontScale}px` }} className={styles["icon-container"]}>
                             <div className={styles.icon}>

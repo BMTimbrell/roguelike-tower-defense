@@ -1,8 +1,7 @@
-import type { KAPLAYCtx, Vec2 } from "kaplay";
+import type { GameObj, KAPLAYCtx, Vec2 } from "kaplay";
 import type { EnemyGameObj, Spell, TowerGameObj } from "../types";
 import { gameStateAtom, store } from "../store";
 import { ELEMENTS, TILE_SIZE } from "../constants";
-import poisonEffect from "../kaplayComponents/poisonEffect";
 import hurtEnemy from "./hurtEnemy";
 import healthBar from "../kaplayComponents/healthBar";
 import chillEffect from "../kaplayComponents/chillEffect";
@@ -10,6 +9,8 @@ import { lifespan } from "../kaplayComponents/lifespan";
 import { waitScaled } from "./timerFunctions";
 import { playSfx, playUISound } from "./soundHelpers";
 import reroll from "./reroll";
+import darkHarvestEffect from "../kaplayComponents/darkHarvestMark";
+import { freezeTile } from "./freezeTile";
 
 export function castSpell(k: KAPLAYCtx, spell: Spell, opts?: { target?: Vec2; tower?: TowerGameObj }) {
 
@@ -22,6 +23,7 @@ export function castSpell(k: KAPLAYCtx, spell: Spell, opts?: { target?: Vec2; to
                 ...prev,
                 health: Math.min(prev.health + 1, prev.maxHealth)
             }));
+            if (spell.uses) spell.uses--;
             break;
 
         case "gold":
@@ -46,110 +48,155 @@ export function castSpell(k: KAPLAYCtx, spell: Spell, opts?: { target?: Vec2; to
 
             fireStorm(k, target ?? k.vec2(0));
 
+            const damage = getAoeSpellDamage(20, store.get(gameStateAtom).waveNumber)
+
+            spawnBurningGround(k, { target: target ?? k.vec2(0), range: 3 * TILE_SIZE, damage: damage * 0.1 });
+
             (k.get("enemy") as EnemyGameObj[]).forEach(enemy => {
-                if (enemy.pos.dist(target ?? k.vec2(0, 0)) <= TILE_SIZE * 3) {
+                if (enemy.pos.dist(target ?? k.vec2(0, 0)) <= TILE_SIZE * (spell.range ?? 3)) {
                     if (enemy.invincible) return;
                     ELEMENTS["Fire"].applyEffect?.(k, { target: enemy, chance: 100, damage: 0 });
-                    hurtEnemy(k, { target: enemy, damage: 10 * store.get(gameStateAtom).waveNumber, element: "Fire", isCrit: false });
+                    hurtEnemy(k, { target: enemy, damage, element: "Fire", isCrit: false });
                 }
             });
             break;
 
-        case "plagueBomb":
-            plagueBomb(k, target ?? k.vec2(0));
-            playUISound(k, "poison bubbles", 0.5);
-
-            k.get("enemy").forEach(enemy => {
-                if (enemy.pos.dist(target ?? k.vec2(0, 0)) <= TILE_SIZE * 3) {
-                    if (enemy.invincible) return;
-                    const poison = enemy.has("poison");
-                    const ignoreLimit = true;
-                    if (poison) {
-                        enemy.addPoisonStack(10, ignoreLimit);
-                    } else {
-                        enemy.use(poisonEffect(k, 10, ignoreLimit));
+        case "toxicInfusion":
+            if (tower) {
+                const toxicInfusionDuration = 5;
+                tower.selected = false;
+                tower.towerBuffs.push(
+                    {
+                        type: "toxicInfusion",
+                        timeLeft: toxicInfusionDuration
                     }
+                );
 
-                    hurtEnemy(k, {
-                        target: enemy as EnemyGameObj,
-                        damage: 10 * store.get(gameStateAtom).waveNumber,
-                        element: "Poison",
-                        isCrit: false,
-                        applyStatusEffects: false
-                    });
-                }
-            });
+                playUISound(k, "poison bubbles", 1);
+
+                const bubbleLoop = k.loop(0.15, () => {
+                    spawnPoisonBubble(k, tower.pos.add(tower.footprint.w * TILE_SIZE / 2, tower.footprint.h * TILE_SIZE / 2));
+                });
+
+                waitScaled(k, toxicInfusionDuration, () => bubbleLoop.cancel());
+            }
             break;
 
         case "darkHarvest":
-            playUISound(k, "ghosts");
-            for (const enemy of (k.get("enemy") as EnemyGameObj[])) {
-                if (enemy.has("curse")) {
-                    const MAX_DAMAGE = 80 + store.get(gameStateAtom).waveNumber * 20;
+            playUISound(k, "dark magic", 2);
+            k.get("enemy").forEach(enemy => {
+                if (enemy.pos.dist(target ?? k.vec2(0, 0)) <= TILE_SIZE * (spell.range ?? 3)) {
+                    if (enemy.invincible) return;
 
-                    spawnDarkHarvestEffect(k, enemy);
-
-
-                    waitScaled(k, 0.25, () => {
-                        spawnDarkBurst(k, enemy.pos);
-
-                        hurtEnemy(k, {
-                            target: enemy,
-                            damage: Math.round(Math.min((enemy.maxHP() || 100) * 0.8, MAX_DAMAGE)),
-                            element: "Dark",
-                            isCrit: false,
-                        });
-
-                        enemy.unuse("curse");
+                    const duration = 5;
+                    const loop = k.loop(0.15, () => {
+                        spawnDarkSoul(k, enemy.pos);
                     });
+
+                    waitScaled(k, 0.2, () => loop.cancel());
+                    const mark = enemy.has("darkHarvestMark");
+                    if (mark) {
+                        enemy.refreshMark();
+                        return;
+                    }
+                    enemy.use(darkHarvestEffect(k, duration));
+                    if (!enemy.has("healthBar")) {
+                        enemy.use(healthBar(k, duration));
+                    }
                 }
-            }
+            });
             break;
 
         case "blindingLight":
             blindingLight(k);
 
-            playUISound(k, "flash", 2);
+            const spellDuration = 6;
+
+            playUISound(k, "holy", 2);
 
             (k.get("enemy") as EnemyGameObj[]).forEach(enemy => {
                 if (enemy.invincible) return;
 
                 ELEMENTS["Light"].applyEffect?.(k, { target: enemy, damage: 0, duration: 6 });
                 if (!enemy.has("healthBar")) {
-                    enemy.use(healthBar(k, 6));
+                    enemy.use(healthBar(k, spellDuration));
                 }
 
             });
+
+            const affectedTowers = (k.get("tower") as TowerGameObj[]).slice();
+
+            affectedTowers.forEach(tower => {
+                tower.stats.range += 2;
+            });
+
+
+            const moteLoop = k.loop(0.02, () => {
+                spawnLightMote(k);
+            });
+
+            waitScaled(k, spellDuration, () => {
+                affectedTowers.forEach(tower => {
+                    tower.stats.range -= 2;
+                });
+                k.get("light mote").forEach(mote => k.destroy(mote));
+                moteLoop.cancel();
+
+            });
+
+            spawnLightAura(k, spellDuration);
+
             break;
 
         case "arcticBlast":
             spawnArcticBlast(k, target ?? k.vec2(0));
             playSfx(k, "ice magic", 2);
             k.get("enemy").forEach(enemy => {
-                if (enemy.pos.dist(target ?? k.vec2(0, 0)) <= TILE_SIZE * 3) {
+                if (enemy.pos.dist(target ?? k.vec2(0, 0)) <= TILE_SIZE * (spell.range ?? 3)) {
                     if (enemy.invincible) return;
 
                     const chill = enemy.has("chill");
+                    const stacks = 10;
                     if (chill) {
-                        enemy.addChillStack(5);
+                        enemy.addChillStack(stacks, stacks, false);
                     } else {
-                        enemy.use(chillEffect(k, 2, 5));
+                        enemy.use(chillEffect(k, 2, stacks, stacks));
                     }
 
                     hurtEnemy(k, {
                         target: enemy as EnemyGameObj,
-                        damage: 5 * store.get(gameStateAtom).waveNumber,
+                        damage: getAoeSpellDamage(20, store.get(gameStateAtom).waveNumber),
                         element: "Ice",
                         isCrit: false,
                         applyStatusEffects: false
                     });
                 }
             });
+
+            const { tileGrid } = store.get(gameStateAtom);
+
+            for (let y = 0; y < tileGrid.length; y++) {
+                for (let x = 0; x < tileGrid[y].length; x++) {
+                    const tile = tileGrid[y][x];
+
+                    if (!tile.hasWater) continue;
+
+                    const pos = k.vec2(
+                        x * TILE_SIZE + TILE_SIZE / 2,
+                        y * TILE_SIZE + TILE_SIZE / 2
+                    );
+
+                    if (pos.dist(target!) <= 2.5 * TILE_SIZE) {
+                        freezeTile(k, { tile, x, y });
+                    }
+                }
+            }
+
             break;
 
         case "overcharge":
             if (tower) {
-                const overchargeDuration = 4;
+                const overchargeDuration = 5;
                 tower.selected = false;
                 tower.towerBuffs.push(
                     {
@@ -174,6 +221,7 @@ export function castSpell(k: KAPLAYCtx, spell: Spell, opts?: { target?: Vec2; to
                 waitScaled(k, overchargeDuration, () => loop.cancel());
             }
             break;
+        default: break;
     }
 }
 
@@ -218,7 +266,6 @@ function spawnArcticBlast(k: KAPLAYCtx, pos: Vec2) {
         (v) => ring.opacity = v,
         k.easings.linear
     );
-
 
     // Ice shards
     for (let i = 0; i < 18; i++) {
@@ -271,7 +318,6 @@ function spawnArcticBlast(k: KAPLAYCtx, pos: Vec2) {
         );
     }
 
-
     // Snow particles
     for (let i = 0; i < 24; i++) {
         const snow = k.add([
@@ -298,50 +344,6 @@ function spawnArcticBlast(k: KAPLAYCtx, pos: Vec2) {
             0.8,
             (v) => snow.opacity = v
         );
-    }
-}
-
-async function plagueBomb(k: KAPLAYCtx, pos: Vec2) {
-    for (let i = 0; i < 40; i++) {
-        const offset = k.vec2(
-            k.rand(-40, 40),
-            k.rand(-40, 40),
-        );
-
-        const cloud = k.add([
-            k.circle(k.rand(8, 16)),
-            k.pos(pos.add(offset)),
-            k.color(70, 180, 70),
-            k.opacity(0.45),
-            k.scale(1),
-            k.anchor("center"),
-            k.lifespan(0.5),
-        ]);
-
-        const startPos = cloud.pos.clone();
-
-        k.tween(
-            0,
-            1,
-            0.8,
-            (t) => {
-                cloud.scale = k.vec2(1 + t * 1.5);
-                cloud.opacity = 0.45 * (1 - t);
-                cloud.pos = startPos.add(
-                    k.vec2(
-                        k.rand(-5, 5) * t,
-                        -15 * t,
-                    )
-                );
-            },
-            k.easings.linear,
-        );
-    }
-
-    for (let i = 0; i < 10; i++) {
-        k.wait(i * 0.05, () => {
-            spawnPoisonBubble(k, pos);
-        });
     }
 }
 
@@ -406,10 +408,10 @@ function blindingLight(k: KAPLAYCtx) {
     });
 }
 
-function spawnDarkHarvestEffect(k: KAPLAYCtx, enemy: EnemyGameObj) {
+export function spawnDarkHarvestEffect(k: KAPLAYCtx, enemy: EnemyGameObj) {
     for (let i = 0; i < 6; i++) {
         const angle = k.rand(0, 360);
-        const distance = k.rand(20, 35);
+        const distance = k.rand(40, 60);
 
         const startPos = enemy.pos.add(
             k.vec2(
@@ -426,7 +428,7 @@ function spawnDarkHarvestEffect(k: KAPLAYCtx, enemy: EnemyGameObj) {
             k.anchor("center"),
             k.lifespan(0.25),
             k.scale(1),
-            k.z(999),
+            k.z(999999),
         ]);
 
         k.tween(
@@ -443,7 +445,7 @@ function spawnDarkHarvestEffect(k: KAPLAYCtx, enemy: EnemyGameObj) {
     }
 }
 
-function spawnDarkBurst(k: KAPLAYCtx, pos: Vec2) {
+export function spawnDarkBurst(k: KAPLAYCtx, pos: Vec2) {
     for (let i = 0; i < 8; i++) {
         const angle = k.rand(0, 360);
         const dir = k.vec2(
@@ -459,7 +461,7 @@ function spawnDarkBurst(k: KAPLAYCtx, pos: Vec2) {
             k.scale(2),
             k.anchor("center"),
             k.lifespan(0.2),
-            k.z(999)
+            k.z(999999)
         ]);
 
         k.tween(
@@ -515,9 +517,12 @@ export function generateRandomSpells(amount: number, arr: Spell[]) {
         const copy = { ...spell };
 
         if (copy.effect === "gold") {
-            const amounts = [10, 20, 30, 40, 50];
+            const amounts = [20, 30, 40, 50, 60];
             copy.amount = amounts[Math.floor(Math.random() * amounts.length)];
             copy.description = `Gain ${copy.amount} gold`;
+        } else if (copy.effect === "heal") {
+            const uses = [1, 1, 1, 2, 2, 3];
+            copy.uses = uses[Math.floor(Math.random() * uses.length)];
         }
 
         return copy;
@@ -528,4 +533,302 @@ export function generateRandomSpells(amount: number, arr: Spell[]) {
         result.add(spellPool[index]);
     }
     return [...result];
+}
+
+export function spawnPoisonCloud(k: KAPLAYCtx, opts: { damage: number; target: Vec2; }) {
+    const { damage, target } = opts;
+    const duration = 3;
+
+    const radius = Math.min(96, 40 + Math.sqrt(damage) * 3);
+
+    const cloud = k.add([
+        k.pos(target),
+        k.circle(radius),
+        k.opacity(0),
+        k.anchor("center"),
+        k.scale(1),
+        lifespan(k, duration),
+        "poisonCloud"
+    ]);
+
+    const interval = Math.max(0.03, 0.12 - radius / 1000);
+
+    const emitter = k.loop(interval, () => {
+        const dist = Math.sqrt(k.rand()) * radius;
+        const angle = k.rand(0, 360);
+
+        const offset = k.vec2(
+            Math.cos(angle) * dist,
+            Math.sin(angle) * dist,
+        );
+
+        spawnCloudPuff(k, cloud.pos.add(offset));
+    });
+
+    waitScaled(k, duration, () => emitter.cancel());
+
+    cloud.onUpdate(() => {
+        cloud.scale = k.vec2(1 + Math.sin(k.time() * 3) * 0.05);
+    });
+
+    const bubbleLoop = k.loop(0.15, () => {
+        spawnPoisonBubble(k, cloud.pos);
+    });
+
+    waitScaled(k, duration, () => bubbleLoop.cancel());
+
+    let tick = 0;
+
+    cloud.onUpdate(() => {
+        const tickRate = 0.25;
+
+        tick += k.dt() * store.get(gameStateAtom).timeScale;
+
+        while (tick >= tickRate) {
+            tick -= tickRate;
+
+            const enemies = k.get("enemy") as EnemyGameObj[];
+            for (const enemy of enemies) {
+                if (enemy.pos.dist(target) <= radius) {
+                    hurtEnemy(k, {
+                        target: enemy,
+                        damage,
+                        element: "Poison",
+                        isCrit: false
+                    });
+                }
+            }
+        }
+    });
+
+}
+
+function spawnCloudPuff(k: KAPLAYCtx, pos: Vec2) {
+    const puff = k.add([
+        k.circle(k.rand(8, 16)),
+        k.pos(pos),
+        k.color(70, 180, 70),
+        k.opacity(0.4),
+        k.scale(1),
+        k.anchor("center"),
+        k.lifespan(0.8),
+    ]);
+
+    const start = puff.pos.clone();
+
+    k.tween(0, 1, 0.8, (t) => {
+        puff.scale = k.vec2(1 + t * 1.5);
+        puff.opacity = 0.4 * (1 - t);
+        puff.pos = start.add(
+            k.vec2(
+                k.rand(-5, 5) * t,
+                -15 * t,
+            )
+        );
+    });
+}
+
+function getAoeSpellDamage(base: number, wave: number) {
+    let damage = base;
+
+    for (let i = 2; i <= wave; i++) {
+        let growth = 0;
+
+        if (i <= 3) growth = 0.3;
+        else if (i <= 9) growth = 0.4;
+        else growth = 0.3;
+
+        damage *= 1 + growth;
+    }
+
+    return Math.round(damage);
+}
+
+function spawnLightMote(k: KAPLAYCtx) {
+    const pos = k.vec2(
+        k.rand(0, k.width()),
+        k.rand(0, k.height())
+    );
+
+    const outer = k.add([
+        k.circle(k.rand(3, 6)),
+        k.pos(pos),
+        k.anchor("center"),
+        k.color(255, 210, 80),
+        k.opacity(0.35),
+        k.scale(1),
+        k.lifespan(2),
+        "light mote"
+    ]);
+
+    const inner = k.add([
+        k.circle(1.5),
+        k.pos(pos),
+        k.anchor("center"),
+        k.color(255, 255, 220),
+        k.opacity(0.8),
+        k.lifespan(2),
+        "light mote"
+    ]);
+
+    const speed = k.rand(10, 25);
+
+    outer.onUpdate(() => {
+        outer.move(0, -speed);
+        inner.move(0, -speed);
+
+        const pulse = 1 + Math.sin(k.time() * 8) * 0.2;
+        outer.scale = k.vec2(pulse);
+    });
+}
+
+function spawnLightAura(k: KAPLAYCtx, duration: number) {
+    const overlay = k.add([
+        k.rect(k.width(), k.height()),
+        k.pos(0, 0),
+        k.fixed(),
+        k.color(255, 230, 150),
+        k.opacity(0.08),
+        k.z(999),
+    ]);
+
+    waitScaled(k, duration, () => {
+        k.destroy(overlay);
+    });
+}
+
+function spawnDarkSoul(k: KAPLAYCtx, pos: Vec2) {
+    const outer = k.add([
+        k.circle(k.rand(2, 4)),
+        k.pos(pos.add(k.rand(k.vec2(-12, -6), k.vec2(12, 6)))),
+        k.color(90, 20, 140),
+        k.opacity(0.35),
+        k.anchor("center"),
+        k.scale(1),
+        k.lifespan(0.9),
+        k.z(999),
+    ]);
+
+    const inner = k.add([
+        k.circle(1),
+        k.pos(outer.pos.clone()),
+        k.color(220, 120, 255),
+        k.opacity(0.9),
+        k.anchor("center"),
+        k.lifespan(0.9),
+        k.z(1000),
+    ]);
+
+    const start = outer.pos.clone();
+    const drift = k.rand(-8, 8);
+
+    k.tween(0, 1, 0.9, (t) => {
+        const offset = k.vec2(
+            Math.sin(t * Math.PI * 2) * drift * 0.3,
+            -20 * t,
+        );
+
+        outer.pos = start.add(offset);
+        inner.pos = outer.pos.clone();
+
+        outer.opacity = 0.35 * (1 - t);
+        inner.opacity = 0.9 * (1 - t);
+
+        outer.scale = k.vec2(1 + t * 0.3);
+    });
+}
+
+function spawnBurningGround(k: KAPLAYCtx, opts: { target: Vec2; range: number; damage: number; }) {
+    const { target, range, damage } = opts;
+
+    const fire = k.add([
+        k.pos(target),
+        lifespan(k, 3),
+        {
+            tick: 0,
+            tickRate: 0.25,
+            range,
+            damage
+        },
+        "burningGround"
+    ]);
+
+    fire.onUpdate(() => {
+        fire.tick -= k.dt() * store.get(gameStateAtom).timeScale;
+
+        if (fire.tick <= 0) {
+            fire.tick += fire.tickRate;
+
+            (k.get("enemy") as EnemyGameObj[]).forEach(enemy => {
+                if (enemy.invincible) return;
+
+                if (enemy.pos.dist(fire.pos) <= fire.range) {
+                    hurtEnemy(k, {
+                        target: enemy,
+                        damage,
+                        element: "Fire",
+                        isCrit: false,
+                    });
+                }
+            });
+        }
+
+        const particlesPerSecond = 40;
+        if (Math.random() < particlesPerSecond * k.dt() * store.get(gameStateAtom).timeScale) {
+
+            k.add([
+                k.sprite("flame particle"),
+                k.pos(
+                    fire.pos.add(
+                        k.vec2(k.rand(-range, range), k.rand(-range, range))
+                    )
+                ),
+                k.anchor("center"),
+                lifespan(k, k.rand(0.3, 0.6)),
+                k.move(k.UP, k.rand(10, 20)),
+                k.scale(k.rand(1.5, 2.5)),
+                k.z(5),
+            ]);
+        }
+    });
+
+    const trees = (k.get("tree") as GameObj[]).filter(tree =>
+        tree.pos.dist(fire.pos) <= range
+    );
+
+    trees.forEach(tree => {
+        if (!tree.burning) {
+            tree.burning = true;
+
+            let particleTimer = 0;
+
+            tree.onUpdate(() => {
+                if (!tree.burning) return;
+
+                particleTimer += k.dt() * store.get(gameStateAtom).timeScale;
+
+                while (particleTimer >= 0.08) {
+                    particleTimer -= 0.08;
+                    const burnOffset = 6;
+
+                    k.add([
+                        k.sprite("flame particle"),
+                        k.pos(tree.pos.add(TILE_SIZE / 2, TILE_SIZE / 2 + burnOffset).add(k.rand(k.vec2(-6), k.vec2(6)))),
+                        k.anchor("center"),
+                        lifespan(k, k.rand(0.3, 0.6)),
+                        k.move(k.UP, k.rand(10, 20)),
+                    ]);
+                }
+            });
+
+            const treeBurnTime = 4;
+
+            waitScaled(k, treeBurnTime, () => {
+                tree.tile.blocked = false;
+
+                tree.destroy();
+            });
+        }
+    });
+
 }
