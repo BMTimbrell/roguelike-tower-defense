@@ -16,7 +16,7 @@ export function generateChallenges() {
         const damageTypeAmount = store.get(gameStateAtom).towerButtons.map(tb => tb.element).filter(dt => dt === randomDamageType).length;
         const difficulty = store.get(gameStateAtom).difficulty;
         const tier = Math.random() < 0.5 ? "normal" : "hard";
-        const baseTarget = (tier === "normal" ? 4000 : 8000) * (difficulty === "normal" ? 1 : 1.15);
+        const baseTarget = (tier === "normal" ? 4000 : 8000) * (difficulty === "normal" ? 1 : 1.2);
         const target = Math.round(baseTarget * Math.pow(damageTypeAmount, 0.65));
 
         challenges.push({

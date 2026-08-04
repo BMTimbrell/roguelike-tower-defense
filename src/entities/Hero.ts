@@ -1,5 +1,5 @@
 import type { KAPLAYCtx, Vec2 } from "kaplay";
-import { ELEMENTS, HEROES, REDUCED_RANGE_TOWERS, TILE_SIZE, type HeroId, type SkillId } from "../constants";
+import { ELEMENTS, HEROES, TILE_SIZE, type HeroId, type SkillId } from "../constants";
 import { gameStateAtom, store } from "../store";
 import type { HeroGameObj, PathTile, SelectedHeroUI, Song, TargetPriority, Tile, UnitEffects } from "../types";
 import makeUnitCombat from "../utils/makeUnitCombat";

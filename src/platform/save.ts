@@ -1,6 +1,6 @@
 import type { Key, MouseButton } from "kaplay";
 import { CURRENT_SAVE_VERSION, type HeroId, type LevelId, type SkillId, type TowerId } from "../constants";
-import type { MapData, MetaSave, PathTile, RunSave, SaveData, SaveDataV1, SaveDataV2, Scene, SettingsSave, Tile, Upgrade } from "../types";
+import type { MapData, MetaSave, PathTile, RunSave, SaveData, SaveDataV1, SaveDataV2, SaveDataV3, Scene, SettingsSave, Tile, Upgrade } from "../types";
 import { isDesktop } from "./platform";
 
 export async function getSave(): Promise<SaveData | null> {
@@ -54,8 +54,15 @@ function createDefaultSave() {
             ...(isDesktop() ? { fullscreen: true } : {})
         },
         meta: {
-            unlockedHeroes: ["archer", "wizard"] satisfies HeroId[],
-            seenTutorials: {}
+            unlockedHeroes: ["archer"] satisfies HeroId[],
+            seenTutorials: {},
+            campaignLevelsCompleted: 0,
+            spellsCast: 0,
+            levelsWithoutLivesLost: 0,
+            bossesKilled: 0,
+            chestsOpened: 0,
+            enemiesPoisoned: 0,
+            completedCampaigns: []
         }
     };
 }
@@ -133,6 +140,10 @@ function migrate(save: any): SaveData {
                 save = migrateV1ToV2(save);
                 break;
 
+            case 2:
+                save = migrateV2ToV3(save);
+                break;
+
             default:
                 throw new Error(
                     `Unknown save version ${save.version}`
@@ -153,6 +164,23 @@ function migrateV1ToV2(save: SaveDataV1): SaveDataV2 {
         meta: {
             ...save.meta,
             seenTutorials: {}
+        }
+    };
+}
+
+function migrateV2ToV3(save: SaveDataV2): SaveDataV3 {
+    return {
+        ...save,
+        version: 3,
+        meta: {
+            ...save.meta,
+            spellsCast: 0,
+            levelsWithoutLivesLost: 0,
+            bossesKilled: 0,
+            chestsOpened: 0,
+            enemiesPoisoned: 0,
+            campaignLevelsCompleted: 0,
+            completedCampaigns: [{ world: 1, difficulty: "normal" }]
         }
     };
 }

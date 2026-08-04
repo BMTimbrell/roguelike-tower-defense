@@ -3,12 +3,13 @@ import type { EnemyId, LevelId } from "../constants";
 import type { TowerGameObj, Wave } from "../types";
 import { BASE_DRAW_COST, LEVEL_WAVES, MAX_HAND_SIZE, REDUCED_RANGE_TOWERS, ROUND_DRAW_NUM, SEEDS, TILE_SIZE } from "../constants";
 import makeEnemy from "./Enemy";
-import { store, gameStateAtom, challengesAtom, gameSpeedUIAtom, mapAtom } from "../store";
+import { store, gameStateAtom, challengesAtom, gameSpeedUIAtom, mapAtom, unlockProgressionAtom } from "../store";
 import drawCards from "../utils/drawCards";
 import makeTower from "./Tower";
 import setGameSpeed from "../utils/setGameSpeed";
 import { fadeOutMusic, getMusic, playUISound } from "../utils/soundHelpers";
 import { saveRun } from "../platform/save";
+import { saveMetaProgress } from "../utils/checkUnlocks";
 
 export default function makeWaveSpawner(k: KAPLAYCtx, levelId: LevelId, waypoints: Vec2[], opts?: { onWaveEnd?: () => void; onWaveStart?: () => void; }) {
     const level = LEVEL_WAVES[levelId];
@@ -166,23 +167,9 @@ export default function makeWaveSpawner(k: KAPLAYCtx, levelId: LevelId, waypoint
                     k.z(999999),
                 ]);
 
-                // reset local storage
-                // let buttons = null;
-                // let volumes = null;
-                // const saveData = localStorage.getItem("saveData");
-
-                // if (saveData) {
-                //     buttons = JSON.parse(saveData)?.buttons;
-                //     volumes = JSON.parse(saveData)?.volumes;
-                // }
-                // localStorage.setItem("saveData", JSON.stringify({
-                //     camMoveAtEdge: store.get(gameStateAtom).camMoveAtEdge,
-                //     showDamageNumbers: store.get(gameStateAtom).showDamageNumbers,
-                //     ...(buttons ? { buttons } : {}),
-                //     ...(volumes ? { volumes } : {})
-                // }));
-
                 await saveRun(undefined);
+
+                await saveMetaProgress();
 
                 k.wait(0.5, () => {
                     const buttonPos = gameOverText.pos.add(0, 110);
@@ -280,6 +267,11 @@ export default function makeWaveSpawner(k: KAPLAYCtx, levelId: LevelId, waypoint
                     playUISound(k, "level up");
 
                     let transitioning = false;
+
+                    store.set(unlockProgressionAtom, prev => ({
+                        ...prev,
+                        campaignLevelsCompleted: prev.campaignLevelsCompleted + 1
+                    }));
 
                     const complete = k.add([
                         k.pos(k.toScreen(k.getCamPos())),

@@ -1,5 +1,5 @@
 import type { AudioPlay, KAPLAYCtx } from "kaplay";
-import { gameStateAtom, store, startingOptionsAtom, selectHeroUIAtom, shopChoiceUIAtom, shopAtom, altarAtom, mainMenuAtom, gameSpeedUIAtom, challengesAtom, chestAtom } from "../store";
+import { gameStateAtom, store, startingOptionsAtom, selectHeroUIAtom, shopChoiceUIAtom, shopAtom, altarAtom, mainMenuAtom, gameSpeedUIAtom, challengesAtom, chestAtom, unlockProgressionAtom } from "../store";
 import initCam from "../utils/initCam";
 import type { Scene, Upgrade } from "../types";
 import { CHARGE_DAMAGE_REQUIRED, EXPERT_PLAYER_HEALTH, HARD_PLAYER_HEATLH, NORMAL_PLAYER_HEATLH, type HeroId, type TowerId } from "../constants";
@@ -72,12 +72,27 @@ export default function mainMenu(k: KAPLAYCtx) {
             }));
         }
 
+        if (saveData?.meta) {
+            const meta = saveData.meta;
+            store.set(unlockProgressionAtom, prev => ({
+                ...prev,
+                unlockedHeroes: meta.unlockedHeroes,
+                campaignLevelsCompleted: meta.campaignLevelsCompleted,
+                spellsCast: meta.spellsCast,
+                levelsWithoutLivesLost: meta.levelsWithoutLivesLost,
+                bossesKilled: meta.bossesKilled,
+                chestsOpened: meta.chestsOpened,
+                enemiesPoisoned: meta.enemiesPoisoned,
+                completedCampaigns: meta.completedCampaigns
+            }));
+        }
+
         store.set(altarAtom, prev => ({
             ...prev,
             visible: false,
             remainingUses: {
                 maxHP: 3,
-                removeCard: 3,
+                removeCard: 5,
                 levelUp: 1
             },
         }));

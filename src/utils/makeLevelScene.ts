@@ -19,6 +19,7 @@ import { playMusic } from "./soundHelpers";
 import { getSave, saveRun } from "../platform/save";
 import { castSpell } from "./spellHelpers";
 import { freezeTile } from "./freezeTile";
+import { saveMetaProgress } from "./checkUnlocks";
 
 export default function makeLevelScene(k: KAPLAYCtx, sceneName: Scene) {
 
@@ -269,6 +270,8 @@ export default function makeLevelScene(k: KAPLAYCtx, sceneName: Scene) {
             wave,
             pathTiles
         });
+
+        await saveMetaProgress();
 
         addSelectTowerListener(k);
         makeLavaManager(k);

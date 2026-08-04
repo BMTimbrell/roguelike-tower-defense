@@ -6,6 +6,7 @@ import styles from "./PauseMenu.module.css";
 import { useState } from "react";
 import Settings from "../Settings/Settings";
 import { playUISound } from "../../utils/soundHelpers";
+import { saveMetaProgress } from "../../utils/checkUnlocks";
 
 export default function PauseMenu() {
     const [pauseMenu, setPauseMenu] = useAtom(pauseMenuAtom);
@@ -27,8 +28,8 @@ export default function PauseMenu() {
     };
 
     const footer = showSettings && <div style={{ fontSize: `${16 * scale}px` }}>
-        <Button 
-            onMouseEnter={onMouseEnter} 
+        <Button
+            onMouseEnter={onMouseEnter}
             onClick={() => {
                 playUISound(gameState.context, "ui click");
                 setShowSettings(false)
@@ -45,13 +46,13 @@ export default function PauseMenu() {
                     <div className={styles.container}>
                         <div className={styles.heading}>Paused</div>
                         <div className={styles["button-container"]}>
-                            <Button 
-                                onMouseEnter={onMouseEnter} 
+                            <Button
+                                onMouseEnter={onMouseEnter}
                                 onClick={onClose}>
-                                    Resume
-                                </Button>
-                            <Button 
-                                onMouseEnter={onMouseEnter} 
+                                Resume
+                            </Button>
+                            <Button
+                                onMouseEnter={onMouseEnter}
                                 onClick={() => {
                                     playUISound(gameState.context, "ui click");
                                     setShowSettings(true);
@@ -59,20 +60,25 @@ export default function PauseMenu() {
                             >
                                 Settings
                             </Button>
-                            <Button 
-                                onMouseEnter={onMouseEnter} 
-                                onClick={() => {
+                            <Button
+                                onMouseEnter={onMouseEnter}
+                                onClick={async () => {
                                     playUISound(gameState.context, "ui click");
+
+                                    await saveMetaProgress();
+
                                     pauseMenu.mainMenu();
                                 }}
                             >
                                 Main Menu
                             </Button>
                         </div>
+
                     </div>
 
-                ) : <Settings />}
-            </div>
-        </Modal>
+                ) : <Settings />
+                }
+            </div >
+        </Modal >
     );
 }

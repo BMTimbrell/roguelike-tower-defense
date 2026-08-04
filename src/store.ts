@@ -1,5 +1,5 @@
 import { atom, createStore } from "jotai";
-import { type startingHeroUI, type GameState, type Rewards, type StartingOptions, type ShopChoiceButtons, type Shop, type Altar, type ChallengeDef, type PauseMenu, type Controls, type MainMenu, type GameSpeedUI, type HeroProgression, type AudioState, type TutorialId, type SaveData } from "./types";
+import { type startingHeroUI, type GameState, type Rewards, type StartingOptions, type ShopChoiceButtons, type Shop, type Altar, type ChallengeDef, type PauseMenu, type Controls, type MainMenu, type GameSpeedUI, type HeroProgression, type AudioState, type TutorialId, type SaveData, type MetaProgress, type UnlockToast } from "./types";
 import { ChallengeManager } from "./utils/challengeHelpers";
 
 export const gameStateAtom = atom<GameState>({
@@ -119,7 +119,7 @@ export const altarAtom = atom<Altar>({
     levelUpCost: 20,
     remainingUses: {
         maxHP: 3,
-        removeCard: 3,
+        removeCard: 5,
         levelUp: 1
     },
     levelUp: () => { }
@@ -168,18 +168,15 @@ export const gameSpeedUIAtom = atom<GameSpeedUI>({
     ]
 });
 
-export const heroProgressionAtom = atom<HeroProgression>({
-    unlocked: ["archer", "wizard"],
-    progress: {
-        kills: 0,
-        towerCoinsSpent: 0,
-        completedLevels: {
-            forest: [],
-            snow: [],
-            desert: [],
-            lava: []
-        }
-    }
+export const unlockProgressionAtom = atom<MetaProgress>({
+    unlockedHeroes: ["archer"],
+    campaignLevelsCompleted: 0,
+    spellsCast: 0,
+    levelsWithoutLivesLost: 0,
+    bossesKilled: 0,
+    chestsOpened: 0,
+    enemiesPoisoned: 0,
+    completedCampaigns: []
 });
 
 export const audioAtom = atom<AudioState>({
@@ -193,5 +190,7 @@ export const audioAtom = atom<AudioState>({
 export const cachedSaveAtom = atom<SaveData | null>(null);
 
 export const activeTutorialAtom = atom<TutorialId | null>(null);
+
+export const unlockToastAtom = atom<UnlockToast>([]);
 
 export const store = createStore();

@@ -418,15 +418,15 @@ export type Spell = {
     type: "spell";
 
     effect:
-        | "firestorm"
-        | "toxicInfusion"
-        | "arcticBlast"
-        | "overcharge"
-        | "heal"
-        | "darkHarvest"
-        | "blindingLight"
-        | "gold"
-        | "reroll";
+    | "firestorm"
+    | "toxicInfusion"
+    | "arcticBlast"
+    | "overcharge"
+    | "heal"
+    | "darkHarvest"
+    | "blindingLight"
+    | "gold"
+    | "reroll";
 
     name: SpellName;
     description: string;
@@ -780,6 +780,8 @@ export type ProjectileBehavior = {
         radius: number;
         damageMult: number;
     };
+    trailEffect?: "flame";
+    impactEffect?: "explosiveFireball";
 };
 
 export type Rewards = {
@@ -955,6 +957,17 @@ export type SeenTutorials =
 export type MetaSave = {
     unlockedHeroes: HeroId[];
     seenTutorials: SeenTutorials;
+    spellsCast: number;
+    levelsWithoutLivesLost: number;
+    bossesKilled: number;
+    chestsOpened: number;
+    enemiesPoisoned: number;
+    campaignLevelsCompleted: number;
+
+    completedCampaigns: {
+        world: 1 | 2;
+        difficulty: "normal" | "hard" | "expert";
+    }[];
 };
 
 export type RunSave = {
@@ -996,7 +1009,34 @@ export type SaveData = {
 };
 
 export type SaveDataV1 = Omit<SaveData, "meta"> & {
-    meta: Omit<MetaSave, "seenTutorials">;
+    meta: Pick<MetaSave, "unlockedHeroes">;
 };
 
-export type SaveDataV2 = SaveData;
+export type SaveDataV2 = Omit<SaveData, "meta"> & {
+    meta: Pick<MetaSave, "unlockedHeroes" | "seenTutorials">;
+};
+
+export type SaveDataV3 = SaveData;
+
+export type MetaProgress = {
+    spellsCast: number;
+    levelsWithoutLivesLost: number;
+    bossesKilled: number;
+    chestsOpened: number;
+    enemiesPoisoned: number;
+    campaignLevelsCompleted: number;
+
+    completedCampaigns: {
+        world: 1 | 2;
+        difficulty: "normal" | "hard" | "expert";
+    }[];
+
+    unlockedHeroes: HeroId[];
+};
+
+export type Requirement = {
+    type: "spells_cast" | "complete_level_no_loss" | "boss_kills" | "chests_opened" | "poison_enemies" | "complete_level";
+    amount: number;
+};
+
+export type UnlockToast = { icon: string; name: string; }[];

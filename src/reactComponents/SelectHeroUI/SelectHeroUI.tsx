@@ -1,20 +1,22 @@
 import { useAtom } from "jotai";
-import { gameStateAtom, heroProgressionAtom, mapAtom, selectHeroUIAtom } from "../../store";
-import { HEROES, type HeroId } from "../../constants";
+import { gameStateAtom, unlockProgressionAtom, mapAtom, selectHeroUIAtom } from "../../store";
+import { HEROES, IS_DEMO, type HeroId } from "../../constants";
 import styles from './SelectHeroUI.module.css';
 import Stats from "../Stats/Stats";
 import { useState } from "react";
 import { playUISound } from "../../utils/soundHelpers";
+import { getUnlockDescription } from "../../utils/checkUnlocks";
 
 export default function SelectHeroUI() {
     const [gameState] = useAtom(gameStateAtom);
     const [selectHeroUI] = useAtom(selectHeroUIAtom);
     const [map] = useAtom(mapAtom);
-    const [heroProgression] = useAtom(heroProgressionAtom);
+    const [unlockProgression] = useAtom(unlockProgressionAtom);
     const [showDetails, setShowDetails] = useState<HeroId | null>(null);
+    const [unlockDescription, setUnlockDescription] = useState<string | null>(null);
     const fontScale = map.fontScale;
     const iconScale = map.iconScale;
-    const unlockedHeroes = heroProgression.unlocked;
+    const unlockedHeroes = unlockProgression.unlockedHeroes;
 
     return (
         <div className={styles.container} style={{ fontSize: `${16 * fontScale}px` }}>
@@ -37,6 +39,10 @@ export default function SelectHeroUI() {
                                 }}
                                 onMouseEnter={() => {
                                     setShowDetails(id);
+                                    if (!unlocked) {
+                                        const description = IS_DEMO && id !== "wizard"  ? "Locked in demo" : getUnlockDescription(id as Exclude<HeroId, "archer" | "songstress" | "necromancer">, unlockProgression);
+                                        setUnlockDescription(description);
+                                    }
                                     playUISound(gameState.context, "ui pop");
                                 }}
                             >
@@ -75,7 +81,7 @@ export default function SelectHeroUI() {
                             ) : (
                                 <>
                                     <div className={styles.description}>
-                                        Locked in demo.
+                                        {unlockDescription}
                                     </div>
                                 </>
                             )}

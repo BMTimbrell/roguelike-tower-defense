@@ -1,4 +1,4 @@
-import type { Upgrade, LevelWaves, EnemyConfig, TowerDef, ElementDef, ElementName, ProjectileDef, HeroDef, HeroSkillDefBase, TowerGameObj, Seed, Scenes, Summon, EnemyGameObj, ChallengeDef, Spell } from "./types";
+import type { Upgrade, LevelWaves, EnemyConfig, TowerDef, ElementDef, ElementName, ProjectileDef, HeroDef, HeroSkillDefBase, TowerGameObj, Seed, Scenes, Summon, EnemyGameObj, ChallengeDef, Spell, Requirement } from "./types";
 import burnEffect from "./kaplayComponents/burnEffect";
 import calcFireInterval from "./utils/calcFireInterval";
 import poisonEffect from "./kaplayComponents/poisonEffect";
@@ -20,7 +20,7 @@ export const HARD_PLAYER_HEATLH = 15;
 export const EXPERT_PLAYER_HEALTH = 10;
 export const IS_DEMO =
     import.meta.env.VITE_BUILD_TYPE === "demo";
-export const CURRENT_SAVE_VERSION = 2;
+export const CURRENT_SAVE_VERSION = 3;
 export const TILE_SIZE = 32;
 export const TOWER_RANGE_TOLERANCE = 5;
 export const MAX_TOWER_UPGRADES = 5;
@@ -2489,7 +2489,7 @@ export const TOWERS = {
         cost: 110,
         stats: {
             damage: 2,
-            range: 2,
+            range: 2.5,
             fireInterval: 1,
             critChance: 5,
             critDamage: 200
@@ -2789,7 +2789,7 @@ export const TOWERS = {
         cost: 90,
         stats: {
             damage: 5,
-            range: 2,
+            range: 2.5,
             fireInterval: 1.5,
             critChance: 5,
             critDamage: 200
@@ -2874,7 +2874,7 @@ export const TOWERS = {
         projectile: "basic",
         canRotate: true,
         timeData: {
-            maxMultiplier: 10,
+            maxMultiplier: 8,
             growthPerSecond: 1.1,
             timeScaling: {
                 interval: true,
@@ -3299,11 +3299,11 @@ export const TOWERS = {
         gunSprite: "discharge tower",
         baseSprite: "discharge tower base",
         sprite: "discharge-tower-sprite.png",
-        description: "Releases an electrical discharge that damages all enemies in range",
+        description: "Releases an electrical discharge that damages all enemies in range. This tower receives half the amount from range upgrades",
         cost: 300,
         stats: {
-            damage: 15,
-            range: 2.5,
+            damage: 13,
+            range: 3,
             fireInterval: 2,
             critChance: 5,
             critDamage: 200
@@ -4257,6 +4257,7 @@ export const HEROES = {
             critDamage: 200
         },
         element: "Normal",
+        shootSound: "scythe slash",
         gunOffset: { x: 0, y: 0 },
         anchorOffset: { x: 20 / 32, y: -18 / 32 },
         shootOffset: { x: 0, y: 0 },
@@ -4333,6 +4334,7 @@ export const HEROES = {
             critDamage: 250
         },
         placementSound: "assassin",
+        shootSound: "arrow",
         element: "Normal",
         gunOffset: { x: 0, y: 0 },
         anchorOffset: { x: 9 / 32, y: 12 / 32 },
@@ -4955,6 +4957,8 @@ export const SKILLS = [
                         projectile.bonusDamage = ctx.damage * 0.5;
                         projectile.element = "Fire";
                         projectile.id = "flamingArrow";
+                        projectile.behaviors ??= {};
+                        projectile.behaviors.trailEffect ??= "flame";
                     });
                 }
             });
@@ -5089,7 +5093,7 @@ export const SKILLS = [
         id: "wizard-fireball-bounce",
         heroIds: ["wizard"],
         name: "Fireball Bounce",
-        description: "Fireballs have a 35% chance to bounce to nearby enemies",
+        description: "Fireballs have a 40% chance to bounce to nearby enemies",
         apply(hero) {
             hero.effects?.push({
                 secondEffect(ctx) {
@@ -5097,7 +5101,7 @@ export const SKILLS = [
                     fireball.behaviors ??= {};
                     fireball.behaviors.bounces ??= 8;
                     fireball.behaviors.bounceRange ??= 4 * TILE_SIZE;
-                    fireball.behaviors.bounceChance ??= 0.35;
+                    fireball.behaviors.bounceChance ??= 0.4;
                 }
             });
         },
@@ -5163,6 +5167,7 @@ export const SKILLS = [
                         radius: 1,
                         damageMult: 0.5
                     };
+                    fireball.behaviors.impactEffect = "explosiveFireball";
                 }
             });
         },
@@ -5895,38 +5900,33 @@ export const CHALLENGES: ChallengeDef[] = [
     }
 ];
 
-export const HERO_UNLOCKS = {
+export const HERO_UNLOCKS: Record<Exclude<HeroId, "archer" | "songstress" | "necromancer">, Requirement> = {
     wizard: {
-        type: "complete_level",
-        level: "forest",
-        difficulty: "normal"
+        type: "spells_cast",
+        amount: 10
     },
     knight: {
-        type: "complete_level",
-        level: "snow",
-        difficulty: "normal"
+        type: "complete_level_no_loss",
+        amount: 5
     },
     assassin: {
-        type: "kill_count",
-        amount: 2000
+        type: "boss_kills",
+        amount: 5
     },
     merchant: {
-        type: "tower_coins",
-        amount: 200
+        type: "chests_opened",
+        amount: 100
     },
     witch: {
-        type: "complete_level",
-        level: "lava",
-        difficulty: "normal"
+        type: "poison_enemies",
+        amount: 1000
     },
-    songstress: {
-        type: "complete_level",
-        level: "snow",
-        difficulty: "hard"
-    },
-    necromancer: {
-        type: "complete_level",
-        level: "lava",
-        difficulty: "hard"
-    }
+    // songstress: {
+    //     type: "complete_level",
+    //     amount: 1
+    // },
+    // necromancer: {
+    //     type: "complete_level",
+    //     amount: 1
+    // }
 };

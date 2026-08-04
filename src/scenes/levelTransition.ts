@@ -1,5 +1,5 @@
 import type { KAPLAYCtx } from "kaplay";
-import { altarAtom, challengesAtom, chestAtom, gameStateAtom, rewardsAtom, shopAtom, shopChoiceUIAtom, store } from "../store";
+import { altarAtom, challengesAtom, chestAtom, gameStateAtom, rewardsAtom, shopAtom, shopChoiceUIAtom, store, unlockProgressionAtom } from "../store";
 import initCam from "../utils/initCam";
 import type { HeroGameObj, LevelWaves, Scene, Upgrade } from "../types";
 import { BASE_DRAW_COST, LEVEL_REWARDS, LEVEL_WAVES, SCENES, TOWERS, UPGRADES, type LevelId, type TowerId } from "../constants";
@@ -10,6 +10,7 @@ import updateSkills from "../utils/updateSkills";
 import goToNextScene from "../utils/goToNextScene";
 import { playUISound } from "../utils/soundHelpers";
 import { saveRun } from "../platform/save";
+import { completeCampaign, saveMetaProgress } from "../utils/checkUnlocks";
 
 export default function levelTransition(k: KAPLAYCtx) {
     k.scene("levelTransition" satisfies Scene, async (hero: HeroGameObj) => {
@@ -61,6 +62,8 @@ export default function levelTransition(k: KAPLAYCtx) {
         ]);
 
         if (store.get(gameStateAtom).level >= 6) {
+            completeCampaign(1, store.get(gameStateAtom).difficulty);
+            
             k.wait(0.5, async () => {
                 k.add([
                     k.pos(k.getCamPos()),
@@ -74,23 +77,9 @@ export default function levelTransition(k: KAPLAYCtx) {
                     k.z(999999),
                 ]);
 
-                // reset local storage
-                // let buttons = null;
-                // let volumes = null;
-                // const saveData = localStorage.getItem("saveData");
-
-                // if (saveData) {
-                //     buttons = JSON.parse(saveData)?.buttons;
-                //     volumes = JSON.parse(saveData)?.volumes;
-                // }
-                // localStorage.setItem("saveData", JSON.stringify({
-                //     camMoveAtEdge: store.get(gameStateAtom).camMoveAtEdge,
-                //     showDamageNumbers: store.get(gameStateAtom).showDamageNumbers,
-                //     ...(buttons ? { buttons } : {}),
-                //     ...(volumes ? { volumes } : {})
-                // }));
-
                 await saveRun(undefined);
+
+                await saveMetaProgress();
 
                 const buttonPos = k.getCamPos().add(k.vec2(0, 50));
 

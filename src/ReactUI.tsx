@@ -18,6 +18,7 @@ import MainMenu from './reactComponents/MainMenu/MainMenu';
 import GameSpeedButtons from './reactComponents/GameSpeedButtons/GameSpeedButtons';
 import TutorialModal from './reactComponents/TutorialModal/TutorialModal';
 import ChestCards from './reactComponents/ChestCards/ChestCards';
+import UnlockToast from './reactComponents/UnlockToast/UnlockToast';
 
 export default function ReactUI() {
     const [gameState] = useAtom(gameStateAtom);
@@ -84,6 +85,8 @@ export default function ReactUI() {
             {activeTutorial && <TutorialModal />}
 
             {chestCards.visible && <ChestCards />}
+
+            <UnlockToast />
         </>
     );
 }

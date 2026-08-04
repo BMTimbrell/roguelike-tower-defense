@@ -11,6 +11,7 @@ import { playSfx, playUISound } from "./soundHelpers";
 import reroll from "./reroll";
 import darkHarvestEffect from "../kaplayComponents/darkHarvestMark";
 import { freezeTile } from "./freezeTile";
+import { spellProgress } from "./checkUnlocks";
 
 export function castSpell(k: KAPLAYCtx, spell: Spell, opts?: { target?: Vec2; tower?: TowerGameObj }) {
 
@@ -52,6 +53,8 @@ export function castSpell(k: KAPLAYCtx, spell: Spell, opts?: { target?: Vec2; to
 
             spawnBurningGround(k, { target: target ?? k.vec2(0), range: 3 * TILE_SIZE, damage: damage * 0.1 });
 
+            spellProgress();
+
             (k.get("enemy") as EnemyGameObj[]).forEach(enemy => {
                 if (enemy.pos.dist(target ?? k.vec2(0, 0)) <= TILE_SIZE * (spell.range ?? 3)) {
                     if (enemy.invincible) return;
@@ -74,6 +77,8 @@ export function castSpell(k: KAPLAYCtx, spell: Spell, opts?: { target?: Vec2; to
 
                 playUISound(k, "poison bubbles", 1);
 
+                spellProgress();
+
                 const bubbleLoop = k.loop(0.15, () => {
                     spawnPoisonBubble(k, tower.pos.add(tower.footprint.w * TILE_SIZE / 2, tower.footprint.h * TILE_SIZE / 2));
                 });
@@ -84,6 +89,8 @@ export function castSpell(k: KAPLAYCtx, spell: Spell, opts?: { target?: Vec2; to
 
         case "darkHarvest":
             playUISound(k, "dark magic", 2);
+            spellProgress();
+
             k.get("enemy").forEach(enemy => {
                 if (enemy.pos.dist(target ?? k.vec2(0, 0)) <= TILE_SIZE * (spell.range ?? 3)) {
                     if (enemy.invincible) return;
@@ -113,6 +120,8 @@ export function castSpell(k: KAPLAYCtx, spell: Spell, opts?: { target?: Vec2; to
             const spellDuration = 6;
 
             playUISound(k, "holy", 2);
+
+            spellProgress();
 
             (k.get("enemy") as EnemyGameObj[]).forEach(enemy => {
                 if (enemy.invincible) return;
@@ -151,6 +160,8 @@ export function castSpell(k: KAPLAYCtx, spell: Spell, opts?: { target?: Vec2; to
         case "arcticBlast":
             spawnArcticBlast(k, target ?? k.vec2(0));
             playSfx(k, "ice magic", 2);
+            spellProgress();
+
             k.get("enemy").forEach(enemy => {
                 if (enemy.pos.dist(target ?? k.vec2(0, 0)) <= TILE_SIZE * (spell.range ?? 3)) {
                     if (enemy.invincible) return;
@@ -213,6 +224,8 @@ export function castSpell(k: KAPLAYCtx, spell: Spell, opts?: { target?: Vec2; to
                 );
 
                 playUISound(k, "electric shock", 0.5);
+
+                spellProgress();
 
                 const loop = k.loop(0.08, () => {
                     spawnElectricSpark(k, tower);
@@ -521,7 +534,7 @@ export function generateRandomSpells(amount: number, arr: Spell[]) {
             copy.amount = amounts[Math.floor(Math.random() * amounts.length)];
             copy.description = `Gain ${copy.amount} gold`;
         } else if (copy.effect === "heal") {
-            const uses = [1, 1, 1, 2, 2, 3];
+            const uses = [1, 1, 2, 2, 3];
             copy.uses = uses[Math.floor(Math.random() * uses.length)];
         }
 

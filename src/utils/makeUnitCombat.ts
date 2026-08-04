@@ -753,7 +753,7 @@ export default function makeUnitCombat(
         if (opts.owner.timeData && anim) {
             anim.speed =
                 TIME_TOWER_BASE_ANIM_SPEED /
-                (opts.owner.timeData.timeMultiplier ?? 1);
+                Math.pow(opts.owner.timeData.timeMultiplier ?? 1, 1.35);
         }
 
         if (shootTimer > 0) {

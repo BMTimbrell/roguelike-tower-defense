@@ -8,6 +8,7 @@ import getBuffValue from '../utils/getBuffValue';
 import { gameStateAtom, store } from '../store';
 import makeAttachedEntity from './AttachedEntity';
 import { playSfx } from '../utils/soundHelpers';
+import { spawnExplosiveFireballParticles, spawnFlameParticle } from '../utils/ProjectileParticleEffects';
 
 export default function makeProjectile(k: KAPLAYCtx, opts: {
     id: ProjectileId;
@@ -85,11 +86,22 @@ export default function makeProjectile(k: KAPLAYCtx, opts: {
         }
     });
 
+    let trailTimer = 0;
+
     let prevPos = projectile.pos.clone();
     projectile.onUpdate(() => {
         const timeScale = store.get(gameStateAtom).timeScale;
         const hitRadius = 4;
+        trailTimer += k.dt() * timeScale;
         const persistentAndEnemyOutOfRange = target && behaviors?.persistent?.owner && behaviors.persistent.origin.dist(target.pos) > (behaviors.persistent.owner.stats.range + 1) * TILE_SIZE;
+
+        if (behaviors?.trailEffect === "flame" && trailTimer >= 0.03) {
+            trailTimer = 0;
+            const dir = k.Vec2.fromAngle(projectile.angle + 180);
+
+            const spawnPos = projectile.pos.sub(dir.scale(6));
+            spawnFlameParticle(k, spawnPos);
+        }
 
         // delay angle change for volley
         if (homing && target && timeAlive >= projectile.homingDelay) {
@@ -271,6 +283,10 @@ export default function makeProjectile(k: KAPLAYCtx, opts: {
                                     element,
                                     attacker: owner
                                 });
+
+                                if (behaviors?.impactEffect === "explosiveFireball") {
+                                    spawnExplosiveFireballParticles(k, projectile.pos);
+                                }
                             });
                         }
 

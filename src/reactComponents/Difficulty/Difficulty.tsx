@@ -1,12 +1,13 @@
 import { useAtom } from 'jotai';
 import styles from './Difficulty.module.css';
-import { gameStateAtom, mapAtom } from '../../store';
+import { gameStateAtom, mapAtom, unlockProgressionAtom } from '../../store';
 import { playUISound } from '../../utils/soundHelpers';
 import Button from '../Button/Button';
 
 export default function Difficulty({ onClick, onBackClick }: { onClick: React.MouseEventHandler<HTMLDivElement>; onBackClick: React.MouseEventHandler<HTMLButtonElement> }) {
     const [gameState, setGameState] = useAtom(gameStateAtom);
-    const hardUnlocked = true;
+    const [unlockProgression] = useAtom(unlockProgressionAtom);
+    const hardUnlocked = unlockProgression.completedCampaigns.some(c => c.difficulty === "normal" && c.world === 1);
     const expertUnlocked = false;
     const [map] = useAtom(mapAtom);
     const scale = map.fontScale;
