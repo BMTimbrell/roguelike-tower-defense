@@ -2,7 +2,7 @@ import { useAtom } from 'jotai';
 import styles from './Difficulty.module.css';
 import { gameStateAtom, mapAtom, unlockProgressionAtom } from '../../store';
 import { playUISound } from '../../utils/soundHelpers';
-import Button from '../Button/Button';
+import MenuHeader from '../MainMenu/MenuHeader/MenuHeader';
 
 export default function Difficulty({ onClick, onBackClick }: { onClick: React.MouseEventHandler<HTMLDivElement>; onBackClick: React.MouseEventHandler<HTMLButtonElement> }) {
     const [gameState, setGameState] = useAtom(gameStateAtom);
@@ -19,10 +19,7 @@ export default function Difficulty({ onClick, onBackClick }: { onClick: React.Mo
 
     return (
         <div className={styles.container}> 
-            <div className={styles.header}>
-                <Button onMouseEnter={onMouseEnter} onClick={onBackClick} classNames={[styles["back-button"]]}>←</Button>
-                <div className={styles.heading}>Choose a Difficulty</div>
-            </div>
+            <MenuHeader onBackClick={onBackClick} onMouseEnter={onMouseEnter} heading="Choose a Difficulty" />
 
             <div className={styles["difficulty-container"]}>
                 <div

@@ -6,7 +6,7 @@ import generateFog from "./generateFog";
 import drawCards from "./drawCards";
 import { cachedSaveAtom, challengesAtom, controlsAtom, gameSpeedUIAtom, gameStateAtom, pauseMenuAtom, store } from "../store";
 import makeFloatingText from "../entities/FloatingText";
-import { LEVEL_WAVES, MAX_HAND_SIZE, ROUND_DRAW_NUM, TILE_SIZE, type LevelId } from "../constants";
+import { HARD_HEALTH_MULT, LEVEL_WAVES, MAX_HAND_SIZE, ROUND_DRAW_NUM, STUN_DURATION, TILE_SIZE, type LevelId } from "../constants";
 import { addSelectTowerListener } from "../entities/Tower";
 import { makeLavaManager } from "./lavaHelpers";
 import makeWaveSpawner from "../entities/WaveSpawner";
@@ -15,11 +15,14 @@ import { generateChallenges } from "./challengeHelpers";
 import isButtonDown from "./isButtonDown";
 import onAction from "./onAction";
 import setGameSpeed from "./setGameSpeed";
-import { playMusic } from "./soundHelpers";
+import { playMusic, playSfx } from "./soundHelpers";
 import { getSave, saveRun } from "../platform/save";
 import { castSpell } from "./spellHelpers";
 import { freezeTile } from "./freezeTile";
 import { saveMetaProgress } from "./checkUnlocks";
+import statusEffect from "../kaplayComponents/statusEffect";
+import healthBar from "../kaplayComponents/healthBar";
+import { waitScaled } from "./timerFunctions";
 
 export default function makeLevelScene(k: KAPLAYCtx, sceneName: Scene) {
 
@@ -248,6 +251,7 @@ export default function makeLevelScene(k: KAPLAYCtx, sceneName: Scene) {
         }
 
         await saveRun({
+            world: store.get(gameStateAtom).world,
             deck: store.get(gameStateAtom).deck.cards,
             scene: sceneName,
             towerCoins: store.get(gameStateAtom).towerCoins,
@@ -454,6 +458,178 @@ export default function makeLevelScene(k: KAPLAYCtx, sceneName: Scene) {
                                 tile
                             }
                         ]);
+                    }
+                }
+            }
+        }
+
+        if (mapData.layers.find(layer => layer.name === "Cacti")) {
+            for (let y = 0; y < tileGrid.length; y++) {
+                for (let x = 0; x < tileGrid[y].length; x++) {
+                    const tile = tileGrid[y][x];
+
+                    if (tile.hasCactus) {
+                        const cactus = k.add([
+                            k.sprite("cactus"),
+                            k.pos(x * TILE_SIZE + TILE_SIZE / 2, y * TILE_SIZE + TILE_SIZE / 2),
+                            k.health(200, 200),
+                            k.anchor("center"),
+                            k.state("idle", ["idle", "stunned", "attack"]),
+                            statusEffect(),
+                            k.rotate(),
+                            "cactus",
+                            "targetable",
+                            {
+                                tileX: x,
+                                tileY: y,
+                                tile,
+                                isDying: false,
+                                attackTimer: 0,
+                                attackInterval: 10,
+                                darkHarvestDamage: 0
+                            }
+                        ]);
+
+                        cactus.onStateUpdate("idle", () => {
+                            if (cactus.isDying) return;
+
+                            if (!store.get(gameStateAtom).waveActive) {
+                                cactus.statuses.forEach(s => {
+                                    if (cactus.has(s)) cactus.unuse(s);
+                                });
+                                cactus.attackTimer = 0;
+                            }
+
+                            if (cactus.getCurAnim()?.name !== "idle") cactus.play("idle");
+
+                            if (cactus.hp() <= 0) {
+                                cactus.play("die");
+                                cactus.isDying = true;
+                            }
+
+                            const timeScale = store.get(gameStateAtom).timeScale;
+                            const dt = k.dt() * timeScale;
+
+                            if (cactus.attackTimer > cactus.attackInterval) cactus.attackTimer = cactus.attackInterval;
+
+                            if (cactus.attackTimer > 0) cactus.attackTimer -= dt;
+
+                            if (cactus.attackTimer <= 0 && store.get(gameStateAtom).waveActive) {
+                                cactus.attackTimer += cactus.attackInterval;
+
+                                cactus.play("attack");
+
+                                k.get("tower").forEach(tower => {
+                                    const towerPos = tower.pos.add((tower.footprint.w * TILE_SIZE) / 2);
+                                    const hitChance = cactus.has("blind") ? 0.3 : 1;
+
+                                    if (cactus.pos.dist(towerPos) <= TILE_SIZE * 2.5) {
+                                        if (tower.hasBlock) {
+                                            makeFloatingText(k, {
+                                                text: "Block",
+                                                color: "#FFFFFF",
+                                                size: 12,
+                                                pos: towerPos
+                                            });
+                                        } else if (Math.random() < hitChance) {
+                                            const duration = 1;
+
+                                            tower.disabledTimeLeft = Math.max(
+                                                tower.disabledTimeLeft ?? 0,
+                                                duration
+                                            );
+
+                                            tower.enterState("disabled");
+
+                                        } else {
+                                            makeFloatingText(k, {
+                                                text: "Miss",
+                                                color: "#FFFFFF",
+                                                size: 12,
+                                                pos: towerPos
+                                            });
+                                        }
+                                    }
+                                });
+
+                                cactus.enterState("attack");
+                            }
+                        });
+
+                        cactus.onStateEnter("attack", () => {
+                            const numNeedles = 24;
+
+                            for (let i = 0; i < numNeedles; i++) {
+                                const angle = (Math.PI * 2 * i) / numNeedles;
+                                const dir = k.vec2(Math.cos(angle), Math.sin(angle));
+
+                                const needle = k.add([
+                                    k.sprite("cactus-needle"),
+                                    k.pos(cactus.pos),
+                                    k.rotate((angle * 180) / Math.PI),
+                                    k.anchor("center"),
+                                    {
+                                        travelled: 0
+                                    }
+                                ]);
+
+                                const speed = 300 * TILE_SIZE;
+                                const maxDistance = 2.3 * TILE_SIZE;
+
+                                needle.onUpdate(() => {
+                                    const movement = dir.scale(speed * k.dt() * store.get(gameStateAtom).timeScale);
+
+                                    needle.move(movement);
+
+                                    if (needle.pos.dist(cactus.pos) >= maxDistance) {
+                                        k.destroy(needle);
+                                    }
+                                });
+                            }
+                        });
+
+                        cactus.onAnimEnd(anim => {
+                            if (anim === "attack") cactus.enterState("idle");
+                            if (anim === "die") k.destroy(cactus);
+                        });
+
+                        cactus.onHurt(amount => {
+                            if (amount === undefined) return;
+
+                            if (!cactus.has("healthBar")) {
+                                cactus.use(healthBar(k, 2));
+                            }
+
+                            const prevDamageDealt = store.get(gameStateAtom).heroCharge.damageDealt;
+                            const damageDealt = prevDamageDealt + (cactus.hp() > 0 ? amount : amount + cactus.hp());
+                            const difficulty = store.get(gameStateAtom).difficulty;
+
+                            store.set(gameStateAtom, prev => ({
+                                ...prev,
+                                heroCharge: {
+                                    ...prev.heroCharge,
+                                    damageDealt,
+                                    charge: Math.min((damageDealt) / prev.heroCharge.damageRequired / (difficulty === "hard" ? HARD_HEALTH_MULT : 1), 1)
+                                }
+                            }));
+                        });
+
+                        cactus.onStateEnter("stunned", () => {
+                            playSfx(k, "dizzy", 1, cactus.pos);
+
+                            cactus.play("idle");
+                            const dizzyEffect = k.add([
+                                k.sprite("dizzy", { anim: "dizzy" }),
+                                k.anchor("center"),
+                                k.pos(cactus.pos),
+                                k.z(999),
+                                `dizzy ${cactus.id}`
+                            ]);
+                            waitScaled(k, STUN_DURATION, () => {
+                                k.destroy(dizzyEffect);
+                                cactus.enterState("idle");
+                            });
+                        });
                     }
                 }
             }

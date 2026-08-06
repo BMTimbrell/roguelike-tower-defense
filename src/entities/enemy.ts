@@ -117,6 +117,7 @@ export default function makeEnemy(
         statusEffect(),
         k.z(1),
         "enemy",
+        "targetable",
         "isBoss" in ENEMIES[enemyId] && ENEMIES[enemyId].isBoss ? "boss" : "",
         `${enemyId}-enemy`
     ]);
@@ -184,7 +185,7 @@ export default function makeEnemy(
                 makeChest(k, enemy.pos);
                 store.get(gameStateAtom).luck--;
             }
-            k.destroy(enemy);
+            if (!(ENEMIES[enemyId] as { noDestroyOnDieAnimation?: boolean; }).noDestroyOnDieAnimation) k.destroy(enemy);
         } else if (anim === "escape") {
             enemy.enterState("hidden");
         } else if (anim === "attack") {
@@ -706,7 +707,12 @@ export default function makeEnemy(
     }
 
     enemy.onDeath(() => {
+
         if (enemy.isDying) return;
+
+        if ((ENEMIES[enemyId] as { onDeath: (k: KAPLAYCtx, enemy: EnemyGameObj ) => void }).onDeath) {
+            (ENEMIES[enemyId] as { onDeath: (k: KAPLAYCtx, enemy: EnemyGameObj ) => void }).onDeath(k, enemy);
+        }
 
         const deathSound = (ENEMIES[enemyId] as { deathSound: string }).deathSound;
         if (deathSound) playSfx(k, deathSound, enemy.boss || enemy.hasLargeSoul ? 1 : 0.5, enemy.pos);

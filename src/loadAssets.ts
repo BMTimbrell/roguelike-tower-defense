@@ -12,6 +12,7 @@ export default function loadAssets(k: KAPLAYCtx) {
     k.loadSprite("level5", "sprites/level5.png");
     k.loadSprite("level5-2", "sprites/level5-2.png");
     k.loadSprite("level6", "sprites/level6.png");
+    k.loadSprite("desert1", "sprites/desert1.png");
     k.loadSprite("tree", "sprites/tree2.png");
     k.loadSprite("gold", "sprites/coin.png");
     k.loadSprite("heart", "sprites/heart.png");
@@ -1085,6 +1086,38 @@ export default function loadAssets(k: KAPLAYCtx) {
         }
     });
 
+    k.loadSprite("cactus", "sprites/cactus3.png", {
+        sliceX: 9,
+        sliceY: 2,
+        anims: {
+            idle: { from: 0, to: 1, speed: 3 },
+            attack: { from: 1, to: 8, loop: false, speed: 10 },
+            die: { from: 9, to: 12, loop: false, speed: 5 }
+        }
+    });
+
+    k.loadSprite("cactus-needle", "sprites/cactus-needle.png");
+
+    k.loadSprite("mummy", "sprites/mummy.png", {
+        sliceX: 4,
+        sliceY: 2,
+        anims: {
+            idle: 0,
+            move: { from: 0, to: 3, loop: true, speed: 4 },
+            die: { from: 4, to: 6, loop: false, speed: 3 }
+        }
+    });
+
+    k.loadSprite("locust", "sprites/locust.png", {
+        sliceX: 4,
+        sliceY: 2,
+        anims: {
+            idle: 0,
+            move: { from: 0, to: 1, loop: true, speed: 7 },
+            die: { from: 4, to: 7, loop: false, speed: 8 }
+        }
+    });
+
     k.loadSprite("poison", "sprites/poison-icon.png");
     k.loadSprite("burn", "sprites/burn-icon.png");
     k.loadSprite("chill", "sprites/chill-icon.png");
@@ -1279,4 +1312,5 @@ export default function loadAssets(k: KAPLAYCtx) {
     k.loadSound("forest boss", "sounds/music/Iron-and-Ash.mp3");
     k.loadSound("snow biome", "sounds/music/jakob_welik-level-two-8-bit-pixel-warriors-chapter-one-415691.mp3");
     k.loadSound("snow boss", "sounds/music/jakob_welik-level-one-8-bit-pixel-warriors-chapter-one-415685.mp3");
+    k.loadSound("desert biome", "sounds/music/Shadows of the Dune King.mp3");
 }

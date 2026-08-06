@@ -14,11 +14,21 @@ export default async function generateMap(k: KAPLAYCtx, filePath: string) {
         height: number;
     } | null = null;
 
+    let cactusArea: {
+        x: number;
+        y: number;
+        numCacti: number;
+        width: number;
+        height: number;
+    } | null = null;
+
     const pathLayer = mapData.layers.find(
         layer => layer.name === "Path"
     );
 
     const treeLayer = mapData.layers.find(layer => layer.name === "Trees");
+
+    const cactusLayer = mapData.layers.find(layer => layer.name === "Cacti");
 
     if (treeLayer?.objects?.[0]) {
         treeArea = {
@@ -29,6 +39,16 @@ export default async function generateMap(k: KAPLAYCtx, filePath: string) {
             numTrees: Number(treeLayer.objects[0].name)
         };
 
+    }
+
+    if (cactusLayer?.objects?.[0]) {
+        cactusArea = {
+            x: cactusLayer.objects[0].x,
+            y: cactusLayer.objects[0].y,
+            width: cactusLayer.objects[0].width,
+            height: cactusLayer.objects[0].height,
+            numCacti: Number(cactusLayer.objects[0].properties?.find(p => p.name === "amount")?.value)
+        };
     }
 
     if (!pathLayer || !pathLayer.data) {
@@ -74,6 +94,37 @@ export default async function generateMap(k: KAPLAYCtx, filePath: string) {
             if (tile.hasTree) continue;
 
             tile.hasTree = true;
+            tile.blocked = true;
+
+            placed++;
+        }
+    }
+
+    if (cactusArea) {
+        const startX = Math.floor(cactusArea.x / TILE_SIZE);
+        const startY = Math.floor(cactusArea.y / TILE_SIZE);
+        const endX = Math.floor((cactusArea.x + cactusArea.width) / TILE_SIZE);
+        const endY = Math.floor((cactusArea.y + cactusArea.height) / TILE_SIZE);
+
+        const maxCacti = cactusArea.numCacti || 20;
+        let placed = 0;
+        let attempts = 0;
+        const maxAttempts = maxCacti * 5;
+
+        while (placed < maxCacti && attempts < maxAttempts) {
+            attempts++;
+
+            const tx = Math.floor(Math.random() * (endX - startX)) + startX;
+            const ty = Math.floor(Math.random() * (endY - startY)) + startY;
+
+            const tile = tileGrid[ty]?.[tx];
+
+            if (!tile) continue;
+
+            if (tile.blocked) continue;
+            if (tile.hasCactus) continue;
+
+            tile.hasCactus = true;
             tile.blocked = true;
 
             placed++;

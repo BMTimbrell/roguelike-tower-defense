@@ -1,4 +1,4 @@
-import type { Upgrade, LevelWaves, EnemyConfig, TowerDef, ElementDef, ElementName, ProjectileDef, HeroDef, HeroSkillDefBase, TowerGameObj, Seed, Scenes, Summon, EnemyGameObj, ChallengeDef, Spell, Requirement } from "./types";
+import type { Upgrade, LevelWaves, EnemyConfig, TowerDef, ElementDef, ElementName, ProjectileDef, HeroDef, HeroSkillDefBase, TowerGameObj, Seed, Scenes, Summon, EnemyGameObj, ChallengeDef, Spell, Requirement, World } from "./types";
 import burnEffect from "./kaplayComponents/burnEffect";
 import calcFireInterval from "./utils/calcFireInterval";
 import poisonEffect from "./kaplayComponents/poisonEffect";
@@ -14,6 +14,8 @@ import hurtEnemy from "./utils/hurtEnemy";
 import { waitScaled } from "./utils/timerFunctions";
 import { lifespan } from "./kaplayComponents/lifespan";
 import { playSfx } from "./utils/soundHelpers";
+import makeEnemy from "./entities/Enemy";
+import type { KAPLAYCtx } from "kaplay";
 
 export const NORMAL_PLAYER_HEATLH = 20;
 export const HARD_PLAYER_HEATLH = 15;
@@ -1787,6 +1789,110 @@ export const LEVEL_WAVES = {
                 reward: 50
             }
         ],
+    },
+    "world2-level1-1": {
+        startingGold: 100,
+        startDelay: 120,
+        music: "desert biome",
+        waves: [
+            {
+                spawns: [
+                    { id: "mummy", count: 2, interval: 1 },
+                ],
+                reward: 50
+            },
+            {
+                spawns: [
+                    { id: "skeleton", count: 3, interval: 1 },
+                    { id: "slime", count: 5, interval: 0.75 }
+                ],
+                reward: 100
+            },
+            {
+                spawns: [
+                    { id: "armouredSkeleton", count: 1, interval: 1 },
+                    { id: "skeleton", count: 5, interval: 1 },
+                    { id: "fairy", count: 1, interval: 1 }
+                ],
+                reward: 200
+            },
+            {
+                spawns: [
+                    { id: "giantSlime", count: 1, interval: 1 },
+                    { id: "slime", count: 5, interval: 0.5 },
+                    { id: "armouredSkeleton", count: 3, interval: 1 },
+                    { id: "skeleton", count: 5, interval: 1 },
+                    { id: "fairy", count: 1, interval: 1 }
+                ],
+                reward: 300
+            },
+            {
+                spawns: [
+                    { id: "armouredSkeleton", count: 5, interval: 1 },
+                    { id: "giantSkeleton", count: 1, interval: 1 },
+                    { id: "skeleton", count: 5, interval: 0.75 },
+                    { id: "fairy", count: 1, interval: 1 },
+                    { id: "skeleton", count: 5, interval: 0.75 },
+                    { id: "giantSlime", count: 1, interval: 1 },
+                    { id: "slime", count: 5, interval: 0.5 },
+                    { id: "armouredSkeleton", count: 5, interval: 1 },
+                    { id: "fairy", count: 1, interval: 1 },
+                ],
+                reward: 0
+            }
+        ]
+    },
+    "world2-level1-2": {
+        startingGold: 100,
+        startDelay: 120,
+        music: "desert biome",
+        waves: [
+            {
+                spawns: [
+                    { id: "mummy", count: 2, interval: 1 },
+                ],
+                reward: 50
+            },
+            {
+                spawns: [
+                    { id: "skeleton", count: 3, interval: 1 },
+                    { id: "slime", count: 5, interval: 0.75 }
+                ],
+                reward: 100
+            },
+            {
+                spawns: [
+                    { id: "armouredSkeleton", count: 1, interval: 1 },
+                    { id: "skeleton", count: 5, interval: 1 },
+                    { id: "fairy", count: 1, interval: 1 }
+                ],
+                reward: 200
+            },
+            {
+                spawns: [
+                    { id: "giantSlime", count: 1, interval: 1 },
+                    { id: "slime", count: 5, interval: 0.5 },
+                    { id: "armouredSkeleton", count: 3, interval: 1 },
+                    { id: "skeleton", count: 5, interval: 1 },
+                    { id: "fairy", count: 1, interval: 1 }
+                ],
+                reward: 300
+            },
+            {
+                spawns: [
+                    { id: "armouredSkeleton", count: 5, interval: 1 },
+                    { id: "giantSkeleton", count: 1, interval: 1 },
+                    { id: "skeleton", count: 5, interval: 0.75 },
+                    { id: "fairy", count: 1, interval: 1 },
+                    { id: "skeleton", count: 5, interval: 0.75 },
+                    { id: "giantSlime", count: 1, interval: 1 },
+                    { id: "slime", count: 5, interval: 0.5 },
+                    { id: "armouredSkeleton", count: 5, interval: 1 },
+                    { id: "fairy", count: 1, interval: 1 },
+                ],
+                reward: 0
+            }
+        ]
     }
 
 } as const satisfies Record<string, LevelWaves>;
@@ -1800,6 +1906,31 @@ export const SCENES: Scenes = [
     ["level4", "level4-2"],
     ["level5", "level5-2"],
     ["level6", "level6"]
+];
+
+export const WORLDS: World[] = [
+    {
+        wavePrefix: "world1",
+        scenes: [
+            ["level1", "level1-2"],
+            ["level2", "level2-2"],
+            ["level3", "level3"],
+            ["level4", "level4-2"],
+            ["level5", "level5-2"],
+            ["level6", "level6"]
+        ]
+    },
+    {
+        wavePrefix: "world2",
+        scenes: [
+            ["desert1", "desert1"],
+            ["desert2", "desert2-2"],
+            ["desert3", "desert3"],
+            ["hell1", "hell1-2"],
+            ["hell2", "hell2-2"],
+            ["hell3", "hell3"]
+        ]
+    }
 ];
 
 export const ENEMIES = {
@@ -2376,6 +2507,40 @@ export const ENEMIES = {
             canAttack: false,
             attackCooldown: 6
         }
+    },
+    mummy: {
+        hp: 8,
+        damage: 1,
+        goldDropped: 1,
+        chestValue: 1,
+        speed: 45,
+        sprite: "mummy",
+        noDestroyOnDieAnimation: true,
+        onDeath(k: KAPLAYCtx, enemy: EnemyGameObj) {
+
+            for (let i = 0; i < 3; i++) {
+                waitScaled(k, i + 1, () => {
+                    makeEnemy(k, "locust", enemy.path, enemy.pathIndex, enemy.pos);
+                });
+            }
+
+            waitScaled(k, 3, () => {
+                enemy.onUpdate(() => {
+                    enemy.opacity -= k.dt() * store.get(gameStateAtom).timeScale * 2;
+                });
+                waitScaled(k, 0.5, () => {
+                    enemy.destroy();
+                });
+            });
+        }
+    },
+    locust: {
+        hp: 15,
+        damage: 1,
+        goldDropped: 1,
+        chestValue: 1,
+        speed: 60,
+        sprite: "locust"
     }
 } as const satisfies Record<string, EnemyConfig>;
 
@@ -4520,6 +4685,7 @@ export const ELEMENTS: Record<ElementName, ElementDef> = {
     Ice: {
         description: `Ice attacks apply 1 (+1 for every ${ICE_DAMAGE_PER_STACK} damage dealt) stack of chill to enemies, capping at ${MAX_CHILL_STACKS} stacks. Each stack reduces enemy speed by ${CHILL_PERCENT}%`,
         applyEffect: (k, { target, damage }) => {
+            if (target.is("cactus")) return;
             const chill = target.has("chill");
             const stacks = 1 + Math.floor(damage / ICE_DAMAGE_PER_STACK);
             const duration = 2;

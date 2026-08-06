@@ -36,6 +36,7 @@ export type Tile = {
     isPath: boolean;
     pathIndex?: number;
     hasTree?: boolean;
+    hasCactus?: boolean;
     hasWater?: boolean;
     frozen?: boolean;
     iceSprite?: string;
@@ -345,7 +346,8 @@ export type EnemyGameObj = GameObj<
         "iceSlime" |
         "giantSnowmanHead" |
         "penguin" |
-        "giantPenguin";
+        "giantPenguin" |
+        "locust";
         amount: number;
         offset?: number;
     };
@@ -528,11 +530,22 @@ export type Scene = "level1" |
     "level4-2" |
     "level5" |
     "level5-2" |
-    "level6";
+    "level6" |
+    "desert1" |
+    "desert1-2" |
+    "desert2" |
+    "desert2-2" |
+    "desert3" |
+    "hell1" |
+    "hell1-2" |
+    "hell2" |
+    "hell2-2" |
+    "hell3";
 
 export type Scenes = Scene[][];
 
 export type GameState = {
+    world: 1 | 2;
     context: KAPLAYCtx | null;
     hideUI: boolean;
     towerButtons: TowerButton[];
@@ -647,7 +660,8 @@ export type EnemyConfig = {
         "iceSlime" |
         "giantSnowmanHead" |
         "penguin" |
-        "giantPenguin";
+        "giantPenguin" |
+        "locust";
         amount: number;
         offset?: number;
     };
@@ -682,6 +696,8 @@ export type EnemyConfig = {
     shieldSprite?: string;
     shieldHp?: number;
     chestValue: number;
+    noDestroyOnDieAnimation?: boolean;
+    onDeath?: (k: KAPLAYCtx, enemy: EnemyGameObj) => void;
 };
 
 export type presentSpawns =
@@ -996,6 +1012,7 @@ export type RunSave = {
     tileGrid: Tile[][];
     wave: LevelId;
     pathTiles: PathTile[];
+    world?: 1 | 2;
 };
 
 export type SaveData = {
@@ -1040,3 +1057,8 @@ export type Requirement = {
 };
 
 export type UnlockToast = { icon: string; name: string; }[];
+
+export type World = {
+    scenes: Scenes;
+    wavePrefix: "world1" | "world2";
+};

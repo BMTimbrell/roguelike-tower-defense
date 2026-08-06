@@ -126,7 +126,7 @@ export function selectBounceTarget(
     const visited = opts?.visited ?? new Set();
 
     return (k
-        .get("enemy") as EnemyGameObj[])
+        .get("targetable") as EnemyGameObj[])
         .filter(e =>
             e !== from &&
             !e.isDying &&
@@ -147,7 +147,7 @@ export function selectBounceTarget(
 }
 
 export function isValidTarget(e: EnemyGameObj) {
-    return e.is("enemy") && !e.isDying;
+    return e.is("targetable") && !e.isDying;
 }
 
 export function findNewTarget(
@@ -156,7 +156,7 @@ export function findNewTarget(
     maxRange?: number
 ): EnemyGameObj | null {
     return (k
-        .get("enemy") as EnemyGameObj[])
+        .get("targetable") as EnemyGameObj[])
         .filter(e => !e.isDying && !e.invincible && (!maxRange || e.pos.dist(fromPos) <= maxRange))
         .sort((a, b) =>
             a.pos.dist(fromPos) - b.pos.dist(fromPos)
@@ -167,7 +167,7 @@ export function enemyTargetResolver(k: KAPLAYCtx, owner: TowerGameObj | HeroGame
 
     return () => {
         const enemy = selectTarget(
-            k.get("enemy") as EnemyGameObj[],
+            k.get("targetable") as EnemyGameObj[],
             owner,
             owner.pos.add((owner.footprint.w * TILE_SIZE) / 2, (owner.footprint.h * TILE_SIZE) / 2)
         );
@@ -223,5 +223,7 @@ export function pathTargetResolver(
 
 function getTargetPriority(e: EnemyGameObj) {
     if (e.has("darkHarvestMark")) return 100;
+    else if (e.is("cactus")) return 1;
+    else return 2;
     return 0;
 }

@@ -16,10 +16,19 @@ import updateSkills from "../../utils/updateSkills";
 import { ChallengeManager } from "../../utils/challengeHelpers";
 import makeHero from "../../entities/Hero";
 import addTowers from "../../utils/addTowers";
+import GameModes from "../GameModes/GameModes";
+import GameModeOption from "../GameModeOption/GameModeOption";
+import CampaignSelection from "../CampaignSelection/CampaignSelection";
 
 export default function MainMenu() {
+    type MainMenuScreen = "main" | "gameMode" | "campaign" | "difficulty" | "endless";
+
     const [showSettings, setShowSettings] = useState(false);
-    const [showDifficulty, setShowDifficulty] = useState(false);
+    const [gameMode, setGameMode] =
+        useState<"campaign" | "endless" | null>(null);
+    const [campaign, setCampaign] =
+        useState<"world1" | "world2" | null>(null);
+    const [screen, setScreen] = useState<MainMenuScreen>("main");
     const [, setSelectHeroUI] = useAtom(selectHeroUIAtom);
     const [, setMenu] = useAtom(mainMenuAtom)
     const [map] = useAtom(mapAtom);
@@ -33,11 +42,10 @@ export default function MainMenu() {
 
     const onHover = () => {
         playUISound(gameState.context, "ui hover");
-    }
+    };
 
-    const handleBackClick = () => {
+    const handleClick = () => {
         playUISound(gameState.context, "ui click");
-        setShowDifficulty(false);
     };
 
     useEffect(() => {
@@ -53,14 +61,14 @@ export default function MainMenu() {
         <>
             <div className={styles.container} style={{ fontSize: `${16 * fontScale}px` }}>
 
-                {!showDifficulty && (<>
+                {screen === "main" && (<>
                     <div className={styles.title}><img width={`${462 * fontScale}px`} src="sprites/librarylogo.png" /></div>
 
                     {save?.run && <Button
                         onClick={() => {
                             playUISound(gameState.context, "ui click");
                             const k = gameState.context;
-                            const saveData = save.run
+                            const saveData = save.run;
                             if (!saveData || !k) return;
 
                             let hero = makeHero(
@@ -82,6 +90,7 @@ export default function MainMenu() {
                             setGameState(prev => ({
                                 ...prev,
                                 timeScale: 1,
+                                world: saveData.world ?? 1,
                                 towerCoins: saveData.towerCoins,
                                 sceneIndex: saveData.sceneIndex,
                                 level: saveData.level,
@@ -135,7 +144,7 @@ export default function MainMenu() {
                     <Button
                         onClick={() => {
                             playUISound(gameState.context, "ui click");
-                            setShowDifficulty(true);
+                            setScreen("gameMode");
                         }}
                         onMouseEnter={onHover}
                     >
@@ -188,14 +197,65 @@ export default function MainMenu() {
                         </Button>
                     }
                 </>)}
-                {showDifficulty && <Difficulty
+
+                {screen === "difficulty" && <Difficulty
                     onClick={() => {
                         setSelectHeroUI(prev => ({ ...prev, visible: true }));
                         setMenu(prev => ({ ...prev, visible: false }));
                         playUISound(gameState.context, "ui click");
                     }}
-                    onBackClick={handleBackClick}
+                    onBackClick={() => {
+                        handleClick();
+                        if (gameMode === "endless") setScreen("gameMode");
+                        else if (gameMode === "campaign") setScreen("campaign");
+                        else setScreen("main");
+                    }}
                 />}
+
+                {screen === "gameMode" && (
+                    <GameModes onBackClick={() => {
+                        setScreen("main");
+                        handleClick();
+                    }}>
+                        <GameModeOption 
+                            onClick={() => {
+                                setScreen("campaign");
+                                setGameMode("campaign");
+                                handleClick();
+                            }}
+                            locked={false}
+                            onMouseEnter={onHover}
+                            heading="Campaign"
+                            description="Embark on a 6 level campaign and beat the final boss to win."
+                        />
+
+                        <GameModeOption
+                            onClick={() => {
+                                setScreen("difficulty");
+                                setGameMode("endless");
+                                handleClick();
+                            }}
+                            locked={IS_DEMO}
+                            unlockText={IS_DEMO ? "Locked in demo." : undefined}
+                            onMouseEnter={onHover}
+                            heading="Endless"
+                            description="Challenge yourself with endless waves of enemies."
+                        />
+                    </GameModes>
+                )}
+
+                {screen === "campaign" && (
+                    <CampaignSelection
+                        onClick={() => {
+                            setScreen("difficulty");
+                            handleClick();
+                        }}
+                        onBackClick={() => {
+                            handleClick();
+                            setScreen("gameMode");
+                        }}
+                    />
+                )}
             </div>
 
             <Modal header={header} isOpen={showSettings} onClose={() => setShowSettings(false)}>

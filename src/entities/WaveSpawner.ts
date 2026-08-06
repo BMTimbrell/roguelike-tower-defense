@@ -1,7 +1,7 @@
 import type { KAPLAYCtx, Vec2 } from "kaplay";
 import type { EnemyId, LevelId } from "../constants";
 import type { TowerGameObj, Wave } from "../types";
-import { BASE_DRAW_COST, LEVEL_WAVES, MAX_HAND_SIZE, REDUCED_RANGE_TOWERS, ROUND_DRAW_NUM, SEEDS, TILE_SIZE } from "../constants";
+import { BASE_DRAW_COST, LEVEL_WAVES, MAX_HAND_SIZE, ROUND_DRAW_NUM, SEEDS, TILE_SIZE } from "../constants";
 import makeEnemy from "./Enemy";
 import { store, gameStateAtom, challengesAtom, gameSpeedUIAtom, mapAtom, unlockProgressionAtom } from "../store";
 import drawCards from "../utils/drawCards";

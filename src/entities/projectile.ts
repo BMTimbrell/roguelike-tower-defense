@@ -116,7 +116,7 @@ export default function makeProjectile(k: KAPLAYCtx, opts: {
             const origin = behaviors?.persistent ? behaviors.persistent.origin : projectile.pos;
 
             target = behaviors?.persistent ?
-                selectTarget(k.get("enemy") as EnemyGameObj[], behaviors.persistent.owner, origin) :
+                selectTarget(k.get("targetable") as EnemyGameObj[], behaviors.persistent.owner, origin) :
                 findNewTarget(k, origin, 5 * TILE_SIZE);
 
             if (behaviors?.persistent) behaviors.persistent.state = "flying";
@@ -173,7 +173,7 @@ export default function makeProjectile(k: KAPLAYCtx, opts: {
                 const owner = behaviors.persistent.owner;
                 const origin = behaviors.persistent.origin;
 
-                const bestTarget = selectTarget(k.get("enemy") as EnemyGameObj[], owner, origin);
+                const bestTarget = selectTarget(k.get("targetable") as EnemyGameObj[], owner, origin);
 
                 if (bestTarget && bestTarget !== target) {
                     target = bestTarget;
@@ -249,7 +249,7 @@ export default function makeProjectile(k: KAPLAYCtx, opts: {
 
                     if (splashRadius) {
 
-                        const enemies = (k.get("enemy") as EnemyGameObj[])
+                        const enemies = (k.get("targetable") as EnemyGameObj[])
                             .filter(e =>
                                 !e.isDying &&
                                 e.pos.dist(projectile.pos) < splashRadius * TILE_SIZE

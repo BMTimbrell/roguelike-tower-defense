@@ -55,7 +55,7 @@ export function castSpell(k: KAPLAYCtx, spell: Spell, opts?: { target?: Vec2; to
 
             spellProgress();
 
-            (k.get("enemy") as EnemyGameObj[]).forEach(enemy => {
+            (k.get("targetable") as EnemyGameObj[]).forEach(enemy => {
                 if (enemy.pos.dist(target ?? k.vec2(0, 0)) <= TILE_SIZE * (spell.range ?? 3)) {
                     if (enemy.invincible) return;
                     ELEMENTS["Fire"].applyEffect?.(k, { target: enemy, chance: 100, damage: 0 });
@@ -91,7 +91,7 @@ export function castSpell(k: KAPLAYCtx, spell: Spell, opts?: { target?: Vec2; to
             playUISound(k, "dark magic", 2);
             spellProgress();
 
-            k.get("enemy").forEach(enemy => {
+            k.get("targetable").forEach(enemy => {
                 if (enemy.pos.dist(target ?? k.vec2(0, 0)) <= TILE_SIZE * (spell.range ?? 3)) {
                     if (enemy.invincible) return;
 
@@ -123,7 +123,7 @@ export function castSpell(k: KAPLAYCtx, spell: Spell, opts?: { target?: Vec2; to
 
             spellProgress();
 
-            (k.get("enemy") as EnemyGameObj[]).forEach(enemy => {
+            (k.get("targetable") as EnemyGameObj[]).forEach(enemy => {
                 if (enemy.invincible) return;
 
                 ELEMENTS["Light"].applyEffect?.(k, { target: enemy, damage: 0, duration: 6 });
@@ -162,7 +162,7 @@ export function castSpell(k: KAPLAYCtx, spell: Spell, opts?: { target?: Vec2; to
             playSfx(k, "ice magic", 2);
             spellProgress();
 
-            k.get("enemy").forEach(enemy => {
+            k.get("targetable").forEach(enemy => {
                 if (enemy.pos.dist(target ?? k.vec2(0, 0)) <= TILE_SIZE * (spell.range ?? 3)) {
                     if (enemy.invincible) return;
 
@@ -170,7 +170,7 @@ export function castSpell(k: KAPLAYCtx, spell: Spell, opts?: { target?: Vec2; to
                     const stacks = 10;
                     if (chill) {
                         enemy.addChillStack(stacks, stacks, false);
-                    } else {
+                    } else if (!enemy.is("cactus")) {
                         enemy.use(chillEffect(k, 2, stacks, stacks));
                     }
 
@@ -600,7 +600,7 @@ export function spawnPoisonCloud(k: KAPLAYCtx, opts: { damage: number; target: V
         while (tick >= tickRate) {
             tick -= tickRate;
 
-            const enemies = k.get("enemy") as EnemyGameObj[];
+            const enemies = k.get("targetable") as EnemyGameObj[];
             for (const enemy of enemies) {
                 if (enemy.pos.dist(target) <= radius) {
                     hurtEnemy(k, {

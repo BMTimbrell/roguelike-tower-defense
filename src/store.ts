@@ -3,6 +3,7 @@ import { type startingHeroUI, type GameState, type Rewards, type StartingOptions
 import { ChallengeManager } from "./utils/challengeHelpers";
 
 export const gameStateAtom = atom<GameState>({
+    world: 1,
     context: null,
     towerButtons: [],
     selectedUI: null,

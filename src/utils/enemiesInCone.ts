@@ -9,7 +9,7 @@ export default function enemiesInCone(
     coneAngle: number
 ): EnemyGameObj[] {
 
-    const enemies = k.get("enemy") as EnemyGameObj[];
+    const enemies = k.get("targetable") as EnemyGameObj[];
 
     const halfAngle = (coneAngle * Math.PI / 180) / 2;
 

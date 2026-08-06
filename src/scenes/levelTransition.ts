@@ -2,7 +2,7 @@ import type { KAPLAYCtx } from "kaplay";
 import { altarAtom, challengesAtom, chestAtom, gameStateAtom, rewardsAtom, shopAtom, shopChoiceUIAtom, store, unlockProgressionAtom } from "../store";
 import initCam from "../utils/initCam";
 import type { HeroGameObj, LevelWaves, Scene, Upgrade } from "../types";
-import { BASE_DRAW_COST, LEVEL_REWARDS, LEVEL_WAVES, SCENES, TOWERS, UPGRADES, type LevelId, type TowerId } from "../constants";
+import { BASE_DRAW_COST, LEVEL_REWARDS, LEVEL_WAVES, SCENES, TOWERS, UPGRADES, WORLDS, type LevelId, type TowerId } from "../constants";
 import generateMap from "../utils/generateMap";
 import makeHero from "../entities/Hero";
 import addTowers from "../utils/addTowers";
@@ -63,7 +63,7 @@ export default function levelTransition(k: KAPLAYCtx) {
 
         if (store.get(gameStateAtom).level >= 6) {
             completeCampaign(1, store.get(gameStateAtom).difficulty);
-            
+
             k.wait(0.5, async () => {
                 k.add([
                     k.pos(k.getCamPos()),
@@ -174,16 +174,18 @@ export default function levelTransition(k: KAPLAYCtx) {
 
             hero.level++;
 
-            let rand = k.randi(SCENES[store.get(gameStateAtom).sceneIndex].length);
-            const sceneName = SCENES[store.get(gameStateAtom).sceneIndex][rand];
+            const { world, sceneIndex, level } = store.get(gameStateAtom);
+
+            const scenes = WORLDS[world - 1].scenes;
+
+            let rand = k.randi(scenes[sceneIndex].length);
+            const sceneName = scenes[sceneIndex][rand];
 
             const { mapData, tileGrid, pathTiles } = await generateMap(k, `data/${sceneName}.json`);
 
-            const level = store.get(gameStateAtom).level;
-
             rand = level === 6 ? 0 : k.randi();
-
-            const wave = `level${level}-${rand + 1}` as LevelId;
+            const wavePrefix = world > 1 ? `${WORLDS[world - 1].wavePrefix}-` : "";
+            const wave = `${wavePrefix}level${level}-${rand + 1}` as LevelId;
 
             store.set(rewardsAtom, prev => ({
                 ...prev,

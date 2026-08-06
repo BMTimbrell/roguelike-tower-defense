@@ -1,8 +1,8 @@
 import type { AudioPlay, KAPLAYCtx } from "kaplay";
 import { gameStateAtom, store, startingOptionsAtom, selectHeroUIAtom, shopChoiceUIAtom, shopAtom, altarAtom, mainMenuAtom, gameSpeedUIAtom, challengesAtom, chestAtom, unlockProgressionAtom } from "../store";
 import initCam from "../utils/initCam";
-import type { Scene, Upgrade } from "../types";
-import { CHARGE_DAMAGE_REQUIRED, EXPERT_PLAYER_HEALTH, HARD_PLAYER_HEATLH, NORMAL_PLAYER_HEATLH, type HeroId, type TowerId } from "../constants";
+import type { MapData, PathTile, Scene, Tile, Upgrade } from "../types";
+import { CHARGE_DAMAGE_REQUIRED, EXPERT_PLAYER_HEALTH, HARD_PLAYER_HEATLH, NORMAL_PLAYER_HEATLH, WORLDS, type HeroId, type LevelId, type TowerId } from "../constants";
 import generateTowerOptions from "../utils/generateTowerOptions";
 import addTowers from "../utils/addTowers";
 import generateDeck from "../utils/generateDeck";
@@ -24,8 +24,6 @@ export default function mainMenu(k: KAPLAYCtx) {
         }
 
         let rand = k.randi();
-        const sceneName = rand === 1 ? "level1" : "level1-2";
-        const { mapData, tileGrid, pathTiles } = await generateMap(k, `data/${sceneName}.json`);
 
         initCam(k);
         k.onResize(() => {
@@ -97,9 +95,21 @@ export default function mainMenu(k: KAPLAYCtx) {
             },
         }));
 
+        let sceneName: Scene | undefined;
+        let mapData: MapData | undefined;
+        let tileGrid: Tile[][] | undefined;
+        let pathTiles: PathTile[] | undefined;
+
         store.set(selectHeroUIAtom, prev => ({
             ...prev,
-            addHero: (id: HeroId) => {
+            addHero: async (id: HeroId) => {
+                const world = store.get(gameStateAtom).world;
+                sceneName = rand === 1 ? WORLDS[world - 1].scenes[0][rand] : WORLDS[world - 1].scenes[0][rand];
+                const map = await generateMap(k, `data/${sceneName}.json`);
+                mapData = map.mapData;
+                tileGrid = map.tileGrid;
+                pathTiles = map.pathTiles;
+
                 const hero = makeHero(
                     k,
                     {
@@ -150,44 +160,50 @@ export default function mainMenu(k: KAPLAYCtx) {
 
         for (let i = 0; i < 3; i++) options.push({ ids: generateTowerOptions(), upgrades: generateDeck(k) });
 
-        rand = k.randi();
-        const waveId = rand === 1 ? "level1-1" : "level1-2";
-
         store.set(startingOptionsAtom, prev => ({
             ...prev,
             options,
             addLoadout: (ids, upgrades) => {
-                const difficulty = store.get(gameStateAtom).difficulty;
-                const playerHealth = difficulty === "normal" ? NORMAL_PLAYER_HEATLH : difficulty === "hard" ? HARD_PLAYER_HEATLH : EXPERT_PLAYER_HEALTH;
+                if (tileGrid && pathTiles && mapData && sceneName) {
+                    const grid = tileGrid;
+                    const path = pathTiles;
+                    rand = k.randi();
+                    const world = store.get(gameStateAtom).world;
+                    const wavePrefix = world > 1 ? `${WORLDS[world - 1].wavePrefix}-` : "";
+                    const waveId = `${wavePrefix}level${1}-${rand + 1}` as LevelId;
+                    const difficulty = store.get(gameStateAtom).difficulty;
+                    const playerHealth = difficulty === "normal" ? NORMAL_PLAYER_HEATLH : difficulty === "hard" ? HARD_PLAYER_HEATLH : EXPERT_PLAYER_HEALTH;
+    
+                    store.set(gameStateAtom, prev => ({
+                        ...prev,
+                        towerButtons: addTowers(k, ids, grid, path),
+                        deck: {
+                            drawCard: () => { },
+                            drawCost: 10,
+                            cards: upgrades
+                        },
+                        timeScale: 1,
+                        scene: "mainMenu",
+                        towerCoins: 0,
+                        challengeManager: new ChallengeManager(),
+                        sceneIndex: 0,
+                        level: 1,
+                        luck: 1,
+                        health: playerHealth,
+                        maxHealth: playerHealth,
+                        waveNumber: 0,
+                        shops: ["shop", "altar"],
+                        selectedUpgrade: null
+                    }));
+    
+                    store.set(startingOptionsAtom, prev => ({
+                        ...prev,
+                        visible: false
+                    }));
+    
+                    k.go(sceneName satisfies Scene, { mapData, tileGrid, pathTiles, wave: waveId });
 
-                store.set(gameStateAtom, prev => ({
-                    ...prev,
-                    towerButtons: addTowers(k, ids, tileGrid, pathTiles),
-                    deck: {
-                        drawCard: () => { },
-                        drawCost: 10,
-                        cards: upgrades
-                    },
-                    timeScale: 1,
-                    scene: "mainMenu",
-                    towerCoins: 0,
-                    challengeManager: new ChallengeManager(),
-                    sceneIndex: 0,
-                    level: 1,
-                    luck: 1,
-                    health: playerHealth,
-                    maxHealth: playerHealth,
-                    waveNumber: 0,
-                    shops: ["shop", "altar"],
-                    selectedUpgrade: null
-                }));
-
-                store.set(startingOptionsAtom, prev => ({
-                    ...prev,
-                    visible: false
-                }));
-
-                k.go(sceneName satisfies Scene, { mapData, tileGrid, pathTiles, wave: waveId });
+                }
             }
         }));
 

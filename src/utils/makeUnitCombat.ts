@@ -961,7 +961,7 @@ function aoeAttack(k: KAPLAYCtx, ctx: AttackContext, dmg: DamageResult) {
 
     if (visualEffect) visualEffect(k, ctx.origin, ctx.attacker.stats.range * TILE_SIZE);
 
-    (k.get("enemy") as EnemyGameObj[]).forEach(e => {
+    (k.get("targetable") as EnemyGameObj[]).forEach(e => {
         if (e.pos.dist(ctx.origin) > ctx.attacker.stats.range * TILE_SIZE + TOWER_RANGE_TOLERANCE) return;
 
         hurtEnemy(k, {
@@ -1156,7 +1156,7 @@ function meleeAttack(
 
     waitScaled(k, swingTime ?? 0.15, () => {
         if (splashRadius) {
-            (k.get("enemy") as EnemyGameObj[]).forEach(e => {
+            (k.get("targetable") as EnemyGameObj[]).forEach(e => {
                 if (e.pos.dist(target.enemy.pos) < splashRadius * TILE_SIZE) hurtEnemy(k, {
                     target: e,
                     damage,
@@ -1203,7 +1203,7 @@ function piercingLaserAttack(
 
     drawLaser(k, ctx.origin, ctx.target.enemy.pos, 106, 0.24);
 
-    (k.get("enemy") as EnemyGameObj[]).forEach(e => {
+    (k.get("targetable") as EnemyGameObj[]).forEach(e => {
         if (isEnemyOnRay(e, ctx.origin, dir, range, 10)) {
             hurtEnemy(k, { target: e, damage, isCrit, element: ctx.element, attacker: ctx.attacker as TowerGameObj });
         }
@@ -1229,7 +1229,7 @@ function thunderAttack(
     stormCloud.onAnimEnd(() => {
         k.destroy(stormCloud);
     });
-    (k.get("enemy") as EnemyGameObj[]).forEach(e => {
+    (k.get("targetable") as EnemyGameObj[]).forEach(e => {
         if (e.pos.dist(stormCloud.pos) < 1.2 * TILE_SIZE) {
             hurtEnemy(k, { target: e, damage, isCrit, element: ctx.element, attacker: ctx.attacker as TowerGameObj });
         }
@@ -1261,7 +1261,7 @@ function blizzardAttack(
         ]);
     }
 
-    (k.get("enemy") as EnemyGameObj[]).forEach(e => {
+    (k.get("targetable") as EnemyGameObj[]).forEach(e => {
         if (e.pos.dist(enemy.pos ?? k.vec2(0)) < 2.5 * TILE_SIZE) {
             hurtEnemy(k, { target: e, damage, isCrit, element: ctx.element, attacker: ctx.attacker as TowerGameObj });
         }

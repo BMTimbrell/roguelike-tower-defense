@@ -1,0 +1,26 @@
+.header {
+    display: flex;
+    justify-content: center;
+    position: relative;
+    width: 100dvw;
+    margin-bottom: 2em;
+}
+
+.back-button {
+    position: absolute;
+    left: 0.5em;
+    font-size: 1.25em;
+    padding-inline: 0.5em;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.heading {
+    font-size: 1.2em;
+    color: white;
+    text-shadow:
+        -1px -1px 0 black,
+         1px -1px 0 black,
+        -1px  1px 0 black,
+         1px  1px 0 black;
+}
