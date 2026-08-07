@@ -476,6 +476,9 @@ export default function makeLevelScene(k: KAPLAYCtx, sceneName: Scene) {
                             k.anchor("center"),
                             k.state("idle", ["idle", "stunned", "attack"]),
                             statusEffect(),
+                            k.area({
+                                shape: new k.Rect(k.vec2(0), 16, 16)
+                            }),
                             k.rotate(),
                             "cactus",
                             "targetable",
@@ -629,6 +632,30 @@ export default function makeLevelScene(k: KAPLAYCtx, sceneName: Scene) {
                                 k.destroy(dizzyEffect);
                                 cactus.enterState("idle");
                             });
+                        });
+
+                        let rangeCircle: GameObj | null = null;
+
+                        cactus.onCollide("cursor", () => {
+                            if (!cactus.has("healthBar")) {
+                                cactus.use(healthBar(k, 1));
+                            }
+
+                            if (!rangeCircle) rangeCircle = k.add([
+                                k.circle(2.5 * TILE_SIZE),
+                                k.pos(cactus.pos),
+                                k.color(255, 0, 0),
+                                k.anchor("center"),
+                                k.opacity(0.2)
+                            ]);
+
+                        });
+
+                        cactus.onCollideEnd("cursor", () => {
+                            if (rangeCircle) {
+                                k.destroy(rangeCircle);
+                                rangeCircle = null;
+                            }
                         });
                     }
                 }

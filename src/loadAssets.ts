@@ -1118,6 +1118,38 @@ export default function loadAssets(k: KAPLAYCtx) {
         }
     });
 
+    k.loadSprite("tortoise", "sprites/tortoise.png", {
+        sliceX: 5,
+        sliceY: 4,
+        anims: {
+            idle: 0,
+            move: { from: 0, to: 4, loop: true, speed: 4 },
+            shellBreak: { from: 5, to: 8, loop: false },
+            run: { from: 10, to: 13, loop: true },
+            die: { from: 15, to: 19, loop: false, speed: 5 }
+        }
+    });
+
+    k.loadSprite("scorpian", "sprites/scorpian.png", {
+        sliceX: 4,
+        sliceY: 2,
+        anims: {
+            idle: 0,
+            move: { from: 0, to: 3, loop: true, speed: 7 },
+            die: { from: 4, to: 7, loop: false, speed: 7 }
+        }
+    });
+
+    k.loadSprite("lizard", "sprites/lizard.png", {
+        sliceX: 6,
+        sliceY: 2,
+        anims: {
+            idle: 0,
+            move: { from: 0, to: 3, loop: true, speed: 7 },
+            die: { from: 6, to: 11, loop: false, speed: 9 }
+        }
+    });
+
     k.loadSprite("poison", "sprites/poison-icon.png");
     k.loadSprite("burn", "sprites/burn-icon.png");
     k.loadSprite("chill", "sprites/chill-icon.png");

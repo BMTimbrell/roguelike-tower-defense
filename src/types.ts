@@ -326,6 +326,7 @@ export type EnemyGameObj = GameObj<
     damage: number;
     isDying: boolean;
     armour: number;
+    shellBroken: boolean;
     maxArmour: number;
     healer?: {
         amount: number;
@@ -698,6 +699,10 @@ export type EnemyConfig = {
     chestValue: number;
     noDestroyOnDieAnimation?: boolean;
     onDeath?: (k: KAPLAYCtx, enemy: EnemyGameObj) => void;
+    breakShell?: {
+        speedMultiplier: number;
+        animation: string;
+    }
 };
 
 export type presentSpawns =

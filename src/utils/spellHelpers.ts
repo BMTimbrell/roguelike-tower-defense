@@ -772,7 +772,7 @@ function spawnBurningGround(k: KAPLAYCtx, opts: { target: Vec2; range: number; d
         if (fire.tick <= 0) {
             fire.tick += fire.tickRate;
 
-            (k.get("enemy") as EnemyGameObj[]).forEach(enemy => {
+            (k.get("targetable") as EnemyGameObj[]).forEach(enemy => {
                 if (enemy.invincible) return;
 
                 if (enemy.pos.dist(fire.pos) <= fire.range) {

@@ -88,6 +88,7 @@ export default function makeEnemy(
             invincible: false,
             invincibleDuration: "invincibleDuration" in ENEMIES[enemyId] ? ENEMIES[enemyId].invincibleDuration as number : 2,
             stunResistance: false,
+            shellBroken: false,
             stunResistanceDuration: 3,
             goldDropped: ENEMIES[enemyId].goldDropped,
             stunResistanceTimer: 0,
@@ -113,7 +114,7 @@ export default function makeEnemy(
                 ice: 1
             }
         },
-        k.state("move", ["move", "stunned", "attack", "idle", "escape", "hidden", "shield"]),
+        k.state("move", ["move", "stunned", "attack", "idle", "escape", "hidden", "shield", "shellBreak"]),
         statusEffect(),
         k.z(1),
         "enemy",
@@ -190,6 +191,10 @@ export default function makeEnemy(
             enemy.enterState("hidden");
         } else if (anim === "attack") {
             enemy.play("idle");
+        } else if (anim === "shellBreak" && "breakShell" in ENEMIES[enemyId]) {
+            enemy.baseSpeed *= (ENEMIES[enemyId].breakShell as { speedMultiplier: number; }).speedMultiplier;
+            updateSpeed.call(enemy);
+            enemy.enterState("move");
         }
     });
 
@@ -218,6 +223,10 @@ export default function makeEnemy(
     });
 
     enemy.onStateEnter("move", () => {
+        if (enemy.shellBroken) {
+            enemy.play("run");
+            return;
+        }
         enemy.play("move");
     });
 
@@ -437,6 +446,26 @@ export default function makeEnemy(
         if (enemy.attacker && attackTimer > 0) attackTimer -= k.dt() * timeScale;
 
         enemy.z = enemy.pos.y + enemy.height * 0.5;
+
+        if (
+            enemy.armour <= 0 &&
+            "breakShell" in ENEMIES[enemyId] &&
+            !enemy.shellBroken
+        ) {
+            enemy.shellBroken = true;
+            enemy.enterState("shellBreak");
+        }
+
+        if (
+            enemy.armour > 0 && 
+            "breakShell" in ENEMIES[enemyId] &&
+            enemy.shellBroken
+        ) {
+            enemy.shellBroken = false;
+            enemy.baseSpeed = ENEMIES[enemyId].speed;
+            updateSpeed.call(enemy);
+            enemy.play("move");
+        }
 
         // boss
         if (enemy.boss && enemy.boss.stopIndexes.length) {
@@ -706,12 +735,16 @@ export default function makeEnemy(
         })
     }
 
+    enemy.onStateEnter("shellBreak", () => {
+        enemy.play("shellBreak");
+    });
+
     enemy.onDeath(() => {
 
         if (enemy.isDying) return;
 
-        if ((ENEMIES[enemyId] as { onDeath: (k: KAPLAYCtx, enemy: EnemyGameObj ) => void }).onDeath) {
-            (ENEMIES[enemyId] as { onDeath: (k: KAPLAYCtx, enemy: EnemyGameObj ) => void }).onDeath(k, enemy);
+        if ((ENEMIES[enemyId] as { onDeath: (k: KAPLAYCtx, enemy: EnemyGameObj) => void }).onDeath) {
+            (ENEMIES[enemyId] as { onDeath: (k: KAPLAYCtx, enemy: EnemyGameObj) => void }).onDeath(k, enemy);
         }
 
         const deathSound = (ENEMIES[enemyId] as { deathSound: string }).deathSound;
@@ -775,7 +808,7 @@ export default function makeEnemy(
             ...prev,
             gold: prev.gold + (enemy.goldDropped * goldBonusMod)
         }));
-        enemy.untag("enemy");
+        if (!(ENEMIES[enemyId] as { noDestroyOnDieAnimation?: boolean; }).noDestroyOnDieAnimation) enemy.untag("enemy");
         enemy.unuse("area");
         enemy.play("die");
     });

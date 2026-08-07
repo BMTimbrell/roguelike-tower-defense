@@ -1797,7 +1797,8 @@ export const LEVEL_WAVES = {
         waves: [
             {
                 spawns: [
-                    { id: "mummy", count: 2, interval: 1 },
+                    { id: "armouredSlime", count: 3, interval: 1},
+                    { id: "tortoise", count: 5, interval: 1 },
                 ],
                 reward: 50
             },
@@ -1849,7 +1850,7 @@ export const LEVEL_WAVES = {
         waves: [
             {
                 spawns: [
-                    { id: "mummy", count: 2, interval: 1 },
+                    { id: "tortoise", count: 2, interval: 1 },
                 ],
                 reward: 50
             },
@@ -2267,7 +2268,7 @@ export const ENEMIES = {
     iceSlime: {
         hp: 15,
         damage: 1,
-        chestValue: 1,
+        chestValue: 0.5,
         goldDropped: 1,
         deathSound: "monster death3",
         speed: 50,
@@ -2278,7 +2279,7 @@ export const ENEMIES = {
         hp: 30,
         damage: 1,
         goldDropped: 1,
-        chestValue: 1,
+        chestValue: 0.5,
         speed: 50,
         sprite: "snowman",
         spawnOnDeath: {
@@ -2289,7 +2290,7 @@ export const ENEMIES = {
     snowmanHead: {
         hp: 10,
         damage: 1,
-        chestValue: 1,
+        chestValue: 0.5,
         goldDropped: 1,
         speed: 50,
         sprite: "snowman head"
@@ -2298,7 +2299,7 @@ export const ENEMIES = {
         hp: 20,
         damage: 1,
         goldDropped: 1,
-        chestValue: 1,
+        chestValue: 0.5,
         deathSound: "penguin death",
         speed: 50,
         sprite: "penguin"
@@ -2307,7 +2308,7 @@ export const ENEMIES = {
         hp: 50,
         damage: 1,
         goldDropped: 1,
-        chestValue: 1,
+        chestValue: 0.5,
         speed: 60,
         deathSound: "polar bear death",
         sprite: "polar bear"
@@ -2509,14 +2510,16 @@ export const ENEMIES = {
         }
     },
     mummy: {
-        hp: 8,
+        hp: 60,
         damage: 1,
         goldDropped: 1,
-        chestValue: 1,
+        chestValue: 0.5,
         speed: 45,
         sprite: "mummy",
         noDestroyOnDieAnimation: true,
         onDeath(k: KAPLAYCtx, enemy: EnemyGameObj) {
+
+            enemy.z = 0;
 
             for (let i = 0; i < 3; i++) {
                 waitScaled(k, i + 1, () => {
@@ -2524,7 +2527,7 @@ export const ENEMIES = {
                 });
             }
 
-            waitScaled(k, 3, () => {
+            waitScaled(k, 3.2, () => {
                 enemy.onUpdate(() => {
                     enemy.opacity -= k.dt() * store.get(gameStateAtom).timeScale * 2;
                 });
@@ -2538,9 +2541,38 @@ export const ENEMIES = {
         hp: 15,
         damage: 1,
         goldDropped: 1,
-        chestValue: 1,
+        chestValue: 0.5,
         speed: 60,
         sprite: "locust"
+    },
+    tortoise: {
+        hp: 50,
+        armour: 120, 
+        damage: 1,
+        goldDropped: 2,
+        chestValue: 0.75,
+        speed: 30,
+        sprite: "tortoise",
+        breakShell: {
+            speedMultiplier: 4,
+            animation: "run"
+        }
+    },
+    scorpian: {
+        hp: 12,
+        damage: 1,
+        goldDropped: 1,
+        chestValue: 0.5,
+        speed: 50,
+        sprite: "scorpian"
+    },
+    lizard: {
+        hp: 16,
+        damage: 1,
+        goldDropped: 1,
+        chestValue: 0.5,
+        speed: 50,
+        sprite: "lizard"
     }
 } as const satisfies Record<string, EnemyConfig>;
 
