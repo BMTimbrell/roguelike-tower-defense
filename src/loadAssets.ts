@@ -1150,6 +1150,66 @@ export default function loadAssets(k: KAPLAYCtx) {
         }
     });
 
+    k.loadSprite("camel", "sprites/camel.png", {
+        sliceX: 6,
+        sliceY: 2,
+        anims: {
+            idle: 0,
+            move: { from: 0, to: 5, loop: true, speed: 10 },
+            die: { from: 6, to: 9, loop: false, speed: 9 }
+        }
+    });
+
+    k.loadSprite("rock golem", "sprites/rock-golem.png", {
+        sliceX: 5,
+        sliceY: 2,
+        anims: {
+            idle: 0,
+            move: { from: 0, to: 3, loop: true, speed: 5 },
+            die: { from: 5, to: 9, loop: false, speed: 12 }
+        }
+    });
+
+    k.loadSprite("rock golem body", "sprites/rock-golem-body.png", {
+        sliceX: 4,
+        sliceY: 2,
+        anims: {
+            idle: 0,
+            move: { from: 0, to: 3, loop: true, speed: 8 },
+            die: { from: 4, to: 7, loop: false, speed: 9 }
+        }
+    });
+
+    k.loadSprite("rock golem bottom", "sprites/rock-golem-bottom.png", {
+        sliceX: 7,
+        sliceY: 2,
+        anims: {
+            idle: 0,
+            move: { from: 0, to: 3, loop: true, speed: 12 },
+            die: { from: 7, to: 13, loop: false, speed: 9 }
+        }
+    });
+
+    k.loadSprite("giant scorpian", "sprites/giant-scorpian.png", {
+        sliceX: 4,
+        sliceY: 2,
+        anims: {
+            idle: 0,
+            move: { from: 0, to: 3, loop: true, speed: 7 },
+            die: { from: 4, to: 7, loop: false, speed: 7 }
+        }
+    });
+
+    k.loadSprite("giant camel", "sprites/giant-camel.png", {
+        sliceX: 6,
+        sliceY: 1,
+        anims: {
+            idle: 0,
+            move: { from: 0, to: 5, loop: true, speed: 10 },
+            die: { from: 6, to: 9, loop: false, speed: 9 }
+        }
+    });
+
     k.loadSprite("poison", "sprites/poison-icon.png");
     k.loadSprite("burn", "sprites/burn-icon.png");
     k.loadSprite("chill", "sprites/chill-icon.png");
@@ -1330,6 +1390,8 @@ export default function loadAssets(k: KAPLAYCtx) {
     k.loadSound("penguin death", "sounds/enemies/penguin-death.mp3");
     k.loadSound("wolf death", "sounds/enemies/wolf-death.mp3");
     k.loadSound("polar bear death", "sounds/enemies/polar-bear-death.mp3");
+    k.loadSound("camel death", "sounds/enemies/camel-death.mp3");
+    k.loadSound("mummy death", "sounds/enemies/mummy-death.mp3");
 
     k.loadSound("boss drums", "sounds/soundEffects/bossApproach.wav");
     k.loadSound("level up", "sounds/soundEffects/nextLevel.mp3");
