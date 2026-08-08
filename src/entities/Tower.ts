@@ -1,5 +1,5 @@
 import type { KAPLAYCtx, Vec2 } from 'kaplay';
-import { CURSE_CRIT, ELEMENTS, REDUCED_RANGE_TOWERS, TILE_SIZE, type TowerId } from '../constants';
+import { CURSE_CRIT, ELEMENTS, TILE_SIZE, type TowerId } from '../constants';
 import type { TowerGameObj, UnitEffects, TowerDef, SeedId, Tile, PathTile, RandomProjectiles, TimeData, ContinuousEffect, Charge, BuffType, Battery, EnemyGameObj, ElementName, Overheat } from '../types';
 import { store, gameStateAtom, controlsAtom, cachedSaveAtom } from '../store';
 import { calcUpgradeCost } from '../utils/calcUpgradeCost';

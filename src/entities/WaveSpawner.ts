@@ -665,6 +665,7 @@ export default function makeWaveSpawner(k: KAPLAYCtx, levelId: LevelId, waypoint
     ]);
 
     nextWaveButton.onHover(() => {
+        if (nextWaveButton.hidden) return;
         k.setCursor("pointer");
         playUISound(k, "ui hover");
         nextWaveButton.color = k.rgb(144, 144, 144); // brighter green
@@ -676,6 +677,7 @@ export default function makeWaveSpawner(k: KAPLAYCtx, levelId: LevelId, waypoint
     });
 
     nextWaveButton.onClick(() => {
+        if (nextWaveButton.hidden) return;
         playUISound(k, "start wave");
 
         if (waitingForNextWave && !levelComplete) {

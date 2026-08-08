@@ -436,6 +436,7 @@ export default function loadAssets(k: KAPLAYCtx) {
         }
     });
     k.loadSprite("arrow", "sprites/arrow.png");
+    k.loadSprite("spit", "sprites/spit.png");
     k.loadSprite("knife", "sprites/knife.png");
     k.loadSprite("gatling bullet", "sprites/gatling-bullet.png");
     k.loadSprite("money bag", "sprites/money-bag.png", {
@@ -1202,11 +1203,12 @@ export default function loadAssets(k: KAPLAYCtx) {
 
     k.loadSprite("giant camel", "sprites/giant-camel.png", {
         sliceX: 6,
-        sliceY: 1,
+        sliceY: 3,
         anims: {
             idle: 0,
             move: { from: 0, to: 5, loop: true, speed: 10 },
-            die: { from: 6, to: 9, loop: false, speed: 9 }
+            die: { from: 6, to: 7, loop: false, speed: 5 },
+            dieForReal: { from: 12, to: 15, loop: false, speed: 9 }
         }
     });
 
@@ -1392,6 +1394,7 @@ export default function loadAssets(k: KAPLAYCtx) {
     k.loadSound("polar bear death", "sounds/enemies/polar-bear-death.mp3");
     k.loadSound("camel death", "sounds/enemies/camel-death.mp3");
     k.loadSound("mummy death", "sounds/enemies/mummy-death.mp3");
+    k.loadSound("camel spit", "sounds/enemies/camel-spit.mp3");
 
     k.loadSound("boss drums", "sounds/soundEffects/bossApproach.wav");
     k.loadSound("level up", "sounds/soundEffects/nextLevel.mp3");

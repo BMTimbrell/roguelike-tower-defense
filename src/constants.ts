@@ -16,6 +16,8 @@ import { lifespan } from "./kaplayComponents/lifespan";
 import { playSfx } from "./utils/soundHelpers";
 import makeEnemy from "./entities/Enemy";
 import type { KAPLAYCtx } from "kaplay";
+import makeEnemyProjectile from "./entities/EnemyProjectile";
+import { rotateVector } from "./utils/targetingHelpers";
 
 export const NORMAL_PLAYER_HEATLH = 20;
 export const HARD_PLAYER_HEATLH = 15;
@@ -2553,7 +2555,7 @@ export const ENEMIES = {
     },
     tortoise: {
         hp: 50,
-        armour: 120, 
+        armour: 120,
         damage: 1,
         goldDropped: 2,
         chestValue: 0.75,
@@ -2651,9 +2653,58 @@ export const ENEMIES = {
         hasLargeSoul: true
     },
     giantCamel: {
-        hp: 600,
+        hp: 50,
         damage: 5,
         goldDropped: 1,
+        shootSound: "camel spit",
+        attacker: {
+            projectile: "spit",
+            attackRange: 3.5,
+            canAttack: false,
+            attackCooldown: 8,
+            shootOffset: { x: 2, y: 15 },
+            rotateOnShoot: true
+        },
+        noDestroyOnDieAnimation: true,
+        onDeath(k: KAPLAYCtx, enemy: EnemyGameObj) {
+
+            enemy.onAnimEnd(anim => {
+                if (anim === "die") {
+                    if (enemy.killer) {
+                        let attacks = 3;
+
+
+                        enemy.angle = enemy.pos.angle(enemy.killer.pos) + 90;
+
+                        const rotatedOffset = enemy.attacker?.shootOffset ? rotateVector(
+                            k,
+                            k.vec2(enemy.attacker.shootOffset.x, enemy.attacker.shootOffset.y),
+                            enemy.angle * Math.PI / 180
+                        ) : 0;
+
+                        for (let i = 0; i < attacks; i++) {
+                            waitScaled(k, i * 0.5, () => {
+                                if (!enemy.killer) return;
+
+                                playSfx(k, enemy.shootSound ?? "squish", 2, enemy.pos);
+
+                                makeEnemyProjectile(k, {
+                                    id: enemy.attacker!.projectile as ProjectileId,
+                                    pos: enemy.pos.add(rotatedOffset),
+                                    target: enemy.killer,
+                                    hitChance: 1
+                                });
+                            });
+                        }
+                    }
+
+                    waitScaled(k, 1.6, () => {
+                        playSfx(k, "camel death", 2, enemy.pos);
+                        enemy.play("dieForReal");
+                    });
+                } else if (anim === "dieForReal") k.destroy(enemy);
+            });
+        },
         chestValue: 1.25,
         deathSound: "camel death",
         speed: 30,
@@ -5118,6 +5169,12 @@ export const PROJECTILES = {
     },
     ghostProjectile: {
         sprite: "ghost projectile",
+        homing: true,
+        speed: 300,
+        splashRadius: 0
+    },
+    spit: {
+        sprite: "spit",
         homing: true,
         speed: 300,
         splashRadius: 0

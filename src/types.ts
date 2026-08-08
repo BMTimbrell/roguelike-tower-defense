@@ -336,6 +336,7 @@ export type EnemyGameObj = GameObj<
     chestValue: number;
     shootSound?: string;
     healTickRate?: number;
+    killer: TowerGameObj | HeroGameObj | null;
     spawnOnDeath?: {
         id: "slime" |
         "spiderling" |
@@ -357,6 +358,8 @@ export type EnemyGameObj = GameObj<
         attackRange: number;
         attackCooldown: number;
         canAttack: boolean;
+        shootOffset?: Vec2;
+        rotateOnShoot?: boolean;
     };
     invincible: boolean;
     invincibleDuration: number;
@@ -673,6 +676,8 @@ export type EnemyConfig = {
         attackRange: number;
         attackCooldown: number;
         canAttack: boolean;
+        shootOffset?: { x: number; y: number; };
+        rotateOnShoot?: boolean;
     };
     invincibleDuration?: number;
     invincibleCooldown?: number;

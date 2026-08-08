@@ -12,6 +12,7 @@ import { lifespan } from '../kaplayComponents/lifespan';
 import { playSfx } from '../utils/soundHelpers';
 import { tryShowTutorial } from '../utils/tutorialHelpers';
 import makeChest from './makeChest';
+import { rotateVector } from '../utils/targetingHelpers';
 
 export default function makeEnemy(
     k: KAPLAYCtx,
@@ -70,6 +71,8 @@ export default function makeEnemy(
                     attackRange: number;
                     attackCooldown: number;
                     canAttack: boolean;
+                    shootOffset?: Vec2;
+                    rotateOnShoot?: boolean;
                 }
             } : {}),
             ...("speedBooster" in ENEMIES[enemyId] ? { speedBooster: ENEMIES[enemyId].speedBooster as { amount: number; range: number; } } : {}),
@@ -89,6 +92,7 @@ export default function makeEnemy(
             invincibleDuration: "invincibleDuration" in ENEMIES[enemyId] ? ENEMIES[enemyId].invincibleDuration as number : 2,
             stunResistance: false,
             shellBroken: false,
+            killer: null,
             stunResistanceDuration: 3,
             goldDropped: ENEMIES[enemyId].goldDropped,
             stunResistanceTimer: 0,
@@ -414,6 +418,8 @@ export default function makeEnemy(
         })
     });
 
+    let rotateOnShootTimer = 0;
+
     enemy.onStateUpdate("move", () => {
         const timeScale = store.get(gameStateAtom).timeScale;
         if (enemy.isDying) return;
@@ -457,7 +463,7 @@ export default function makeEnemy(
         }
 
         if (
-            enemy.armour > 0 && 
+            enemy.armour > 0 &&
             "breakShell" in ENEMIES[enemyId] &&
             enemy.shellBroken
         ) {
@@ -465,6 +471,10 @@ export default function makeEnemy(
             enemy.baseSpeed = ENEMIES[enemyId].speed;
             updateSpeed.call(enemy);
             enemy.play("move");
+        }
+
+        if (rotateOnShootTimer > 0) {
+            rotateOnShootTimer -= k.dt() * timeScale;
         }
 
         // boss
@@ -522,7 +532,9 @@ export default function makeEnemy(
         dir = next.sub(enemy.pos).unit();
         enemy.pos = enemy.pos.add(dir.scale(enemy.speed * k.dt() * timeScale));
 
-        enemy.angle = dirToRotation(dir);
+        if (rotateOnShootTimer <= 0) {
+            enemy.angle = dirToRotation(dir);
+        }
 
         const segmentLen = enemy.segmentStart.dist(next);
         const traveled = enemy.pos.dist(enemy.segmentStart);
@@ -565,14 +577,26 @@ export default function makeEnemy(
 
                 if (enemy.shootSound) playSfx(k, enemy.shootSound, 2, enemy.pos);
 
+                if (enemy.attacker.rotateOnShoot) {
+                    enemy.angle = enemy.pos.angle(towers[index].pos) + 90;
+                    rotateOnShootTimer = 0.5;
+                }
+
+                const rotatedOffset = enemy.attacker.shootOffset ? rotateVector(
+                    k,
+                    k.vec2(enemy.attacker.shootOffset.x, enemy.attacker.shootOffset.y),
+                    enemy.angle * Math.PI / 180
+                ) : 0;
+
                 makeEnemyProjectile(k, {
                     id: enemy.attacker!.projectile as ProjectileId,
-                    pos: enemy.pos,
+                    pos: enemy.pos.add(rotatedOffset),
                     target: towers[index],
                     hitChance: enemy.has("blind") ? 0.3 : 1
                 });
 
                 attackTimer += enemy.attacker!.attackCooldown;
+
             }
         }
 
