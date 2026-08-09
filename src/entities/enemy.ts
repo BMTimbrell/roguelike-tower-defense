@@ -4,7 +4,7 @@ import type { EnemyId, ProjectileId } from '../constants';
 import { ENEMIES, HARD_HEALTH_MULT, HARD_SHIELD_MULT, STUN_DURATION, TILE_SIZE, TOWER_RANGE_TOLERANCE } from '../constants';
 import healthBar from '../kaplayComponents/healthBar';
 import statusEffect from '../kaplayComponents/statusEffect';
-import type { EnemyConfig, EnemyGameObj, presentSpawns, TowerGameObj } from '../types';
+import type { EnemyConfig, EnemyGameObj, presentSpawns, SwarmVisual, TowerGameObj } from '../types';
 import makeEnemyProjectile from './EnemyProjectile';
 import { aoeBurst } from '../utils/makeUnitCombat';
 import { waitScaled } from '../utils/timerFunctions';
@@ -111,6 +111,7 @@ export default function makeEnemy(
             ...("hasLargeSoul" in ENEMIES[enemyId] ? { hasLargeSoul: ENEMIES[enemyId].hasLargeSoul as boolean } : {}),
             ...("shieldSprite" in ENEMIES[enemyId] ? { shieldSprite: ENEMIES[enemyId].shieldSprite as string } : {}),
             ...("shootSound" in ENEMIES[enemyId] ? { shootSound: ENEMIES[enemyId].shootSound as string } : {}),
+            ...("swarmVisual" in ENEMIES[enemyId] ? { swarmVisual: ENEMIES[enemyId].swarmVisual as SwarmVisual } : {}),
             speedMultipliers: {
                 chill: 1,
                 boost: 1,
@@ -226,6 +227,45 @@ export default function makeEnemy(
         }
     });
 
+    if (enemy.swarmVisual) {
+        const locusts = createSwarmVisuals(k, enemy, enemy.swarmVisual.swarmCount);
+        enemy.onUpdate(() => {
+            updateSwarmVisuals(enemy, locusts);
+        });
+
+        enemy.onHurt((amount) => {
+            if (!enemy.swarmVisual || locusts.length <= 1 || !amount) return;
+
+            const maxHP = enemy.maxHP();
+            if (!maxHP) return;
+
+            const currentHP = enemy.hp();
+            const oldHealth = currentHP + amount;
+
+            const oldCount = Math.floor(
+                oldHealth / maxHP * enemy.swarmVisual.swarmCount
+            );
+
+            const newCount = Math.floor(
+                currentHP / maxHP * enemy.swarmVisual.swarmCount
+            );
+
+            const deaths = oldCount - newCount;
+
+            for (let i = 0; i < deaths && locusts.length > 1; i++) {
+                killSwarmLocust(k, locusts);
+            }
+        });
+
+        enemy.onDeath(() => {
+            while (locusts.length > 0) {
+                killSwarmLocust(k, locusts);
+            }
+        });
+
+
+    }
+
     enemy.onStateEnter("move", () => {
         if (enemy.shellBroken) {
             enemy.play("run");
@@ -263,7 +303,7 @@ export default function makeEnemy(
         waitScaled(k, STUN_DURATION, () => {
             k.destroy(dizzyEffect);
             if (enemy?.boss?.reachedStopIndex) enemy.enterState("attack");
-            else enemy.enterState("move");
+            else if (!enemy.isDying) enemy.enterState("move");
         });
     });
 
@@ -927,4 +967,106 @@ function getEnemySpeed(baseSpeed: number, wave: number) {
     }
 
     return speed;
+}
+
+type SwarmLocust = {
+    obj: GameObj;
+    offset: Vec2;
+};
+
+function createSwarmVisuals(
+    k: KAPLAYCtx,
+    swarm: GameObj,
+    count: number
+): SwarmLocust[] {
+    const LOCUST_POSITIONS = [
+        { x: -14, y: -7 },
+        { x: 0, y: -12 },
+        { x: 14, y: -6 },
+
+        { x: -18, y: 2 },
+        { x: -3, y: 0 },
+        { x: 11, y: 3 },
+
+        { x: -11, y: 11 },
+        { x: 3, y: 10 },
+        { x: 17, y: 12 },
+    ];
+
+    const locusts: SwarmLocust[] = [];
+
+    for (let i = 0; i < count; i++) {
+        const offset = k.vec2(
+            LOCUST_POSITIONS[i].x,
+            LOCUST_POSITIONS[i].y
+        );
+
+        const locust = k.add([
+            k.sprite(swarm.swarmVisual.sprite, {
+                anim: i % 2 === 0 ? "move" : "move2"
+            }),
+            k.rotate(),
+            k.pos(swarm.pos.add(offset)),
+            k.anchor("center"),
+            k.z(0),
+            {
+                update() {
+                    locust.angle = swarm.angle;
+                    locust.z = swarm.z;
+                }
+            }
+        ]);
+
+        locust.animSpeed *= store.get(gameStateAtom).timeScale;
+
+        locusts.push({
+            obj: locust,
+            offset
+        });
+    }
+
+    return locusts;
+}
+
+function updateSwarmVisuals(
+    swarm: GameObj,
+    locusts: SwarmLocust[],
+) {
+    for (const locust of locusts) {
+        if (locust.obj.exists()) {
+            locust.obj.pos = swarm.pos.add(locust.offset);
+        }
+    }
+}
+
+function killSwarmLocust(
+    k: KAPLAYCtx,
+    locusts: SwarmLocust[],
+) {
+
+    const index = Math.floor(Math.random() * locusts.length);
+    const [locust] = locusts.splice(index, 1);
+
+    if (!locust) return;
+
+    const deathPos = locust.obj.pos.clone();
+
+    locust.obj.destroy();
+
+    spawnDyingLocust(k, deathPos, locust.obj.angle);
+}
+
+function spawnDyingLocust(k: KAPLAYCtx, pos: Vec2, angle: number) {
+    const locust = k.add([
+        k.pos(pos),
+        k.sprite("locust", {
+            anim: "die"
+        }),
+        k.rotate(angle),
+        k.anchor("center")
+    ]);
+
+    locust.onAnimEnd(anim => {
+        if (anim === "die") k.destroy(locust);
+    });
 }

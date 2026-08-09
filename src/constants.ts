@@ -1799,7 +1799,7 @@ export const LEVEL_WAVES = {
         waves: [
             {
                 spawns: [
-                    { id: "giantCamel", count: 1, interval: 1 }
+                    { id: "scorpian", count: 5, interval: 1 }
                 ],
                 reward: 50
             },
@@ -1833,15 +1833,29 @@ export const LEVEL_WAVES = {
             },
             {
                 spawns: [
-                    { id: "armouredSkeleton", count: 5, interval: 1 },
-                    { id: "giantSkeleton", count: 1, interval: 1 },
-                    { id: "skeleton", count: 5, interval: 0.75 },
+                    { id: "giantCamel", count: 1, interval: 2 },
+                    { id: "camel", count: 5, interval: 1.5 },
+                    { id: "giantScorpian", count: 1, interval: 1 },
+                    { id: "scorpian", count: 5, interval: 0.5 },
+                    { id: "armouredOrc", count: 3, interval: 2 },
+                    { id: "orc", count: 3, interval: 1.5 },
+                    { id: "fairy", count: 1, interval: 1 }
+                ],
+                reward: 400
+            },
+            {
+                spawns: [
+                    { id: "armouredSlime", count: 1, interval: 1.5 },
+                    { id: "spider", count: 2, interval: 1.5 },
+                    { id: "armouredOrc", count: 3, interval: 1.5 },
                     { id: "fairy", count: 1, interval: 1 },
-                    { id: "skeleton", count: 5, interval: 0.75 },
-                    { id: "giantSlime", count: 1, interval: 1 },
-                    { id: "slime", count: 5, interval: 0.5 },
-                    { id: "armouredSkeleton", count: 5, interval: 1 },
+                    { id: "giantCamel", count: 1, interval: 2 },
+                    { id: "camel", count: 5, interval: 1 },
                     { id: "fairy", count: 1, interval: 1 },
+                    { id: "giantScorpian", count: 1, interval: 1 },
+                    { id: "scorpian", count: 5, interval: 0.5 },
+                    { id: "spider", count: 2, interval: 1 },
+                    { id: "fairy", count: 1, interval: 1 }
                 ],
                 reward: 0
             }
@@ -1854,7 +1868,7 @@ export const LEVEL_WAVES = {
         waves: [
             {
                 spawns: [
-                    { id: "lizard", count: 5, interval: 1 },
+                    { id: "lizard", count: 4, interval: 1 },
                 ],
                 reward: 50
             },
@@ -1867,34 +1881,33 @@ export const LEVEL_WAVES = {
             },
             {
                 spawns: [
-                    { id: "armouredSkeleton", count: 1, interval: 1 },
-                    { id: "skeleton", count: 3, interval: 1 },
+                    { id: "mummy", count: 1, interval: 1.5 },
+                    { id: "skeleton", count: 2, interval: 1 },
                     { id: "fairy", count: 1, interval: 1 },
-                    { id: "mummy", count: 1, interval: 1 },
                     { id: "lizard", count: 3, interval: 1 }
                 ],
                 reward: 200
             },
             {
                 spawns: [
-                    { id: "giantSlime", count: 1, interval: 1 },
-                    { id: "slime", count: 5, interval: 0.5 },
-                    { id: "armouredSkeleton", count: 3, interval: 1 },
-                    { id: "skeleton", count: 5, interval: 1 },
-                    { id: "fairy", count: 1, interval: 1 }
+                    { id: "armouredSkeleton", count: 1, interval: 2 },
+                    { id: "skeleton", count: 2, interval: 1.5 },
+                    { id: "giantLizard", count: 1, interval: 2 },
+                    { id: "lizard", count: 2, interval: 1 },
+                    { id: "mummy", count: 1, interval: 1 },
+                    { id: "fairy", count: 1, interval: 1 },
+                    { id: "mummy", count: 1, interval: 1 }
                 ],
                 reward: 300
             },
             {
                 spawns: [
-                    { id: "armouredSkeleton", count: 5, interval: 1 },
-                    { id: "giantSkeleton", count: 1, interval: 1 },
-                    { id: "skeleton", count: 5, interval: 0.75 },
+                    { id: "giantMummy", count: 1, interval: 3 },
+                    { id: "mummy", count: 3, interval: 1 },
                     { id: "fairy", count: 1, interval: 1 },
-                    { id: "skeleton", count: 5, interval: 0.75 },
-                    { id: "giantSlime", count: 1, interval: 1 },
-                    { id: "slime", count: 5, interval: 0.5 },
-                    { id: "armouredSkeleton", count: 5, interval: 1 },
+                    { id: "armouredSkeleton", count: 2, interval: 2 },
+                    { id: "skeleton", count: 2, interval: 1.5 },
+                    { id: "lizard", count: 3, interval: 1 },
                     { id: "fairy", count: 1, interval: 1 },
                 ],
                 reward: 0
@@ -2498,8 +2511,8 @@ export const ENEMIES = {
     giantPolarBearJockey: {
         hp: 700,
         damage: 10,
-        goldDropped: 5,
-        chestValue: 2,
+        goldDropped: 4,
+        chestValue: 1.25,
         deathSound: "polar bear death",
         speed: 30,
         hasLargeSoul: true,
@@ -2526,7 +2539,7 @@ export const ENEMIES = {
         noDestroyOnDieAnimation: true,
         onDeath(k: KAPLAYCtx, enemy: EnemyGameObj) {
 
-            enemy.z = 0;
+            enemy.z = 9999;
 
             for (let i = 0; i < 3; i++) {
                 waitScaled(k, i + 1, () => {
@@ -2653,16 +2666,16 @@ export const ENEMIES = {
         hasLargeSoul: true
     },
     giantCamel: {
-        hp: 50,
+        hp: 600,
         damage: 5,
-        goldDropped: 1,
+        goldDropped: 4,
         shootSound: "camel spit",
         attacker: {
             projectile: "spit",
             attackRange: 3.5,
             canAttack: false,
             attackCooldown: 8,
-            shootOffset: { x: 2, y: 15 },
+            shootOffset: { x: 1, y: 15 },
             rotateOnShoot: true
         },
         noDestroyOnDieAnimation: true,
@@ -2710,6 +2723,62 @@ export const ENEMIES = {
         speed: 30,
         sprite: "giant camel"
     },
+    giantLizard: {
+        hp: 355,
+        damage: 5,
+        goldDropped: 3,
+        chestValue: 1,
+        speed: 25,
+        deathSound: "monster death3",
+        attacker: {
+            projectile: "egg",
+            attackRange: 3.5,
+            canAttack: false,
+            attackCooldown: 6
+        },
+        sprite: "giant lizard"
+    },
+    giantMummy: {
+        hp: 900,
+        damage: 5,
+        goldDropped: 4,
+        chestValue: 1.25,
+        speed: 20,
+        deathSound: "mummy death",
+        sprite: "giant mummy",
+        noDestroyOnDieAnimation: true,
+        onDeath(k: KAPLAYCtx, enemy: EnemyGameObj) {
+
+            enemy.z = 0;
+
+            waitScaled(k, 1, () => {
+                makeEnemy(k, "locustSwarm", enemy.path, enemy.pathIndex, enemy.pos);
+            });
+
+
+            waitScaled(k, 1.4, () => {
+                enemy.onUpdate(() => {
+                    enemy.opacity -= k.dt() * store.get(gameStateAtom).timeScale * 2;
+                });
+                waitScaled(k, 0.5, () => {
+                    enemy.destroy();
+                });
+            });
+        }
+    },
+    locustSwarm: {
+        hp: 100,
+        damage: 1,
+        goldDropped: 3,
+        chestValue: 0.75,
+        deathSound: "monster death3",
+        speed: 60,
+        sprite: "hammer tower",
+        swarmVisual: {
+            sprite: "locust",
+            swarmCount: 9
+        }
+    }
 } as const satisfies Record<string, EnemyConfig>;
 
 export type EnemyId = keyof typeof ENEMIES;
@@ -4844,6 +4913,7 @@ export const ELEMENTS: Record<ElementName, ElementDef> = {
                     target.refreshBurn();
                     return;
                 }
+
                 target.use(burnEffect(k, duration));
             }
         },

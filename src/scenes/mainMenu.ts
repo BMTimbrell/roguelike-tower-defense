@@ -168,6 +168,7 @@ export default function mainMenu(k: KAPLAYCtx) {
                     const grid = tileGrid;
                     const path = pathTiles;
                     rand = k.randi();
+                    rand = 1;
                     const world = store.get(gameStateAtom).world;
                     const wavePrefix = world > 1 ? `${WORLDS[world - 1].wavePrefix}-` : "";
                     const waveId = `${wavePrefix}level${1}-${rand + 1}` as LevelId;

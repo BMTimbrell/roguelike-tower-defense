@@ -403,6 +403,12 @@ export type EnemyGameObj = GameObj<
     shieldHp?: number;
     maxShieldHp?: number;
     shieldSprite?: string;
+    swarmVisual?: SwarmVisual;
+};
+
+export type SwarmVisual = {
+    sprite: string,
+    swarmCount: number;
 };
 
 export type Upgrade = {
@@ -707,7 +713,8 @@ export type EnemyConfig = {
     breakShell?: {
         speedMultiplier: number;
         animation: string;
-    }
+    };
+    swarmVisual?: SwarmVisual;
 };
 
 export type presentSpawns =

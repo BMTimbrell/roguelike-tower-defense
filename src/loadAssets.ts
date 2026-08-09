@@ -164,7 +164,9 @@ export default function loadAssets(k: KAPLAYCtx) {
         sliceX: 1,
         sliceY: 1,
         anims: {
-            idle: 0
+            idle: 0,
+            move: 0,
+            die: 0
         }
     });
     k.loadSprite("hammer handle", "sprites/hammer-handle.png");
@@ -1115,6 +1117,7 @@ export default function loadAssets(k: KAPLAYCtx) {
         anims: {
             idle: 0,
             move: { from: 0, to: 1, loop: true, speed: 7 },
+            "move2": { from: 1, to: 0, loop: true, speed: 7 },
             die: { from: 4, to: 7, loop: false, speed: 8 }
         }
     });
@@ -1209,6 +1212,35 @@ export default function loadAssets(k: KAPLAYCtx) {
             move: { from: 0, to: 5, loop: true, speed: 10 },
             die: { from: 6, to: 7, loop: false, speed: 5 },
             dieForReal: { from: 12, to: 15, loop: false, speed: 9 }
+        }
+    });
+
+    k.loadSprite("giant lizard", "sprites/giant-lizard.png", {
+        sliceX: 6,
+        sliceY: 2,
+        anims: {
+            idle: 0,
+            move: { from: 0, to: 3, loop: true, speed: 7 },
+            die: { from: 6, to: 11, loop: false, speed: 9 }
+        }
+    });
+
+    k.loadSprite("giant mummy", "sprites/giant-mummy.png", {
+        sliceX: 4,
+        sliceY: 2,
+        anims: {
+            idle: 0,
+            move: { from: 0, to: 3, loop: true, speed: 4 },
+            die: { from: 4, to: 6, loop: false, speed: 3 }
+        }
+    });
+
+    k.loadSprite("locust swarm", "sprites/locust-swarm.png", {
+        sliceX: 2,
+        sliceY: 1,
+        anims: {
+            idle: 0,
+            move: { from: 0, to: 1, loop: true, speed: 4 }
         }
     });
 

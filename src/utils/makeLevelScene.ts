@@ -489,7 +489,8 @@ export default function makeLevelScene(k: KAPLAYCtx, sceneName: Scene) {
                                 isDying: false,
                                 attackTimer: 0,
                                 attackInterval: 10,
-                                darkHarvestDamage: 0
+                                darkHarvestDamage: 0,
+                                debuffDurationMultiplier: 1
                             }
                         ]);
 

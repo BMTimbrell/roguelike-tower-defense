@@ -48,7 +48,7 @@ export default function hurtEnemy(k: KAPLAYCtx, opts: {
         if (target.shieldHp < 0) target.hurt(-target.shieldHp);
     } else {
         target.hurt(remainingDamage);
-        target.killer = attacker ?? null;
+        if (attacker) target.killer = attacker;
         if (hasDarkHarvest) target.darkHarvestDamage += effectiveDamage;
     }
 
