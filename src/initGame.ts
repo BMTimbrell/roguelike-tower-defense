@@ -17,6 +17,7 @@ import { audioAtom, controlsAtom, gameStateAtom, store } from './store';
 import type { MouseButton } from 'kaplay';
 import { DEFAULT_SETTINGS, getSave, saveSettings } from './platform/save';
 import desert1 from './scenes/desert1';
+import desert2 from './scenes/desert2';
 
 export default async function initGame() {
     // focus back on canvas when clicking on html elements
@@ -45,6 +46,8 @@ export default async function initGame() {
     level6(k);
 
     desert1(k);
+
+    desert2(k);
 
     mainMenu(k);
 

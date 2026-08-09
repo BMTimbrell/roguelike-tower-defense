@@ -1902,15 +1902,23 @@ export const LEVEL_WAVES = {
             },
             {
                 spawns: [
-                    { id: "giantMummy", count: 1, interval: 3 },
-                    { id: "mummy", count: 3, interval: 1 },
+                    { id: "mummy", count: 3, interval: 1.5 },
                     { id: "fairy", count: 1, interval: 1 },
-                    { id: "armouredSkeleton", count: 2, interval: 2 },
-                    { id: "skeleton", count: 2, interval: 1.5 },
+                    { id: "giantLizard", count: 1, interval: 2 },
                     { id: "lizard", count: 3, interval: 1 },
-                    { id: "fairy", count: 1, interval: 1 },
+                    { id: "armouredSkeleton", count: 5, interval: 1.5 },
+                    { id: "skeleton", count: 3, interval: 1 },
+                    { id: "mummy", count: 1, interval: 1.5 },
+                    { id: "fairy", count: 1, interval: 1 }
                 ],
-                reward: 0
+                reward: 400
+            },
+            {
+                spawns: [
+                    { id: "giantMummy", count: 1, interval: 5 },
+                    { id: "mummy", count: 10, interval: 1.5 }
+                ],
+                reward: 400
             }
         ]
     }
@@ -1943,7 +1951,7 @@ export const WORLDS: World[] = [
     {
         wavePrefix: "world2",
         scenes: [
-            ["desert1", "desert1"],
+            ["desert1", "desert2"],
             ["desert2", "desert2-2"],
             ["desert3", "desert3"],
             ["hell1", "hell1-2"],

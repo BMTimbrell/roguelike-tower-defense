@@ -13,6 +13,7 @@ export default function loadAssets(k: KAPLAYCtx) {
     k.loadSprite("level5-2", "sprites/level5-2.png");
     k.loadSprite("level6", "sprites/level6.png");
     k.loadSprite("desert1", "sprites/desert1.png");
+    k.loadSprite("desert2", "sprites/desert2.png");
     k.loadSprite("tree", "sprites/tree2.png");
     k.loadSprite("gold", "sprites/coin.png");
     k.loadSprite("heart", "sprites/heart.png");

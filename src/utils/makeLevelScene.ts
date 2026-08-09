@@ -594,7 +594,9 @@ export default function makeLevelScene(k: KAPLAYCtx, sceneName: Scene) {
 
                         cactus.onAnimEnd(anim => {
                             if (anim === "attack") cactus.enterState("idle");
-                            if (anim === "die") k.destroy(cactus);
+                            if (anim === "die") {
+                                k.destroy(cactus);
+                            }
                         });
 
                         cactus.onHurt(amount => {
