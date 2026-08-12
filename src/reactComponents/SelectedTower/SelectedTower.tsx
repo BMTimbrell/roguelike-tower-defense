@@ -44,7 +44,7 @@ export default function SelectedTower({ tower }: { tower: SelectedTowerUI }) {
     })));
 
     function highlightUpgradeSlots(slots: USlot[]): number[] {
-        if (selectedUpgrade) {
+        if (selectedUpgrade && !("type" in selectedUpgrade)) {
             const upgradeCost = selectedUpgrade.cost;
             const slotAvailable = (s: USlot) => s.unlocked && !s.upgrade;
             const availableSlots = slots.filter(slotAvailable).length;
@@ -71,7 +71,7 @@ export default function SelectedTower({ tower }: { tower: SelectedTowerUI }) {
     }
 
     function addUpgrades() {
-        if (!selectedUpgrade) return;
+        if (!selectedUpgrade || "type" in selectedUpgrade) return;
 
         const highlightedIndexes = upgradeSlots
             .map((s, i) => (s.highlighted ? i : -1))
@@ -140,6 +140,7 @@ export default function SelectedTower({ tower }: { tower: SelectedTowerUI }) {
 
         const shouldShowPreview =
             selectedUpgrade &&
+            !("type" in selectedUpgrade) &&
             selectedUpgrade.stat === "range" &&
             highlightedCount > 0;
 
@@ -176,7 +177,7 @@ export default function SelectedTower({ tower }: { tower: SelectedTowerUI }) {
                 {upgradeSlots.map((slot, index) => (
                     <UpgradeSlot
                         upgrade={slot.upgrade}
-                        selectedUpgrade={selectedUpgrade}
+                        selectedUpgrade={selectedUpgrade && ("type" in selectedUpgrade) ? null : selectedUpgrade}
                         unlocked={slot.unlocked}
                         {...(slot.purchasable ? { onClick } : slot.highlighted ? { onClick: addUpgrades } : {})}
                         active={upgrades[index]?.active || false}

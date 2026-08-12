@@ -1,12 +1,13 @@
 import type { KAPLAYCtx, Vec2 } from "kaplay";
-import { ELEMENTS, HEROES, TILE_SIZE, type HeroId, type SkillId } from "../constants";
-import { gameStateAtom, store } from "../store";
+import { ELEMENTS, HEROES, LEVEL_WAVES, TILE_SIZE, type HeroId, type SkillId } from "../constants";
+import { cachedSaveAtom, gameStateAtom, store } from "../store";
 import type { HeroGameObj, PathTile, SelectedHeroUI, Song, TargetPriority, Tile, UnitEffects } from "../types";
 import makeUnitCombat from "../utils/makeUnitCombat";
 import makePlaceableOnGrid, { setBlockedTiles } from "../utils/makePlacementOnGrid";
 import { SKILLS } from "../constants";
 import { enemyTargetResolver, pathTargetResolver } from "../utils/targetingHelpers";
-import { playUISound } from "../utils/soundHelpers";
+import { playSfx, playUISound } from "../utils/soundHelpers";
+import { lifespan } from "../kaplayComponents/lifespan";
 
 export default function makeHero(k: KAPLAYCtx,
     opts: {
@@ -55,6 +56,11 @@ export default function makeHero(k: KAPLAYCtx,
             tileGrid,
             pathTiles,
             targetType,
+            isThirsty: false,
+            thirstDuration: 10,
+            thirstTimer: 0,
+            drinkingEffectTimer: 0,
+            isDrinking: false,
             towerBuffs: [],
             stats: { ...stats },
             canReposition: true,
@@ -67,6 +73,7 @@ export default function makeHero(k: KAPLAYCtx,
             footprint: { w: 1, h: 1 },
             element,
             effects: [],
+            hasThirst: (LEVEL_WAVES[store.get(cachedSaveAtom)?.run?.wave ?? "level1-1"] as { thirst?: boolean; })?.thirst ?? false,
             canRotate,
             ...("shootSound" in HEROES[heroId] ? { shootSound: HEROES[heroId].shootSound as string } : {}),
             disabledUntil: 0,
@@ -157,6 +164,69 @@ export default function makeHero(k: KAPLAYCtx,
             if (combat.gun.getCurAnim()?.speed) combat.gun.getCurAnim()!.speed = 0;
         });
 
+        hero.hasThirst = (LEVEL_WAVES[store.get(cachedSaveAtom)?.run?.wave ?? "level1-1"] as { thirst?: boolean; })?.thirst ?? false;
+
+        if (hero.hasThirst) {
+            const barWidth = hero.width * 0.8;
+            const barPos = hero.pos.add(hero.width * 0.2, hero.height);
+
+            // background
+            const thirstBarBackground = k.add([
+                k.pos(barPos),
+                k.rect(barWidth, 4),
+                k.color(k.Color.fromHex("#707070")),
+                k.outline(1, k.Color.fromHex("#000000")),
+                k.opacity(0),
+                {
+                    update() {
+                        thirstBarBackground.pos = hero.pos.add(hero.width * 0.2, hero.height);
+                        if (hero.placed) thirstBarBackground.opacity = 1;
+                    }
+                },
+                k.z(9999)
+            ]);
+
+            // thirst bar
+            const thirstBar = k.add([
+                k.pos(barPos),
+                k.rect(0, 4),
+                k.color(k.Color.fromHex("#4681d8")),
+                k.z(99999999),
+                k.opacity(0),
+                {
+                    update() {
+                        const hydrationRatio =
+                            1 - hero.thirstTimer / hero.thirstDuration;
+                        thirstBar.pos = hero.pos.add(hero.width * 0.2, hero.height);
+                        thirstBar.width = barWidth * hydrationRatio;
+                        if (hero.placed) {
+                            thirstBar.opacity = 1;
+                        }
+                    }
+                }
+            ]);
+
+            const waterDrop = k.add([
+                k.sprite("water drop"),
+                k.anchor("center"),
+                k.pos(thirstBarBackground.pos.sub(7, 0)),
+                k.opacity(0),
+                {
+                    update() {
+                        waterDrop.opacity = thirstBarBackground.opacity;
+                        waterDrop.pos = thirstBarBackground.pos.sub(7, 0);
+                    }
+                },
+                k.z(9999)
+            ]);
+
+            hero.onDestroy(() => {
+                k.destroy(thirstBarBackground);
+                k.destroy(thirstBar);
+                k.destroy(waterDrop);
+            });
+        }
+
         makePlaceableOnGrid(k, {
             obj: hero,
             heroSprite: sprite,
@@ -195,7 +265,6 @@ export default function makeHero(k: KAPLAYCtx,
                         const heroCenter = hero.pos.add(k.vec2(TILE_SIZE / 2));
 
                         if (towerCenter.dist(heroCenter) <= TILE_SIZE * tower.footprint.w) {
-                            // const amount = REDUCED_RANGE_TOWERS.some(name => name === tower.name) ? 0.5 : 1;
                             tower.stats.range++
                         }
                     });
@@ -234,7 +303,10 @@ export default function makeHero(k: KAPLAYCtx,
                         pos: hero.screenPos(),
                         priority: hero.priority,
                         name: hero.name,
-                        stats: hero.stats,
+                        stats: {
+                            ...hero.stats,
+                            fireInterval: hero.stats.fireInterval * (hero.isThirsty ? 2 : 1)
+                        },
                         element: hero.element,
                         setPriority: (priority: TargetPriority) => {
                             hero.priority = priority;
@@ -257,6 +329,8 @@ export default function makeHero(k: KAPLAYCtx,
                 }));
             }
         });
+
+        let puddlePos: Vec2 | null = null;
 
         const update = hero.onUpdate(() => {
             const timeScale = store.get(gameStateAtom).timeScale;
@@ -283,6 +357,59 @@ export default function makeHero(k: KAPLAYCtx,
                 if (hero.fireIntervalBoostTimer > 0) {
                     hero.fireIntervalBoostTimer -= k.dt() * timeScale;
                 } else hero.fireIntervalBoostTimer = 0;
+
+                if (hero.hasThirst && !hero.thirstImmune && hero.thirstTimer > 0) {
+                    k.get("water puddle").forEach(puddle => {
+                        const heroCenter = hero.pos.add(k.vec2(TILE_SIZE / 2));
+
+                        if (puddle.pos.dist(heroCenter) <= TILE_SIZE) {
+                            hero.isThirsty = false;
+                            hero.thirstImmune = true;
+                            hero.isDrinking = true;
+                            puddlePos = puddle.pos;
+                            playSfx(k, "drinking", 5, hero.pos);
+                        }
+                    });
+                }
+
+                if (hero.hasThirst && !hero.thirstImmune && !hero.isThirsty && store.get(gameStateAtom).waveActive) {
+
+                    hero.thirstTimer += k.dt() * store.get(gameStateAtom).timeScale;
+                    if (hero.thirstTimer >= hero.thirstDuration) {
+                        hero.isThirsty = true;
+                    }
+                }
+
+                if (hero.isDrinking) {
+                    const dt = k.dt() * store.get(gameStateAtom).timeScale;
+                    hero.thirstTimer -= dt * 15;
+
+                    // Drinking effect
+                    hero.drinkingEffectTimer -= dt;
+
+                    if (hero.drinkingEffectTimer <= 0) {
+                        hero.drinkingEffectTimer += 0.05;
+                        const heroCenter = hero.pos.add(k.vec2(TILE_SIZE / 2));
+                        const offsetX = k.rand(-5, 5);
+                        const offsetY = k.rand(-5, 5);
+
+                        // Spawn a little effect
+                        k.add([
+                            k.rect(2, 2),
+                            k.color(k.Color.fromHex("#4681d8")),
+                            k.pos((puddlePos ?? heroCenter).add(offsetX, offsetY)),
+                            k.opacity(1),
+                            k.z(999),
+                            lifespan(k, 0.5),
+                            k.move(heroCenter.angle(puddlePos ?? heroCenter), 40),
+                        ]);
+                    }
+
+                    if (hero.thirstTimer <= 0) {
+                        hero.thirstTimer = 0;
+                        hero.isDrinking = false;
+                    }
+                }
 
                 if (hero.state === "disabled") return;
 

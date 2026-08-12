@@ -6,7 +6,7 @@ export default function UpgradePopup({ upgrade, pos, fontSize }: { upgrade: Upgr
     return (
         <Popup mode="screen" pos={{ x: pos?.x || 0, y: pos?.y || 0 }}>
             <div style={{ fontSize }} className={styles["upgrade-info"]}>
-                {upgrade.name + ` +${upgrade.amount}${upgrade.percentage ? '%' : ''}`}
+                {upgrade.name + (upgrade.stat !== "thirst" ? ` +${upgrade.amount}${upgrade.percentage ? '%' : ''}` : '')}
             </div>
         </Popup>
     );

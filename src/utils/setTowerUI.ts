@@ -6,7 +6,7 @@ import calcFireInterval from "./calcFireInterval";
 import calcSellPrice from "./calcSellPrice";
 import { SCYTHE_MAX_KILL_STACKS, SEEDS } from "../constants";
 import { rebuildLava } from "./lavaHelpers";
-import { playUISound } from "./soundHelpers";
+import { playSfx, playUISound } from "./soundHelpers";
 
 export default function setTowerUI(k: KAPLAYCtx, type: "combat" | "farm", tower: TowerGameObj) {
     if (type === "combat") {
@@ -28,7 +28,7 @@ export default function setTowerUI(k: KAPLAYCtx, type: "combat" | "farm", tower:
                 ) - 1;
 
             bonusDamage += value;
-            
+
             sources.push({
                 name: "time scaling",
                 value
@@ -56,7 +56,7 @@ export default function setTowerUI(k: KAPLAYCtx, type: "combat" | "farm", tower:
             const value = tower.battery.charge * 0.42;
 
             bonusDamage += value;
-  
+
             sources.push({
                 name: "battery",
                 value
@@ -92,6 +92,7 @@ export default function setTowerUI(k: KAPLAYCtx, type: "combat" | "farm", tower:
                     .join(" + ")})`
                 : `${damageValue}`;
 
+
         store.set(gameStateAtom, prev => ({
             ...prev,
             selectedUI: {
@@ -102,10 +103,11 @@ export default function setTowerUI(k: KAPLAYCtx, type: "combat" | "farm", tower:
                 name: tower.name,
                 stats: {
                     ...tower.stats,
-                    ...(tower.timeData || tower.charge || tower.overheat?.current || tower.killStacks || tower.battery ? {
+                    ...(tower.timeData || tower.charge || tower.overheat?.current || tower.killStacks || tower.battery || tower.hasThirst ? {
                         fireInterval: tower.stats.fireInterval *
                             (tower.timeData?.timeScaling.interval ? tower.timeData.timeMultiplier : 1) *
-                            (1 - (tower.charge?.currentCharge ?? 0)),
+                            (1 - (tower.charge?.currentCharge ?? 0)) *
+                            (tower.isThirsty ? 2 : 1),
                         damage: damageLabel
                     } : {})
                 },
@@ -140,7 +142,12 @@ export default function setTowerUI(k: KAPLAYCtx, type: "combat" | "farm", tower:
                     tower.upgrades = upgrades;
                     tower.upgrades.forEach(upgrade => {
                         if (upgrade.active && !upgrade.used) {
-                            if (upgrade.stat === "fireInterval") {
+                            if (upgrade.stat === "thirst") {
+                                tower.thirstImmune = true;
+                                tower.isThirsty = false;
+                                playSfx(k, "drinking", 5, tower.pos);
+                                tower.isDrinking = true;
+                            } else if (upgrade.stat === "fireInterval") {
                                 const fireInterval = tower.stats.fireInterval;
                                 const newInterval = calcFireInterval(fireInterval, upgrade.amount);
                                 tower.stats.fireInterval = newInterval;

@@ -137,7 +137,7 @@ export default function spawnSummon(k: KAPLAYCtx, ctx: AttackContext, id: Summon
         const fireRateMultiplier = ctx.attacker.towerBuffs
             .filter(b => b.type === "fireRate")
             .reduce((acc, b) => acc * b.multiplier, 1);
-        const interval = summon.fireInterval * fireRateMultiplier;
+        const interval = summon.fireInterval * fireRateMultiplier * (ctx.attacker.isThirsty ? 2 : 1);
 
         if (summon.attackTimer > interval) summon.attackTimer = interval;
 

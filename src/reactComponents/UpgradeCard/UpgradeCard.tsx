@@ -52,7 +52,7 @@ export default function UpgradeCard({
             >
                 <div className={styles.icon}>
                     <img width={`${16 * iconScale}px`} src={upgrade.icon} />
-                    <div>+{upgrade.amount}{upgrade.percentage ? '%' : ''}</div>
+                    {upgrade.stat !== "thirst" && <div>+{upgrade.amount}{upgrade.percentage ? '%' : ''}</div>}
                 </div>
                 <div>Slots: {upgrade.cost}</div>
             </div>

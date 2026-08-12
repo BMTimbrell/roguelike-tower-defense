@@ -1,6 +1,6 @@
 import type { KAPLAYCtx, Vec2 } from "kaplay";
 import { TILE_SIZE, TOWER_RANGE_TOLERANCE } from "../constants";
-import type { EnemyGameObj, HeroGameObj, PathTile, TargetResolver, TowerGameObj } from "../types";
+import type { EnemyGameObj, HeroGameObj, PathTile, TargetPriority, TargetResolver, TowerGameObj } from "../types";
 
 export function selectTarget(
     enemies: EnemyGameObj[],
@@ -39,8 +39,8 @@ export function selectTarget(
             continue;
         }
 
-        const priority = getTargetPriority(e);
-        const bestPriority = getTargetPriority(best);
+        const priority = getTargetPriority(e, tower.priority);
+        const bestPriority = getTargetPriority(best, tower.priority);
 
         if (priority !== bestPriority) {
             if (priority > bestPriority) {
@@ -86,6 +86,13 @@ export function selectTarget(
 
             case "Furthest":
                 if (dist > bestDist) {
+                    best = e;
+                    bestDist = dist;
+                }
+                break;
+
+            case "Cactus":
+                if (e.is("cactus") && dist < bestDist) {
                     best = e;
                     bestDist = dist;
                 }
@@ -221,9 +228,14 @@ export function pathTargetResolver(
     }
 }
 
-function getTargetPriority(e: EnemyGameObj) {
+function getTargetPriority(e: EnemyGameObj, priority: TargetPriority) {
     if (e.has("darkHarvestMark")) return 100;
-    else if (e.is("cactus")) return 1;
-    else return 2;
-    return 0;
+
+    if (priority === "Cactus") {
+        return e.is("cactus") ? 3 : 2;
+    }
+
+    if (e.is("cactus")) return 1;
+
+    return 2;
 }

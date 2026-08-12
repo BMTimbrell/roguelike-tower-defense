@@ -17,6 +17,7 @@ import { audioAtom, controlsAtom, gameStateAtom, store } from './store';
 import type { MouseButton } from 'kaplay';
 import { DEFAULT_SETTINGS, getSave, saveSettings } from './platform/save';
 import desert1 from './scenes/desert1';
+import desert1_2 from './scenes/desert1-2';
 import desert2 from './scenes/desert2';
 
 export default async function initGame() {
@@ -46,6 +47,8 @@ export default async function initGame() {
     level6(k);
 
     desert1(k);
+
+    desert1_2(k);
 
     desert2(k);
 

@@ -2,6 +2,8 @@ import type { TargetPriority } from "../../types";
 import styles from "./PriorityButton.module.css";
 import Button from "../Button/Button";
 import { useState } from "react";
+import { useAtom } from "jotai";
+import { gameStateAtom } from "../../store";
 
 export default function PriorityButton({
     scale,
@@ -12,8 +14,9 @@ export default function PriorityButton({
     priority: TargetPriority;
     setPriority: (priority: TargetPriority) => void;
 }) {
-
-    const priorities: TargetPriority[] = ["Most Progress", "Least Progress", "Highest HP", "Lowest HP", "Closest", "Furthest"];
+    const [gameState] = useAtom(gameStateAtom);
+    const cactusPriority: TargetPriority[] = gameState.context?.get("cactus").length ? ["Cactus"] : [];
+    const priorities: TargetPriority[] = ["Most Progress", "Least Progress", "Highest HP", "Lowest HP", "Closest", "Furthest", ...cactusPriority];
     let priorityIndex = priorities.findIndex(p => p === priority);
     const [hovered, setHovered] = useState(false);
 

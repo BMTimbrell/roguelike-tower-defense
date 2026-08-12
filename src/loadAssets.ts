@@ -13,6 +13,7 @@ export default function loadAssets(k: KAPLAYCtx) {
     k.loadSprite("level5-2", "sprites/level5-2.png");
     k.loadSprite("level6", "sprites/level6.png");
     k.loadSprite("desert1", "sprites/desert1.png");
+    k.loadSprite("desert1-2", "sprites/desert1-2.png");
     k.loadSprite("desert2", "sprites/desert2.png");
     k.loadSprite("tree", "sprites/tree2.png");
     k.loadSprite("gold", "sprites/coin.png");
@@ -1096,7 +1097,7 @@ export default function loadAssets(k: KAPLAYCtx) {
         anims: {
             idle: { from: 0, to: 1, speed: 3 },
             attack: { from: 1, to: 8, loop: false, speed: 10 },
-            die: { from: 9, to: 12, loop: false, speed: 5 }
+            die: { from: 9, to: 12, loop: false, speed: 10 }
         }
     });
 
@@ -1325,7 +1326,10 @@ export default function loadAssets(k: KAPLAYCtx) {
         }
     });
     k.loadSprite("poison puddle", "sprites/poison-puddle.png");
+    k.loadSprite("water puddle", "sprites/water-puddle.png");
+    k.loadSprite("water bottle", "sprites/water-bottle-icon.png");
     k.loadSprite("shield", "sprites/shield.png");
+    k.loadSprite("water drop", "sprites/water-drop.png");
     k.loadSprite("dizzy", "sprites/dizzy.png", {
         sliceX: 3,
         sliceY: 1,
@@ -1435,6 +1439,7 @@ export default function loadAssets(k: KAPLAYCtx) {
     k.loadSound("challenge failed", "sounds/soundEffects/challengeFailed.mp3");
     k.loadSound("present tear", "sounds/soundEffects/present-tear.mp3");
     k.loadSound("dizzy", "sounds/soundEffects/dizzy.mp3");
+    k.loadSound("drinking", "sounds/soundEffects/drinking.mp3");
 
     //music
     k.loadSound("main title", "sounds/music/The-Crown-of-Aethelgard.mp3");

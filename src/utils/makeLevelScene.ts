@@ -191,6 +191,23 @@ export default function makeLevelScene(k: KAPLAYCtx, sceneName: Scene) {
             cursor.pos = k.toWorld(k.mousePos());
         });
 
+        if ((LEVEL_WAVES[wave] as { thirst?: boolean }).thirst && !store.get(gameStateAtom).deck.cards.some(c => c.stat === "thirst")) {
+            store.set(gameStateAtom, prev => ({
+                ...prev,
+                deck: {
+                    ...prev.deck,
+                    cards: [...prev.deck.cards, {
+                        stat: "thirst",
+                        name: "Water Bottle",
+                        icon: "sprites/water-bottle-icon.png",
+                        amount: 1,
+                        cost: 1,
+                        percentage: false
+                    }]
+                }
+            }));
+        }
+
         const upgrades = drawCards(k, store.get(gameStateAtom).deck.cards, ROUND_DRAW_NUM);
         store.set(gameStateAtom, prev => ({
             ...prev,
@@ -469,10 +486,11 @@ export default function makeLevelScene(k: KAPLAYCtx, sceneName: Scene) {
                     const tile = tileGrid[y][x];
 
                     if (tile.hasCactus) {
+                        const health = store.get(gameStateAtom).difficulty === "normal" ? 200 : 240;
                         const cactus = k.add([
                             k.sprite("cactus"),
                             k.pos(x * TILE_SIZE + TILE_SIZE / 2, y * TILE_SIZE + TILE_SIZE / 2),
-                            k.health(200, 200),
+                            k.health(health, health),
                             k.anchor("center"),
                             k.state("idle", ["idle", "stunned", "attack"]),
                             statusEffect(),
@@ -595,8 +613,92 @@ export default function makeLevelScene(k: KAPLAYCtx, sceneName: Scene) {
                         cactus.onAnimEnd(anim => {
                             if (anim === "attack") cactus.enterState("idle");
                             if (anim === "die") {
+
+                                k.add([
+                                    k.sprite("water puddle"),
+                                    k.pos(cactus.pos),
+                                    k.anchor("center"),
+                                    "water puddle",
+                                    k.z(-1)
+                                ]);
                                 k.destroy(cactus);
+                                if (rangeCircle) k.destroy(rangeCircle);
+
                             }
+                        });
+
+                        cactus.onDeath(() => {
+                            const goldEarned = 10;
+                            store.set(gameStateAtom, prev => ({
+                                ...prev,
+                                gold: prev.gold + goldEarned
+                            }));
+
+                            const handleUpdate = (obj: GameObj) => {
+                                const dt = k.dt() * store.get(gameStateAtom).timeScale;
+                                obj.opacity -= dt * 2;
+                                obj.pos = obj.pos.sub(0, dt * 3);
+
+                                if (obj.opacity <= 0) k.destroy(obj);
+                            };
+
+                            const coin = k.add([
+                                k.sprite("gold"),
+                                k.pos(cactus.pos.sub(TILE_SIZE / 4, TILE_SIZE / 2)),
+                                k.opacity(1),
+                                k.z(999),
+                                {
+                                    update() {
+                                        handleUpdate(coin);
+                                    }
+                                }
+                            ]);
+
+                            const offsets = [
+                                [-1, 0],
+                                [1, 0],
+                                [0, -1],
+                                [0, 1]
+                            ];
+
+                            const textPos = coin.pos.add(9, 0);
+                            const fontSize = 12;
+
+                            offsets.map(([x, y]) => {
+                                const outline = k.add([
+                                    k.pos(textPos.x + x, textPos.y + y),
+                                    k.color('#000000'),
+                                    k.text(`${goldEarned}`, {
+                                        size: fontSize,
+                                        font: "free pixel"
+                                    }),
+                                    k.opacity(1),
+                                    k.z(999),
+                                    {
+                                        update() {
+                                            handleUpdate(outline);
+                                        }
+                                    }
+                                ]);
+
+                            });
+
+                            const text = k.add([
+                                k.text(`${goldEarned}`, {
+                                    size: fontSize,
+                                    font: "free pixel"
+                                }),
+                                k.opacity(1),
+                                k.z(999),
+                                k.pos(textPos),
+                                {
+                                    update() {
+                                        handleUpdate(text);
+                                    }
+                                }
+                            ]);
+
+                            playSfx(k, "monster death3", 1);
                         });
 
                         cactus.onHurt(amount => {

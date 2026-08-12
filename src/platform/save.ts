@@ -5,7 +5,6 @@ import { isDesktop } from "./platform";
 
 export async function getSave(): Promise<SaveData | null> {
     let raw: string | null;
-
     if (isDesktop()) {
         raw = await window.platform?.loadGame() ?? null;
     } else {

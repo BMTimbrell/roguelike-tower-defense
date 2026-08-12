@@ -1,5 +1,5 @@
 import type { KAPLAYCtx, Vec2 } from 'kaplay';
-import { CURSE_CRIT, ELEMENTS, TILE_SIZE, type TowerId } from '../constants';
+import { CURSE_CRIT, ELEMENTS, LEVEL_WAVES, TILE_SIZE, type TowerId } from '../constants';
 import type { TowerGameObj, UnitEffects, TowerDef, SeedId, Tile, PathTile, RandomProjectiles, TimeData, ContinuousEffect, Charge, BuffType, Battery, EnemyGameObj, ElementName, Overheat } from '../types';
 import { store, gameStateAtom, controlsAtom, cachedSaveAtom } from '../store';
 import { calcUpgradeCost } from '../utils/calcUpgradeCost';
@@ -17,6 +17,7 @@ import { waitScaled } from '../utils/timerFunctions';
 import makeProjectile from './Projectile';
 import { playSfx, playUISound } from '../utils/soundHelpers';
 import { tryShowTutorial } from '../utils/tutorialHelpers';
+import { lifespan } from '../kaplayComponents/lifespan';
 
 export default function makeTower(
     k: KAPLAYCtx,
@@ -71,8 +72,14 @@ export default function makeTower(
             pathTiles,
             footprint,
             lastShotTime: 0,
+            isThirsty: false,
+            thirstTimer: 0,
+            thirstDuration: 10,
+            isDrinking: false,
+            drinkingEffectTimer: 0,
             towerBuffs: [],
             upgrades: [],
+            hasThirst: (LEVEL_WAVES[store.get(cachedSaveAtom)?.run?.wave ?? "level1-1"] as { thirst?: boolean; })?.thirst ?? false,
             ...("effects" in TOWERS[towerId] ? { effects: TOWERS[towerId].effects as UnitEffects } : {}),
             ...("shootSound" in TOWERS[towerId] ? { shootSound: TOWERS[towerId].shootSound as string } : {}),
             ...("farmData" in TOWERS[towerId] ? {
@@ -232,7 +239,7 @@ export default function makeTower(
                         return;
                     }
 
-                    orbiter.speed = 2 * Math.PI / (((1 - fireRateBuff) * fireRateMultiplier) * tower.stats.fireInterval);
+                    orbiter.speed = 2 * Math.PI / (((1 - fireRateBuff) * fireRateMultiplier) * tower.stats.fireInterval * (tower.isThirsty ? 2 : 1));
                     orbiter.angle += orbiter.speed * k.dt() * timeScale;
 
                     const cx = tower.pos.x + (tower.footprint.w * TILE_SIZE) / 2;
@@ -305,7 +312,7 @@ export default function makeTower(
                         .filter(b => b.type === "fireRate")
                         .reduce((acc, b) => acc * b.multiplier, 1);
 
-                    const fireInterval = (((1 - fireRateBuff) * fireRateMultiplier) * tower.stats.fireInterval);
+                    const fireInterval = (((1 - fireRateBuff) * fireRateMultiplier) * tower.stats.fireInterval * (tower.isThirsty ? 2 : 1));
 
                     phoenix.speed =
                         2 * Math.PI /
@@ -411,7 +418,6 @@ export default function makeTower(
                     const heroCenter = hero.pos.add(k.vec2(TILE_SIZE / 2));
 
                     if (towerCenter.dist(heroCenter) <= TILE_SIZE * tower.footprint.w) {
-                        // const amount = REDUCED_RANGE_TOWERS.some(name => name === tower.name) ? 0.5 : 1;
                         tower.stats.range++;
                     }
                 }
@@ -450,6 +456,69 @@ export default function makeTower(
             }));
         }
     });
+
+    if (tower.hasThirst) {
+        const barWidth = tower.width * 0.8;
+        const barPos = tower.pos.add(tower.width * 0.2, tower.height);
+
+        // background
+        const thirstBarBackground = k.add([
+            k.pos(barPos),
+            k.rect(barWidth, 4),
+            k.color(k.Color.fromHex("#707070")),
+            k.outline(1, k.Color.fromHex("#000000")),
+            k.opacity(0),
+            {
+                update() {
+                    thirstBarBackground.pos = tower.pos.add(tower.width * 0.2, tower.height);
+                    if (tower.placed && !tower.farmData) thirstBarBackground.opacity = 1;
+                }
+            },
+            k.z(9999)
+        ]);
+
+        // thirst bar
+        const thirstBar = k.add([
+            k.pos(barPos),
+            k.rect(0, 4),
+            k.color(k.Color.fromHex("#4681d8")),
+            k.z(99999999),
+            k.opacity(0),
+            {
+                update() {
+                    const hydrationRatio =
+                        1 - tower.thirstTimer / tower.thirstDuration;
+                    thirstBar.pos = tower.pos.add(tower.width * 0.2, tower.height);
+                    thirstBar.width = barWidth * hydrationRatio;
+                    if (tower.placed && !tower.farmData) {
+                        thirstBar.opacity = 1;
+                    }
+                }
+            }
+        ]);
+
+        const waterDrop = k.add([
+            k.sprite("water drop"),
+            k.anchor("center"),
+            k.pos(thirstBarBackground.pos.sub(7, 0)),
+            k.opacity(0),
+            {
+                update() {
+                    waterDrop.opacity = thirstBarBackground.opacity;
+                    waterDrop.pos = thirstBarBackground.pos.sub(7, 0);
+                }
+            },
+            k.z(9999)
+        ]);
+
+        tower.onDestroy(() => {
+            k.destroy(thirstBarBackground);
+            k.destroy(thirstBar);
+            k.destroy(waterDrop);
+        });
+    }
+
+    let puddlePos: null | Vec2 = null;
 
     tower.onUpdate(() => {
         const timeScale = store.get(gameStateAtom).timeScale;
@@ -552,6 +621,58 @@ export default function makeTower(
                 heat.current <= heat.recoveryThreshold
             ) {
                 heat.overheated = false;
+            }
+        }
+
+        if (tower.hasThirst && tower.thirstTimer > 0 && !tower.thirstImmune && !tower.farmData) {
+            k.get("water puddle").forEach(puddle => {
+                const towerCenter = tower.pos.add(k.vec2(TILE_SIZE * tower.footprint.w / 2));
+
+                if (puddle.pos.dist(towerCenter) <= TILE_SIZE * tower.footprint.w) {
+                    tower.isThirsty = false;
+                    tower.thirstImmune = true;
+                    playSfx(k, "drinking", 5, tower.pos);
+                    puddlePos = puddle.pos;
+                    tower.isDrinking = true;
+                }
+            });
+        }
+
+        if (tower.hasThirst && !tower.thirstImmune && !tower.isThirsty && store.get(gameStateAtom).waveActive) {
+            tower.thirstTimer += k.dt() * store.get(gameStateAtom).timeScale;
+            if (tower.thirstTimer >= tower.thirstDuration) {
+                tower.isThirsty = true;
+            }
+        }
+
+        if (tower.isDrinking) {
+            const dt = k.dt() * store.get(gameStateAtom).timeScale;
+            tower.thirstTimer -= dt * 15;
+
+            // Drinking effect
+            tower.drinkingEffectTimer -= dt;
+
+            if (tower.drinkingEffectTimer <= 0) {
+                tower.drinkingEffectTimer += 0.05;
+                const towerCenter = tower.pos.add(k.vec2(TILE_SIZE * tower.footprint.w / 2));
+                const offsetX = k.rand(-5, 5);
+                const offsetY = k.rand(-5, 5);
+
+                // Spawn a little effect
+                k.add([
+                    k.rect(2, 2),
+                    k.color(k.Color.fromHex("#4681d8")),
+                    k.pos((puddlePos ?? towerCenter.sub(tower.width / 2, 0)).add(offsetX, offsetY)),
+                    k.opacity(1),
+                    k.z(999),
+                    lifespan(k, 0.5),
+                    k.move(towerCenter.angle(puddlePos ?? towerCenter), 40),
+                ]);
+            }
+
+            if (tower.thirstTimer <= 0) {
+                tower.thirstTimer = 0;
+                tower.isDrinking = false;
             }
         }
 

@@ -227,7 +227,7 @@ export default function makeProjectile(k: KAPLAYCtx, opts: {
                         .filter(b => b.type === "fireRate")
                         .reduce((acc, b) => acc * b.multiplier, 1);
                     const fireRateBuff = getBuffValue(opts.owner, "fireRate");
-                    const interval = ((1 - fireRateBuff) * fireRateMultiplier * opts.owner.stats.fireInterval);
+                    const interval = ((1 - fireRateBuff) * fireRateMultiplier * opts.owner.stats.fireInterval * fireRateMultiplier * (opts.owner.isThirsty ? 2 : 1));
                     if (attackTimer > interval) attackTimer = interval;
                     attackTimer -= k.dt() * timeScale;
                 }
@@ -328,7 +328,7 @@ export default function makeProjectile(k: KAPLAYCtx, opts: {
                             .filter(b => b.type === "fireRate")
                             .reduce((acc, b) => acc * b.multiplier, 1);
                         const fireRateBuff = getBuffValue(behaviors.persistent.owner, "fireRate");
-                        attackTimer += (behaviors.persistent.owner.stats.fireInterval * (1 - fireRateBuff) * fireRateMultiplier);
+                        attackTimer += (behaviors.persistent.owner.stats.fireInterval * (1 - fireRateBuff) * fireRateMultiplier * fireRateMultiplier * (opts.owner.isThirsty ? 2 : 1));
                     }
 
                 }

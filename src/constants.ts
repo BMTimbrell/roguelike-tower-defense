@@ -1803,6 +1803,137 @@ export const LEVEL_WAVES = {
                 ],
                 reward: 50
             },
+            // {
+            //     spawns: [
+            //         { id: "scorpian", count: 5, interval: 0.75 },
+            //         { id: "camel", count: 2, interval: 1 }
+            //     ],
+            //     reward: 100
+            // },
+            // {
+            //     spawns: [
+            //         { id: "orc", count: 3, interval: 2 },
+            //         { id: "fairy", count: 1, interval: 1 },
+            //         { id: "scorpian", count: 3, interval: 1 },
+            //         { id: "camel", count: 1, interval: 1 }
+            //     ],
+            //     reward: 200
+            // },
+            // {
+            //     spawns: [
+            //         { id: "armouredOrc", count: 1, interval: 2 },
+            //         { id: "orc", count: 2, interval: 1.5 },
+            //         { id: "scorpian", count: 2, interval: 1 },
+            //         { id: "giantScorpian", count: 1, interval: 1 },
+            //         { id: "scorpian", count: 2, interval: 1 },
+            //         { id: "fairy", count: 1, interval: 1 },
+            //         { id: "camel", count: 3, interval: 1 }
+            //     ],
+            //     reward: 300
+            // },
+            // {
+            //     spawns: [
+            //         { id: "giantCamel", count: 1, interval: 2 },
+            //         { id: "camel", count: 5, interval: 1.5 },
+            //         { id: "giantScorpian", count: 1, interval: 1 },
+            //         { id: "scorpian", count: 5, interval: 0.5 },
+            //         { id: "armouredOrc", count: 3, interval: 2 },
+            //         { id: "orc", count: 3, interval: 1.5 },
+            //         { id: "fairy", count: 1, interval: 1 }
+            //     ],
+            //     reward: 400
+            // },
+            // {
+            //     spawns: [
+            //         { id: "armouredSlime", count: 1, interval: 1.5 },
+            //         { id: "spider", count: 2, interval: 1.5 },
+            //         { id: "armouredOrc", count: 3, interval: 1.5 },
+            //         { id: "fairy", count: 1, interval: 1 },
+            //         { id: "giantCamel", count: 1, interval: 2 },
+            //         { id: "camel", count: 5, interval: 1 },
+            //         { id: "fairy", count: 1, interval: 1 },
+            //         { id: "giantScorpian", count: 1, interval: 1 },
+            //         { id: "scorpian", count: 5, interval: 0.5 },
+            //         { id: "spider", count: 2, interval: 1 },
+            //         { id: "fairy", count: 1, interval: 1 }
+            //     ],
+            //     reward: 0
+            // }
+        ]
+    },
+    "world2-level1-2": {
+        startingGold: 100,
+        startDelay: 120,
+        music: "desert biome",
+        waves: [
+            {
+                spawns: [
+                    { id: "lizard", count: 4, interval: 1 },
+                ],
+                reward: 50
+            },
+            // {
+            //     spawns: [
+            //         { id: "mummy", count: 1, interval: 1 },
+            //         { id: "lizard", count: 5, interval: 0.75 }
+            //     ],
+            //     reward: 100
+            // },
+            // {
+            //     spawns: [
+            //         { id: "mummy", count: 1, interval: 1.5 },
+            //         { id: "skeleton", count: 2, interval: 1 },
+            //         { id: "fairy", count: 1, interval: 1 },
+            //         { id: "lizard", count: 3, interval: 1 }
+            //     ],
+            //     reward: 200
+            // },
+            // {
+            //     spawns: [
+            //         { id: "armouredSkeleton", count: 1, interval: 2 },
+            //         { id: "skeleton", count: 2, interval: 1.5 },
+            //         { id: "giantLizard", count: 1, interval: 2 },
+            //         { id: "lizard", count: 2, interval: 1 },
+            //         { id: "mummy", count: 1, interval: 1 },
+            //         { id: "fairy", count: 1, interval: 1 },
+            //         { id: "mummy", count: 1, interval: 1 }
+            //     ],
+            //     reward: 300
+            // },
+            // {
+            //     spawns: [
+            //         { id: "mummy", count: 3, interval: 1.5 },
+            //         { id: "fairy", count: 1, interval: 1 },
+            //         { id: "giantLizard", count: 1, interval: 2 },
+            //         { id: "lizard", count: 3, interval: 1 },
+            //         { id: "armouredSkeleton", count: 5, interval: 1.5 },
+            //         { id: "skeleton", count: 3, interval: 1 },
+            //         { id: "mummy", count: 1, interval: 1.5 },
+            //         { id: "fairy", count: 1, interval: 1 }
+            //     ],
+            //     reward: 400
+            // },
+            // {
+            //     spawns: [
+            //         { id: "giantMummy", count: 1, interval: 5 },
+            //         { id: "mummy", count: 10, interval: 1.5 }
+            //     ],
+            //     reward: 400
+            // }
+        ]
+    },
+    "world2-level2-1": {
+        startingGold: 100,
+        startDelay: 120,
+        music: "desert biome",
+        thirst: true,
+        waves: [
+            {
+                spawns: [
+                    { id: "scorpian", count: 5, interval: 1 }
+                ],
+                reward: 50
+            },
             {
                 spawns: [
                     { id: "scorpian", count: 5, interval: 0.75 },
@@ -1861,64 +1992,73 @@ export const LEVEL_WAVES = {
             }
         ]
     },
-    "world2-level1-2": {
+    "world2-level2-2": {
         startingGold: 100,
         startDelay: 120,
+        thirst: true,
         music: "desert biome",
         waves: [
             {
                 spawns: [
-                    { id: "lizard", count: 4, interval: 1 },
+                    { id: "scorpian", count: 5, interval: 1 }
                 ],
                 reward: 50
             },
             {
                 spawns: [
-                    { id: "mummy", count: 1, interval: 1 },
-                    { id: "lizard", count: 5, interval: 0.75 }
+                    { id: "scorpian", count: 5, interval: 0.75 },
+                    { id: "camel", count: 2, interval: 1 }
                 ],
                 reward: 100
             },
             {
                 spawns: [
-                    { id: "mummy", count: 1, interval: 1.5 },
-                    { id: "skeleton", count: 2, interval: 1 },
+                    { id: "orc", count: 3, interval: 2 },
                     { id: "fairy", count: 1, interval: 1 },
-                    { id: "lizard", count: 3, interval: 1 }
+                    { id: "scorpian", count: 3, interval: 1 },
+                    { id: "camel", count: 1, interval: 1 }
                 ],
                 reward: 200
             },
             {
                 spawns: [
-                    { id: "armouredSkeleton", count: 1, interval: 2 },
-                    { id: "skeleton", count: 2, interval: 1.5 },
-                    { id: "giantLizard", count: 1, interval: 2 },
-                    { id: "lizard", count: 2, interval: 1 },
-                    { id: "mummy", count: 1, interval: 1 },
+                    { id: "armouredOrc", count: 1, interval: 2 },
+                    { id: "orc", count: 2, interval: 1.5 },
+                    { id: "scorpian", count: 2, interval: 1 },
+                    { id: "giantScorpian", count: 1, interval: 1 },
+                    { id: "scorpian", count: 2, interval: 1 },
                     { id: "fairy", count: 1, interval: 1 },
-                    { id: "mummy", count: 1, interval: 1 }
+                    { id: "camel", count: 3, interval: 1 }
                 ],
                 reward: 300
             },
             {
                 spawns: [
-                    { id: "mummy", count: 3, interval: 1.5 },
-                    { id: "fairy", count: 1, interval: 1 },
-                    { id: "giantLizard", count: 1, interval: 2 },
-                    { id: "lizard", count: 3, interval: 1 },
-                    { id: "armouredSkeleton", count: 5, interval: 1.5 },
-                    { id: "skeleton", count: 3, interval: 1 },
-                    { id: "mummy", count: 1, interval: 1.5 },
+                    { id: "giantCamel", count: 1, interval: 2 },
+                    { id: "camel", count: 5, interval: 1.5 },
+                    { id: "giantScorpian", count: 1, interval: 1 },
+                    { id: "scorpian", count: 5, interval: 0.5 },
+                    { id: "armouredOrc", count: 3, interval: 2 },
+                    { id: "orc", count: 3, interval: 1.5 },
                     { id: "fairy", count: 1, interval: 1 }
                 ],
                 reward: 400
             },
             {
                 spawns: [
-                    { id: "giantMummy", count: 1, interval: 5 },
-                    { id: "mummy", count: 10, interval: 1.5 }
+                    { id: "armouredSlime", count: 1, interval: 1.5 },
+                    { id: "spider", count: 2, interval: 1.5 },
+                    { id: "armouredOrc", count: 3, interval: 1.5 },
+                    { id: "fairy", count: 1, interval: 1 },
+                    { id: "giantCamel", count: 1, interval: 2 },
+                    { id: "camel", count: 5, interval: 1 },
+                    { id: "fairy", count: 1, interval: 1 },
+                    { id: "giantScorpian", count: 1, interval: 1 },
+                    { id: "scorpian", count: 5, interval: 0.5 },
+                    { id: "spider", count: 2, interval: 1 },
+                    { id: "fairy", count: 1, interval: 1 }
                 ],
-                reward: 400
+                reward: 0
             }
         ]
     }
@@ -1951,8 +2091,8 @@ export const WORLDS: World[] = [
     {
         wavePrefix: "world2",
         scenes: [
-            ["desert1", "desert2"],
-            ["desert2", "desert2-2"],
+            ["desert1", "desert1-2"],
+            ["desert2", "desert2"],
             ["desert3", "desert3"],
             ["hell1", "hell1-2"],
             ["hell2", "hell2-2"],
@@ -3474,7 +3614,7 @@ export const TOWERS = {
                         const smashEffect = k.add([
                             k.sprite("smash effect", { anim: "smash" }),
                             k.anchor("center"),
-                            k.z(999),
+                            k.z(9999),
                             k.pos(impactPos)
                         ]);
 
@@ -3981,7 +4121,7 @@ export const TOWERS = {
                             k.rotate(ctx.gun.angle + 180),
                             k.opacity(1),
                             k.scale(2),
-                            k.z(999),
+                            k.z(9999),
                             k.lifespan(0.25),
                             k.pos(impactPos)
                         ]);

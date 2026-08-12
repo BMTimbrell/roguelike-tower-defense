@@ -214,6 +214,7 @@ export type UnitInstance = {
     footprint: Footprint;
     chargeStacks?: Charge;
     towerBuffs: TowerBuff[];
+    hasThirst: boolean;
 };
 
 export type TimeData = {
@@ -270,6 +271,7 @@ export type TowerInstance = UnitInstance & {
         required: number;
     };
     overheat?: Overheat;
+    isThirsty: boolean;
 };
 
 export type TowerGameObj = GameObj & TowerInstance;
@@ -412,8 +414,8 @@ export type SwarmVisual = {
 };
 
 export type Upgrade = {
-    stat: "damage" | "range" | "fireInterval" | "critChance" | "critDamage";
-    name: "Damage" | "Range" | "Fire Rate" | "Crit Chance" | "Crit Damage";
+    stat: "damage" | "range" | "fireInterval" | "critChance" | "critDamage" | "thirst";
+    name: "Damage" | "Range" | "Fire Rate" | "Crit Chance" | "Crit Damage" | "Water Bottle";
     amount: number;
     cost: number;
     percentage: boolean;
@@ -467,7 +469,7 @@ export type TowerButton = Pick<TowerDef, 'name' | 'cost' | 'stats' | 'element' |
     onClick: MouseEventHandler<HTMLButtonElement>;
 };
 
-export type TargetPriority = "Most Progress" | "Least Progress" | "Highest HP" | "Lowest HP" | "Closest" | "Furthest" | null;
+export type TargetPriority = "Most Progress" | "Least Progress" | "Highest HP" | "Lowest HP" | "Closest" | "Furthest" | null | "Cactus";
 
 export type SelectedUnitUI = {
     name: string;
@@ -645,6 +647,7 @@ export type LevelWaves = {
     shop?: boolean;
     challenge?: boolean;
     music: string;
+    thirst?: boolean;
 };
 
 export type EnemyConfig = {

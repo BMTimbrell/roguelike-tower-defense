@@ -64,6 +64,7 @@ export default function makeUnitCombat(
             k.color(255, 255, 255),
             k.scale(1),
             k.opacity(1),
+            k.z(9998),
             k.pos(0),
             {
                 update() {
@@ -81,6 +82,7 @@ export default function makeUnitCombat(
             k.scale(1),
             k.opacity(1),
             k.color(255, 255, 255),
+            k.z(9998),
             k.pos(-handleLength, 0),
             {
                 update() {
@@ -744,7 +746,8 @@ export default function makeUnitCombat(
             * (1 - (opts.owner.charge?.currentCharge ?? 0))
             * (opts.owner.fireIntervalBoostTimer > 0 ? opts.owner.fireIntervalBoost ?? 1 : 1)
             * (fireRateMultiplier)
-            * (1 - fireRateBuff);
+            * (1 - fireRateBuff)
+            * (opts.owner.isThirsty ? 2 : 1);
 
         if (shootTimer > interval) shootTimer = interval;
 
