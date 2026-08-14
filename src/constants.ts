@@ -65,7 +65,8 @@ export const LEVEL_REWARDS = [20, 20, 30, 25, 25];
 export const TUTORIAL_VERSIONS = {
     towerUpgrade: 1,
     heroCharge: 1,
-    armour: 1
+    armour: 1,
+    thirst: 1
 };
 export type TutorialStep = {
     title?: string;
@@ -104,8 +105,26 @@ export const TUTORIALS = {
                 images: ["armoured-enemy.png"]
             }
         ]
+    },
+    thirst: {
+        steps: [
+            {
+                title: "Desert Heat",
+                text: "The desert heat is getting too much for your towers and they are getting thirsty. Thirsty towers will have their fire rates halved.",
+                images: ["thirsty-towers.png"]
+            },
+            {
+                title: "Desert Heat",
+                text: "You can tell when a tower gets thirsty because its hydration bar will be fully depleted.",
+                images: ["thirsty-towers-test3.png"]
+            },
+            {
+                title: "Desert Heat",
+                text: "Fortunately there is now a water bottle card in your deck. But maybe there is another way to get water...",
+                images: ["water-bottles.png"]
+            }
+        ]
     }
-
 };
 
 export const UPGRADES: Upgrade[] = [{
@@ -1923,40 +1942,42 @@ export const LEVEL_WAVES = {
         ]
     },
     "world2-level2-1": {
-        startingGold: 100,
+        startingGold: 150,
         startDelay: 120,
         music: "desert biome",
         thirst: true,
         waves: [
             {
                 spawns: [
-                    { id: "scorpian", count: 5, interval: 1 }
+                    { id: "scorpian", count: 10, interval: 1 }
                 ],
                 reward: 50
             },
             {
                 spawns: [
-                    { id: "scorpian", count: 5, interval: 0.75 },
-                    { id: "camel", count: 2, interval: 1 }
+                    { id: "scorpian", count: 6, interval: 0.75 },
+                    { id: "camel", count: 3, interval: 1 }
                 ],
                 reward: 100
             },
             {
                 spawns: [
+                    { id: "armouredOrc", count: 1, interval: 2 },
                     { id: "orc", count: 3, interval: 2 },
                     { id: "fairy", count: 1, interval: 1 },
-                    { id: "scorpian", count: 3, interval: 1 },
-                    { id: "camel", count: 1, interval: 1 }
+                    { id: "scorpian", count: 5, interval: 1 },
+                    { id: "camel", count: 5, interval: 1 }
                 ],
                 reward: 200
             },
             {
                 spawns: [
-                    { id: "armouredOrc", count: 1, interval: 2 },
-                    { id: "orc", count: 2, interval: 1.5 },
-                    { id: "scorpian", count: 2, interval: 1 },
+                    { id: "rockGolem", count: 3, interval: 2 },
                     { id: "giantScorpian", count: 1, interval: 1 },
-                    { id: "scorpian", count: 2, interval: 1 },
+                    { id: "scorpian", count: 5, interval: 0.75 },
+                    { id: "fairy", count: 1, interval: 1 },
+                    { id: "armouredOrc", count: 2, interval: 2 },
+                    { id: "orc", count: 3, interval: 1.5 },
                     { id: "fairy", count: 1, interval: 1 },
                     { id: "camel", count: 3, interval: 1 }
                 ],
@@ -1964,12 +1985,14 @@ export const LEVEL_WAVES = {
             },
             {
                 spawns: [
+                    { id: "armouredSlime", count: 1, interval: 1.5 },
+                    { id: "spider", count: 3, interval: 2 },
                     { id: "giantCamel", count: 1, interval: 2 },
                     { id: "camel", count: 5, interval: 1.5 },
                     { id: "giantScorpian", count: 1, interval: 1 },
+                    { id: "fairy", count: 1, interval: 1 },
                     { id: "scorpian", count: 5, interval: 0.5 },
-                    { id: "armouredOrc", count: 3, interval: 2 },
-                    { id: "orc", count: 3, interval: 1.5 },
+                    { id: "spider", count: 2, interval: 2 },
                     { id: "fairy", count: 1, interval: 1 }
                 ],
                 reward: 400
@@ -1977,86 +2000,115 @@ export const LEVEL_WAVES = {
             {
                 spawns: [
                     { id: "armouredSlime", count: 1, interval: 1.5 },
-                    { id: "spider", count: 2, interval: 1.5 },
-                    { id: "armouredOrc", count: 3, interval: 1.5 },
-                    { id: "fairy", count: 1, interval: 1 },
+                    { id: "rockGolem", count: 3, interval: 1.5 },
+                    { id: "redFairy", count: 1, interval: 1 },
                     { id: "giantCamel", count: 1, interval: 2 },
-                    { id: "camel", count: 5, interval: 1 },
+                    { id: "camel", count: 3, interval: 1.5 },
+                    { id: "armouredOrc", count: 5, interval: 1.5 },
+                    { id: "orc", count: 5, interval: 1 },
                     { id: "fairy", count: 1, interval: 1 },
-                    { id: "giantScorpian", count: 1, interval: 1 },
-                    { id: "scorpian", count: 5, interval: 0.5 },
-                    { id: "spider", count: 2, interval: 1 },
-                    { id: "fairy", count: 1, interval: 1 }
+                    { id: "armouredSlime", count: 1, interval: 1.5 },
+                    { id: "spider", count: 5, interval: 1.5 },
+                ],
+                reward: 500
+            },
+            {
+                spawns: [
+                    { id: "giantRockGolem", count: 1, interval: 3 },
+                    { id: "rockGolem", count: 10, interval: 1.5 },
                 ],
                 reward: 0
             }
         ]
     },
     "world2-level2-2": {
-        startingGold: 100,
+        startingGold: 150,
         startDelay: 120,
         thirst: true,
         music: "desert biome",
         waves: [
             {
                 spawns: [
-                    { id: "scorpian", count: 5, interval: 1 }
+                    { id: "lizard", count: 8, interval: 1 }
                 ],
                 reward: 50
             },
             {
                 spawns: [
-                    { id: "scorpian", count: 5, interval: 0.75 },
-                    { id: "camel", count: 2, interval: 1 }
+                    { id: "lizard", count: 5, interval: 0.75 },
+                    { id: "mummy", count: 1, interval: 1 }
                 ],
                 reward: 100
             },
             {
                 spawns: [
-                    { id: "orc", count: 3, interval: 2 },
+                    { id: "mummy", count: 3, interval: 1.5 },
+                    { id: "armouredSkeleton", count: 1, interval: 2 },
+                    { id: "skeleton", count: 3, interval: 1 },
                     { id: "fairy", count: 1, interval: 1 },
-                    { id: "scorpian", count: 3, interval: 1 },
-                    { id: "camel", count: 1, interval: 1 }
+                    { id: "lizard", count: 5, interval: 1 },
                 ],
                 reward: 200
             },
             {
                 spawns: [
-                    { id: "armouredOrc", count: 1, interval: 2 },
-                    { id: "orc", count: 2, interval: 1.5 },
-                    { id: "scorpian", count: 2, interval: 1 },
-                    { id: "giantScorpian", count: 1, interval: 1 },
-                    { id: "scorpian", count: 2, interval: 1 },
+                    { id: "tortoise", count: 1, interval: 2 },
+                    { id: "giantLizard", count: 1, interval: 1 },
+                    { id: "lizard", count: 5, interval: 0.75 },
                     { id: "fairy", count: 1, interval: 1 },
-                    { id: "camel", count: 3, interval: 1 }
+                    { id: "mummy", count: 3, interval: 1 },
+                    { id: "armouredSkeleton", count: 2, interval: 2 },
+                    { id: "skeleton", count: 3, interval: 1.5 },
+                    { id: "fairy", count: 1, interval: 1 },
                 ],
                 reward: 300
             },
             {
                 spawns: [
-                    { id: "giantCamel", count: 1, interval: 2 },
-                    { id: "camel", count: 5, interval: 1.5 },
-                    { id: "giantScorpian", count: 1, interval: 1 },
-                    { id: "scorpian", count: 5, interval: 0.5 },
-                    { id: "armouredOrc", count: 3, interval: 2 },
-                    { id: "orc", count: 3, interval: 1.5 },
+                    { id: "mummy", count: 5, interval: 1.5 },
+                    { id: "ghost", count: 2, interval: 1.5 },
+                    { id: "tortoise", count: 1, interval: 1 },
+                    { id: "skeleton", count: 5, interval: 1 },
+                    { id: "fairy", count: 1, interval: 1 },
+                    { id: "tortoise", count: 1, interval: 1 },
+                    { id: "giantLizard", count: 1, interval: 2 },
+                    { id: "tortoise", count: 2, interval: 1 },
+                    { id: "wolf", count: 1, interval: 1},
+                    { id: "lizard", count: 5, interval: 0.5 },
+                    { id: "ghost", count: 3, interval: 1.5 },
                     { id: "fairy", count: 1, interval: 1 }
                 ],
                 reward: 400
             },
             {
                 spawns: [
-                    { id: "armouredSlime", count: 1, interval: 1.5 },
-                    { id: "spider", count: 2, interval: 1.5 },
-                    { id: "armouredOrc", count: 3, interval: 1.5 },
+                    { id: "giantMummy", count: 1, interval: 1.5 },
+                    { id: "mummy", count: 3, interval: 1.5 },
+                    { id: "ghost", count: 2, interval: 1.5 },
+                    { id: "redFairy", count: 1, interval: 1 },
+                    { id: "armouredSkeleton", count: 5, interval: 2 },
+                    { id: "tortoise", count: 1, interval: 1.5 },
+                    { id: "skeleton", count: 5, interval: 1 },
+                    { id: "tortoise", count: 1, interval: 1.5 },
                     { id: "fairy", count: 1, interval: 1 },
-                    { id: "giantCamel", count: 1, interval: 2 },
-                    { id: "camel", count: 5, interval: 1 },
+                    { id: "wolf", count: 1, interval: 1.5 },
+                    { id: "giantLizard", count: 1, interval: 1 },
+                    { id: "lizard", count: 5, interval: 1 },
+                    { id: "wolf", count: 1, interval: 1 }
+                ],
+                reward: 500
+            },
+            {
+                spawns: [
+                    { id: "giantTortoise", count: 1, interval: 3 },
+                    { id: "tortoise", count: 5, interval: 1.5 },
+                    { id: "redFairy", count: 1, interval: 1 },
+                    { id: "giantMummy", count: 1, interval: 2 },
+                    { id: "mummy", count: 3, interval: 1.5 },
+                    { id: "ghost", count: 2, interval: 1.5 },
+                    { id: "skeleton", count: 5, interval: 0.5 },
                     { id: "fairy", count: 1, interval: 1 },
-                    { id: "giantScorpian", count: 1, interval: 1 },
-                    { id: "scorpian", count: 5, interval: 0.5 },
-                    { id: "spider", count: 2, interval: 1 },
-                    { id: "fairy", count: 1, interval: 1 }
+                    { id: "wolf", count: 1, interval: 1 }
                 ],
                 reward: 0
             }
@@ -2834,8 +2886,7 @@ export const ENEMIES = {
                     if (enemy.killer) {
                         let attacks = 3;
 
-
-                        enemy.angle = enemy.pos.angle(enemy.killer.pos) + 90;
+                        enemy.angle = enemy.pos.angle(enemy.killer.pos.add(enemy.killer.footprint.w * TILE_SIZE / 2)) + 90;
 
                         const rotatedOffset = enemy.attacker?.shootOffset ? rotateVector(
                             k,
@@ -2868,6 +2919,7 @@ export const ENEMIES = {
         },
         chestValue: 1.25,
         deathSound: "camel death",
+        hasLargeSoul: true,
         speed: 30,
         sprite: "giant camel"
     },
@@ -2878,6 +2930,7 @@ export const ENEMIES = {
         chestValue: 1,
         speed: 25,
         deathSound: "monster death3",
+        hasLargeSoul: true,
         attacker: {
             projectile: "egg",
             attackRange: 3.5,
@@ -2894,6 +2947,7 @@ export const ENEMIES = {
         speed: 20,
         deathSound: "mummy death",
         sprite: "giant mummy",
+        hasLargeSoul: true,
         noDestroyOnDieAnimation: true,
         onDeath(k: KAPLAYCtx, enemy: EnemyGameObj) {
 
@@ -2926,7 +2980,70 @@ export const ENEMIES = {
             sprite: "locust",
             swarmCount: 9
         }
-    }
+    },
+    giantRockGolem: {
+        hp: 1050,
+        damage: 5,
+        goldDropped: 2,
+        chestValue: 1,
+        speed: 15,
+        sprite: "giant rock golem",
+        noDestroyOnDieAnimation: true,
+        onDeath(k: KAPLAYCtx, enemy: EnemyGameObj) {
+
+            enemy.z = 0;
+
+            enemy.onAnimEnd(anim => {
+                if (anim === "die") {
+                    makeEnemy(k, "giantRockGolemBody", enemy.path, enemy.pathIndex, enemy.pos);
+                    k.destroy(enemy);
+                }
+            });
+        }
+    },
+    giantRockGolemBody: {
+        hp: 600,
+        damage: 5,
+        goldDropped: 3,
+        chestValue: 1,
+        speed: 25,
+        sprite: "giant rock golem body",
+        noDestroyOnDieAnimation: true,
+        onDeath(k: KAPLAYCtx, enemy: EnemyGameObj) {
+
+            enemy.z = 0;
+
+            enemy.onAnimEnd(anim => {
+                if (anim === "die") {
+                    makeEnemy(k, "giantRockGolemBottom", enemy.path, enemy.pathIndex, enemy.pos);
+                    k.destroy(enemy);
+                }
+            });
+        }
+    },
+    giantRockGolemBottom: {
+        hp: 300,
+        damage: 5,
+        goldDropped: 4,
+        chestValue: 1,
+        speed: 35,
+        hasLargeSoul: true,
+        sprite: "giant rock golem bottom"
+    },
+    giantTortoise: {
+        hp: 500,
+        armour: 720,
+        damage: 5,
+        goldDropped: 5,
+        chestValue: 2,
+        speed: 15,
+        sprite: "giant tortoise",
+        breakShell: {
+            speedMultiplier: 4,
+            animation: "run"
+        },
+        deathSound: "monster death3"
+    },
 } as const satisfies Record<string, EnemyConfig>;
 
 export type EnemyId = keyof typeof ENEMIES;

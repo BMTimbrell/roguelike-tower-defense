@@ -57,7 +57,8 @@ export default function makeHero(k: KAPLAYCtx,
             pathTiles,
             targetType,
             isThirsty: false,
-            thirstDuration: 10,
+            thirstDuration: 50,
+            drinkTimer: 1,
             thirstTimer: 0,
             drinkingEffectTimer: 0,
             isDrinking: false,
@@ -380,9 +381,10 @@ export default function makeHero(k: KAPLAYCtx,
                     }
                 }
 
-                if (hero.isDrinking) {
-                    const dt = k.dt() * store.get(gameStateAtom).timeScale;
-                    hero.thirstTimer -= dt * 15;
+                const dt = k.dt() * store.get(gameStateAtom).timeScale;
+
+                if (hero.thirstImmune && hero.drinkTimer > 0) {
+                    hero.drinkTimer -= dt;
 
                     // Drinking effect
                     hero.drinkingEffectTimer -= dt;
@@ -404,6 +406,11 @@ export default function makeHero(k: KAPLAYCtx,
                             k.move(heroCenter.angle(puddlePos ?? heroCenter), 40),
                         ]);
                     }
+                }
+
+                if (hero.isDrinking) {
+                    hero.thirstTimer -= dt * 15;
+
 
                     if (hero.thirstTimer <= 0) {
                         hero.thirstTimer = 0;

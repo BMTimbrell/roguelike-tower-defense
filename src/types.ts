@@ -985,7 +985,8 @@ export type SettingsSave = {
 export type TutorialId =
     | "towerUpgrade"
     | "armour"
-    | "heroCharge";
+    | "heroCharge"
+    | "thirst";
 
 export type SeenTutorials =
     Partial<Record<TutorialId, number>>;

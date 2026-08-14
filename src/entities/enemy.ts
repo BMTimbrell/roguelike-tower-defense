@@ -131,7 +131,7 @@ export default function makeEnemy(
     enemy.animSpeed = store.get(gameStateAtom).timeScale;
 
     if (enemy.armour > 1) {
-        // upgrade tutorial
+        // armour tutorial
         const save = store.get(cachedSaveAtom);
         if (save) {
             tryShowTutorial("armour", save);
@@ -618,7 +618,7 @@ export default function makeEnemy(
                 if (enemy.shootSound) playSfx(k, enemy.shootSound, 2, enemy.pos);
 
                 if (enemy.attacker.rotateOnShoot) {
-                    enemy.angle = enemy.pos.angle(towers[index].pos) + 90;
+                    enemy.angle = enemy.pos.angle(towers[index].pos.add(TILE_SIZE * towers[index].footprint.w / 2)) + 90;
                     rotateOnShootTimer = 0.5;
                 }
 

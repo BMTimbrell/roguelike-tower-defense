@@ -23,6 +23,7 @@ import { saveMetaProgress } from "./checkUnlocks";
 import statusEffect from "../kaplayComponents/statusEffect";
 import healthBar from "../kaplayComponents/healthBar";
 import { waitScaled } from "./timerFunctions";
+import { tryShowTutorial } from "./tutorialHelpers";
 
 export default function makeLevelScene(k: KAPLAYCtx, sceneName: Scene) {
 
@@ -301,6 +302,7 @@ export default function makeLevelScene(k: KAPLAYCtx, sceneName: Scene) {
         const save = await getSave();
         if (save) {
             store.set(cachedSaveAtom, save);
+            if ((LEVEL_WAVES[wave] as { thirst: boolean; }).thirst) tryShowTutorial("thirst", save);
         }
 
         k.onClick(() => {

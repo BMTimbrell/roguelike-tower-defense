@@ -74,8 +74,9 @@ export default function makeTower(
             lastShotTime: 0,
             isThirsty: false,
             thirstTimer: 0,
-            thirstDuration: 10,
+            thirstDuration: 50,
             isDrinking: false,
+            drinkTimer: 1,
             drinkingEffectTimer: 0,
             towerBuffs: [],
             upgrades: [],
@@ -645,14 +646,15 @@ export default function makeTower(
             }
         }
 
-        if (tower.isDrinking) {
-            const dt = k.dt() * store.get(gameStateAtom).timeScale;
-            tower.thirstTimer -= dt * 15;
+        const dt = k.dt() * store.get(gameStateAtom).timeScale;
 
+        if (tower.thirstImmune && tower.drinkTimer > 0) {
+            tower.drinkTimer -= dt;
+            
             // Drinking effect
             tower.drinkingEffectTimer -= dt;
 
-            if (tower.drinkingEffectTimer <= 0) {
+            if (tower.drinkingEffectTimer <= 0 && tower.drinkTimer > 0) {
                 tower.drinkingEffectTimer += 0.05;
                 const towerCenter = tower.pos.add(k.vec2(TILE_SIZE * tower.footprint.w / 2));
                 const offsetX = k.rand(-5, 5);
@@ -669,6 +671,11 @@ export default function makeTower(
                     k.move(towerCenter.angle(puddlePos ?? towerCenter), 40),
                 ]);
             }
+        }
+
+        if (tower.isDrinking) {
+
+            tower.thirstTimer -= dt * 15;
 
             if (tower.thirstTimer <= 0) {
                 tower.thirstTimer = 0;
