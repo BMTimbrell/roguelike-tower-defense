@@ -1949,76 +1949,76 @@ export const LEVEL_WAVES = {
         waves: [
             {
                 spawns: [
-                    { id: "scorpian", count: 10, interval: 1 }
+                    { id: "scorpian", count: 8, interval: 1 }
                 ],
                 reward: 50
             },
-            {
-                spawns: [
-                    { id: "scorpian", count: 6, interval: 0.75 },
-                    { id: "camel", count: 3, interval: 1 }
-                ],
-                reward: 100
-            },
-            {
-                spawns: [
-                    { id: "armouredOrc", count: 1, interval: 2 },
-                    { id: "orc", count: 3, interval: 2 },
-                    { id: "fairy", count: 1, interval: 1 },
-                    { id: "scorpian", count: 5, interval: 1 },
-                    { id: "camel", count: 5, interval: 1 }
-                ],
-                reward: 200
-            },
-            {
-                spawns: [
-                    { id: "rockGolem", count: 3, interval: 2 },
-                    { id: "giantScorpian", count: 1, interval: 1 },
-                    { id: "scorpian", count: 5, interval: 0.75 },
-                    { id: "fairy", count: 1, interval: 1 },
-                    { id: "armouredOrc", count: 2, interval: 2 },
-                    { id: "orc", count: 3, interval: 1.5 },
-                    { id: "fairy", count: 1, interval: 1 },
-                    { id: "camel", count: 3, interval: 1 }
-                ],
-                reward: 300
-            },
-            {
-                spawns: [
-                    { id: "armouredSlime", count: 1, interval: 1.5 },
-                    { id: "spider", count: 3, interval: 2 },
-                    { id: "giantCamel", count: 1, interval: 2 },
-                    { id: "camel", count: 5, interval: 1.5 },
-                    { id: "giantScorpian", count: 1, interval: 1 },
-                    { id: "fairy", count: 1, interval: 1 },
-                    { id: "scorpian", count: 5, interval: 0.5 },
-                    { id: "spider", count: 2, interval: 2 },
-                    { id: "fairy", count: 1, interval: 1 }
-                ],
-                reward: 400
-            },
-            {
-                spawns: [
-                    { id: "armouredSlime", count: 1, interval: 1.5 },
-                    { id: "rockGolem", count: 3, interval: 1.5 },
-                    { id: "redFairy", count: 1, interval: 1 },
-                    { id: "giantCamel", count: 1, interval: 2 },
-                    { id: "camel", count: 3, interval: 1.5 },
-                    { id: "armouredOrc", count: 5, interval: 1.5 },
-                    { id: "orc", count: 5, interval: 1 },
-                    { id: "fairy", count: 1, interval: 1 },
-                    { id: "armouredSlime", count: 1, interval: 1.5 },
-                    { id: "spider", count: 5, interval: 1.5 },
-                ],
-                reward: 500
-            },
-            {
-                spawns: [
-                    { id: "giantRockGolem", count: 1, interval: 3 },
-                    { id: "rockGolem", count: 10, interval: 1.5 },
-                ],
-                reward: 0
-            }
+            // {
+            //     spawns: [
+            //         { id: "scorpian", count: 6, interval: 0.75 },
+            //         { id: "camel", count: 3, interval: 1 }
+            //     ],
+            //     reward: 100
+            // },
+            // {
+            //     spawns: [
+            //         { id: "armouredOrc", count: 1, interval: 2 },
+            //         { id: "orc", count: 3, interval: 2 },
+            //         { id: "fairy", count: 1, interval: 1 },
+            //         { id: "scorpian", count: 5, interval: 1 },
+            //         { id: "camel", count: 5, interval: 1 }
+            //     ],
+            //     reward: 200
+            // },
+            // {
+            //     spawns: [
+            //         { id: "rockGolem", count: 3, interval: 2 },
+            //         { id: "giantScorpian", count: 1, interval: 1 },
+            //         { id: "scorpian", count: 5, interval: 0.75 },
+            //         { id: "fairy", count: 1, interval: 1 },
+            //         { id: "armouredOrc", count: 2, interval: 2 },
+            //         { id: "orc", count: 3, interval: 2 },
+            //         { id: "fairy", count: 1, interval: 1 },
+            //         { id: "camel", count: 3, interval: 1 }
+            //     ],
+            //     reward: 300
+            // },
+            // {
+            //     spawns: [
+            //         { id: "armouredSlime", count: 1, interval: 1.5 },
+            //         { id: "spider", count: 3, interval: 2 },
+            //         { id: "giantCamel", count: 1, interval: 2 },
+            //         { id: "camel", count: 5, interval: 1.5 },
+            //         { id: "giantScorpian", count: 1, interval: 1 },
+            //         { id: "fairy", count: 1, interval: 1 },
+            //         { id: "scorpian", count: 5, interval: 0.5 },
+            //         { id: "spider", count: 2, interval: 2 },
+            //         { id: "fairy", count: 1, interval: 1 }
+            //     ],
+            //     reward: 400
+            // },
+            // {
+            //     spawns: [
+            //         { id: "armouredSlime", count: 1, interval: 1 },
+            //         { id: "rockGolem", count: 3, interval: 1.5 },
+            //         { id: "redFairy", count: 1, interval: 1 },
+            //         { id: "giantCamel", count: 1, interval: 2 },
+            //         { id: "camel", count: 3, interval: 1.5 },
+            //         { id: "armouredOrc", count: 5, interval: 1.5 },
+            //         { id: "orc", count: 5, interval: 1 },
+            //         { id: "fairy", count: 1, interval: 1 },
+            //         { id: "armouredSlime", count: 1, interval: 1.5 },
+            //         { id: "spider", count: 5, interval: 1.5 },
+            //     ],
+            //     reward: 500
+            // },
+            // {
+            //     spawns: [
+            //         { id: "giantRockGolem", count: 1, interval: 3 },
+            //         { id: "rockGolem", count: 10, interval: 1.5 },
+            //     ],
+            //     reward: 0
+            // }
         ]
     },
     "world2-level2-2": {
@@ -2029,92 +2029,289 @@ export const LEVEL_WAVES = {
         waves: [
             {
                 spawns: [
-                    { id: "lizard", count: 8, interval: 1 }
+                    { id: "lizard", count: 6, interval: 1 }
                 ],
                 reward: 50
             },
+            // {
+            //     spawns: [
+            //         { id: "lizard", count: 5, interval: 0.75 },
+            //         { id: "mummy", count: 1, interval: 1 }
+            //     ],
+            //     reward: 100
+            // },
+            // {
+            //     spawns: [
+            //         { id: "mummy", count: 3, interval: 1.5 },
+            //         { id: "armouredSkeleton", count: 1, interval: 2 },
+            //         { id: "skeleton", count: 3, interval: 1 },
+            //         { id: "fairy", count: 1, interval: 1 },
+            //         { id: "lizard", count: 5, interval: 1 },
+            //     ],
+            //     reward: 200
+            // },
+            // {
+            //     spawns: [
+            //         { id: "tortoise", count: 1, interval: 2 },
+            //         { id: "giantLizard", count: 1, interval: 1.5 },
+            //         { id: "lizard", count: 5, interval: 1 },
+            //         { id: "fairy", count: 1, interval: 1 },
+            //         { id: "mummy", count: 3, interval: 1.5 },
+            //         { id: "armouredSkeleton", count: 2, interval: 2 },
+            //         { id: "skeleton", count: 3, interval: 1.5 },
+            //         { id: "fairy", count: 1, interval: 1 },
+            //     ],
+            //     reward: 300
+            // },
+            // {
+            //     spawns: [
+            //         { id: "mummy", count: 5, interval: 1.5 },
+            //         { id: "ghost", count: 2, interval: 2 },
+            //         { id: "tortoise", count: 1, interval: 1 },
+            //         { id: "skeleton", count: 5, interval: 1 },
+            //         { id: "fairy", count: 1, interval: 1 },
+            //         { id: "tortoise", count: 1, interval: 1 },
+            //         { id: "giantLizard", count: 1, interval: 2 },
+            //         { id: "tortoise", count: 2, interval: 1.5 },
+            //         { id: "wolf", count: 1, interval: 1},
+            //         { id: "lizard", count: 5, interval: 0.5 },
+            //         { id: "ghost", count: 3, interval: 1.5 },
+            //         { id: "fairy", count: 1, interval: 1 }
+            //     ],
+            //     reward: 400
+            // },
+            // {
+            //     spawns: [
+            //         { id: "giantMummy", count: 1, interval: 1.5 },
+            //         { id: "mummy", count: 3, interval: 1.5 },
+            //         { id: "ghost", count: 2, interval: 1.5 },
+            //         { id: "redFairy", count: 1, interval: 1 },
+            //         { id: "armouredSkeleton", count: 5, interval: 2 },
+            //         { id: "tortoise", count: 1, interval: 1.5 },
+            //         { id: "skeleton", count: 5, interval: 1 },
+            //         { id: "tortoise", count: 1, interval: 1.5 },
+            //         { id: "fairy", count: 1, interval: 1 },
+            //         { id: "wolf", count: 1, interval: 1.5 },
+            //         { id: "giantLizard", count: 1, interval: 1 },
+            //         { id: "lizard", count: 5, interval: 1 },
+            //         { id: "wolf", count: 1, interval: 1 }
+            //     ],
+            //     reward: 500
+            // },
+            // {
+            //     spawns: [
+            //         { id: "giantTortoise", count: 1, interval: 3 },
+            //         { id: "tortoise", count: 5, interval: 1.5 },
+            //         { id: "redFairy", count: 1, interval: 1 },
+            //         { id: "giantMummy", count: 1, interval: 2 },
+            //         { id: "mummy", count: 3, interval: 1.5 },
+            //         { id: "ghost", count: 2, interval: 1.5 },
+            //         { id: "skeleton", count: 5, interval: 0.75 },
+            //         { id: "fairy", count: 1, interval: 1 },
+            //         { id: "wolf", count: 1, interval: 1 }
+            //     ],
+            //     reward: 0
+            // }
+        ],
+    },
+    "world2-level3-1": {
+        startingGold: 200,
+        startDelay: 120,
+        boss: {
+            id: "rockTitan",
+            bossStops: [0, 1, 3, 5, 6, 7, 8, 15]
+        },
+        thirst: true,
+        music: "desert boss",
+        waves: [
             {
                 spawns: [
-                    { id: "lizard", count: 5, interval: 0.75 },
-                    { id: "mummy", count: 1, interval: 1 }
+                    { id: "rockGolem", count: 1, interval: 6 },
+                    { id: "scorpian", count: 5, interval: 1.5 },
                 ],
                 reward: 100
             },
             {
                 spawns: [
-                    { id: "mummy", count: 3, interval: 1.5 },
-                    { id: "armouredSkeleton", count: 1, interval: 2 },
-                    { id: "skeleton", count: 3, interval: 1 },
-                    { id: "fairy", count: 1, interval: 1 },
-                    { id: "lizard", count: 5, interval: 1 },
+                    { id: "rockGolem", count: 1, interval: 6 },
+                    { id: "scorpian", count: 5, interval: 1 },
+                    { id: "camel", count: 2, interval: 1.5 }
                 ],
                 reward: 200
             },
             {
                 spawns: [
-                    { id: "tortoise", count: 1, interval: 2 },
-                    { id: "giantLizard", count: 1, interval: 1 },
-                    { id: "lizard", count: 5, interval: 0.75 },
-                    { id: "fairy", count: 1, interval: 1 },
-                    { id: "mummy", count: 3, interval: 1 },
-                    { id: "armouredSkeleton", count: 2, interval: 2 },
-                    { id: "skeleton", count: 3, interval: 1.5 },
+                    { id: "rockGolem", count: 1, interval: 5 },
+                    { id: "scorpian", count: 5, interval: 1 },
+                    { id: "camel", count: 3, interval: 1 },
+                    { id: "orc", count: 3, interval: 1.5 },
                     { id: "fairy", count: 1, interval: 1 },
                 ],
                 reward: 300
             },
             {
                 spawns: [
-                    { id: "mummy", count: 5, interval: 1.5 },
-                    { id: "ghost", count: 2, interval: 1.5 },
-                    { id: "tortoise", count: 1, interval: 1 },
-                    { id: "skeleton", count: 5, interval: 1 },
+                    { id: "giantScorpian", count: 1, interval: 2 },
+                    { id: "scorpian", count: 5, interval: 0.75 },
+                    { id: "rockGolem", count: 1, interval: 3 },
                     { id: "fairy", count: 1, interval: 1 },
-                    { id: "tortoise", count: 1, interval: 1 },
-                    { id: "giantLizard", count: 1, interval: 2 },
-                    { id: "tortoise", count: 2, interval: 1 },
-                    { id: "wolf", count: 1, interval: 1},
-                    { id: "lizard", count: 5, interval: 0.5 },
-                    { id: "ghost", count: 3, interval: 1.5 },
-                    { id: "fairy", count: 1, interval: 1 }
+                    { id: "armouredOrc", count: 3, interval: 2 },
+                    { id: "orc", count: 2, interval: 1 },
+                    { id: "camel", count: 3, interval: 1.5 },
+                    { id: "fairy", count: 1, interval: 1 },
                 ],
                 reward: 400
             },
             {
                 spawns: [
-                    { id: "giantMummy", count: 1, interval: 1.5 },
-                    { id: "mummy", count: 3, interval: 1.5 },
-                    { id: "ghost", count: 2, interval: 1.5 },
-                    { id: "redFairy", count: 1, interval: 1 },
-                    { id: "armouredSkeleton", count: 5, interval: 2 },
-                    { id: "tortoise", count: 1, interval: 1.5 },
-                    { id: "skeleton", count: 5, interval: 1 },
-                    { id: "tortoise", count: 1, interval: 1.5 },
+                    { id: "giantCamel", count: 1, interval: 3 },
+                    { id: "camel", count: 3, interval: 1 },
+                    { id: "rockGolem", count: 3, interval: 2 },
                     { id: "fairy", count: 1, interval: 1 },
-                    { id: "wolf", count: 1, interval: 1.5 },
-                    { id: "giantLizard", count: 1, interval: 1 },
-                    { id: "lizard", count: 5, interval: 1 },
-                    { id: "wolf", count: 1, interval: 1 }
+                    { id: "armouredSlime", count: 1, interval: 1.5 },
+                    { id: "spider", count: 3, interval: 2 },
+                    { id: "scorpian", count: 8, interval: 0.5 },
+                    { id: "armouredOrc", count: 3, interval: 2 },
+                    { id: "orc", count: 3, interval: 1.5 },
+                    { id: "redFairy", count: 1, interval: 1 }
                 ],
                 reward: 500
             },
             {
                 spawns: [
-                    { id: "giantTortoise", count: 1, interval: 3 },
-                    { id: "tortoise", count: 5, interval: 1.5 },
+                    { id: "giantScorpian", count: 1, interval: 2 },
+                    { id: "scorpian", count: 3, interval: 0.5 },
+                    { id: "armouredSlime", count: 1, interval: 1.5 },
+                    { id: "spider", count: 3, interval: 2 },
+                    { id: "scorpian", count: 3, interval: 0.5 },
+                    { id: "armouredSlime", count: 1, interval: 1.5 },
                     { id: "redFairy", count: 1, interval: 1 },
-                    { id: "giantMummy", count: 1, interval: 2 },
-                    { id: "mummy", count: 3, interval: 1.5 },
-                    { id: "ghost", count: 2, interval: 1.5 },
-                    { id: "skeleton", count: 5, interval: 0.5 },
-                    { id: "fairy", count: 1, interval: 1 },
-                    { id: "wolf", count: 1, interval: 1 }
+                    { id: "giantCamel", count: 1, interval: 2 },
+                    { id: "camel", count: 5, interval: 1 },
+                    { id: "armouredOrc", count: 5, interval: 2 },
+                    { id: "orc", count: 5, interval: 1 },
+                    { id: "rockGolem", count: 5, interval: 1.5 },
+                    { id: "redFairy", count: 1, interval: 1 }
+                ],
+                reward: 600
+            },
+            {
+                spawns: [
+                    { id: "giantRockGolem", count: 1, interval: 3 },
+                    { id: "rockGolem", count: 5, interval: 1.5 },
+                    { id: "armouredSlime", count: 1, interval: 1.5 },
+                    { id: "spider", count: 3, interval: 2 },
+                    { id: "scorpian", count: 10, interval: 0.75 },
+                    { id: "redFairy", count: 1, interval: 1 },
+                    { id: "giantCamel", count: 1, interval: 2 },
+                    { id: "camel", count: 5, interval: 1 },
+                    { id: "armouredOrc", count: 5, interval: 2 },
+                    { id: "orc", count: 5, interval: 1 },
+                    { id: "redFairy", count: 1, interval: 1 }
                 ],
                 reward: 0
             }
         ]
-    }
-
+    },
+    "world2-level3-2": {
+        startingGold: 200,
+        startDelay: 120,
+        boss: {
+            id: "rockTitan",
+            bossStops: [0, 1, 3, 5, 6, 7, 8, 15]
+        },
+        thirst: true,
+        music: "desert boss",
+        waves: [
+            {
+                spawns: [
+                    { id: "rockGolem", count: 1, interval: 6 },
+                    { id: "scorpian", count: 5, interval: 1.5 },
+                ],
+                reward: 100
+            },
+            {
+                spawns: [
+                    { id: "rockGolem", count: 1, interval: 6 },
+                    { id: "scorpian", count: 5, interval: 1 },
+                    { id: "camel", count: 2, interval: 1.5 }
+                ],
+                reward: 200
+            },
+            {
+                spawns: [
+                    { id: "rockGolem", count: 1, interval: 5 },
+                    { id: "scorpian", count: 5, interval: 1 },
+                    { id: "camel", count: 3, interval: 1 },
+                    { id: "orc", count: 3, interval: 1.5 },
+                    { id: "fairy", count: 1, interval: 1 },
+                ],
+                reward: 300
+            },
+            {
+                spawns: [
+                    { id: "giantScorpian", count: 1, interval: 2 },
+                    { id: "scorpian", count: 5, interval: 0.75 },
+                    { id: "rockGolem", count: 1, interval: 3 },
+                    { id: "fairy", count: 1, interval: 1 },
+                    { id: "armouredOrc", count: 3, interval: 2 },
+                    { id: "orc", count: 2, interval: 1 },
+                    { id: "camel", count: 3, interval: 1.5 },
+                    { id: "fairy", count: 1, interval: 1 },
+                ],
+                reward: 400
+            },
+            {
+                spawns: [
+                    { id: "giantCamel", count: 1, interval: 3 },
+                    { id: "camel", count: 3, interval: 1 },
+                    { id: "rockGolem", count: 3, interval: 2 },
+                    { id: "fairy", count: 1, interval: 1 },
+                    { id: "armouredSlime", count: 1, interval: 1.5 },
+                    { id: "spider", count: 3, interval: 2 },
+                    { id: "scorpian", count: 8, interval: 0.5 },
+                    { id: "armouredOrc", count: 3, interval: 2 },
+                    { id: "orc", count: 3, interval: 1.5 },
+                    { id: "redFairy", count: 1, interval: 1 }
+                ],
+                reward: 500
+            },
+            {
+                spawns: [
+                    { id: "giantScorpian", count: 1, interval: 2 },
+                    { id: "scorpian", count: 3, interval: 0.5 },
+                    { id: "armouredSlime", count: 1, interval: 1.5 },
+                    { id: "spider", count: 3, interval: 2 },
+                    { id: "scorpian", count: 3, interval: 0.5 },
+                    { id: "armouredSlime", count: 1, interval: 1.5 },
+                    { id: "redFairy", count: 1, interval: 1 },
+                    { id: "giantCamel", count: 1, interval: 2 },
+                    { id: "camel", count: 5, interval: 1 },
+                    { id: "armouredOrc", count: 5, interval: 2 },
+                    { id: "orc", count: 5, interval: 1 },
+                    { id: "rockGolem", count: 5, interval: 1.5 },
+                    { id: "redFairy", count: 1, interval: 1 }
+                ],
+                reward: 600
+            },
+            {
+                spawns: [
+                    { id: "giantRockGolem", count: 1, interval: 3 },
+                    { id: "rockGolem", count: 5, interval: 1.5 },
+                    { id: "armouredSlime", count: 1, interval: 1.5 },
+                    { id: "spider", count: 3, interval: 2 },
+                    { id: "scorpian", count: 10, interval: 0.75 },
+                    { id: "redFairy", count: 1, interval: 1 },
+                    { id: "giantCamel", count: 1, interval: 2 },
+                    { id: "camel", count: 5, interval: 1 },
+                    { id: "armouredOrc", count: 5, interval: 2 },
+                    { id: "orc", count: 5, interval: 1 },
+                    { id: "redFairy", count: 1, interval: 1 }
+                ],
+                reward: 0
+            }
+        ]
+    },
 } as const satisfies Record<string, LevelWaves>;
 
 export type LevelId = keyof typeof LEVEL_WAVES;
@@ -2144,7 +2341,7 @@ export const WORLDS: World[] = [
         wavePrefix: "world2",
         scenes: [
             ["desert1", "desert1-2"],
-            ["desert2", "desert2"],
+            ["desert2-2", "desert2-2"],
             ["desert3", "desert3"],
             ["hell1", "hell1-2"],
             ["hell2", "hell2-2"],
@@ -2605,7 +2802,7 @@ export const ENEMIES = {
         spawnOnDeath: {
             id: "giantSnowmanHead",
             amount: 1
-        },
+        }
     },
     giantSnowmanHead: {
         hp: 150,
@@ -2865,6 +3062,20 @@ export const ENEMIES = {
         sprite: "giant scorpian",
         hasLargeSoul: true
     },
+    specialGiantScorpian: {
+        hp: 320,
+        damage: 5,
+        goldDropped: 3,
+        chestValue: 1,
+        speed: 25,
+        deathSound: "monster death3",
+        sprite: "special giant scorpian",
+        spawnOnDeath: {
+            id: "scorpian",
+            amount: 4
+        },
+        hasLargeSoul: true
+    },
     giantCamel: {
         hp: 600,
         damage: 5,
@@ -3006,7 +3217,7 @@ export const ENEMIES = {
         damage: 5,
         goldDropped: 3,
         chestValue: 1,
-        speed: 25,
+        speed: 26,
         sprite: "giant rock golem body",
         noDestroyOnDieAnimation: true,
         onDeath(k: KAPLAYCtx, enemy: EnemyGameObj) {
@@ -3026,7 +3237,7 @@ export const ENEMIES = {
         damage: 5,
         goldDropped: 4,
         chestValue: 1,
-        speed: 35,
+        speed: 39,
         hasLargeSoul: true,
         sprite: "giant rock golem bottom"
     },
@@ -3044,6 +3255,71 @@ export const ENEMIES = {
         },
         deathSound: "monster death3"
     },
+    rockTitan: {
+        hp: 6000,
+        damage: 99,
+        goldDropped: 50,
+        chestValue: 5,
+        isBoss: true,
+        shootSound: "arrow",
+        bossMechanic: "shield",
+        shieldSprite: "rock shield",
+        shieldHp: 500,
+        checkpointTimer: 12,
+        attacker: {
+            projectile: "boulder",
+            attackRange: 5,
+            canAttack: false,
+            attackCooldown: 8
+        },
+        speed: 15,
+        sprite: "rock titan",
+        deathSound: "monster death3",
+        noDestroyOnDieAnimation: true,
+        onDeath(k: KAPLAYCtx, enemy: EnemyGameObj) {
+            enemy.z = 0;
+
+            enemy.onAnimEnd(anim => {
+                if (anim === "die") {
+                    makeEnemy(k, "armlessRockTitan", enemy.path, enemy.pathIndex, enemy.pos);
+                    k.destroy(enemy);
+                }
+            });
+        }
+    },
+    armlessRockTitan: {
+        hp: 300,
+        damage: 5,
+        goldDropped: 5,
+        chestValue: 2,
+        speed: 25,
+        sprite: "armless rock titan",
+        noDestroyOnDieAnimation: true,
+        onDeath(k: KAPLAYCtx, enemy: EnemyGameObj) {
+            enemy.z = 0;
+
+            enemy.onAnimEnd(anim => {
+                if (anim === "die") {
+                    makeEnemy(k, "leglessRockTitan", enemy.path, enemy.pathIndex, enemy.pos);
+                    k.destroy(enemy);
+                }
+            });
+        },
+        deathSound: "monster death3"
+    },
+    leglessRockTitan: {
+        hp: 150,
+        damage: 1,
+        goldDropped: 2,
+        chestValue: 1,
+        speed: 30,
+        sprite: "legless rock titan",
+        deathSound: "monster death3",
+        spawnOnDeath: {
+            id: "specialGiantScorpian",
+            amount: 1
+        }
+    }
 } as const satisfies Record<string, EnemyConfig>;
 
 export type EnemyId = keyof typeof ENEMIES;
@@ -5386,6 +5662,14 @@ export const PROJECTILES = {
         homing: true,
         speed: 200,
         impactSound: "explosion",
+        splashRadius: 1.2,
+        anim: "explode"
+    },
+    boulder: {
+        sprite: "boulder",
+        homing: true,
+        speed: 200,
+        impactSound: "rock smash",
         splashRadius: 1.2,
         anim: "explode"
     },

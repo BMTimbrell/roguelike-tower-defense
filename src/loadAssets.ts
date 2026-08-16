@@ -15,6 +15,8 @@ export default function loadAssets(k: KAPLAYCtx) {
     k.loadSprite("desert1", "sprites/desert1.png");
     k.loadSprite("desert1-2", "sprites/desert1-2.png");
     k.loadSprite("desert2", "sprites/desert2.png");
+    k.loadSprite("desert2-2", "sprites/desert2-2.png");
+    k.loadSprite("desert3", "sprites/desert3.png");
     k.loadSprite("tree", "sprites/tree2.png");
     k.loadSprite("gold", "sprites/coin.png");
     k.loadSprite("heart", "sprites/heart.png");
@@ -556,6 +558,13 @@ export default function loadAssets(k: KAPLAYCtx) {
         sliceY: 1,
         anims: {
             explode: { from: 0, to: 6, loop: false }
+        }
+    });
+    k.loadSprite("boulder", "sprites/boulder.png", {
+        sliceX: 6,
+        sliceY: 1,
+        anims: {
+            explode: { from: 0, to: 5, loop: false }
         }
     });
     k.loadSprite("planet", "sprites/planet.png");
@@ -1129,6 +1138,7 @@ export default function loadAssets(k: KAPLAYCtx) {
         sliceY: 4,
         anims: {
             idle: 0,
+            idleShellBroken: 10,
             move: { from: 0, to: 4, loop: true, speed: 4 },
             shellBreak: { from: 5, to: 8, loop: false },
             run: { from: 10, to: 13, loop: true },
@@ -1197,6 +1207,16 @@ export default function loadAssets(k: KAPLAYCtx) {
     });
 
     k.loadSprite("giant scorpian", "sprites/giant-scorpian.png", {
+        sliceX: 4,
+        sliceY: 2,
+        anims: {
+            idle: 0,
+            move: { from: 0, to: 3, loop: true, speed: 7 },
+            die: { from: 4, to: 7, loop: false, speed: 7 }
+        }
+    });
+
+    k.loadSprite("special giant scorpian", "sprites/special-giant-scorpian.png", {
         sliceX: 4,
         sliceY: 2,
         anims: {
@@ -1281,10 +1301,67 @@ export default function loadAssets(k: KAPLAYCtx) {
         sliceY: 4,
         anims: {
             idle: 0,
+            idleShellBroken: 10,
             move: { from: 0, to: 4, loop: true, speed: 4 },
             shellBreak: { from: 5, to: 8, loop: false },
             run: { from: 10, to: 13, loop: true },
             die: { from: 15, to: 19, loop: false, speed: 5 }
+        }
+    });
+
+    k.loadSprite("rock titan", "sprites/rock-titan.png", {
+        sliceX: 7,
+        sliceY: 4,
+        anims: {
+            createShield: { from: 22, to: 22, loop: false, speed: 2 },
+            attack: { from: 22, to: 22, loop: false, speed: 3 },
+            idle: { from: 14, to: 15, loop: true, speed: 3 },
+            move: { from: 0, to: 3, loop: true, speed: 3 },
+            die: { from: 7, to: 13, loop: false, speed: 12 }
+        }
+    });
+
+    k.loadSprite("headless rock titan", "sprites/headless-rock-titan.png", {
+        sliceX: 13,
+        sliceY: 4,
+        anims: {
+            createShield: { from: 39, to: 39, loop: false, speed: 2 },
+            attack: { from: 39, to: 39, loop: false, speed: 3 },
+            idle: { from: 26, to: 27, loop: true, speed: 3 },
+            move: { from: 0, to: 3, loop: true, speed: 3 },
+            die: { from: 13, to: 25, loop: false, speed: 12 }
+        }
+    });
+
+    k.loadSprite("torsoless rock titan", "sprites/torsoless-rock-titan.png", {
+        sliceX: 5,
+        sliceY: 4,
+        anims: {
+            createShield: { from: 15, to: 15, loop: false, speed: 2 },
+            attack: { from: 15, to: 15, loop: false, speed: 3 },
+            idle: { from: 10, to: 11, speed: 3, loop: true },
+            move: { from: 0, to: 3, loop: true, speed: 3 },
+            die: { from: 5, to: 9, loop: false, speed: 7 }
+        }
+    });
+
+    k.loadSprite("armless rock titan", "sprites/armless-rock-titan.png", {
+        sliceX: 8,
+        sliceY: 2,
+        anims: {
+            idle: 0,
+            move: { from: 0, to: 3, loop: true, speed: 3 },
+            die: { from: 8, to: 15, loop: false, speed: 5 }
+        }
+    });
+
+    k.loadSprite("legless rock titan", "sprites/legless-rock-titan.png", {
+        sliceX: 8,
+        sliceY: 2,
+        anims: {
+            idle: 0,
+            move: { from: 0, to: 7, loop: true, speed: 12 },
+            die: { from: 8, to: 13, loop: false, speed: 12 }
         }
     });
 
@@ -1401,8 +1478,27 @@ export default function loadAssets(k: KAPLAYCtx) {
             open: { from: 0, to: 4, loop: false }
         }
     });
-    k.loadSprite("slime shield", "sprites/slime-shield.png");
-    k.loadSprite("bee shield", "sprites/bee-shield.png");
+    k.loadSprite("slime shield", "sprites/slime-shield.png", {
+        sliceX: 1,
+        sliceY: 1,
+        anims: {
+            appear: 0
+        }
+    });
+    k.loadSprite("bee shield", "sprites/bee-shield.png", {
+        sliceX: 1,
+        sliceY: 1,
+        anims: {
+            appear: 0
+        }
+    });
+    k.loadSprite("rock shield", "sprites/rock-shield.png", {
+        sliceX: 6,
+        sliceY: 1,
+        anims: {
+            appear: { from: 0, to: 5, loop: false }
+        }
+    });
 
     //sounds
 
@@ -1482,6 +1578,7 @@ export default function loadAssets(k: KAPLAYCtx) {
     k.loadSound("present tear", "sounds/soundEffects/present-tear.mp3");
     k.loadSound("dizzy", "sounds/soundEffects/dizzy.mp3");
     k.loadSound("drinking", "sounds/soundEffects/drinking.mp3");
+     k.loadSound("rock smash", "sounds/soundEffects/rock-smash.mp3");
 
     //music
     k.loadSound("main title", "sounds/music/The-Crown-of-Aethelgard.mp3");
@@ -1490,4 +1587,5 @@ export default function loadAssets(k: KAPLAYCtx) {
     k.loadSound("snow biome", "sounds/music/jakob_welik-level-two-8-bit-pixel-warriors-chapter-one-415691.mp3");
     k.loadSound("snow boss", "sounds/music/jakob_welik-level-one-8-bit-pixel-warriors-chapter-one-415685.mp3");
     k.loadSound("desert biome", "sounds/music/Shadows of the Dune King.mp3");
+    k.loadSound("desert boss", "sounds/music/The Rotting Rite.mp3");
 }

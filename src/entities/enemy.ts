@@ -180,6 +180,30 @@ export default function makeEnemy(
 
     enemy.onAnimEnd(anim => {
         if (anim === "die") {
+            if (enemy.sprite === "rock titan") {
+                enemy.unuse("healthBar")
+                enemy.use(k.sprite("headless rock titan"));
+                enemy.isDying = false;
+                if (enemy.state === "move") {
+                    enemy.play("move");
+                } else {
+                    enemy.play("idle");
+                }
+                enemy.use(healthBar(k, 1, { isBoss: true }));
+                return;
+            } else if (enemy.sprite === "headless rock titan") {
+                enemy.unuse("healthBar")
+                enemy.use(k.sprite("torsoless rock titan"));
+                enemy.isDying = false;
+                if (enemy.state === "move") {
+                    enemy.play("move");
+                } else {
+                    enemy.play("idle");
+                }
+                enemy.use(healthBar(k, 1, { isBoss: true }));
+                return;
+            }
+
             const luckGain = 0.01 * enemy.goldDropped;
             store.set(gameStateAtom, prev => ({
                 ...prev,
@@ -194,7 +218,7 @@ export default function makeEnemy(
             if (!(ENEMIES[enemyId] as { noDestroyOnDieAnimation?: boolean; }).noDestroyOnDieAnimation) k.destroy(enemy);
         } else if (anim === "escape") {
             enemy.enterState("hidden");
-        } else if (anim === "attack") {
+        } else if (anim === "attack" || anim === "createShield") {
             enemy.play("idle");
         } else if (anim === "shellBreak" && "breakShell" in ENEMIES[enemyId]) {
             enemy.baseSpeed *= (ENEMIES[enemyId].breakShell as { speedMultiplier: number; }).speedMultiplier;
@@ -204,7 +228,9 @@ export default function makeEnemy(
     });
 
     enemy.onStateEnter("idle", () => {
-        enemy.play("idle");
+        if (enemy.shellBroken) {
+            enemy.play("idleShellBroken");
+        } else enemy.play("idle");
 
         if (!store.get(gameStateAtom).waveActive) {
             if ("checkpointTimer" in ENEMIES[enemyId]) {
@@ -224,6 +250,19 @@ export default function makeEnemy(
             enemy.statuses.forEach(s => {
                 if (enemy.has(s)) enemy.unuse(s);
             });
+        }
+    });
+
+    enemy.onUpdate(() => {
+        if (enemy.isDying) return;
+        if (enemy.state === "stunned") return;
+
+        if (enemyId === "rockTitan" && enemy.maxHP() && enemy.hp() / enemy.maxHP()! <= 0.66 && enemy.sprite === "rock titan") {
+            enemy.play("die");
+            enemy.isDying = true;
+        } else if (enemyId === "rockTitan" && enemy.maxHP() && enemy.hp() / enemy.maxHP()! <= 0.33 && enemy.sprite === "headless rock titan") {
+            enemy.play("die");
+            enemy.isDying = true;
         }
     });
 
@@ -292,7 +331,9 @@ export default function makeEnemy(
         enemy.stunResistance = true;
         enemy.stunResistanceTimer = enemy.stunResistanceDuration;
 
-        enemy.play("idle");
+        if (enemy.shellBroken) enemy.play("idleShellBroken")
+        else enemy.play("idle");
+
         const dizzyEffect = k.add([
             k.sprite("dizzy", { anim: "dizzy" }),
             k.anchor("center"),
@@ -380,7 +421,9 @@ export default function makeEnemy(
     });
 
     enemy.onStateEnter("shield", () => {
-        enemy.play("idle");
+        if (enemy.hasAnim("createShield")) {
+            enemy.play("createShield");
+        } else enemy.play("idle");
         enemy.shieldHp = enemy.maxShieldHp;
 
         const shieldSound = (ENEMIES[enemyId] as { shieldSound: string }).shieldSound;
@@ -391,7 +434,7 @@ export default function makeEnemy(
             if (enemy.has(s)) enemy.unuse(s);
         });
         k.add([
-            k.sprite(enemy.shieldSprite ?? "slime shield"),
+            k.sprite(enemy.shieldSprite ?? "slime shield", { anim: "appear" }),
             k.anchor("center"),
             k.pos(enemy.pos),
             k.z(999999),

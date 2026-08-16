@@ -19,6 +19,8 @@ import { DEFAULT_SETTINGS, getSave, saveSettings } from './platform/save';
 import desert1 from './scenes/desert1';
 import desert1_2 from './scenes/desert1-2';
 import desert2 from './scenes/desert2';
+import desert2_2 from './scenes/desert2-2';
+import desert3 from './scenes/desert3';
 
 export default async function initGame() {
     // focus back on canvas when clicking on html elements
@@ -51,6 +53,10 @@ export default async function initGame() {
     desert1_2(k);
 
     desert2(k);
+
+    desert2_2(k);
+
+    desert3(k);
 
     mainMenu(k);
 

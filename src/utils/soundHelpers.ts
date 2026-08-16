@@ -43,7 +43,8 @@ const SOUND_VOLUMES: Record<string, number> = {
     "fairy death2": 6,
     "open chest": 0.5,
     "main title": 1.2,
-    "holy": 0.75
+    "holy": 0.75,
+    "boss drums": 0.5
 };
 
 export function playUISound(

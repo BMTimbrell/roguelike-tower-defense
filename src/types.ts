@@ -351,7 +351,8 @@ export type EnemyGameObj = GameObj<
         "giantSnowmanHead" |
         "penguin" |
         "giantPenguin" |
-        "locust";
+        "locust" |
+        "specialGiantScorpian";
         amount: number;
         offset?: number;
     };
@@ -674,7 +675,9 @@ export type EnemyConfig = {
         "giantSnowmanHead" |
         "penguin" |
         "giantPenguin" |
-        "locust";
+        "locust" | 
+        "specialGiantScorpian" |
+        "scorpian";
         amount: number;
         offset?: number;
     };
