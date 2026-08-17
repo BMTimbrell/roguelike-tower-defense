@@ -1258,11 +1258,13 @@ export default function loadAssets(k: KAPLAYCtx) {
     });
 
     k.loadSprite("locust swarm", "sprites/locust-swarm.png", {
-        sliceX: 2,
-        sliceY: 1,
+        sliceX: 5,
+        sliceY: 2,
         anims: {
             idle: 0,
-            move: { from: 0, to: 1, loop: true, speed: 4 }
+            appear: { from: 0, to: 4, loop: false, speed: 6 },
+            animate: { from: 5, to: 6, loop: true, speed: 4 },
+            move: { from: 5, to: 6, loop: true, speed: 4 }
         }
     });
 
@@ -1362,6 +1364,28 @@ export default function loadAssets(k: KAPLAYCtx) {
             idle: 0,
             move: { from: 0, to: 7, loop: true, speed: 12 },
             die: { from: 8, to: 13, loop: false, speed: 12 }
+        }
+    });
+
+    k.loadSprite("plague mummy", "sprites/plague-mummy.png", {
+        sliceX: 7,
+        sliceY: 4,
+        anims: {
+            createShield: { from: 7, to: 13, loop: false, speed: 5 },
+            attack: { from: 7, to: 13, loop: false, speed: 6 },
+            idle: { from: 14, to: 15, loop: true, speed: 3 },
+            move: { from: 0, to: 3, loop: true, speed: 3 },
+            die: { from: 21, to: 25, loop: false, speed: 3 }
+        }
+    });
+
+    k.loadSprite("locust middle finger", "sprites/locust-middle-finger.png", {
+        sliceX: 9,
+        sliceY: 2,
+        anims: {
+            appear: { from: 0, to: 8, loop: false, speed: 4 },
+            idle: 0,
+            animate: { from: 9, to: 10, loop: true, speed: 5 }
         }
     });
 
@@ -1569,6 +1593,7 @@ export default function loadAssets(k: KAPLAYCtx) {
     k.loadSound("polar bear death", "sounds/enemies/polar-bear-death.mp3");
     k.loadSound("camel death", "sounds/enemies/camel-death.mp3");
     k.loadSound("mummy death", "sounds/enemies/mummy-death.mp3");
+    k.loadSound("mummy summon", "sounds/enemies/mummy-summon-3.mp3");
     k.loadSound("camel spit", "sounds/enemies/camel-spit.mp3");
 
     k.loadSound("boss drums", "sounds/soundEffects/bossApproach.wav");

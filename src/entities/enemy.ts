@@ -258,9 +258,11 @@ export default function makeEnemy(
         if (enemy.state === "stunned") return;
 
         if (enemyId === "rockTitan" && enemy.maxHP() && enemy.hp() / enemy.maxHP()! <= 0.66 && enemy.sprite === "rock titan") {
+            playSfx(k, "rock smash", 0.75, enemy.pos);
             enemy.play("die");
             enemy.isDying = true;
         } else if (enemyId === "rockTitan" && enemy.maxHP() && enemy.hp() / enemy.maxHP()! <= 0.33 && enemy.sprite === "headless rock titan") {
+            playSfx(k, "rock smash", 0.75, enemy.pos);
             enemy.play("die");
             enemy.isDying = true;
         }
@@ -363,7 +365,7 @@ export default function makeEnemy(
 
         if (enemy.checkpointTimer) {
             enemy.checkpointTimer -= k.dt() * timeScale;
-            if (enemy.checkpointTimer <= 0) {
+            if (enemy.checkpointTimer <= 0 && enemy.getCurAnim()?.name !== "die") {
                 enemy.checkpointTimer = enemy.checkpointDuration;
                 if (enemy.boss?.bossMechanic === "escape") enemy.enterState("escape");
                 if (enemy.boss?.bossMechanic === "shield") enemy.enterState("shield");
@@ -390,7 +392,8 @@ export default function makeEnemy(
                 id: enemy.attacker!.projectile as ProjectileId,
                 pos: enemy.pos,
                 target: towers[index],
-                hitChance: enemy.has("blind") ? 0.3 : 1
+                hitChance: enemy.has("blind") ? 0.3 : 1,
+                summonAnim: (ENEMIES[enemyId] as { attacker?: { summonAnim?: string; }}).attacker?.summonAnim ?? undefined
             });
 
             if (enemy.hasAnim("attack")) enemy.play("attack");
@@ -433,13 +436,20 @@ export default function makeEnemy(
         enemy.statuses.forEach(s => {
             if (enemy.has(s)) enemy.unuse(s);
         });
-        k.add([
+
+        const shield = k.add([
             k.sprite(enemy.shieldSprite ?? "slime shield", { anim: "appear" }),
             k.anchor("center"),
             k.pos(enemy.pos),
             k.z(999999),
             "shield"
         ]);
+
+        shield.onAnimEnd(anim => {
+            if (anim === "appear" && shield.hasAnim("animate")) {
+                shield.play("animate");
+            }
+        });
 
         const barWidth = 64;
         const barHeight = 5;

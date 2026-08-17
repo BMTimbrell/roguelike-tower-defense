@@ -4,17 +4,20 @@ import type { HeroGameObj, TowerGameObj } from "../types";
 import makeFloatingText from "./FloatingText";
 import { gameStateAtom, store } from "../store";
 import { playSfx } from "../utils/soundHelpers";
+import { waitScaled } from "../utils/timerFunctions";
 
 export default function makeEnemyProjectile(k: KAPLAYCtx, opts: {
     id: ProjectileId;
     pos: Vec2;
     target: TowerGameObj | HeroGameObj;
     hitChance: number;
+    summonAnim?: string;
+    destroyDelay?: number;
 }) {
     const { id, pos, target, hitChance } = opts;
 
     const projectile = k.add([
-        k.sprite(PROJECTILES[id].sprite),
+        k.sprite(PROJECTILES[id].sprite, { ...(opts.summonAnim ? { anim: opts.summonAnim } : {}) }),
         k.pos(pos),
         k.anchor("center"),
         k.rotate(0),
@@ -31,13 +34,17 @@ export default function makeEnemyProjectile(k: KAPLAYCtx, opts: {
 
     let prevPos = projectile.pos.clone();
 
+    let reachedTarget = false;
+
     projectile.onUpdate(() => {
+        if (projectile.getCurAnim()?.name === "appear") return; 
+
         const timeScale = store.get(gameStateAtom).timeScale;
         const hitRadius = 4;
         const dir = targetPos.sub(projectile.pos).unit();
-        projectile.angle = projectile.pos.angle(targetPos);
+        if (!(PROJECTILES[id] as { noRotate?: boolean; }).noRotate) projectile.angle = projectile.pos.angle(targetPos);
 
-        projectile.pos = projectile.pos.add(dir.scale(projectile.speed * k.dt() * timeScale));
+        if (!reachedTarget) projectile.pos = projectile.pos.add(dir.scale(projectile.speed * k.dt() * timeScale));
 
         const seg = projectile.pos.sub(prevPos);
         const toEnemy = targetPos.sub(prevPos);
@@ -48,6 +55,7 @@ export default function makeEnemyProjectile(k: KAPLAYCtx, opts: {
         const hit = closest.dist(targetPos) < hitRadius;
 
         if (hit) {
+            reachedTarget = true;
             if (target.hasBlock) {
                 makeFloatingText(k, {
                     text: "Block",
@@ -80,10 +88,20 @@ export default function makeEnemyProjectile(k: KAPLAYCtx, opts: {
                 playSfx(k, impactSound, 1, projectile.pos);
             }
 
-            k.destroy(projectile);
+            if (opts.destroyDelay) {
+                waitScaled(k, opts.destroyDelay, () => {
+                    k.destroy(projectile);
+                });
+            } else k.destroy(projectile);
         }
 
         prevPos = projectile.pos.clone();
+    });
+
+    projectile.onAnimEnd(anim => {
+        if (anim === "appear" && projectile.hasAnim("animate")) {
+            projectile.play("animate");
+        }
     });
 
     projectile.onDestroy(() => {

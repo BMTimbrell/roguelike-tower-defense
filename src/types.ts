@@ -362,6 +362,7 @@ export type EnemyGameObj = GameObj<
         attackCooldown: number;
         canAttack: boolean;
         shootOffset?: Vec2;
+        summonAnim?: string;
         rotateOnShoot?: boolean;
     };
     invincible: boolean;
@@ -690,6 +691,7 @@ export type EnemyConfig = {
         canAttack: boolean;
         shootOffset?: { x: number; y: number; };
         rotateOnShoot?: boolean;
+        summonAnim?: string;
     };
     invincibleDuration?: number;
     invincibleCooldown?: number;
