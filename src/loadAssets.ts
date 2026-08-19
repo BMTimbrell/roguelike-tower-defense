@@ -17,6 +17,7 @@ export default function loadAssets(k: KAPLAYCtx) {
     k.loadSprite("desert2", "sprites/desert2.png");
     k.loadSprite("desert2-2", "sprites/desert2-2.png");
     k.loadSprite("desert3", "sprites/desert3.png");
+    k.loadSprite("hell1", "sprites/hell1.png");
     k.loadSprite("tree", "sprites/tree2.png");
     k.loadSprite("gold", "sprites/coin.png");
     k.loadSprite("heart", "sprites/heart.png");
@@ -1352,7 +1353,7 @@ export default function loadAssets(k: KAPLAYCtx) {
         sliceY: 2,
         anims: {
             idle: 0,
-            move: { from: 0, to: 3, loop: true, speed: 3 },
+            move: { from: 0, to: 3, loop: true, speed: 6 },
             die: { from: 8, to: 15, loop: false, speed: 5 }
         }
     });
@@ -1386,6 +1387,15 @@ export default function loadAssets(k: KAPLAYCtx) {
             appear: { from: 0, to: 8, loop: false, speed: 4 },
             idle: 0,
             animate: { from: 9, to: 10, loop: true, speed: 5 }
+        }
+    });
+    k.loadSprite("fire slime", "sprites/fire-slime.png", {
+        sliceX: 7,
+        sliceY: 2,
+        anims: {
+            idle: 0,
+            move: { from: 0, to: 5, loop: true },
+            die: { from: 7, to: 12, loop: false }
         }
     });
 
@@ -1613,4 +1623,5 @@ export default function loadAssets(k: KAPLAYCtx) {
     k.loadSound("snow boss", "sounds/music/jakob_welik-level-one-8-bit-pixel-warriors-chapter-one-415685.mp3");
     k.loadSound("desert biome", "sounds/music/Shadows of the Dune King.mp3");
     k.loadSound("desert boss", "sounds/music/The Rotting Rite.mp3");
+    k.loadSound("hell biome", "sounds/music/poorartistt-evil-cinematic-music-no-copyright-415161.mp3");
 }

@@ -184,6 +184,7 @@ export default function levelTransition(k: KAPLAYCtx) {
             const { mapData, tileGrid, pathTiles } = await generateMap(k, `data/${sceneName}.json`);
 
             rand = level === 6 ? 0 : k.randi();
+
             const wavePrefix = world > 1 ? `${WORLDS[world - 1].wavePrefix}-` : "";
             const wave = `${wavePrefix}level${level}-${rand + 1}` as LevelId;
 

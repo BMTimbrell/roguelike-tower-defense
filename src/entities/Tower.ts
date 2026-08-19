@@ -249,7 +249,7 @@ export default function makeTower(
                     orbiter.pos.x = cx + Math.cos(orbiter.angle) * orbiter.r;
                     orbiter.pos.y = cy + Math.sin(orbiter.angle) * orbiter.r;
 
-                    (k.get("enemy") as EnemyGameObj[]).forEach(enemy => {
+                    (k.get("targetable") as EnemyGameObj[]).forEach(enemy => {
                         if (orbiter.hitEnemies.has(enemy)) return;
 
                         if (enemy.pos.dist(orbiter.pos) < TILE_SIZE * 0.75 && store.get(gameStateAtom).waveActive) {
@@ -345,7 +345,7 @@ export default function makeTower(
 
                     if (phoenix.fireTimer <= 0 && store.get(gameStateAtom).waveActive) {
 
-                        const enemies = k.get("enemy") as EnemyGameObj[];
+                        const enemies = k.get("targetable") as EnemyGameObj[];
 
                         const target = selectTarget(enemies, { ...tower, stats: { ...tower.stats, range: 3 } }, phoenix.pos);
 

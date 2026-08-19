@@ -8,7 +8,7 @@ import { gameStateAtom, store } from "../store";
 
 export function makeLavaManager(k: KAPLAYCtx) {
     let tick = 0;
-    const tickRate = 0.4;
+    const tickRate = 0.35;
 
     k.onUpdate(() => {
         if (!store.get(gameStateAtom).waveActive) return;
@@ -71,7 +71,8 @@ export function makeLavaTile(k: KAPLAYCtx, pos: Vec2, tower: TowerGameObj) {
         {
             towerId: tower.instanceId
         },
-        "lava tile"
+        "lava tile",
+        k.z(-1)
     ]);
 
     return lava;

@@ -192,7 +192,9 @@ export default function makeLevelScene(k: KAPLAYCtx, sceneName: Scene) {
             cursor.pos = k.toWorld(k.mousePos());
         });
 
-        if ((LEVEL_WAVES[wave] as { thirst?: boolean }).thirst && !store.get(gameStateAtom).deck.cards.some(c => c.stat === "thirst")) {
+        const hasWaterBottle = store.get(gameStateAtom).deck.cards.some(c => c.stat === "thirst");
+
+        if ((LEVEL_WAVES[wave] as { thirst?: boolean }).thirst && !hasWaterBottle) {
             store.set(gameStateAtom, prev => ({
                 ...prev,
                 deck: {
@@ -205,6 +207,16 @@ export default function makeLevelScene(k: KAPLAYCtx, sceneName: Scene) {
                         cost: 1,
                         percentage: false
                     }]
+                }
+            }));
+        }
+
+        if (hasWaterBottle && !(LEVEL_WAVES[wave] as { thirst?: boolean }).thirst) {
+            store.set(gameStateAtom, prev => ({
+                ...prev,
+                deck: {
+                    ...prev.deck,
+                    cards: prev.deck.cards.filter(c => c.stat !== "thirst")
                 }
             }));
         }
@@ -526,11 +538,6 @@ export default function makeLevelScene(k: KAPLAYCtx, sceneName: Scene) {
 
                             if (cactus.getCurAnim()?.name !== "idle") cactus.play("idle");
 
-                            if (cactus.hp() <= 0) {
-                                cactus.play("die");
-                                cactus.isDying = true;
-                            }
-
                             const timeScale = store.get(gameStateAtom).timeScale;
                             const dt = k.dt() * timeScale;
 
@@ -630,6 +637,11 @@ export default function makeLevelScene(k: KAPLAYCtx, sceneName: Scene) {
                         });
 
                         cactus.onDeath(() => {
+                            if (cactus.isDying) return;
+                            
+                            cactus.play("die");
+                            cactus.isDying = true;
+
                             const goldEarned = 10;
                             store.set(gameStateAtom, prev => ({
                                 ...prev,

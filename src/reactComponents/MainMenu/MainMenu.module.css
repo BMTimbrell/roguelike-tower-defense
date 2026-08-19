@@ -13,6 +13,7 @@
     overflow-y: auto;
     background-image: url("/sprites/main-background.png");
     background-position: center;
+    background-size: cover;
 }
 
 .title {
