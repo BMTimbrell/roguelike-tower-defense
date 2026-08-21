@@ -4,7 +4,7 @@ import type { EnemyId, ProjectileId } from '../constants';
 import { ENEMIES, HARD_HEALTH_MULT, HARD_SHIELD_MULT, STUN_DURATION, TILE_SIZE, TOWER_RANGE_TOLERANCE } from '../constants';
 import healthBar from '../kaplayComponents/healthBar';
 import statusEffect from '../kaplayComponents/statusEffect';
-import type { EnemyConfig, EnemyGameObj, presentSpawns, SwarmVisual, TowerGameObj } from '../types';
+import { type TotemGameObj, type EnemyConfig, type EnemyGameObj, type presentSpawns, type SwarmVisual, type TowerGameObj } from '../types';
 import makeEnemyProjectile from './EnemyProjectile';
 import { aoeBurst } from '../utils/makeUnitCombat';
 import { waitScaled } from '../utils/timerFunctions';
@@ -13,6 +13,7 @@ import { playSfx } from '../utils/soundHelpers';
 import { tryShowTutorial } from '../utils/tutorialHelpers';
 import makeChest from './makeChest';
 import { rotateVector } from '../utils/targetingHelpers';
+import { addTotemEffect, removeTotemEffect } from './Totem';
 
 export default function makeEnemy(
     k: KAPLAYCtx,
@@ -93,6 +94,7 @@ export default function makeEnemy(
             stunResistance: false,
             shellBroken: false,
             killer: null,
+            healthRegen: 0,
             stunResistanceDuration: 3,
             goldDropped: ENEMIES[enemyId].goldDropped,
             stunResistanceTimer: 0,
@@ -116,8 +118,10 @@ export default function makeEnemy(
                 chill: 1,
                 boost: 1,
                 wind: 1,
-                ice: 1
-            }
+                ice: 1,
+                totem: 1
+            },
+            totemEffects: new Set<TotemGameObj>()
         },
         k.state("move", ["move", "stunned", "attack", "idle", "escape", "hidden", "shield", "shellBreak"]),
         statusEffect(),
@@ -253,8 +257,36 @@ export default function makeEnemy(
         }
     });
 
+    let regenTimer = 0;
+    const regenTick = 1;
+
     enemy.onUpdate(() => {
         if (enemy.isDying) return;
+        updateTotemMembership(k, enemy);
+  
+        if (enemy.healthRegen > 0) {
+            regenTimer -= k.dt() * store.get(gameStateAtom).timeScale;
+            if (regenTimer <= 0) {
+                regenTimer += regenTick;
+                if (!enemy.has("curse")) {
+                    enemy.heal((enemy.maxHP() ?? 10) * enemy.healthRegen);
+                    const healEffect = k.add([
+                        k.sprite("heal effect", { anim: "heal" }),
+                        k.pos(enemy.pos),
+                        k.anchor("center"),
+                        k.opacity(1),
+                        {
+                            update() {
+                                healEffect.pos = enemy.pos;
+                            }
+                        }
+                    ]);
+
+                    healEffect.onAnimEnd(() => k.destroy(healEffect));
+                }
+            }
+        }
+
         if (enemy.state === "stunned") return;
 
         if (enemyId === "rockTitan" && enemy.maxHP() && enemy.hp() / enemy.maxHP()! <= 0.66 && enemy.sprite === "rock titan") {
@@ -393,7 +425,7 @@ export default function makeEnemy(
                 pos: enemy.pos,
                 target: towers[index],
                 hitChance: enemy.has("blind") ? 0.3 : 1,
-                summonAnim: (ENEMIES[enemyId] as { attacker?: { summonAnim?: string; }}).attacker?.summonAnim ?? undefined
+                summonAnim: (ENEMIES[enemyId] as { attacker?: { summonAnim?: string; } }).attacker?.summonAnim ?? undefined
             });
 
             if (enemy.hasAnim("attack")) enemy.play("attack");
@@ -860,6 +892,12 @@ export default function makeEnemy(
 
         if (enemy.isDying) return;
 
+        for (const totem of enemy.totemEffects) {
+            totem.affectedEnemies.delete(enemy);
+        }
+
+        enemy.totemEffects.clear();
+
         if ((ENEMIES[enemyId] as { onDeath: (k: KAPLAYCtx, enemy: EnemyGameObj) => void }).onDeath) {
             (ENEMIES[enemyId] as { onDeath: (k: KAPLAYCtx, enemy: EnemyGameObj) => void }).onDeath(k, enemy);
         }
@@ -1122,4 +1160,21 @@ function spawnDyingLocust(k: KAPLAYCtx, pos: Vec2, angle: number) {
     locust.onAnimEnd(anim => {
         if (anim === "die") k.destroy(locust);
     });
+}
+
+function updateTotemMembership(k: KAPLAYCtx, enemy: EnemyGameObj) {
+    for (const totem of (k.get("totem") as TotemGameObj[])) {
+        if (totem.isCaptured) continue;
+
+        const inRange =
+            enemy.pos.dist(totem.pos) <= totem.range * TILE_SIZE;
+
+        const affected = totem.affectedEnemies.has(enemy);
+
+        if (inRange && !affected) {
+            addTotemEffect(enemy, totem);
+        } else if (!inRange && affected) {
+            removeTotemEffect(enemy, totem);
+        }
+    }
 }

@@ -381,6 +381,7 @@ export type EnemyGameObj = GameObj<
         boost: number;
         wind: number;
         ice: number;
+        totem: number;
     };
     debuffDurationMultiplier: number;
     spawnArmourOnDeath?: {
@@ -408,6 +409,8 @@ export type EnemyGameObj = GameObj<
     maxShieldHp?: number;
     shieldSprite?: string;
     swarmVisual?: SwarmVisual;
+    totemEffects: Set<TotemGameObj>;
+    healthRegen: number;
 };
 
 export type SwarmVisual = {
@@ -676,7 +679,7 @@ export type EnemyConfig = {
         "giantSnowmanHead" |
         "penguin" |
         "giantPenguin" |
-        "locust" | 
+        "locust" |
         "specialGiantScorpian" |
         "scorpian";
         amount: number;
@@ -1087,4 +1090,59 @@ export type UnlockToast = { icon: string; name: string; }[];
 export type World = {
     scenes: Scenes;
     wavePrefix: "world1" | "world2";
+};
+
+export type TotemId =
+    | "flame"
+    | "lightning"
+    | "dark"
+    | "light";
+
+export type TotemEffect =
+    | {
+        type: "speed";
+        amount: number;
+        description: string;
+    }
+    | {
+        type: "regen";
+        amount: number;
+        description: string;
+    }
+    | {
+        type: "health";
+        amount: number;
+        description: string;
+    };
+
+export type PlayerBuff = TowerBuff & {
+    description: string;
+};
+
+export type TotemDef = {
+    name: string;
+
+    enemyEffect: TotemEffect;
+
+    playerBuff: PlayerBuff;
+
+    radius: number;
+    requiredDamage: number;
+};
+
+export type HoveredTotem = {
+    id: TotemId;
+    pos: { x: number; y: number; };
+};
+
+export type TotemGameObj = GameObj & {
+    totemId: TotemId;
+    isCaptured: boolean;
+    captureProgress: number;
+    captureTower: TowerGameObj | null;
+    range: number;
+    requiredDamage: number;
+    affectedEnemies: Set<EnemyGameObj>;
+    enemyEffect: TotemEffect;
+    playerBuff: PlayerBuff;
 };

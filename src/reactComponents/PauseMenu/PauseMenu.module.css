@@ -54,3 +54,18 @@
 .key.selected {
     outline: yellow 1px solid;
 }
+
+.quit-confirmation {
+    width: 12em;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1em;
+    margin-inline: auto;
+}
+
+.confirm-button-container {
+    display: flex;
+    gap: 0.5em;
+}

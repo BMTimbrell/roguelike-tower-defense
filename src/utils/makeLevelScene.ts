@@ -1,5 +1,5 @@
 import type { GameObj, KAPLAYCtx } from "kaplay";
-import type { MapData, PathTile, Scene, Tile, TowerGameObj } from "../types";
+import type { MapData, PathTile, Scene, Tile, TotemId, TowerGameObj } from "../types";
 import showLevelStats from "./showLevelStats";
 import initCam from "./initCam";
 import generateFog from "./generateFog";
@@ -24,6 +24,7 @@ import statusEffect from "../kaplayComponents/statusEffect";
 import healthBar from "../kaplayComponents/healthBar";
 import { waitScaled } from "./timerFunctions";
 import { tryShowTutorial } from "./tutorialHelpers";
+import makeTotem from "../entities/Totem";
 
 export default function makeLevelScene(k: KAPLAYCtx, sceneName: Scene) {
 
@@ -870,7 +871,19 @@ export default function makeLevelScene(k: KAPLAYCtx, sceneName: Scene) {
                     k.anchor("center")
                 ]);
             });
-
+        
+        // totems
+        mapData.layers
+            .find(layer => layer.name === "Totems")
+            ?.objects
+            ?.forEach(obj => {
+                if (obj.name)  {
+                    makeTotem(k, obj.name as TotemId, k.vec2(obj.x, obj.y));
+                    tileGrid[obj.y / TILE_SIZE][obj.x / TILE_SIZE].blocked = true;
+                }
+            });
+        
+        // challenges
         if ((LEVEL_WAVES[wave] as { challenge: boolean }).challenge) {
             store.set(challengesAtom, prev => ({
                 ...prev,

@@ -15,6 +15,7 @@ export default function PauseMenu() {
     const scale = map.fontScale;
     const [showSettings, setShowSettings] = useState(false);
     const header = showSettings && <div style={{ fontSize: `${16 * scale * 1.2}px` }} className={styles.heading}>Settings</div>;
+    const [showQuitConfirmation, setShowQuitConfirmation] = useState(false);
 
     const onClose = () => {
         playUISound(gameState.context, "ui click");
@@ -40,45 +41,68 @@ export default function PauseMenu() {
     </div>;
 
     return (
-        <Modal header={header} footer={footer} isOpen={pauseMenu.visible} onClose={onClose} disableCloseOnClick={true}>
-            <div style={{ fontSize: `${16 * scale}px` }}>
-                {!showSettings ? (
-                    <div className={styles.container}>
-                        <div className={styles.heading}>Paused</div>
-                        <div className={styles["button-container"]}>
-                            <Button
-                                onMouseEnter={onMouseEnter}
-                                onClick={onClose}>
-                                Resume
-                            </Button>
-                            <Button
-                                onMouseEnter={onMouseEnter}
-                                onClick={() => {
-                                    playUISound(gameState.context, "ui click");
-                                    setShowSettings(true);
-                                }}
-                            >
-                                Settings
-                            </Button>
-                            <Button
-                                onMouseEnter={onMouseEnter}
-                                onClick={async () => {
-                                    playUISound(gameState.context, "ui click");
+        <>
+            <Modal header={header} footer={footer} isOpen={pauseMenu.visible} onClose={onClose} disableCloseOnClick={true}>
+                <div style={{ fontSize: `${16 * scale}px` }}>
+                    {!showSettings ? (
+                        <div className={styles.container}>
+                            <div className={styles.heading}>Paused</div>
+                            <div className={styles["button-container"]}>
+                                <Button
+                                    onMouseEnter={onMouseEnter}
+                                    onClick={onClose}>
+                                    Resume
+                                </Button>
+                                <Button
+                                    onMouseEnter={onMouseEnter}
+                                    onClick={() => {
+                                        playUISound(gameState.context, "ui click");
+                                        setShowSettings(true);
+                                    }}
+                                >
+                                    Settings
+                                </Button>
+                                <Button
+                                    onMouseEnter={onMouseEnter}
+                                    onClick={() => {
+                                        playUISound(gameState.context, "ui click");
+                                        setShowQuitConfirmation(true);
+                                    }}
+                                >
+                                    Save & Quit to Main Menu
+                                </Button>
+                            </div>
 
-                                    await saveMetaProgress();
-
-                                    pauseMenu.mainMenu();
-                                }}
-                            >
-                                Main Menu
-                            </Button>
                         </div>
 
+                    ) : <Settings />
+                    }
+                </div >
+            </Modal >
+
+            <Modal isOpen={showQuitConfirmation} onClose={() => setShowQuitConfirmation(false)} disableCloseOnClick={true}>
+                <div style={{ fontSize: `${16 * scale}px` }} className={styles["quit-confirmation"]}>
+                    <div>Are you sure you want to quit? You will have to start from the beginning of the level.</div>
+
+                    <div className={styles["confirm-button-container"]}>
+                        <Button onClick={async () => {
+                            playUISound(gameState.context, "ui click");
+                            await saveMetaProgress();
+                            setShowQuitConfirmation(false);
+                            pauseMenu.mainMenu();
+                        }}>
+                            Yes
+                        </Button>
+                        <Button onClick={() => {
+                            playUISound(gameState.context, "ui click");
+                            setShowQuitConfirmation(false);
+                        }}>
+                            No
+                        </Button>
                     </div>
 
-                ) : <Settings />
-                }
-            </div >
-        </Modal >
+                </div>
+            </Modal>
+        </>
     );
 }
