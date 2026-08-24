@@ -292,6 +292,15 @@ export default function makeHero(k: KAPLAYCtx,
                         }
                     });
                 }
+
+                k.get("totem").forEach(totem => {
+                    const heroCenter = hero.pos.add(k.vec2(TILE_SIZE / 2));
+                    const totemPos = totem.pos;
+
+                    if (heroCenter.dist(totemPos) <= TILE_SIZE && !totem.captureTower) {
+                        totem.captureTower = hero;
+                    }
+                });
             }
         });
 

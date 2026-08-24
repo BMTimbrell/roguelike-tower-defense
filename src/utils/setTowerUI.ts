@@ -92,7 +92,6 @@ export default function setTowerUI(k: KAPLAYCtx, type: "combat" | "farm", tower:
                     .join(" + ")})`
                 : `${damageValue}`;
 
-
         store.set(gameStateAtom, prev => ({
             ...prev,
             selectedUI: {
@@ -199,6 +198,7 @@ export default function setTowerUI(k: KAPLAYCtx, type: "combat" | "farm", tower:
                     gold: prev.gold + calcSellPrice(tower.cost, tower.unlockedUpgradeSlots),
                     selectedUI: null
                 }));
+                playUISound(k, "ui buy");
                 k.destroy(tower);
             },
             plantedSeed: tower.farmData?.plantedSeed ?? null,

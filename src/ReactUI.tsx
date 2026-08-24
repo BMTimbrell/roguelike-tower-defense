@@ -1,5 +1,5 @@
 import { useAtom } from 'jotai';
-import { activeTutorialAtom, altarAtom, challengesAtom, chestAtom, gameSpeedUIAtom, gameStateAtom, mainMenuAtom, rewardsAtom, selectHeroUIAtom, shopAtom, shopChoiceUIAtom, startingOptionsAtom } from './store';
+import { activeTutorialAtom, altarAtom, challengesAtom, chestAtom, gameSpeedUIAtom, gameStateAtom, hoveredTotemAtom, mainMenuAtom, rewardsAtom, selectHeroUIAtom, shopAtom, shopChoiceUIAtom, startingOptionsAtom } from './store';
 import { BottomBar } from "./reactComponents/BottomBar/BottomBar";
 import SelectedTower from "./reactComponents/SelectedTower/SelectedTower";
 import SelectedHero from './reactComponents/SelectedHero/SelectedHero';
@@ -19,6 +19,7 @@ import GameSpeedButtons from './reactComponents/GameSpeedButtons/GameSpeedButton
 import TutorialModal from './reactComponents/TutorialModal/TutorialModal';
 import ChestCards from './reactComponents/ChestCards/ChestCards';
 import UnlockToast from './reactComponents/UnlockToast/UnlockToast';
+import TotemPopup from './reactComponents/TotemPopup/TotemPopup';
 
 export default function ReactUI() {
     const [gameState] = useAtom(gameStateAtom);
@@ -36,6 +37,7 @@ export default function ReactUI() {
     const [mainMenu] = useAtom(mainMenuAtom);
     const [gameSpeedUI] = useAtom(gameSpeedUIAtom);
     const [activeTutorial] = useAtom(activeTutorialAtom);
+    const [totem] = useAtom(hoveredTotemAtom);
 
     if (selectedUI) {
         selectedTower = "plantedSeed" in selectedUI
@@ -85,6 +87,8 @@ export default function ReactUI() {
             {activeTutorial && <TutorialModal />}
 
             {chestCards.visible && <ChestCards />}
+
+            {totem && <TotemPopup />}
 
             <UnlockToast />
         </>

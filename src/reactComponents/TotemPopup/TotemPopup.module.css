@@ -1,0 +1,14 @@
+.container {
+    position: absolute;
+    background: rgb(3 3 3 / 0.8);
+    color: white;
+    padding: 0.5em;
+    border-radius: 0.25em;
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    pointer-events: none;
+}
+
+.heading {
+    font-size: 1.25em;
+    margin-bottom: 0.25em;
+}

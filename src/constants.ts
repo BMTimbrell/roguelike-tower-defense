@@ -18,6 +18,7 @@ import makeEnemy from "./entities/Enemy";
 import type { KAPLAYCtx } from "kaplay";
 import makeEnemyProjectile from "./entities/EnemyProjectile";
 import { rotateVector } from "./utils/targetingHelpers";
+import makeFloatingText from "./entities/FloatingText";
 
 export const NORMAL_PLAYER_HEATLH = 20;
 export const HARD_PLAYER_HEATLH = 15;
@@ -3415,17 +3416,72 @@ export const ENEMIES = {
         damage: 1,
         goldDropped: 1,
         onDeath(k: KAPLAYCtx, enemy: EnemyGameObj) {
-            if (enemy.killer) {
 
-                makeEnemyProjectile(k, {
-                    id: "fireball",
-                    pos: enemy.pos,
-                    target: enemy.killer,
-                    hitChance: 1
+            const numFireballs = 12;
+
+            playSfx(k, "fireball", 1, enemy.pos);
+
+            for (let i = 0; i < numFireballs; i++) {
+                const angle = (Math.PI * 2 * i) / numFireballs;
+                const dir = k.vec2(Math.cos(angle), Math.sin(angle));
+
+                const fireball = k.add([
+                    k.sprite("fireball"),
+                    k.pos(enemy.pos),
+                    k.rotate((angle * 180) / Math.PI),
+                    k.anchor("center"),
+                    {
+                        travelled: 0
+                    }
+                ]);
+
+                const speed = 300 * TILE_SIZE;
+                const maxDistance = 2.3 * TILE_SIZE;
+
+                fireball.onUpdate(() => {
+                    const movement = dir.scale(speed * k.dt() * store.get(gameStateAtom).timeScale);
+
+                    fireball.move(movement);
+
+                    k.get("tower").forEach(tower => {
+                        if (fireball.pos.dist(tower.pos.add(tower.footprint.w * TILE_SIZE / 2)) <= tower.footprint.w * TILE_SIZE / 2) {
+                            k.destroy(fireball);
+                            if (tower.hasBlock) {
+                                makeFloatingText(k, {
+                                    text: "Block",
+                                    color: "#FFFFFF",
+                                    size: 12,
+                                    pos: fireball.pos
+                                });
+                            } else {
+                                const duration = 1;
+                                tower.disabledTimeLeft = Math.max(
+                                    tower.disabledTimeLeft ?? 0,
+                                    duration
+                                );
+
+                                tower.enterState("disabled");
+                            }
+                        }
+                    });
+
+                    if (fireball.pos.dist(enemy.pos) >= maxDistance) {
+                        k.destroy(fireball);
+                    }
                 });
-
-                playSfx(k, "fireball", 1, enemy.pos);
             }
+
+            // if (enemy.killer) {
+
+            //     makeEnemyProjectile(k, {
+            //         id: "fireball",
+            //         pos: enemy.pos,
+            //         target: enemy.killer,
+            //         hitChance: 1
+            //     });
+
+            //     playSfx(k, "fireball", 1, enemy.pos);
+            // }
         },
         chestValue: 0.5,
         deathSound: "monster death3",
@@ -4287,7 +4343,7 @@ export const TOWERS = {
         baseSprite: "sniper tower base",
         sprite: "sniper-tower-sprite.png",
         description: "Deals devastating damage to targets at a great range",
-        cost: 350,
+        cost: 0,
         stats: {
             damage: 140,
             range: 9,

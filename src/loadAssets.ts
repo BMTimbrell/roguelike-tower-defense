@@ -1533,6 +1533,22 @@ export default function loadAssets(k: KAPLAYCtx) {
             appear: { from: 0, to: 5, loop: false }
         }
     });
+    k.loadSprite("flame totem", "sprites/flame-totem.png", {
+        sliceX: 2,
+        sliceY: 1,
+        anims: {
+            enemy: 0,
+            tower: 1
+        }
+    });
+    k.loadSprite("flame totem orb", "sprites/flame-totem-orb.png", {
+        sliceX: 12,
+        sliceY: 1,
+        anims: {
+            appear: { from: 0, to: 10, loop: false }
+        }
+    });
+    k.loadSprite("tower placement icon", "sprites/tower-placement-icon.png");
 
     //sounds
 
@@ -1613,7 +1629,7 @@ export default function loadAssets(k: KAPLAYCtx) {
     k.loadSound("present tear", "sounds/soundEffects/present-tear.mp3");
     k.loadSound("dizzy", "sounds/soundEffects/dizzy.mp3");
     k.loadSound("drinking", "sounds/soundEffects/drinking.mp3");
-     k.loadSound("rock smash", "sounds/soundEffects/rock-smash.mp3");
+    k.loadSound("rock smash", "sounds/soundEffects/rock-smash.mp3");
 
     //music
     k.loadSound("main title", "sounds/music/The-Crown-of-Aethelgard.mp3");

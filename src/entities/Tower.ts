@@ -150,6 +150,23 @@ export default function makeTower(
                 tileGrid: tower.tileGrid,
                 blocked: false
             });
+
+            k.get("totem").forEach(totem => {
+
+                if (totem.captureTower === tower) {
+                    totem.captureTower = null;
+                    totem.captureProgress = 0;
+                }
+
+                k.get("tower").forEach(t => {
+                const towerCenter = t.pos.add(k.vec2((t.footprint.w * TILE_SIZE) / 2));
+                const totemPos = totem.pos;
+
+                if (towerCenter.dist(totemPos) <= TILE_SIZE * t.footprint.w && !totem.captureTower) {
+                    k.wait(0.00001, () => totem.captureTower = t);
+                }
+            });
+            });
         }
         combat.destroy();
 
@@ -444,6 +461,15 @@ export default function makeTower(
                     tower.hasBlock = true;
                 }
             }
+
+            k.get("totem").forEach(totem => {
+                const towerCenter = tower.pos.add(k.vec2((tower.footprint.w * TILE_SIZE) / 2));
+                const totemPos = totem.pos;
+
+                if (towerCenter.dist(totemPos) <= TILE_SIZE * tower.footprint.w && !totem.captureTower) {
+                    totem.captureTower = tower;
+                }
+            });
         },
     });
 
@@ -465,7 +491,7 @@ export default function makeTower(
         // background
         const thirstBarBackground = k.add([
             k.pos(barPos),
-            k.rect(barWidth, 4),
+            k.rect(barWidth + 2, 4),
             k.color(k.Color.fromHex("#707070")),
             k.outline(1, k.Color.fromHex("#000000")),
             k.opacity(0),
@@ -481,7 +507,7 @@ export default function makeTower(
         // thirst bar
         const thirstBar = k.add([
             k.pos(barPos),
-            k.rect(0, 4),
+            k.rect(0, 2),
             k.color(k.Color.fromHex("#4681d8")),
             k.z(99999999),
             k.opacity(0),
@@ -489,7 +515,7 @@ export default function makeTower(
                 update() {
                     const hydrationRatio =
                         1 - tower.thirstTimer / tower.thirstDuration;
-                    thirstBar.pos = tower.pos.add(tower.width * 0.2, tower.height);
+                    thirstBar.pos = tower.pos.add(tower.width * 0.2 + 1, tower.height + 1);
                     thirstBar.width = barWidth * hydrationRatio;
                     if (tower.placed && !tower.farmData) {
                         thirstBar.opacity = 1;
@@ -650,7 +676,7 @@ export default function makeTower(
 
         if (tower.thirstImmune && tower.drinkTimer > 0) {
             tower.drinkTimer -= dt;
-            
+
             // Drinking effect
             tower.drinkingEffectTimer -= dt;
 
