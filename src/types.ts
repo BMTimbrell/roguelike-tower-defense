@@ -1,6 +1,6 @@
 import { type MouseEventHandler } from "react";
 import { TILE_SIZE, type EnemyId, type HeroId, type LevelId, type ProjectileId, type SkillId, type TowerId } from "./constants";
-import type { Vec2, GameObj, KAPLAYCtx, HealthComp, SpriteComp, StateComp, RotateComp, PosComp, ZComp, OpacityComp, ButtonBinding, MouseButton, Key, AreaComp } from "kaplay";
+import type { Vec2, GameObj, KAPLAYCtx, HealthComp, SpriteComp, StateComp, RotateComp, PosComp, ZComp, OpacityComp, ButtonBinding, MouseButton, Key, AreaComp, Color } from "kaplay";
 import { frostAoeBurst } from "./utils/makeUnitCombat";
 import type { StatusEffectComp } from "./kaplayComponents/statusEffect";
 import type { ChallengeManager } from "./utils/challengeHelpers";
@@ -69,7 +69,7 @@ export type TowerBuff =
         type: "bonusDamage";
         element: ElementName;
         multiplier: number;
-        timeLeft: number;
+        timeLeft?: number;
     }
     | {
         type: "toxicInfusion",
@@ -78,12 +78,17 @@ export type TowerBuff =
     | {
         type: "fireRate";
         multiplier: number;
-        timeLeft: number;
+        timeLeft?: number;
     }
     | {
         type: "range";
         number: number;
-        timeLeft: number;
+        timeLeft?: number;
+    }
+    | {
+        type: "damage";
+        timeLeft?: number;
+        multiplier: number;
     };
 
 export type SeedId = "chili" | "starfruit" | "nightshade";
@@ -1115,8 +1120,9 @@ export type TotemEffect =
         description: string;
     };
 
-export type PlayerBuff = TowerBuff & {
+export type PlayerBuff = {
     description: string;
+    buffs: TowerBuff[];
 };
 
 export type TotemDef = {
@@ -1128,6 +1134,8 @@ export type TotemDef = {
 
     radius: number;
     requiredDamage: number;
+
+    particleColor: string;
 };
 
 export type HoveredTotem = {

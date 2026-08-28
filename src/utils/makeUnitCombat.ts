@@ -577,7 +577,11 @@ export default function makeUnitCombat(
                 ctx.lightning.range = Math.min(Math.floor(ctx.attacker.battery.charge / 20) + 1, 5);
                 ctx.damage += ctx.attacker.battery.charge * 0.42;
             }
-            const damageMult = 1 + getBuffValue(opts.owner as TowerGameObj, "damage");
+
+            const damageTowerBuff = opts.owner.towerBuffs
+                .filter(b => b.type === "damage")
+                .reduce((acc, b) => acc + b.multiplier, 0);
+            const damageMult = 1 + getBuffValue(opts.owner as TowerGameObj, "damage") + damageTowerBuff;
 
             // laser ramp up charge damage
             let bonusDamage = 0;
@@ -713,7 +717,10 @@ export default function makeUnitCombat(
 
             opts.owner.effects?.forEach(e => e.firstEffect?.(ctx));
             opts.owner.effects?.forEach(e => e.secondEffect?.(ctx));
-            const damageMult = 1 + getBuffValue(opts.owner as TowerGameObj, "damage");
+            const damageTowerBuff = opts.owner.towerBuffs
+                .filter(b => b.type === "damage")
+                .reduce((acc, b) => acc + b.multiplier, 0);
+            const damageMult = 1 + getBuffValue(opts.owner as TowerGameObj, "damage") + damageTowerBuff;
 
             if (!ctx.isSummon) {
                 makePathEntity(k, {

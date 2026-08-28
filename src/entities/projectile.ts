@@ -234,7 +234,10 @@ export default function makeProjectile(k: KAPLAYCtx, opts: {
                 if (!target.isDying && !target.invincible && (behaviors?.persistent?.state !== "attached" || (attackTimer !== null && attackTimer <= 0))) {
                     if (behaviors?.persistent) {
                         const owner = behaviors.persistent.owner;
-                        const damageMult = 1 + getBuffValue(owner, "damage");
+                        const damageTowerBuff = owner.towerBuffs
+                            .filter(b => b.type === "damage")
+                            .reduce((acc, b) => acc + b.multiplier, 0);
+                        const damageMult = 1 + getBuffValue(owner, "damage") + damageTowerBuff;
                         const { isCrit, damage: newDamage } = calcDamage({
                             bonusDamage: 0,
                             bonusCritChance: target.has("curse") ? CURSE_CRIT + (k.get("hero")[0]?.hasCurseBuff ? 10 : 0) : 0,

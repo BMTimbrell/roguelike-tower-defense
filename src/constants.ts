@@ -2330,6 +2330,12 @@ export const LEVEL_WAVES = {
                 ],
                 reward: 100
             },
+            {
+                spawns: [
+                    { id: "fireSlime", count: 5, interval: 1.5 },
+                ],
+                reward: 100
+            },
         ]
     },
     "world2-level4-2": {
@@ -4343,7 +4349,7 @@ export const TOWERS = {
         baseSprite: "sniper tower base",
         sprite: "sniper-tower-sprite.png",
         description: "Deals devastating damage to targets at a great range",
-        cost: 0,
+        cost: 350,
         stats: {
             damage: 140,
             range: 9,
@@ -7084,12 +7090,19 @@ export const TOTEMS: Record<TotemId, TotemDef> = {
         },
 
         playerBuff: {
-            type: "bonusDamage",
-            multiplier: 0.2,
-            element: "Fire",
-            description: "+20% damage",
-            timeLeft: 5
+            buffs: [{
+                type: "bonusDamage",
+                multiplier: 0.1,
+                element: "Fire"
+            },
+            {
+                type: "damage",
+                multiplier: 0.5
+            }],
+            description: "+50% damage and 10% bonus fire damage",
         },
+
+        particleColor: "#DF7126",
 
         radius: TILE_SIZE * 4,
         requiredDamage: 1000
@@ -7104,15 +7117,20 @@ export const TOTEMS: Record<TotemId, TotemDef> = {
         },
 
         playerBuff: {
-            type: "bonusDamage",
-            multiplier: 0.2,
-            element: "Electric",
+            buffs: [{
+                type: "bonusDamage",
+                multiplier: 0.1,
+                element: "Electric",
+            },
+            {
+                type: "fireRate",
+                multiplier: 0.666
+            }],
             description: "+20% damage",
-            timeLeft: 10,
         },
-
         radius: TILE_SIZE * 4,
-        requiredDamage: 1000
+        requiredDamage: 1000,
+        particleColor: "#FFFF00"
     },
     light: {
         name: "Infernal Totem",
@@ -7124,15 +7142,17 @@ export const TOTEMS: Record<TotemId, TotemDef> = {
         },
 
         playerBuff: {
-            type: "bonusDamage",
-            element: "Light",
-            multiplier: 0.2,
+            buffs: [{
+                type: "bonusDamage",
+                element: "Light",
+                multiplier: 0.2
+            }],
             description: "+20% damage",
-            timeLeft: 10
         },
 
         radius: TILE_SIZE * 4,
-        requiredDamage: 1000
+        requiredDamage: 1000,
+        particleColor: "#ffff97"
     },
     dark: {
         name: "Infernal Totem",
@@ -7144,12 +7164,14 @@ export const TOTEMS: Record<TotemId, TotemDef> = {
         },
 
         playerBuff: {
-            type: "bonusDamage",
-            multiplier: 0.2,
-            description: "+20% damage",
-            element: "Dark",
-            timeLeft: 10
+            buffs: [{
+                type: "bonusDamage",
+                multiplier: 0.2,
+                element: "Dark"
+            }],
+            description: "+20% damage"
         },
+        particleColor: "#800080",
 
         radius: TILE_SIZE * 4,
         requiredDamage: 1000

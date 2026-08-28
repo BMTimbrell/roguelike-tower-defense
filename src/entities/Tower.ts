@@ -159,13 +159,13 @@ export default function makeTower(
                 }
 
                 k.get("tower").forEach(t => {
-                const towerCenter = t.pos.add(k.vec2((t.footprint.w * TILE_SIZE) / 2));
-                const totemPos = totem.pos;
+                    const towerCenter = t.pos.add(k.vec2((t.footprint.w * TILE_SIZE) / 2));
+                    const totemPos = totem.pos;
 
-                if (towerCenter.dist(totemPos) <= TILE_SIZE * t.footprint.w && !totem.captureTower) {
-                    k.wait(0.00001, () => totem.captureTower = t);
-                }
-            });
+                    if (towerCenter.dist(totemPos) <= TILE_SIZE * t.footprint.w && !totem.captureTower) {
+                        k.wait(0.00001, () => totem.captureTower = t);
+                    }
+                });
             });
         }
         combat.destroy();
@@ -270,7 +270,10 @@ export default function makeTower(
                         if (orbiter.hitEnemies.has(enemy)) return;
 
                         if (enemy.pos.dist(orbiter.pos) < TILE_SIZE * 0.75 && store.get(gameStateAtom).waveActive) {
-                            const damageMult = 1 + getBuffValue(tower, "damage");
+                            const damageTowerBuff = tower.towerBuffs
+                                .filter(b => b.type === "damage")
+                                .reduce((acc, b) => acc + b.multiplier, 0);
+                            const damageMult = 1 + getBuffValue(tower, "damage") + damageTowerBuff;
 
                             const { isCrit, damage } = calcDamage({
                                 bonusDamage: 0,
@@ -370,8 +373,10 @@ export default function makeTower(
 
                         phoenix.fireTimer += (fireInterval / 12);
 
-                        const damageMult =
-                            1 + getBuffValue(tower, "damage");
+                        const damageTowerBuff = tower.towerBuffs
+                            .filter(b => b.type === "damage")
+                            .reduce((acc, b) => acc + b.multiplier, 0);
+                        const damageMult = 1 + getBuffValue(tower, "damage") + damageTowerBuff;
 
                         const { isCrit, damage } = calcDamage({
                             bonusDamage: 0,
@@ -603,10 +608,12 @@ export default function makeTower(
         for (let i = tower.towerBuffs.length - 1; i >= 0; i--) {
             const buff = tower.towerBuffs[i];
 
-            buff.timeLeft -= k.dt() * timeScale;
+            if (buff.timeLeft !== undefined) {
+                buff.timeLeft -= k.dt() * timeScale;
 
-            if (buff.timeLeft <= 0) {
-                tower.towerBuffs.splice(i, 1);
+                if (buff.timeLeft <= 0) {
+                    tower.towerBuffs.splice(i, 1);
+                }
             }
         }
 

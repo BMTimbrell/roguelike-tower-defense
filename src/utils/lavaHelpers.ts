@@ -17,27 +17,30 @@ export function makeLavaManager(k: KAPLAYCtx) {
 
         while (tick >= tickRate) {
             tick -= tickRate;
-    
+
             const enemies = k.get("enemy") as EnemyGameObj[];
             const lavaTiles = k.get("lava tile");
-    
+
             const damaged = new Set<number>();
-    
+
             enemies.forEach(e => {
                 for (const lava of lavaTiles) {
-    
+
                     if (e.pos.dist(lava.pos) < TILE_SIZE / 2) {
-    
+
                         if (damaged.has(e.id ?? 0)) break;
-    
+
                         damaged.add(e.id ?? 0);
-    
+
                         const tower = (k.get("tower") as TowerGameObj[]).find(t => t.instanceId === lava.towerId);
-    
+
                         if (!tower) return;
-    
-                        const damageMult = 1 + getBuffValue(tower, "damage");
-    
+
+                        const damageTowerBuff = tower.towerBuffs
+                            .filter(b => b.type === "damage")
+                            .reduce((acc, b) => acc + b.multiplier, 0);
+                        const damageMult = 1 + getBuffValue(tower, "damage") + damageTowerBuff;
+
                         const { damage, isCrit } = calcDamage({
                             damage: tower.stats.damage,
                             bonusDamage: 0,
@@ -46,7 +49,7 @@ export function makeLavaManager(k: KAPLAYCtx) {
                             critDamage: tower.stats.critDamage * (1 + getBuffValue(tower, "critDamage")),
                             damageMultiplier: damageMult
                         });
-    
+
                         hurtEnemy(k, {
                             target: e,
                             damage,
@@ -54,7 +57,7 @@ export function makeLavaManager(k: KAPLAYCtx) {
                             element: "Fire",
                             attacker: tower
                         });
-    
+
                         break;
                     }
                 }

@@ -69,7 +69,7 @@ export default function PauseMenu() {
                                         setShowQuitConfirmation(true);
                                     }}
                                 >
-                                    Save & Quit to Main Menu
+                                    Save & Quit
                                 </Button>
                             </div>
 
