@@ -2326,7 +2326,7 @@ export const LEVEL_WAVES = {
         waves: [
             {
                 spawns: [
-                    { id: "fireSlime", count: 5, interval: 1.5 },
+                    { id: "vampire", count: 5, interval: 1 },
                 ],
                 reward: 100
             },
@@ -3476,24 +3476,37 @@ export const ENEMIES = {
                     }
                 });
             }
-
-            // if (enemy.killer) {
-
-            //     makeEnemyProjectile(k, {
-            //         id: "fireball",
-            //         pos: enemy.pos,
-            //         target: enemy.killer,
-            //         hitChance: 1
-            //     });
-
-            //     playSfx(k, "fireball", 1, enemy.pos);
-            // }
         },
         chestValue: 0.5,
         deathSound: "monster death3",
         speed: 45,
         sprite: "fire slime"
-    }
+    },
+    zombieFairy: {
+        hp: 50,
+        damage: 1,
+        chestValue: 0.5,
+        goldDropped: 1,
+        speed: 60,
+        sprite: "zombie fairy",
+        healer: {
+            amount: 10,
+            range: 2
+        },
+        deathSound: "zombie fairy death"
+    },
+    vampire: {
+        hp: 100,
+        damage: 1,
+        chestValue: 0.75,
+        goldDropped: 2,
+        speed: 50,
+        sprite: "vampire",
+        deathSound: "monster death",
+        batDuration: 3,
+        batCooldown: 5,
+        suckBloodCooldown: 2
+    },
 } as const satisfies Record<string, EnemyConfig>;
 
 export type EnemyId = keyof typeof ENEMIES;

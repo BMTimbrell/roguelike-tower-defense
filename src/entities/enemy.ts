@@ -121,7 +121,10 @@ export default function makeEnemy(
                 ice: 1,
                 totem: 1
             },
-            totemEffects: new Set<TotemGameObj>()
+            totemEffects: new Set<TotemGameObj>(),
+            ...("batDuration" in ENEMIES[enemyId] ? { batDuration: ENEMIES[enemyId].batDuration as number } : {}),
+            ...("batCooldown" in ENEMIES[enemyId] ? { batCooldown: ENEMIES[enemyId].batCooldown as number } : {}),
+            ...("suckBloodCooldown" in ENEMIES[enemyId] ? { suckBloodCooldown: ENEMIES[enemyId].suckBloodCooldown as number } : {}),
         },
         k.state("move", ["move", "stunned", "attack", "idle", "escape", "hidden", "shield", "shellBreak"]),
         statusEffect(),
@@ -263,7 +266,7 @@ export default function makeEnemy(
     enemy.onUpdate(() => {
         if (enemy.isDying) return;
         updateTotemMembership(k, enemy);
-  
+
         if (enemy.healthRegen > 0) {
             regenTimer -= k.dt() * store.get(gameStateAtom).timeScale;
             if (regenTimer <= 0) {
@@ -344,7 +347,7 @@ export default function makeEnemy(
             enemy.play("run");
             return;
         }
-        enemy.play("move");
+        if (!enemy.isBat) enemy.play("move");
     });
 
     enemy.onStateEnter("attack", () => {
@@ -365,8 +368,8 @@ export default function makeEnemy(
         enemy.stunResistance = true;
         enemy.stunResistanceTimer = enemy.stunResistanceDuration;
 
-        if (enemy.shellBroken) enemy.play("idleShellBroken")
-        else enemy.play("idle");
+        if (enemy.shellBroken) enemy.play("idleShellBroken");
+        else if (!enemy.isBat) enemy.play("idle");
 
         const dizzyEffect = k.add([
             k.sprite("dizzy", { anim: "dizzy" }),
@@ -378,7 +381,9 @@ export default function makeEnemy(
         waitScaled(k, STUN_DURATION, () => {
             k.destroy(dizzyEffect);
             if (enemy?.boss?.reachedStopIndex) enemy.enterState("attack");
-            else if (!enemy.isDying) enemy.enterState("move");
+            else if (!enemy.isDying) {
+                enemy.enterState("move");
+            }
         });
     });
 
@@ -544,6 +549,8 @@ export default function makeEnemy(
     });
 
     let rotateOnShootTimer = 0;
+    let batTimer = enemy.batCooldown ?? 0;
+    let suckBloodTimer = enemy.suckBloodCooldown ?? 0;
 
     enemy.onStateUpdate("move", () => {
         const timeScale = store.get(gameStateAtom).timeScale;
@@ -554,12 +561,90 @@ export default function makeEnemy(
             if (enemy.invincibleTimer <= 0) enemy.invincible = true;
         }
 
+        if (enemy.suckBloodCooldown && suckBloodTimer > enemy.suckBloodCooldown) {
+            suckBloodTimer = enemy.suckBloodCooldown;
+        }
+
+        if (enemy.suckBloodCooldown && suckBloodTimer > 0) {
+            suckBloodTimer -= k.dt() * timeScale;
+        }
+
+        if (suckBloodTimer <= 0 && enemy.suckBloodCooldown) {
+            const enemies = k.get("enemy") as EnemyGameObj[];
+            const range = 2 * TILE_SIZE;
+
+            let target: EnemyGameObj | undefined;
+            let closestDistance = Infinity;
+
+            for (const e of enemies) {
+                if (e.isDying || e.invincible || e === enemy) continue;
+
+                const distance = e.pos.dist(enemy.pos);
+
+                if (distance <= range && distance < closestDistance) {
+                    target = e;
+                    closestDistance = distance;
+                }
+            }
+
+            if (target && enemy.hp() < (enemy.maxHP() ?? 100) && !enemy.isBat) {
+                suckBloodTimer += enemy.suckBloodCooldown;
+                playSfx(k, "blood splatter");
+                createBloodParticles(
+                    k,
+                    target,
+                    enemy
+                );
+
+                const healEffect = k.add([
+                    k.sprite("heal effect", { anim: "heal" }),
+                    k.pos(enemy.pos),
+                    k.anchor("center"),
+                    k.opacity(1),
+                    {
+                        update() {
+                            healEffect.pos = enemy.pos;
+                        }
+                    }
+                ]);
+
+                healEffect.onAnimEnd(() => k.destroy(healEffect));
+
+                target.hurt(10);
+                enemy.heal(30);
+            }
+        }
+
+
+        if (enemy.batCooldown && batTimer > 0) {
+            batTimer -= k.dt() * timeScale;
+            if (batTimer <= 0) {
+                enemy.play("fly");
+                enemy.isBat = true;
+                enemy.baseSpeed *= 2;
+                updateSpeed.call(enemy);
+            }
+        }
+
+        if (enemy.batCooldown && enemy.isBat && enemy.batDuration) {
+            enemy.batDuration -= k.dt() * timeScale;
+
+            if (enemy.batDuration <= 0) {
+                enemy.play("move");
+                enemy.isBat = false;
+                enemy.baseSpeed = ENEMIES[enemyId].speed;
+                updateSpeed.call(enemy);
+                batTimer = enemy.batCooldown;
+                enemy.batDuration = "batDuration" in ENEMIES[enemyId] ? ENEMIES[enemyId].batDuration as number : 2;
+            }
+        }
+
         if (enemy.invincible) {
             enemy.invincibleDuration -= k.dt() * timeScale;
             if (enemy.invincibleDuration <= 0) {
                 enemy.invincible = false;
-                enemy.invincibleTimer += enemy.invincibleCooldown;
-                enemy.invincibleDuration = 2;
+                enemy.invincibleTimer = enemy.invincibleCooldown;
+                enemy.invincibleDuration = "invincibleDuration" in ENEMIES[enemyId] ? ENEMIES[enemyId].invincibleDuration as number : 2;
             }
 
             enemy.statuses.forEach(s => {
@@ -1176,5 +1261,46 @@ function updateTotemMembership(k: KAPLAYCtx, enemy: EnemyGameObj) {
         } else if (!inRange && affected) {
             removeTotemEffect(enemy, totem);
         }
+    }
+}
+
+function createBloodParticles(
+    k: KAPLAYCtx,
+    target: EnemyGameObj,
+    vampire: EnemyGameObj,
+) {
+    const targetPos = target.pos;
+
+    const vampirePos = vampire.pos;
+
+    for (let i = 0; i < 8; i++) {
+        const start = targetPos.add(
+            k.rand(-12, 12),
+            k.rand(-12, 12),
+        );
+
+        const end = vampirePos.add(
+            k.rand(-3, 3),
+            k.rand(-3, 3),
+        );
+
+        const size = k.rand(1, 3);
+
+        const particle = k.add([
+            k.rect(size, size),
+            k.color(180, 20, 20),
+            k.pos(start),
+            k.z(100),
+        ]);
+
+        k.tween(
+            start,
+            end,
+            k.rand(0.2, 0.35),
+            (p) => particle.pos = p,
+            k.easings.easeInQuad,
+        ).then(() => {
+            particle.destroy();
+        });
     }
 }

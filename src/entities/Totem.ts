@@ -38,6 +38,7 @@ export default function makeTotem(k: KAPLAYCtx, id: TotemId, pos: Vec2) {
 
     function captureTotem(totem: TotemGameObj) {
         totem.isCaptured = true;
+        totem.play("tower");
 
         for (const enemy of totem.affectedEnemies) {
             removeTotemEffect(enemy, totem);
@@ -146,7 +147,10 @@ export default function makeTotem(k: KAPLAYCtx, id: TotemId, pos: Vec2) {
                             });
                         }
 
-                    } else p.opacity = 1;
+                    } else {
+                        p.opacity = 1;
+                        totem.play("enemy");
+                    }
 
                     if (!totem.captureTower || totem.isCaptured) {
                         if (bondBeam) k.destroy(bondBeam);

@@ -416,6 +416,10 @@ export type EnemyGameObj = GameObj<
     swarmVisual?: SwarmVisual;
     totemEffects: Set<TotemGameObj>;
     healthRegen: number;
+    batDuration?: number;
+    batCooldown?: number;
+    suckBloodCooldown?: number;
+    isBat?: boolean;
 };
 
 export type SwarmVisual = {
@@ -731,6 +735,9 @@ export type EnemyConfig = {
         animation: string;
     };
     swarmVisual?: SwarmVisual;
+    batDuration?: number;
+    batCooldown?: number;
+    suckBloodCooldown?: number;
 };
 
 export type presentSpawns =

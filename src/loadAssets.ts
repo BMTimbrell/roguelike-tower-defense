@@ -1399,6 +1399,37 @@ export default function loadAssets(k: KAPLAYCtx) {
         }
     });
 
+    k.loadSprite("zombie fairy", "sprites/zombie-fairy.png", {
+        sliceX: 4,
+        sliceY: 2,
+        anims: {
+            idle: 0,
+            move: { from: 0, to: 3, loop: true, speed: 4 },
+            die: { from: 4, to: 7, loop: false, speed: 7 }
+        }
+    });
+
+    k.loadSprite("hell wolf", "sprites/hell-wolf.png", {
+        sliceX: 4,
+        sliceY: 2,
+        anims: {
+            idle: 0,
+            move: { from: 0, to: 3, loop: true, speed: 7 },
+            die: { from: 4, to: 7, loop: false, speed: 7 }
+        }
+    });
+
+    k.loadSprite("vampire", "sprites/vampire.png", {
+        sliceX: 5,
+        sliceY: 3,
+        anims: {
+            idle: 0,
+            move: { from: 0, to: 3, loop: true, speed: 7 },
+            fly: { from: 5, to: 6, loop: true, speed: 7 },
+            die: { from: 10, to: 14, loop: false, speed: 8 }
+        }
+    });
+
     k.loadSprite("poison", "sprites/poison-icon.png");
     k.loadSprite("burn", "sprites/burn-icon.png");
     k.loadSprite("chill", "sprites/chill-icon.png");
@@ -1613,6 +1644,7 @@ export default function loadAssets(k: KAPLAYCtx) {
     k.loadSound("skeleton death", "sounds/enemies/skeleton-death.mp3");
     k.loadSound("fairy death", "sounds/enemies/fairy-death.mp3");
     k.loadSound("fairy death2", "sounds/enemies/fairy-death2.mp3");
+    k.loadSound("zombie fairy death", "sounds/enemies/zombie-fairy-death.mp3");
     k.loadSound("santa death", "sounds/enemies/santa-death.mp3");
     k.loadSound("penguin death", "sounds/enemies/penguin-death.mp3");
     k.loadSound("wolf death", "sounds/enemies/wolf-death.mp3");
@@ -1621,6 +1653,7 @@ export default function loadAssets(k: KAPLAYCtx) {
     k.loadSound("mummy death", "sounds/enemies/mummy-death.mp3");
     k.loadSound("mummy summon", "sounds/enemies/mummy-summon-3.mp3");
     k.loadSound("camel spit", "sounds/enemies/camel-spit.mp3");
+    k.loadSound("blood splatter", "sounds/enemies/blood-splatter.mp3");
 
     k.loadSound("boss drums", "sounds/soundEffects/bossApproach.wav");
     k.loadSound("level up", "sounds/soundEffects/nextLevel.mp3");
