@@ -639,9 +639,11 @@ export default function makeLevelScene(k: KAPLAYCtx, sceneName: Scene) {
 
                         cactus.onDeath(() => {
                             if (cactus.isDying) return;
-                            
+
                             cactus.play("die");
                             cactus.isDying = true;
+
+                            k.trigger("enemyDeath", "ghost", { pos: cactus.pos, cactus, soulClaimed: false });
 
                             const goldEarned = 10;
                             store.set(gameStateAtom, prev => ({
@@ -871,18 +873,18 @@ export default function makeLevelScene(k: KAPLAYCtx, sceneName: Scene) {
                     k.anchor("center")
                 ]);
             });
-        
+
         // totems
         mapData.layers
             .find(layer => layer.name === "Totems")
             ?.objects
             ?.forEach(obj => {
-                if (obj.name)  {
+                if (obj.name) {
                     makeTotem(k, obj.name as TotemId, k.vec2(obj.x, obj.y));
                     tileGrid[obj.y / TILE_SIZE][obj.x / TILE_SIZE].blocked = true;
                 }
             });
-        
+
         // challenges
         if ((LEVEL_WAVES[wave] as { challenge: boolean }).challenge) {
             store.set(challengesAtom, prev => ({

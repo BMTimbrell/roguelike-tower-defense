@@ -49,6 +49,7 @@ export default function makeEnemy(
         k.area({
             shape: new k.Rect(k.vec2(0), 16, 16)
         }),
+        k.scale(1),
         k.rotate(),
         k.opacity(1),
         k.health(health, health),
@@ -597,22 +598,25 @@ export default function makeEnemy(
                     enemy
                 );
 
-                const healEffect = k.add([
-                    k.sprite("heal effect", { anim: "heal" }),
-                    k.pos(enemy.pos),
-                    k.anchor("center"),
-                    k.opacity(1),
-                    {
-                        update() {
-                            healEffect.pos = enemy.pos;
-                        }
-                    }
-                ]);
-
-                healEffect.onAnimEnd(() => k.destroy(healEffect));
-
                 target.hurt(enemy.suckAmount ?? 10);
-                enemy.heal((enemy.suckAmount ?? 10) * 3);
+
+                waitScaled(k, 0.2, () => {
+                    enemy.heal((enemy.suckAmount ?? 10) * 3);
+                    const healEffect = k.add([
+                        k.sprite("heal effect", { anim: "heal" }),
+                        k.pos(enemy.pos),
+                        k.anchor("center"),
+                        k.opacity(1),
+                        {
+                            update() {
+                                healEffect.pos = enemy.pos;
+                            }
+                        }
+                    ]);
+
+                    healEffect.onAnimEnd(() => k.destroy(healEffect));
+                });
+
             }
         }
 
@@ -978,6 +982,37 @@ export default function makeEnemy(
 
         if (enemy.isDying) return;
 
+        // reaper harvesting souls
+        const reapers = k.get("grimReaper-enemy") as EnemyGameObj[];
+
+        for (const reaper of reapers) {
+            if (
+                reaper !== enemy &&
+                reaper.pos.dist(enemy.pos) <= 3 * TILE_SIZE
+            ) {
+
+                createDeathParticles(k, enemy.pos, reaper);
+
+                waitScaled(k, 0.25, () => {
+                    reaper.heal(10);
+                    const healEffect = k.add([
+                        k.sprite("heal effect", { anim: "heal" }),
+                        k.pos(reaper.pos),
+                        k.anchor("center"),
+                        k.opacity(1),
+                        {
+                            update() {
+                                healEffect.pos = reaper.pos;
+                            }
+                        }
+                    ]);
+
+                    healEffect.onAnimEnd(() => k.destroy(healEffect));
+                });
+            }
+        }
+
+        //totems
         for (const totem of enemy.totemEffects) {
             totem.affectedEnemies.delete(enemy);
         }
@@ -1272,17 +1307,12 @@ function createBloodParticles(
 ) {
     const targetPos = target.pos;
 
-    const vampirePos = vampire.pos;
+    const particleCount = 8;
 
-    for (let i = 0; i < 8; i++) {
+    for (let i = 0; i < particleCount; i++) {
         const start = targetPos.add(
             k.rand(-12, 12),
             k.rand(-12, 12),
-        );
-
-        const end = vampirePos.add(
-            k.rand(-3, 3),
-            k.rand(-3, 3),
         );
 
         const size = k.rand(1, 3);
@@ -1294,14 +1324,109 @@ function createBloodParticles(
             k.z(100),
         ]);
 
-        k.tween(
-            start,
-            end,
-            k.rand(0.2, 0.35),
-            (p) => particle.pos = p,
-            k.easings.easeInQuad,
-        ).then(() => {
-            particle.destroy();
+        const speed = k.rand(120, 210);
+
+        particle.onUpdate(() => {
+
+            const distance = particle.pos.dist(vampire.pos);
+
+            if (distance <= 4) {
+                particle.destroy();
+                return;
+            }
+
+            const direction = vampire.pos
+                .sub(particle.pos)
+                .unit();
+
+            particle.pos = particle.pos.add(
+                direction.scale(speed * k.dt() * store.get(gameStateAtom).timeScale)
+            );
         });
     }
+}
+
+function createDeathParticles(
+    k: KAPLAYCtx,
+    from: Vec2,
+    reaper: EnemyGameObj
+) {
+    const particleCount = 10;
+    let particlesRemaining = particleCount;
+
+    for (let i = 0; i < particleCount; i++) {
+        const start = from.add(
+            k.rand(-12, 12),
+            k.rand(-12, 12),
+        );
+
+        const size = k.rand(1, 3);
+        const speed = k.rand(80, 140);
+
+        const particle = k.add([
+            k.rect(size, size),
+            k.color(50, 20, 60),
+            k.pos(start),
+            k.z(100),
+        ]);
+
+        particle.onUpdate(() => {
+
+            const distance = particle.pos.dist(reaper.pos);
+
+            if (distance <= 4) {
+                particle.destroy();
+                particlesRemaining--;
+
+                // Trigger the effect when the final particle arrives
+                if (particlesRemaining === 0) {
+                    empowerReaper(k, reaper);
+                }
+
+                return;
+            }
+
+            const direction = reaper.pos
+                .sub(particle.pos)
+                .unit();
+
+            particle.pos = particle.pos.add(
+                direction.scale(speed * k.dt() * store.get(gameStateAtom).timeScale)
+            );
+        });
+
+
+    }
+}
+
+function empowerReaper(k: KAPLAYCtx, reaper: EnemyGameObj) {
+    const originalScale = reaper.scale.clone();
+    const originalAngle = reaper.angle;
+
+    reaper.scale = originalScale.scale(1.2);
+
+    let elapsed = 0;
+    const duration = 0.3;
+
+    const update = reaper.onUpdate(() => {
+        elapsed += k.dt() * store.get(gameStateAtom).timeScale;
+
+        if (elapsed >= duration) {
+            reaper.angle = originalAngle;
+            update.cancel();
+            return;
+        }
+
+        const strength = 8 * (1 - elapsed / duration);
+
+        reaper.angle = originalAngle + k.rand(-strength, strength);
+    });
+
+    k.tween(
+        reaper.scale,
+        originalScale,
+        duration,
+        (scale) => reaper.scale = scale,
+        k.easings.easeOutQuad,
+    );
 }

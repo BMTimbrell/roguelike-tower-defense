@@ -17,7 +17,7 @@ export default function makeTotem(k: KAPLAYCtx, id: TotemId, pos: Vec2) {
             captureProgress: 0,
             captureTower: null,
             range: 4,
-            requiredDamage: 10,
+            requiredDamage: 250,
             affectedEnemies: new Set<EnemyGameObj>(),
             enemyEffect: TOTEMS[id].enemyEffect,
             playerBuff: TOTEMS[id].playerBuff
