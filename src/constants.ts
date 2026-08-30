@@ -2326,7 +2326,7 @@ export const LEVEL_WAVES = {
         waves: [
             {
                 spawns: [
-                    { id: "vampire", count: 5, interval: 1 },
+                    { id: "demon", count: 2, interval: 1.5}
                 ],
                 reward: 100
             },
@@ -3505,8 +3505,18 @@ export const ENEMIES = {
         deathSound: "monster death",
         batDuration: 3,
         batCooldown: 5,
-        suckBloodCooldown: 2
+        suckBloodCooldown: 2,
+        suckAmount: 10
     },
+    demon: {
+        hp: 100,
+        damage: 1,
+        chestValue: 0.75,
+        goldDropped: 2,
+        deathSound: "monster death4",
+        speed: 50,
+        sprite: "demon"
+    }
 } as const satisfies Record<string, EnemyConfig>;
 
 export type EnemyId = keyof typeof ENEMIES;

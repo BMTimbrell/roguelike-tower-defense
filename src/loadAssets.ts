@@ -1430,6 +1430,16 @@ export default function loadAssets(k: KAPLAYCtx) {
         }
     });
 
+    k.loadSprite("demon", "sprites/demon.png", {
+        sliceX: 5,
+        sliceY: 2,
+        anims: {
+            idle: 0,
+            move: { from: 0, to: 3, loop: true, speed: 4 },
+            die: { from: 5, to: 9, loop: false, speed: 7 }
+        }
+    });
+
     k.loadSprite("poison", "sprites/poison-icon.png");
     k.loadSprite("burn", "sprites/burn-icon.png");
     k.loadSprite("chill", "sprites/chill-icon.png");
@@ -1641,6 +1651,7 @@ export default function loadAssets(k: KAPLAYCtx) {
     k.loadSound("monster death", "sounds/enemies/monster-death.mp3");
     k.loadSound("monster death2", "sounds/enemies/monster-death2.mp3");
     k.loadSound("monster death3", "sounds/enemies/monster-death3.mp3");
+    k.loadSound("monster death4", "sounds/enemies/monster-death5.mp3");
     k.loadSound("skeleton death", "sounds/enemies/skeleton-death.mp3");
     k.loadSound("fairy death", "sounds/enemies/fairy-death.mp3");
     k.loadSound("fairy death2", "sounds/enemies/fairy-death2.mp3");

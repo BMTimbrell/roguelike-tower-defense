@@ -420,6 +420,7 @@ export type EnemyGameObj = GameObj<
     batCooldown?: number;
     suckBloodCooldown?: number;
     isBat?: boolean;
+    suckAmount?: number;
 };
 
 export type SwarmVisual = {
@@ -738,6 +739,7 @@ export type EnemyConfig = {
     batDuration?: number;
     batCooldown?: number;
     suckBloodCooldown?: number;
+    suckAmount?: number;
 };
 
 export type presentSpawns =

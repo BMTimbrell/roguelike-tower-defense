@@ -125,6 +125,7 @@ export default function makeEnemy(
             ...("batDuration" in ENEMIES[enemyId] ? { batDuration: ENEMIES[enemyId].batDuration as number } : {}),
             ...("batCooldown" in ENEMIES[enemyId] ? { batCooldown: ENEMIES[enemyId].batCooldown as number } : {}),
             ...("suckBloodCooldown" in ENEMIES[enemyId] ? { suckBloodCooldown: ENEMIES[enemyId].suckBloodCooldown as number } : {}),
+            ...("suckAmount" in ENEMIES[enemyId] ? { suckAmount: ENEMIES[enemyId].suckAmount as number } : {})
         },
         k.state("move", ["move", "stunned", "attack", "idle", "escape", "hidden", "shield", "shellBreak"]),
         statusEffect(),
@@ -610,8 +611,8 @@ export default function makeEnemy(
 
                 healEffect.onAnimEnd(() => k.destroy(healEffect));
 
-                target.hurt(10);
-                enemy.heal(30);
+                target.hurt(enemy.suckAmount ?? 10);
+                enemy.heal((enemy.suckAmount ?? 10) * 3);
             }
         }
 

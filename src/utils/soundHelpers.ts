@@ -45,7 +45,8 @@ const SOUND_VOLUMES: Record<string, number> = {
     "main title": 1.2,
     "holy": 0.75,
     "boss drums": 0.5,
-    "rock smash": 2
+    "rock smash": 2,
+    "monster death4": 10
 };
 
 export function playUISound(
