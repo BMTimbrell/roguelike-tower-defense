@@ -2346,7 +2346,7 @@ export const LEVEL_WAVES = {
         waves: [
             {
                 spawns: [
-                    { id: "fireSlime", count: 5, interval: 1.5 },
+                    { id: "masochist", count: 15, interval: 0.5 },
                 ],
                 reward: 100
             },

@@ -1734,6 +1734,7 @@ export default function loadAssets(k: KAPLAYCtx) {
     k.loadSound("dizzy", "sounds/soundEffects/dizzy.mp3");
     k.loadSound("drinking", "sounds/soundEffects/drinking.mp3");
     k.loadSound("rock smash", "sounds/soundEffects/rock-smash.mp3");
+    k.loadSound("totem magic", "sounds/soundEffects/totem-magic.mp3");
 
     //music
     k.loadSound("main title", "sounds/music/The-Crown-of-Aethelgard.mp3");

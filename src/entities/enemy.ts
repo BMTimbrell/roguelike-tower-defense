@@ -154,7 +154,8 @@ export default function makeEnemy(
             return;
         }
 
-        if (enemyId === "masochist") {
+        if (enemyId === "masochist" && painTimer <= 0 && painInterval) {
+            painTimer += painInterval * k.dt() * store.get(gameStateAtom).timeScale;
             if (enemy.sprite === "masochist") {
                 enemy.unuse("healthBar");
                 enemy.use(k.sprite("masochist happy", { anim: "move" }));
@@ -281,9 +282,14 @@ export default function makeEnemy(
     let regenTimer = 0;
     const regenTick = 1;
 
+    let painTimer = 0;
+    let painInterval = enemyId === "masochist" ? 0.5 : undefined;
+
     enemy.onUpdate(() => {
         if (enemy.isDying) return;
         updateTotemMembership(k, enemy);
+
+        if (painInterval && painTimer > 0) painTimer -= k.dt() * store.get(gameStateAtom).timeScale;
 
         if (enemy.healthRegen > 0) {
             regenTimer -= k.dt() * store.get(gameStateAtom).timeScale;

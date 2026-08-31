@@ -643,7 +643,7 @@ export default function makeLevelScene(k: KAPLAYCtx, sceneName: Scene) {
                             cactus.play("die");
                             cactus.isDying = true;
 
-                            k.trigger("enemyDeath", "ghost", { pos: cactus.pos, cactus, soulClaimed: false });
+                            k.trigger("enemyDeath", "ghost", { pos: cactus.pos, enemy: cactus, soulClaimed: false });
 
                             const goldEarned = 10;
                             store.set(gameStateAtom, prev => ({

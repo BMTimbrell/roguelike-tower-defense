@@ -3,6 +3,7 @@ import type { EnemyGameObj, TotemGameObj, TotemId, TowerGameObj } from "../types
 import { TILE_SIZE, TOTEMS } from "../constants";
 import { updateSpeed } from "./Enemy";
 import { hoveredTotemAtom, store } from "../store";
+import { playSfx } from "../utils/soundHelpers";
 
 export default function makeTotem(k: KAPLAYCtx, id: TotemId, pos: Vec2) {
     const totem: TotemGameObj = k.add([
@@ -17,7 +18,7 @@ export default function makeTotem(k: KAPLAYCtx, id: TotemId, pos: Vec2) {
             captureProgress: 0,
             captureTower: null,
             range: 4,
-            requiredDamage: 250,
+            requiredDamage: 50,
             affectedEnemies: new Set<EnemyGameObj>(),
             enemyEffect: TOTEMS[id].enemyEffect,
             playerBuff: TOTEMS[id].playerBuff
@@ -39,6 +40,8 @@ export default function makeTotem(k: KAPLAYCtx, id: TotemId, pos: Vec2) {
     function captureTotem(totem: TotemGameObj) {
         totem.isCaptured = true;
         totem.play("tower");
+
+        playSfx(k, "totem magic");
 
         for (const enemy of totem.affectedEnemies) {
             removeTotemEffect(enemy, totem);

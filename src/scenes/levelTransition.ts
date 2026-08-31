@@ -2,7 +2,7 @@ import type { KAPLAYCtx } from "kaplay";
 import { altarAtom, challengesAtom, chestAtom, gameStateAtom, hoveredTotemAtom, rewardsAtom, shopAtom, shopChoiceUIAtom, store, unlockProgressionAtom } from "../store";
 import initCam from "../utils/initCam";
 import type { HeroGameObj, LevelWaves, Scene, Upgrade } from "../types";
-import { BASE_DRAW_COST, LEVEL_REWARDS, LEVEL_WAVES, SCENES, TOWERS, UPGRADES, WORLDS, type LevelId, type TowerId } from "../constants";
+import { BASE_DRAW_COST, LEVEL_REWARDS, LEVEL_WAVES, TOWERS, UPGRADES, WORLDS, type LevelId, type TowerId } from "../constants";
 import generateMap from "../utils/generateMap";
 import makeHero from "../entities/Hero";
 import addTowers from "../utils/addTowers";
