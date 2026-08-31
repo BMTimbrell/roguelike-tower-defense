@@ -154,6 +154,22 @@ export default function makeEnemy(
             return;
         }
 
+        if (enemyId === "masochist") {
+            if (enemy.sprite === "masochist") {
+                enemy.unuse("healthBar");
+                enemy.use(k.sprite("masochist happy", { anim: "move" }));
+                enemy.baseSpeed *= 1.5;
+                updateSpeed.call(enemy);
+                enemy.use(healthBar(k, 2));
+            } else if (enemy.sprite === "masochist happy") {
+                enemy.unuse("healthBar");
+                enemy.use(k.sprite("masochist delighted", { anim: "move" }));
+                enemy.baseSpeed *= 1.5;
+                updateSpeed.call(enemy);
+                enemy.use(healthBar(k, 2));
+            }
+        }
+
         const prevDamageDealt = store.get(gameStateAtom).heroCharge.damageDealt;
         const damageDealt = prevDamageDealt + (enemy.hp() > 0 ? amount : amount + enemy.hp());
 
@@ -190,7 +206,7 @@ export default function makeEnemy(
     enemy.onAnimEnd(anim => {
         if (anim === "die") {
             if (enemy.sprite === "rock titan") {
-                enemy.unuse("healthBar")
+                enemy.unuse("healthBar");
                 enemy.use(k.sprite("headless rock titan"));
                 enemy.isDying = false;
                 if (enemy.state === "move") {

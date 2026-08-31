@@ -2326,7 +2326,7 @@ export const LEVEL_WAVES = {
         waves: [
             {
                 spawns: [
-                    { id: "grimReaper", count: 15, interval: 0.5 },
+                    { id: "masochist", count: 15, interval: 0.5 },
                 ],
                 reward: 100
             },
@@ -3550,14 +3550,40 @@ export const ENEMIES = {
         sprite: "grim reaper"
     },
     masochist: {
-        hp: 20,
+        hp: 70,
         chestValue: 0.75,
         goldDropped: 2,
         deathSound: "monster death",
         damage: 1,
         speed: 50,
-        sprite: "masochist delighted"
+        sprite: "masochist"
     },
+    imp: {
+        hp: 10,
+        damage: 1,
+        chestValue: 0.5,
+        goldDropped: 1,
+        deathSound: "monster death",
+        speed: 50,
+        sprite: "imp",
+        onDeath(k: KAPLAYCtx, enemy: EnemyGameObj) {
+
+            if (enemy.killer && enemy.killer.pos.add(enemy.killer.footprint.w * TILE_SIZE / 2).dist(enemy.pos) <= TILE_SIZE * 3) {
+
+                playSfx(k, "dark magic", 2, enemy.pos);
+
+                makeEnemyProjectile(k, {
+                    id: "shadowBlob",
+                    pos: enemy.pos,
+                    target: enemy.killer,
+                    hitChance: 1,
+                    damage: 0.5
+                });
+
+            }
+
+        }
+    }
 } as const satisfies Record<string, EnemyConfig>;
 
 export type EnemyId = keyof typeof ENEMIES;

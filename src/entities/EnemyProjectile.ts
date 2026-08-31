@@ -13,6 +13,7 @@ export default function makeEnemyProjectile(k: KAPLAYCtx, opts: {
     hitChance: number;
     summonAnim?: string;
     destroyDelay?: number;
+    damage?: number;
 }) {
     const { id, pos, target, hitChance } = opts;
 
@@ -64,7 +65,7 @@ export default function makeEnemyProjectile(k: KAPLAYCtx, opts: {
                     pos: targetPos
                 });
             } else if (Math.random() < hitChance) {
-                const duration = 2;
+                const duration = opts?.damage ?? 2;
 
                 target.disabledTimeLeft = Math.max(
                     target.disabledTimeLeft ?? 0,

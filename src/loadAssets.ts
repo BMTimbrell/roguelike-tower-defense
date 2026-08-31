@@ -1475,7 +1475,7 @@ export default function loadAssets(k: KAPLAYCtx) {
         sliceY: 4,
         anims: {
             idle: 0,
-            move: { from: 5, to: 8, loop: true, speed: 4 },
+            move: { from: 5, to: 8, loop: true, speed: 5 },
             die: { from: 15, to: 19, loop: false, speed: 7 }
         }
     });
@@ -1485,8 +1485,18 @@ export default function loadAssets(k: KAPLAYCtx) {
         sliceY: 4,
         anims: {
             idle: 0,
-            move: { from: 10, to: 13, loop: true, speed: 4 },
+            move: { from: 10, to: 13, loop: true, speed: 6 },
             die: { from: 15, to: 19, loop: false, speed: 7 }
+        }
+    });
+
+    k.loadSprite("imp", "sprites/imp.png", {
+        sliceX: 5,
+        sliceY: 2,
+        anims: {
+            idle: 0,
+            move: { from: 0, to: 3, loop: true, speed: 4 },
+            die: { from: 5, to: 9, loop: false, speed: 7 }
         }
     });
 
