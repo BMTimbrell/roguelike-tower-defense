@@ -1398,6 +1398,16 @@ export default function loadAssets(k: KAPLAYCtx) {
             die: { from: 7, to: 12, loop: false }
         }
     });
+    
+    k.loadSprite("giant fire slime", "sprites/giant-fire-slime.png", {
+        sliceX: 7,
+        sliceY: 2,
+        anims: {
+            idle: 0,
+            move: { from: 0, to: 5, loop: true },
+            die: { from: 7, to: 12, loop: false }
+        }
+    });
 
     k.loadSprite("zombie fairy", "sprites/zombie-fairy.png", {
         sliceX: 4,
@@ -1409,7 +1419,47 @@ export default function loadAssets(k: KAPLAYCtx) {
         }
     });
 
+    k.loadSprite("red zombie fairy", "sprites/red-zombie-fairy.png", {
+        sliceX: 4,
+        sliceY: 2,
+        anims: {
+            idle: 0,
+            move: { from: 0, to: 3, loop: true, speed: 4 },
+            die: { from: 4, to: 7, loop: false, speed: 7 }
+        }
+    });
+
+    k.loadSprite("giant zombie fairy", "sprites/giant-zombie-fairy.png", {
+        sliceX: 4,
+        sliceY: 2,
+        anims: {
+            idle: 0,
+            move: { from: 0, to: 3, loop: true, speed: 4 },
+            die: { from: 4, to: 7, loop: false, speed: 7 }
+        }
+    });
+
+    k.loadSprite("giant red zombie fairy", "sprites/giant-red-zombie-fairy.png", {
+        sliceX: 4,
+        sliceY: 2,
+        anims: {
+            idle: 0,
+            move: { from: 0, to: 3, loop: true, speed: 4 },
+            die: { from: 4, to: 7, loop: false, speed: 7 }
+        }
+    });
+
     k.loadSprite("hell wolf", "sprites/hell-wolf.png", {
+        sliceX: 4,
+        sliceY: 2,
+        anims: {
+            idle: 0,
+            move: { from: 0, to: 3, loop: true, speed: 7 },
+            die: { from: 4, to: 7, loop: false, speed: 7 }
+        }
+    });
+
+    k.loadSprite("giant hell wolf", "sprites/giant-hell-wolf.png", {
         sliceX: 4,
         sliceY: 2,
         anims: {
@@ -1430,6 +1480,17 @@ export default function loadAssets(k: KAPLAYCtx) {
         }
     });
 
+    k.loadSprite("giant vampire", "sprites/giant-vampire.png", {
+        sliceX: 5,
+        sliceY: 3,
+        anims: {
+            idle: 0,
+            move: { from: 0, to: 3, loop: true, speed: 7 },
+            fly: { from: 5, to: 6, loop: true, speed: 7 },
+            die: { from: 10, to: 14, loop: false, speed: 8 }
+        }
+    });
+
     k.loadSprite("demon", "sprites/demon.png", {
         sliceX: 5,
         sliceY: 2,
@@ -1440,6 +1501,16 @@ export default function loadAssets(k: KAPLAYCtx) {
         }
     });
 
+    k.loadSprite("giant demon", "sprites/giant-demon.png", {
+        sliceX: 7,
+        sliceY: 2,
+        anims: {
+            idle: 0,
+            move: { from: 0, to: 3, loop: true, speed: 4 },
+            die: { from: 8, to: 11, loop: false, speed: 6 }
+        }
+    });
+
     k.loadSprite("armoured demon", "sprites/armoured-demon.png", {
         sliceX: 5,
         sliceY: 2,
@@ -1447,6 +1518,16 @@ export default function loadAssets(k: KAPLAYCtx) {
             idle: 0,
             move: { from: 0, to: 3, loop: true, speed: 4 },
             die: { from: 5, to: 9, loop: false, speed: 7 }
+        }
+    });
+
+    k.loadSprite("giant armoured demon", "sprites/giant-armoured-demon.png", {
+        sliceX: 7,
+        sliceY: 2,
+        anims: {
+            idle: 0,
+            move: { from: 0, to: 3, loop: true, speed: 4 },
+            die: { from: 8, to: 11, loop: false, speed: 6 }
         }
     });
 
@@ -1470,6 +1551,16 @@ export default function loadAssets(k: KAPLAYCtx) {
         }
     });
 
+    k.loadSprite("giant masochist", "sprites/giant-masochist.png", {
+        sliceX: 5,
+        sliceY: 4,
+        anims: {
+            idle: 0,
+            move: { from: 0, to: 3, loop: true, speed: 4 },
+            die: { from: 15, to: 19, loop: false, speed: 7 }
+        }
+    });
+
     k.loadSprite("masochist happy", "sprites/masochist.png", {
         sliceX: 5,
         sliceY: 4,
@@ -1480,7 +1571,27 @@ export default function loadAssets(k: KAPLAYCtx) {
         }
     });
 
+    k.loadSprite("giant masochist happy", "sprites/giant-masochist.png", {
+        sliceX: 5,
+        sliceY: 4,
+        anims: {
+            idle: 0,
+            move: { from: 5, to: 8, loop: true, speed: 5 },
+            die: { from: 15, to: 19, loop: false, speed: 7 }
+        }
+    });
+
     k.loadSprite("masochist delighted", "sprites/masochist.png", {
+        sliceX: 5,
+        sliceY: 4,
+        anims: {
+            idle: 0,
+            move: { from: 10, to: 13, loop: true, speed: 6 },
+            die: { from: 15, to: 19, loop: false, speed: 7 }
+        }
+    });
+
+    k.loadSprite("giant masochist delighted", "sprites/giant-masochist.png", {
         sliceX: 5,
         sliceY: 4,
         anims: {
@@ -1725,6 +1836,7 @@ export default function loadAssets(k: KAPLAYCtx) {
     k.loadSound("mummy summon", "sounds/enemies/mummy-summon-3.mp3");
     k.loadSound("camel spit", "sounds/enemies/camel-spit.mp3");
     k.loadSound("blood splatter", "sounds/enemies/blood-splatter.mp3");
+    k.loadSound("masochist death", "sounds/enemies/creepy-laugh.mp3");
 
     k.loadSound("boss drums", "sounds/soundEffects/bossApproach.wav");
     k.loadSound("level up", "sounds/soundEffects/nextLevel.mp3");

@@ -2339,14 +2339,14 @@ export const LEVEL_WAVES = {
         ]
     },
     "world2-level4-2": {
-        startingGold: 150,
+        startingGold: 600,
         startDelay: 120,
         music: "hell biome",
         shop: true,
         waves: [
             {
                 spawns: [
-                    { id: "masochist", count: 15, interval: 0.5 },
+                    { id: "giantMasochist", count: 2, interval: 10 },
                 ],
                 reward: 100
             },
@@ -3530,6 +3530,16 @@ export const ENEMIES = {
         speed: 50,
         sprite: "demon"
     },
+    giantDemon: {
+        hp: 1400,
+        hasLargeSoul: true,
+        goldDropped: 5,
+        chestValue: 1.75,
+        deathSound: "monster death4",
+        damage: 5,
+        speed: 25,
+        sprite: "giant demon"
+    },
     armouredDemon: {
         hp: 120,
         armour: 100,
@@ -3539,6 +3549,17 @@ export const ENEMIES = {
         damage: 1,
         speed: 50,
         sprite: "armoured demon"
+    },
+    giantArmouredDemon: {
+        hp: 2000,
+        armour: 280,
+        chestValue: 3,
+        goldDropped: 6,
+        deathSound: "monster death4",
+        hasLargeSoul: true,
+        damage: 5,
+        speed: 25,
+        sprite: "giant armoured demon"
     },
     grimReaper: {
         hp: 20,
@@ -3553,10 +3574,19 @@ export const ENEMIES = {
         hp: 70,
         chestValue: 0.75,
         goldDropped: 2,
-        deathSound: "monster death",
+        deathSound: "masochist death",
         damage: 1,
         speed: 50,
         sprite: "masochist"
+    },
+    giantMasochist: {
+        hp: 850,
+        chestValue: 1.25,
+        goldDropped: 4,
+        deathSound: "masochist death",
+        damage: 5,
+        speed: 25,
+        sprite: "giant masochist"
     },
     imp: {
         hp: 10,
@@ -3583,6 +3613,27 @@ export const ENEMIES = {
             }
 
         }
+    },
+    giantFireSlime: {
+        hp: 300,
+        damage: 5,
+        chestValue: 1,
+        hasLargeSoul: true,
+        goldDropped: 3,
+        deathSound: "monster death3",
+        shootSound: "fireball",
+        speed: 25,
+        spawnOnDeath: {
+            id: "fireSlime",
+            amount: 4
+        },
+        attacker: {
+            projectile: "fireball",
+            attackRange: 3.5,
+            canAttack: false,
+            attackCooldown: 5
+        },
+        sprite: "giant fire slime"
     }
 } as const satisfies Record<string, EnemyConfig>;
 

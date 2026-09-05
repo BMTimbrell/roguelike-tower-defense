@@ -154,17 +154,35 @@ export default function makeEnemy(
             return;
         }
 
-        if (enemyId === "masochist" && painTimer <= 0 && painInterval) {
+        if ((enemyId === "masochist" || enemyId === "giantMasochist") && painTimer <= 0 && painInterval && !enemy.isDying) {
             painTimer += painInterval * k.dt() * store.get(gameStateAtom).timeScale;
-            if (enemy.sprite === "masochist") {
+            let newSprite: string | undefined;
+
+            switch (enemy.sprite) {
+                case "masochist":
+                    newSprite = "masochist happy";
+                    break;
+                case "masochist happy":
+                    newSprite = "masochist delighted";
+                    break;
+                case "giant masochist":
+                    newSprite = "giant masochist happy";
+                    break;
+                case "giant masochist happy":
+                    newSprite = "giant masochist delighted";
+                    break;
+                default: newSprite = "masochist";
+            }
+
+            if (enemy.sprite === "masochist" || enemy.sprite === "giant masochist") {
                 enemy.unuse("healthBar");
-                enemy.use(k.sprite("masochist happy", { anim: "move" }));
+                enemy.use(k.sprite(newSprite, { anim: "move" }));
                 enemy.baseSpeed *= 1.5;
                 updateSpeed.call(enemy);
                 enemy.use(healthBar(k, 2));
-            } else if (enemy.sprite === "masochist happy") {
+            } else if (enemy.sprite === "masochist happy" || enemy.sprite === "giant masochist happy") {
                 enemy.unuse("healthBar");
-                enemy.use(k.sprite("masochist delighted", { anim: "move" }));
+                enemy.use(k.sprite(newSprite, { anim: "move" }));
                 enemy.baseSpeed *= 1.5;
                 updateSpeed.call(enemy);
                 enemy.use(healthBar(k, 2));
@@ -283,7 +301,7 @@ export default function makeEnemy(
     const regenTick = 1;
 
     let painTimer = 0;
-    let painInterval = enemyId === "masochist" ? 0.5 : undefined;
+    let painInterval = enemyId === "masochist" || enemyId === "giantMasochist" ? 0.5 : undefined;
 
     enemy.onUpdate(() => {
         if (enemy.isDying) return;

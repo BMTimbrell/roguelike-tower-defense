@@ -692,7 +692,8 @@ export type EnemyConfig = {
         "giantPenguin" |
         "locust" |
         "specialGiantScorpian" |
-        "scorpian";
+        "scorpian" |
+        "fireSlime";
         amount: number;
         offset?: number;
     };

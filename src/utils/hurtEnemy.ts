@@ -29,6 +29,8 @@ export default function hurtEnemy(k: KAPLAYCtx, opts: {
     let remainingDamage = Math.round(damage * darkHarvestMarkDamageMult);
     let effectiveDamage = Math.round(damage * darkHarvestMarkDamageMult);
 
+    if (attacker) target.killer = attacker;
+
     if (target.armour && target.armour > 0 && !ignoreArmour) {
         // crits ignore reduced
         effectiveDamage = Math.round(damage * (isCrit ? 1 : 0.5));
@@ -48,7 +50,6 @@ export default function hurtEnemy(k: KAPLAYCtx, opts: {
         if (target.shieldHp < 0) target.hurt(-target.shieldHp);
     } else {
         target.hurt(remainingDamage);
-        if (attacker) target.killer = attacker;
         if (hasDarkHarvest) target.darkHarvestDamage += effectiveDamage;
     }
 
