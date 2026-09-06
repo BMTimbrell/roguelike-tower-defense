@@ -1,6 +1,6 @@
 import { type MouseEventHandler } from "react";
 import { TILE_SIZE, type EnemyId, type HeroId, type LevelId, type ProjectileId, type SkillId, type TowerId } from "./constants";
-import type { Vec2, GameObj, KAPLAYCtx, HealthComp, SpriteComp, StateComp, RotateComp, PosComp, ZComp, OpacityComp, ButtonBinding, MouseButton, Key, AreaComp, Color, ScaleComp } from "kaplay";
+import type { Vec2, GameObj, KAPLAYCtx, HealthComp, SpriteComp, StateComp, RotateComp, PosComp, ZComp, OpacityComp, ButtonBinding, MouseButton, Key, AreaComp, Color, ScaleComp, KEventController } from "kaplay";
 import { frostAoeBurst } from "./utils/makeUnitCombat";
 import type { StatusEffectComp } from "./kaplayComponents/statusEffect";
 import type { ChallengeManager } from "./utils/challengeHelpers";
@@ -422,6 +422,9 @@ export type EnemyGameObj = GameObj<
     suckBloodCooldown?: number;
     isBat?: boolean;
     suckAmount?: number;
+    soulCount?: number;
+    reaperEmpowerUpdate?: KEventController | null;
+    reaperEmpowerElapsed?: number;
 };
 
 export type SwarmVisual = {

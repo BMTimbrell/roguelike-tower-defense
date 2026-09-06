@@ -21,7 +21,8 @@ export default function makeEnemy(
     waypoints: Vec2[],
     pathIndex: number = 0,
     pos?: Vec2,
-    stopIndexes?: number[]
+    stopIndexes?: number[],
+    healthPercentage?: number
 ) {
     const difficulty = store.get(gameStateAtom).difficulty;
     const waveNumber = store.get(gameStateAtom).waveNumber;
@@ -126,16 +127,27 @@ export default function makeEnemy(
             ...("batDuration" in ENEMIES[enemyId] ? { batDuration: ENEMIES[enemyId].batDuration as number } : {}),
             ...("batCooldown" in ENEMIES[enemyId] ? { batCooldown: ENEMIES[enemyId].batCooldown as number } : {}),
             ...("suckBloodCooldown" in ENEMIES[enemyId] ? { suckBloodCooldown: ENEMIES[enemyId].suckBloodCooldown as number } : {}),
-            ...("suckAmount" in ENEMIES[enemyId] ? { suckAmount: ENEMIES[enemyId].suckAmount as number } : {})
+            ...("suckAmount" in ENEMIES[enemyId] ? { suckAmount: ENEMIES[enemyId].suckAmount as number } : {}),
+            ...(enemyId === "grimReaper" || enemyId === "giantGrimReaper" ? { 
+                soulCount: 0,
+                reaperEmpowerUpdate: null,
+                reaperEmpowerElapsed: 0
+            } : {})
         },
         k.state("move", ["move", "stunned", "attack", "idle", "escape", "hidden", "shield", "shellBreak"]),
         statusEffect(),
         k.z(1),
         "enemy",
         "targetable",
+        enemyId === "grimReaper" || enemyId === "giantGrimReaper" ? "grimreaper" : "",
         "isBoss" in ENEMIES[enemyId] && ENEMIES[enemyId].isBoss ? "boss" : "",
         `${enemyId}-enemy`
     ]);
+
+
+    if (healthPercentage) {
+        enemy.setHP(Math.round(healthPercentage * (enemy.maxHP() ?? 1)));
+    }
 
     enemy.animSpeed = store.get(gameStateAtom).timeScale;
 
@@ -306,6 +318,30 @@ export default function makeEnemy(
     enemy.onUpdate(() => {
         if (enemy.isDying) return;
         updateTotemMembership(k, enemy);
+
+        if (enemy.soulCount && enemy.soulCount >= 5) {
+            if (enemyId === "grimReaper") {
+                k.destroy(enemy);
+                makeEnemy(k, "giantGrimReaper", enemy.path, enemy.pathIndex, enemy.pos, undefined, enemy.hp() / (enemy.maxHP() ?? 1));
+            } else if (enemyId === "giantGrimReaper") {
+                enemy.soulCount = 0;
+                let didShoot = false;
+                (k.get("tower") as TowerGameObj[]).forEach(tower => {
+                    if (tower.pos.add(tower.footprint.w * TILE_SIZE / 2).dist(enemy.pos) <= TILE_SIZE * 4) {
+                        makeEnemyProjectile(k, {
+                            id: "ghostProjectile",
+                            pos: enemy.pos,
+                            target: tower,
+                            hitChance: enemy.has("blind") ? 0.3 : 1,
+                            damage: 1
+                        });
+                        didShoot = true;
+                    }
+                });
+
+                if (didShoot) playSfx(k, "ghosts", 1.5, enemy.pos);
+            }
+        }
 
         if (painInterval && painTimer > 0) painTimer -= k.dt() * store.get(gameStateAtom).timeScale;
 
@@ -1023,7 +1059,7 @@ export default function makeEnemy(
         if (enemy.isDying) return;
 
         // reaper harvesting souls
-        const reapers = k.get("grimReaper-enemy") as EnemyGameObj[];
+        const reapers = k.get("grimreaper") as EnemyGameObj[];
 
         for (const reaper of reapers) {
             if (
@@ -1034,7 +1070,7 @@ export default function makeEnemy(
                 createDeathParticles(k, enemy.pos, reaper);
 
                 waitScaled(k, 0.25, () => {
-                    reaper.heal(10);
+                    reaper.heal(enemyId === "giantGrimReaper" ? 30 : 10);
                     const healEffect = k.add([
                         k.sprite("heal effect", { anim: "heal" }),
                         k.pos(reaper.pos),
@@ -1046,6 +1082,8 @@ export default function makeEnemy(
                             }
                         }
                     ]);
+
+                    if (reaper.soulCount !== undefined) reaper.soulCount++;
 
                     healEffect.onAnimEnd(() => k.destroy(healEffect));
                 });
@@ -1440,33 +1478,42 @@ function createDeathParticles(
 }
 
 function empowerReaper(k: KAPLAYCtx, reaper: EnemyGameObj) {
+    if (reaper.reaperEmpowerUpdate) {
+        reaper.reaperEmpowerElapsed = 0;
+        return;
+    }
+
     const originalScale = reaper.scale.clone();
     const originalAngle = reaper.angle;
-
-    reaper.scale = originalScale.scale(1.2);
-
-    let elapsed = 0;
     const duration = 0.3;
 
-    const update = reaper.onUpdate(() => {
-        elapsed += k.dt() * store.get(gameStateAtom).timeScale;
+    reaper.reaperEmpowerElapsed = 0;
 
-        if (elapsed >= duration) {
-            reaper.angle = originalAngle;
-            update.cancel();
-            return;
-        }
+    reaper.reaperEmpowerUpdate = reaper.onUpdate(() => {
+        if (!reaper.reaperEmpowerElapsed) reaper.reaperEmpowerElapsed = 0;
+        reaper.reaperEmpowerElapsed += k.dt() * store.get(gameStateAtom).timeScale;
 
-        const strength = 8 * (1 - elapsed / duration);
+        const progress = Math.min(
+            reaper.reaperEmpowerElapsed / duration,
+            1
+        );
+
+        const strength = 8 * (1 - progress);
 
         reaper.angle = originalAngle + k.rand(-strength, strength);
-    });
 
-    k.tween(
-        reaper.scale,
-        originalScale,
-        duration,
-        (scale) => reaper.scale = scale,
-        k.easings.easeOutQuad,
-    );
+        // Scale goes from 1.2 -> 1
+        const scaleAmount = 1 + 0.2 * (1 - progress);
+        reaper.scale = originalScale.scale(scaleAmount);
+
+        if (progress >= 1) {
+            reaper.scale = originalScale;
+            reaper.angle = originalAngle;
+
+            if (reaper.reaperEmpowerUpdate) {
+                reaper.reaperEmpowerUpdate.cancel();
+                reaper.reaperEmpowerUpdate = undefined;
+            }
+        }
+    });
 }

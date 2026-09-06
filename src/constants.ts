@@ -1950,6 +1950,7 @@ export const LEVEL_WAVES = {
         waves: [
             {
                 spawns: [
+                    { id: "giantCamel", count: 1, interval: 2 },
                     { id: "scorpian", count: 8, interval: 1 }
                 ],
                 reward: 50
@@ -2319,14 +2320,15 @@ export const LEVEL_WAVES = {
         ]
     },
     "world2-level4-1": {
-        startingGold: 150,
+        startingGold: 500,
         startDelay: 120,
         music: "hell biome",
         shop: true,
         waves: [
             {
                 spawns: [
-                    { id: "masochist", count: 15, interval: 0.5 },
+                    { id: "grimReaper", count: 1, interval: 0.5 },
+                    { id: "bee", count: 50, interval: 0.25 },
                 ],
                 reward: 100
             },
@@ -2339,14 +2341,15 @@ export const LEVEL_WAVES = {
         ]
     },
     "world2-level4-2": {
-        startingGold: 600,
+        startingGold: 150,
         startDelay: 120,
         music: "hell biome",
         shop: true,
         waves: [
             {
                 spawns: [
-                    { id: "giantMasochist", count: 2, interval: 10 },
+                    { id: "grimReaper", count: 1, interval: 5 },
+                    { id: "bee", count: 50, interval: 0.25 },
                 ],
                 reward: 100
             },
@@ -3369,7 +3372,7 @@ export const ENEMIES = {
         }
     },
     plagueMummy: {
-        hp: 6,
+        hp: 50,
         damage: 99,
         goldDropped: 50,
         chestValue: 5,
@@ -3495,6 +3498,47 @@ export const ENEMIES = {
         },
         deathSound: "zombie fairy death"
     },
+    redZombieFairy: {
+        hp: 120,
+        damage: 1,
+        chestValue: 0.75,
+        goldDropped: 2,
+        speed: 60,
+        sprite: "red zombie fairy",
+        healer: {
+            amount: 20,
+            range: 2
+        },
+        deathSound: "zombiefairy death"
+    },
+    giantZombieFairy: {
+        hp: 700,
+        damage: 5,
+        goldDropped: 5,
+        chestValue: 2,
+        hasLargeSoul: true,
+        deathSound: "zombiefairy death",
+        speed: 30,
+        sprite: "giant zombie fairy",
+        healer: {
+            amount: 30,
+            range: 2
+        }
+    },
+    giantRedZombieFairy: {
+        hp: 1400,
+        damage: 5,
+        hasLargeSoul: true,
+        deathSound: "zombiefairy death",
+        chestValue: 3,
+        speed: 30,
+        goldDropped: 6,
+        sprite: "giant red zombie fairy",
+        healer: {
+            amount: 60,
+            range: 2
+        }
+    },
     hellWolf: {
         hp: 60,
         damage: 1,
@@ -3534,7 +3578,7 @@ export const ENEMIES = {
         hp: 1400,
         hasLargeSoul: true,
         goldDropped: 5,
-        chestValue: 1.75,
+        chestValue: 2,
         deathSound: "monster death4",
         damage: 5,
         speed: 25,
@@ -3562,7 +3606,7 @@ export const ENEMIES = {
         sprite: "giant armoured demon"
     },
     grimReaper: {
-        hp: 20,
+        hp: 80,
         chestValue: 0.75,
         goldDropped: 2,
         deathSound: "monster death",
@@ -3582,6 +3626,7 @@ export const ENEMIES = {
     giantMasochist: {
         hp: 850,
         chestValue: 1.25,
+        hasLargeSoul: true,
         goldDropped: 4,
         deathSound: "masochist death",
         damage: 5,
@@ -3634,6 +3679,30 @@ export const ENEMIES = {
             attackCooldown: 5
         },
         sprite: "giant fire slime"
+    },
+    giantVampire: {
+        hp: 1250,
+        damage: 5,
+        chestValue: 2,
+        goldDropped: 5,
+        speed: 25,
+        sprite: "giant vampire",
+        deathSound: "monster death",
+        batDuration: 3,
+        hasLargeSoul: true,
+        batCooldown: 5,
+        suckBloodCooldown: 2,
+        suckAmount: 50
+    },
+    giantGrimReaper: {
+        hp: 1000,
+        chestValue: 1.5,
+        goldDropped: 5,
+        deathSound: "monster death",
+        damage: 5,
+        hasLargeSoul: true,
+        speed: 25,
+        sprite: "giant grim reaper"
     }
 } as const satisfies Record<string, EnemyConfig>;
 

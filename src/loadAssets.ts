@@ -1541,6 +1541,16 @@ export default function loadAssets(k: KAPLAYCtx) {
         }
     });
 
+    k.loadSprite("giant grim reaper", "sprites/giant-grim-reaper.png", {
+        sliceX: 4,
+        sliceY: 2,
+        anims: {
+            idle: 0,
+            move: { from: 0, to: 3, loop: true, speed: 4 },
+            die: { from: 4, to: 7, loop: false, speed: 7 }
+        }
+    });
+
     k.loadSprite("masochist", "sprites/masochist.png", {
         sliceX: 5,
         sliceY: 4,
