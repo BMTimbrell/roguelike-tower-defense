@@ -1064,7 +1064,7 @@ export default function makeEnemy(
         for (const reaper of reapers) {
             if (
                 reaper !== enemy &&
-                reaper.pos.dist(enemy.pos) <= 3 * TILE_SIZE
+                reaper.pos.dist(enemy.pos) <= (enemyId === "giantGrimReaper" ? 4 : 3) * TILE_SIZE
             ) {
 
                 createDeathParticles(k, enemy.pos, reaper);

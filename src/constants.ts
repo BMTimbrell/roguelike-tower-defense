@@ -2327,8 +2327,7 @@ export const LEVEL_WAVES = {
         waves: [
             {
                 spawns: [
-                    { id: "grimReaper", count: 1, interval: 0.5 },
-                    { id: "bee", count: 50, interval: 0.25 },
+                    { id: "occultist", count: 5, interval: 0.5 }
                 ],
                 reward: 100
             },
@@ -3659,6 +3658,40 @@ export const ENEMIES = {
 
         }
     },
+    giantImp: {
+        hp: 300,
+        damage: 5,
+        chestValue: 1,
+        goldDropped: 3,
+        deathSound: "monster death",
+        hasLargeSoul: true,
+        speed: 25,
+        sprite: "giant imp",
+        shootSound: "dark magic",
+        attacker: {
+            projectile: "shadowBlob",
+            attackRange: 3.5,
+            canAttack: false,
+            attackCooldown: 5
+        },
+        onDeath(k: KAPLAYCtx, enemy: EnemyGameObj) {
+
+            if (enemy.killer && enemy.killer.pos.add(enemy.killer.footprint.w * TILE_SIZE / 2).dist(enemy.pos) <= TILE_SIZE * 4) {
+
+                playSfx(k, "dark magic", 2, enemy.pos);
+
+                makeEnemyProjectile(k, {
+                    id: "shadowBlob",
+                    pos: enemy.pos,
+                    target: enemy.killer,
+                    hitChance: 1,
+                    damage: 1
+                });
+
+            }
+
+        }
+    },
     giantFireSlime: {
         hp: 300,
         damage: 5,
@@ -3703,7 +3736,16 @@ export const ENEMIES = {
         hasLargeSoul: true,
         speed: 25,
         sprite: "giant grim reaper"
-    }
+    },
+    occultist: {
+        hp: 80,
+        damage: 1,
+        chestValue: 0.75,
+        goldDropped: 2,
+        deathSound: "monster death",
+        speed: 50,
+        sprite: "occultist"
+    },
 } as const satisfies Record<string, EnemyConfig>;
 
 export type EnemyId = keyof typeof ENEMIES;

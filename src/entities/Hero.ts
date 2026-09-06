@@ -348,12 +348,15 @@ export default function makeHero(k: KAPLAYCtx,
                 // non-song buffs
                 for (let i = hero.towerBuffs.length - 1; i >= 0; i--) {
                     const buff = hero.towerBuffs[i];
+                    if (buff?.timeLeft !== undefined) {
+                        buff.timeLeft -= k.dt() * timeScale;
 
-                    buff.timeLeft -= k.dt() * timeScale;
+                        if (buff.timeLeft <= 0) {
+                            hero.towerBuffs.splice(i, 1);
+                        }
 
-                    if (buff.timeLeft <= 0) {
-                        hero.towerBuffs.splice(i, 1);
                     }
+
                 }
 
                 if (hero.disabledTimeLeft > 0) {

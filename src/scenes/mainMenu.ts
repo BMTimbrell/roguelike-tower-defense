@@ -72,9 +72,10 @@ export default function mainMenu(k: KAPLAYCtx) {
 
         if (saveData?.meta) {
             const meta = saveData.meta;
+            
             store.set(unlockProgressionAtom, prev => ({
                 ...prev,
-                unlockedHeroes: ["archer", "assassin"],
+                unlockedHeroes: meta.unlockedHeroes,
                 campaignLevelsCompleted: meta.campaignLevelsCompleted,
                 spellsCast: meta.spellsCast,
                 levelsWithoutLivesLost: meta.levelsWithoutLivesLost,
