@@ -640,6 +640,7 @@ export default function makeEnemy(
 
         castCircle = k.add([
             k.sprite("occultist circle"),
+            k.scale(enemy.castRange ?? 1),
             k.anchor("center"),
             k.pos(enemy.pos)
         ]);

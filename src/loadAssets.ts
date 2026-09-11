@@ -1642,6 +1642,17 @@ export default function loadAssets(k: KAPLAYCtx) {
         }
     });
 
+    k.loadSprite("giant occultist", "sprites/giant-occultist.png", {
+        sliceX: 4,
+        sliceY: 3,
+        anims: {
+            idle: 0,
+            move: { from: 0, to: 3, loop: true, speed: 4 },
+            cast: { from: 4, to: 6, loop: false, speed: 7 },
+            die: { from: 8, to: 11, loop: false, speed: 7 }
+        }
+    });
+
     k.loadSprite("poison", "sprites/poison-icon.png");
     k.loadSprite("burn", "sprites/burn-icon.png");
     k.loadSprite("chill", "sprites/chill-icon.png");

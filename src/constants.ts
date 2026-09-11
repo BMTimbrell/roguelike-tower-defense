@@ -2326,8 +2326,8 @@ export const LEVEL_WAVES = {
         waves: [
             {
                 spawns: [
-                    { id: "occultist", count: 1, interval: 0.5 },
-                    { id: "imp", count: 10, interval: 0.5}
+                    { id: "giantOccultist", count: 1, interval: 3 },
+                    { id: "imp", count: 30, interval: 0.5}
                 ],
                 reward: 100
             },
@@ -3748,6 +3748,19 @@ export const ENEMIES = {
         castRange: 1,
         speed: 50,
         sprite: "occultist"
+    },
+    giantOccultist: {
+        hp: 1000,
+        chestValue: 1.5,
+        goldDropped: 5,
+        deathSound: "monster death",
+        damage: 5,
+        hasLargeSoul: true,
+        speed: 25,
+        sprite: "giant occultist",
+        castCooldown: 5,
+        castDuration: 2.5,
+        castRange: 2,
     },
 } as const satisfies Record<string, EnemyConfig>;
 
