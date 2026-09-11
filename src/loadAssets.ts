@@ -1637,7 +1637,7 @@ export default function loadAssets(k: KAPLAYCtx) {
         anims: {
             idle: 0,
             move: { from: 0, to: 3, loop: true, speed: 4 },
-            castSpell: { from: 4, to: 6, loop: false, speed: 7 },
+            cast: { from: 4, to: 6, loop: false, speed: 7 },
             die: { from: 8, to: 11, loop: false, speed: 7 }
         }
     });
@@ -1725,6 +1725,13 @@ export default function loadAssets(k: KAPLAYCtx) {
     k.loadSprite("water puddle", "sprites/water-puddle.png");
     k.loadSprite("water bottle", "sprites/water-bottle-icon.png");
     k.loadSprite("shield", "sprites/shield.png");
+    k.loadSprite("occultist shield", "sprites/occultist-shield.png", {
+        sliceX: 4,
+        sliceY: 1,
+        anims: {
+            shield: 1
+        }
+    });
     k.loadSprite("water drop", "sprites/water-drop.png");
     k.loadSprite("dizzy", "sprites/dizzy.png", {
         sliceX: 3,
@@ -1792,6 +1799,7 @@ export default function loadAssets(k: KAPLAYCtx) {
         }
     });
     k.loadSprite("tower placement icon", "sprites/tower-placement-icon.png");
+    k.loadSprite("occultist circle", "sprites/occultist-circle.png");
 
     //sounds
 
@@ -1868,6 +1876,7 @@ export default function loadAssets(k: KAPLAYCtx) {
     k.loadSound("camel spit", "sounds/enemies/camel-spit.mp3");
     k.loadSound("blood splatter", "sounds/enemies/blood-splatter.mp3");
     k.loadSound("masochist death", "sounds/enemies/creepy-laugh.mp3");
+    k.loadSound("occultist spell", "sounds/enemies/occultist-spell.mp3");
 
     k.loadSound("boss drums", "sounds/soundEffects/bossApproach.wav");
     k.loadSound("level up", "sounds/soundEffects/nextLevel.mp3");

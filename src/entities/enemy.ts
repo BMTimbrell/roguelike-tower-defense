@@ -128,13 +128,17 @@ export default function makeEnemy(
             ...("batCooldown" in ENEMIES[enemyId] ? { batCooldown: ENEMIES[enemyId].batCooldown as number } : {}),
             ...("suckBloodCooldown" in ENEMIES[enemyId] ? { suckBloodCooldown: ENEMIES[enemyId].suckBloodCooldown as number } : {}),
             ...("suckAmount" in ENEMIES[enemyId] ? { suckAmount: ENEMIES[enemyId].suckAmount as number } : {}),
-            ...(enemyId === "grimReaper" || enemyId === "giantGrimReaper" ? { 
+            ...(enemyId === "grimReaper" || enemyId === "giantGrimReaper" ? {
                 soulCount: 0,
                 reaperEmpowerUpdate: null,
                 reaperEmpowerElapsed: 0
-            } : {})
+            } : {}),
+            ...("castCooldown" in ENEMIES[enemyId] ? { castCooldown: ENEMIES[enemyId].castCooldown as number } : {}),
+            ...("castRange" in ENEMIES[enemyId] ? { castRange: ENEMIES[enemyId].castRange as number } : {}),
+            ...("castDuration" in ENEMIES[enemyId] ? { castDuration: ENEMIES[enemyId].castDuration as number } : {}),
+            blockSources: new Set<EnemyGameObj>()
         },
-        k.state("move", ["move", "stunned", "attack", "idle", "escape", "hidden", "shield", "shellBreak"]),
+        k.state("move", ["move", "stunned", "attack", "idle", "escape", "hidden", "shield", "shellBreak", "cast"]),
         statusEffect(),
         k.z(1),
         "enemy",
@@ -143,7 +147,6 @@ export default function makeEnemy(
         "isBoss" in ENEMIES[enemyId] && ENEMIES[enemyId].isBoss ? "boss" : "",
         `${enemyId}-enemy`
     ]);
-
 
     if (healthPercentage) {
         enemy.setHP(Math.round(healthPercentage * (enemy.maxHP() ?? 1)));
@@ -626,9 +629,63 @@ export default function makeEnemy(
         })
     });
 
+    let castTimer = enemy.castDuration ?? 0;
+    let castCircle: GameObj | undefined;
+    let occultistShield: GameObj | undefined;
+
+    enemy.onStateEnter("cast", () => {
+        enemy.play("cast");
+
+        playSfx(k, "occultist spell", 1, enemy.pos);
+
+        castCircle = k.add([
+            k.sprite("occultist circle"),
+            k.anchor("center"),
+            k.pos(enemy.pos)
+        ]);
+        occultistShield = k.add([
+            k.sprite("occultist shield", { anim: "shield" }),
+            k.anchor("center"),
+            k.pos(enemy.pos)
+        ]);
+
+        occultistShield.width = (enemy.castRange ?? 0) * TILE_SIZE * 2;
+        occultistShield.height = (enemy.castRange ?? 0) * TILE_SIZE * 2;
+    });
+
+    enemy.onStateEnd("cast", () => {
+        castTimer = enemy.castDuration ?? 0;
+        if (castCircle) k.destroy(castCircle);
+        if (occultistShield) k.destroy(occultistShield);
+        for (const target of k.get("enemy") as EnemyGameObj[]) {
+            target.blockSources.delete(enemy);
+        }
+    });
+
+    enemy.onStateUpdate("cast", () => {
+        if (castTimer > 0) castTimer -= store.get(gameStateAtom).timeScale * k.dt();
+        if (castTimer <= 0) {
+            enemy.enterState("move");
+            return;
+        }
+
+        for (const target of k.get("enemy") as EnemyGameObj[]) {
+            if (target.isDying) continue;
+
+            if (
+                target.pos.dist(enemy.pos) <= (enemy.castRange ?? 0) * TILE_SIZE
+            ) {
+                target.blockSources.add(enemy);
+            } else {
+                target.blockSources.delete(enemy);
+            }
+        }
+    });
+
     let rotateOnShootTimer = 0;
     let batTimer = enemy.batCooldown ?? 0;
     let suckBloodTimer = enemy.suckBloodCooldown ?? 0;
+    let castCooldownTimer = enemy.castCooldown ?? 0;
 
     enemy.onStateUpdate("move", () => {
         const timeScale = store.get(gameStateAtom).timeScale;
@@ -637,6 +694,15 @@ export default function makeEnemy(
         if (enemy.invincibleCooldown && enemy.invincibleTimer > 0) {
             enemy.invincibleTimer -= k.dt() * timeScale;
             if (enemy.invincibleTimer <= 0) enemy.invincible = true;
+        }
+
+        if (enemy.castCooldown && castCooldownTimer > 0) {
+            castCooldownTimer -= k.dt() * timeScale;
+        }
+
+        if (enemy.castCooldown && castCooldownTimer <= 0) {
+            castCooldownTimer = enemy.castCooldown ?? 0;
+            enemy.enterState("cast");
         }
 
         if (enemy.suckBloodCooldown && suckBloodTimer > enemy.suckBloodCooldown) {
@@ -655,7 +721,7 @@ export default function makeEnemy(
             let closestDistance = Infinity;
 
             for (const e of enemies) {
-                if (e.isDying || e.invincible || e === enemy) continue;
+                if (e.isDying || e.invincible || e === enemy || e.blockSources.size > 0) continue;
 
                 const distance = e.pos.dist(enemy.pos);
 
@@ -1052,6 +1118,14 @@ export default function makeEnemy(
 
     enemy.onStateEnter("shellBreak", () => {
         enemy.play("shellBreak");
+    });
+
+    enemy.onDestroy(() => {
+        if (castCircle) k.destroy(castCircle);
+        if (occultistShield) k.destroy(occultistShield);
+        for (const target of k.get("enemy") as EnemyGameObj[]) {
+            target.blockSources.delete(enemy);
+        }
     });
 
     enemy.onDeath(() => {

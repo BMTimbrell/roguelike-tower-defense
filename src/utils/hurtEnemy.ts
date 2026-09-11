@@ -22,6 +22,16 @@ export default function hurtEnemy(k: KAPLAYCtx, opts: {
 
     if (target.invincible) return;
 
+    if (target.blockSources.size > 0) {
+        makeFloatingText(k, {
+            pos: target.pos,
+            color: "#FFFFFF",
+            size: 12,
+            text: "BLOCK"
+        });
+        return;
+    }
+
     const hasDarkHarvest = target.has("darkHarvestMark");
 
     const darkHarvestMarkDamageMult = hasDarkHarvest ? 1.5 : 1;

@@ -425,6 +425,10 @@ export type EnemyGameObj = GameObj<
     soulCount?: number;
     reaperEmpowerUpdate?: KEventController | null;
     reaperEmpowerElapsed?: number;
+    castCooldown?: number;
+    castRange?: number;
+    castDuration?: number;
+    blockSources: Set<EnemyGameObj>;
 };
 
 export type SwarmVisual = {
@@ -745,6 +749,9 @@ export type EnemyConfig = {
     batCooldown?: number;
     suckBloodCooldown?: number;
     suckAmount?: number;
+    castCooldown?: number;
+    castRange?: number;
+    castDuration?: number;
 };
 
 export type presentSpawns =

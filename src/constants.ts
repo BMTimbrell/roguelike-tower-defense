@@ -1950,7 +1950,6 @@ export const LEVEL_WAVES = {
         waves: [
             {
                 spawns: [
-                    { id: "giantCamel", count: 1, interval: 2 },
                     { id: "scorpian", count: 8, interval: 1 }
                 ],
                 reward: 50
@@ -2327,7 +2326,8 @@ export const LEVEL_WAVES = {
         waves: [
             {
                 spawns: [
-                    { id: "occultist", count: 5, interval: 0.5 }
+                    { id: "occultist", count: 1, interval: 0.5 },
+                    { id: "imp", count: 10, interval: 0.5}
                 ],
                 reward: 100
             },
@@ -3743,6 +3743,9 @@ export const ENEMIES = {
         chestValue: 0.75,
         goldDropped: 2,
         deathSound: "monster death",
+        castCooldown: 5,
+        castDuration: 2.5,
+        castRange: 1,
         speed: 50,
         sprite: "occultist"
     },
