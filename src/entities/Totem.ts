@@ -2,7 +2,7 @@ import type { Color, GameObj, KAPLAYCtx, Vec2 } from "kaplay";
 import type { EnemyGameObj, TotemGameObj, TotemId, TowerGameObj } from "../types";
 import { TILE_SIZE, TOTEMS } from "../constants";
 import { updateSpeed } from "./Enemy";
-import { hoveredTotemAtom, store } from "../store";
+import { gameStateAtom, hoveredTotemAtom, store } from "../store";
 import { playSfx } from "../utils/soundHelpers";
 
 export default function makeTotem(k: KAPLAYCtx, id: TotemId, pos: Vec2) {
@@ -17,8 +17,8 @@ export default function makeTotem(k: KAPLAYCtx, id: TotemId, pos: Vec2) {
             isCaptured: false,
             captureProgress: 0,
             captureTower: null,
-            range: 4,
-            requiredDamage: 50,
+            range: TOTEMS[id].radius,
+            requiredDamage: TOTEMS[id].requiredDamage * (store.get(gameStateAtom).difficulty === "hard" ? 1.2 : store.get(gameStateAtom).difficulty === "expert" ? 1.5 : 1),
             affectedEnemies: new Set<EnemyGameObj>(),
             enemyEffect: TOTEMS[id].enemyEffect,
             playerBuff: TOTEMS[id].playerBuff
@@ -135,7 +135,7 @@ export default function makeTotem(k: KAPLAYCtx, id: TotemId, pos: Vec2) {
                         p.opacity = 0;
                         if (!bondBeam) {
                             bondBeam = k.add([
-                                k.sprite("flame totem orb", { anim: "appear" }),
+                                k.sprite(`${id} totem orb`, { anim: "appear" }),
                                 k.pos(totem.pos),
                                 k.anchor("center"),
                                 k.rotate(0),
@@ -200,8 +200,6 @@ export function recalculateTotemStats(enemy: EnemyGameObj) {
 }
 
 function applyPlayerBlessing(totem: TotemGameObj) {
-
-
     totem.playerBuff.buffs.forEach(buff => {
         if (totem.captureTower) totem.captureTower.towerBuffs.push(buff);
     });

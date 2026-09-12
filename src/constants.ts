@@ -2319,24 +2319,127 @@ export const LEVEL_WAVES = {
         ]
     },
     "world2-level4-1": {
-        startingGold: 500,
+        startingGold: 150,
         startDelay: 120,
         music: "hell biome",
         shop: true,
         waves: [
             {
                 spawns: [
-                    { id: "giantOccultist", count: 1, interval: 3 },
-                    { id: "imp", count: 30, interval: 0.5}
+                    { id: "imp", count: 5, interval: 1 }
                 ],
                 reward: 100
             },
             {
                 spawns: [
-                    { id: "fireSlime", count: 5, interval: 1.5 },
+                    { id: "imp", count: 5, interval: 1 },
+                    { id: "orc", count: 2, interval: 1 }
                 ],
-                reward: 100
+                reward: 200
             },
+            {
+                spawns: [
+                    { id: "demon", count: 1, interval: 1 },
+                    { id: "orc", count: 3, interval: 1.5 },
+                    { id: "imp", count: 5, interval: 1 },
+                    { id: "zombieFairy", count: 1, interval: 1 }
+                ],
+                reward: 300
+            },
+            {
+                spawns: [
+                    { id: "demon", count: 1, interval: 1 },
+                    { id: "occultist", count: 1, interval: 1 },
+                    { id: "demon", count: 1, interval: 1 },
+                    { id: "armouredOrc", count: 1, interval: 2 },
+                    { id: "orc", count: 5, interval: 1.5 },
+                    { id: "zombieFairy", count: 1, interval: 1 },
+                    { id: "giantImp", count: 1, interval: 1 },
+                    { id: "imp", count: 5, interval: 0.75 },
+                    { id: "hellWolf", count: 1, interval: 1 },
+                    { id: "zombieFairy", count: 1, interval: 1 }
+                ],
+                reward: 400
+            },
+            {
+                spawns: [
+                    { id: "occultist", count: 3, interval: 1 },
+                    { id: "armouredOrc", count: 3, interval: 1 },
+                    { id: "orc", count: 3, interval: 1 },
+                    { id: "demon", count: 3, interval: 1 },
+                    { id: "redZombieFairy", count: 1, interval: 1 },
+                    { id: "giantImp", count: 1, interval: 1 },
+                    { id: "imp", count: 5, interval: 0.5 },
+                    { id: "spider", count: 5, interval: 1 },
+                    { id: "occultist", count: 1, interval: 1 },
+                    { id: "hellWolf", count: 1, interval: 1 },
+                    { id: "redZombieFairy", count: 1, interval: 1 }
+                ],
+                reward: 500
+            },
+            {
+                spawns: [
+                    { id: "giantDemon", count: 1, interval: 1 },
+                    { id: "occultist", count: 1, interval: 1 },
+                    { id: "armouredDemon", count: 3, interval: 1.5 },
+                    { id: "occultist", count: 1, interval: 1 },
+                    { id: "hellWolf", count: 1, interval: 1 },
+                    { id: "demon", count: 5, interval: 1 },
+                    { id: "redZombieFairy", count: 1, interval: 1 },
+                    { id: "occultist", count: 1, interval: 1 },
+                    { id: "hellWolf", count: 1, interval: 1 },
+                    { id: "giantImp", count: 1, interval: 1 },
+                    { id: "imp", count: 5, interval: 0.5 },
+                    { id: "redZombieFairy", count: 1, interval: 1 },
+                    { id: "occultist", count: 1, interval: 1 },
+                    { id: "spider", count: 5, interval: 1 },
+                    { id: "occultist", count: 1, interval: 1 },
+                    { id: "hellWolf", count: 1, interval: 1 },
+                    { id: "redZombieFairy", count: 1, interval: 1 }
+                ],
+                reward: 600
+            },
+            {
+                spawns: [
+                    { id: "giantArmouredDemon", count: 1, interval: 1.5 },
+                    { id: "occultist", count: 2, interval: 1 },
+                    { id: "armouredDemon", count: 5, interval: 1 },
+                    { id: "occultist", count: 2, interval: 1 },
+                    { id: "hellWolf", count: 1, interval: 1 },
+                    { id: "redZombieFairy", count: 1, interval: 1 },
+                    { id: "giantImp", count: 1, interval: 1 },
+                    { id: "imp", count: 3, interval: 0.5 },
+                    { id: "giantDemon", count: 1, interval: 1 },
+                    { id: "demon", count: 5, interval: 0.75 },
+                    { id: "occultist", count: 2, interval: 1 },
+                    { id: "hellWolf", count: 1, interval: 1 },
+                    { id: "giantZombieFairy", count: 1, interval: 1 },
+                    { id: "zombieFairy", count: 3, interval: 0.5 },
+                    { id: "occultist", count: 3, interval: 1.5 }
+                ],
+                reward: 700
+            },
+            {
+                spawns: [
+                    { id: "giantOccultist", count: 1, interval: 1.5 },
+                    { id: "occultist", count: 3, interval: 1 },
+                    { id: "giantArmouredDemon", count: 1, interval: 1 },
+                    { id: "occultist", count: 2, interval: 1 },
+                    { id: "hellWolf", count: 1, interval: 1 },
+                    { id: "redZombieFairy", count: 1, interval: 1 },
+                    { id: "armouredDemon", count: 5, interval: 1 },
+                    { id: "giantImp", count: 1, interval: 1 },
+                    { id: "imp", count: 3, interval: 0.5 },
+                    { id: "giantDemon", count: 1, interval: 1.5 },
+                    { id: "occultist", count: 2, interval: 1 },
+                    { id: "demon", count: 3, interval: 1 },
+                    { id: "occultist", count: 1, interval: 1 },
+                    { id: "redZombieFairy", count: 1, interval: 1 },
+                    { id: "giantHellWolf", count: 1, interval: 1 },
+                    { id: "hellWolf", count: 2, interval: 1 }
+                ],
+                reward: 800
+            }
         ]
     },
     "world2-level4-2": {
@@ -2347,10 +2450,26 @@ export const LEVEL_WAVES = {
         waves: [
             {
                 spawns: [
-                    { id: "grimReaper", count: 1, interval: 5 },
-                    { id: "bee", count: 50, interval: 0.25 },
+                    { id: "fireSlime", count: 5, interval: 1 }
                 ],
                 reward: 100
+            },
+            {
+                spawns: [
+                    { id: "skeleton", count: 3, interval: 1 },
+                    { id: "fireSlime", count: 5, interval: 1 }
+                ],
+                reward: 200
+            },
+            {
+                spawns: [
+                    { id: "masochist", count: 1, interval: 1 },
+                    { id: "armouredSkeleton", count: 1, interval: 1 },
+                    { id: "skeleton", count: 3, interval: 1 },
+                    { id: "fireSlime", count: 5, interval: 1 },
+                    { id: "zombieFairy", count: 1, interval: 1 },
+                ],
+                reward: 300
             },
         ]
     },
@@ -3508,7 +3627,7 @@ export const ENEMIES = {
             amount: 20,
             range: 2
         },
-        deathSound: "zombiefairy death"
+        deathSound: "zombie fairy death"
     },
     giantZombieFairy: {
         hp: 700,
@@ -3516,7 +3635,7 @@ export const ENEMIES = {
         goldDropped: 5,
         chestValue: 2,
         hasLargeSoul: true,
-        deathSound: "zombiefairy death",
+        deathSound: "zombie fairy death",
         speed: 30,
         sprite: "giant zombie fairy",
         healer: {
@@ -3528,7 +3647,7 @@ export const ENEMIES = {
         hp: 1400,
         damage: 5,
         hasLargeSoul: true,
-        deathSound: "zombiefairy death",
+        deathSound: "zombie fairy death",
         chestValue: 3,
         speed: 30,
         goldDropped: 6,
@@ -3548,6 +3667,20 @@ export const ENEMIES = {
         deathSound: "wolf death",
         speedBooster: {
             amount: 1.3,
+            range: 2
+        }
+    },
+    giantHellWolf: {
+        hp: 800,
+        damage: 5,
+        hasLargeSoul: true,
+        chestValue: 2,
+        goldDropped: 5,
+        deathSound: "wolf death",
+        speed: 40,
+        sprite: "giant hell wolf",
+        speedBooster: {
+            amount: 1.5,
             range: 2
         }
     },
@@ -7372,16 +7505,16 @@ export const TOTEMS: Record<TotemId, TotemDef> = {
 
         particleColor: "#DF7126",
 
-        radius: TILE_SIZE * 4,
+        radius: 3.5,
         requiredDamage: 1000
     },
     lightning: {
         name: "Thunder Totem",
 
         enemyEffect: {
-            type: "health",
-            amount: 0.05,
-            description: "Enemies regen 5% HP per second",
+            type: "speed",
+            amount: 1.5,
+            description: "Enemies gain 50% movement speed",
         },
 
         playerBuff: {
@@ -7394,9 +7527,9 @@ export const TOTEMS: Record<TotemId, TotemDef> = {
                 type: "fireRate",
                 multiplier: 0.666
             }],
-            description: "+20% damage",
+            description: "+50% fire rate and 10% bonus electric damage",
         },
-        radius: TILE_SIZE * 4,
+        radius: 3.5,
         requiredDamage: 1000,
         particleColor: "#FFFF00"
     },

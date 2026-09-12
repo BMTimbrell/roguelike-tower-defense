@@ -1809,6 +1809,21 @@ export default function loadAssets(k: KAPLAYCtx) {
             appear: { from: 0, to: 10, loop: false }
         }
     });
+    k.loadSprite("lightning totem", "sprites/lightning-totem.png", {
+        sliceX: 2,
+        sliceY: 1,
+        anims: {
+            enemy: 0,
+            tower: 1
+        }
+    });
+    k.loadSprite("lightning totem orb", "sprites/lightning-totem-orb.png", {
+        sliceX: 12,
+        sliceY: 1,
+        anims: {
+            appear: { from: 0, to: 10, loop: false }
+        }
+    });
     k.loadSprite("tower placement icon", "sprites/tower-placement-icon.png");
     k.loadSprite("occultist circle", "sprites/occultist-circle.png");
 

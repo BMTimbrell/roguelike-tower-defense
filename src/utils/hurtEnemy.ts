@@ -22,7 +22,7 @@ export default function hurtEnemy(k: KAPLAYCtx, opts: {
 
     if (target.invincible) return;
 
-    if (target.blockSources.size > 0) {
+    if (!target.is("cactus") && target.blockSources.size > 0) {
         makeFloatingText(k, {
             pos: target.pos,
             color: "#FFFFFF",
