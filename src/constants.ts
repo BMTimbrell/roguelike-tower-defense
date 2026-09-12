@@ -2471,6 +2471,109 @@ export const LEVEL_WAVES = {
                 ],
                 reward: 300
             },
+            {
+                spawns: [
+                    { id: "vampire", count: 1, interval: 1 },
+                    { id: "masochist", count: 3, interval: 1 },
+                    { id: "vampire", count: 1, interval: 1 },
+                    { id: "masochist", count: 1, interval: 1 },
+                    { id: "ghost", count: 3, interval: 1 },
+                    { id: "armouredSkeleton", count: 3, interval: 1 },
+                    { id: "skeleton", count: 5, interval: 1 },
+                    { id: "zombieFairy", count: 1, interval: 1 },
+                    { id: "giantFireSlime", count: 1, interval: 1 },
+                    { id: "fireSlime", count: 5, interval: 0.75 },
+                    { id: "vampire", count: 1, interval: 1 },
+                    { id: "zombieFairy", count: 1, interval: 1 }
+                ],
+                reward: 400
+            },
+            {
+                spawns: [
+                    { id: "armouredSlime", count: 1, interval: 1 },
+                    { id: "vampire", count: 1, interval: 1 },
+                    { id: "ghost", count: 3, interval: 1 },
+                    { id: "redZombieFairy", count: 1, interval: 1 },
+                    { id: "giantFireSlime", count: 1, interval: 1 },
+                    { id: "fireSlime", count: 5, interval: 0.5 },
+                    { id: "grimReaper", count: 1, interval: 1 },
+                    { id: "vampire", count: 3, interval: 1 },
+                    { id: "giantSkeleton", count: 1, interval: 1 },
+                    { id: "skeleton", count: 5, interval: 0.5 },
+                    { id: "masochist", count: 5, interval: 1 },
+                    { id: "redZombieFairy", count: 1, interval: 1 }
+                ],
+                reward: 500
+            },
+            {
+                spawns: [
+                    { id: "giantMasochist", count: 1, interval: 1 },
+                    { id: "masochist", count: 3, interval: 1 },
+                    { id: "armouredSlime", count: 1, interval: 1 },
+                    { id: "vampire", count: 1, interval: 1 },
+                    { id: "grimReaper", count: 1, interval: 1 },
+                    { id: "armouredSlime", count: 1, interval: 1 },
+                    { id: "redZombieFairy", count: 1, interval: 1 },
+                    { id: "masochist", count: 5, interval: 0.75 },
+                    { id: "giantFireSlime", count: 1, interval: 1 },
+                    { id: "fireSlime", count: 3, interval: 0.5 },
+                    { id: "grimReaper", count: 1, interval: 1 },
+                    { id: "redZombieFairy", count: 1, interval: 1 },
+                    { id: "vampire", count: 1, interval: 1 },
+                    { id: "armouredSkeleton", count: 5, interval: 1 },
+                    { id: "giantGhost", count: 1, interval: 1 },
+                    { id: "ghost", count: 3, interval: 1 },
+                    { id: "redZombieFairy", count: 1, interval: 1 },
+                    { id: "vampire", count: 3, interval: 1 }
+                ],
+                reward: 600
+            },
+            {
+                spawns: [
+                    { id: "giantArmouredSkeleton", count: 1, interval: 1.5 },
+                    { id: "armouredSlime", count: 2, interval: 1 },
+                    { id: "armouredSkeleton", count: 5, interval: 1 },
+                    { id: "vampire", count: 2, interval: 1 },
+                    { id: "masochist", count: 3, interval: 1 },
+                    { id: "redZombieFairy", count: 1, interval: 1 },
+                    { id: "giantFireSlime", count: 1, interval: 1 },
+                    { id: "fireSlime", count: 3, interval: 0.5 },
+                    { id: "grimReaper", count: 2, interval: 1 },
+                    { id: "armouredSlime", count: 3, interval: 1 },
+                    { id: "giantVampire", count: 1, interval: 1 },
+                    { id: "vampire", count: 5, interval: 1 },
+                    { id: "grimReaper", count: 1, interval: 1 },
+                    { id: "giantMasochist", count: 1, interval: 1 },
+                    { id: "masochist", count: 5, interval: 1 },
+                    { id: "giantZombieFairy", count: 1, interval: 1 },
+                    { id: "zombieFairy", count: 3, interval: 0.5 },
+                    { id: "vampire", count: 3, interval: 1 }
+                ],
+                reward: 700
+            },
+            {
+                spawns: [
+                    { id: "giantVampire", count: 1, interval: 1 },
+                    { id: "armouredSlime", count: 5, interval: 0.5 },
+                    { id: "grimReaper", count: 1, interval: 0.5 },
+                    { id: "giantArmouredSlime", count: 1, interval: 1 },
+                    { id: "vampire", count: 5, interval: 1 },
+                    { id: "redZombieFairy", count: 1, interval: 1 },
+                    { id: "giantArmouredSkeleton", count: 1, interval: 1 },
+                    { id: "armouredSkeleton", count: 5, interval: 1 },
+                    { id: "giantFireSlime", count: 1, interval: 1 },
+                    { id: "fireSlime", count: 3, interval: 0.5 },
+                    { id: "grimReaper", count: 3, interval: 1},
+                    { id: "giantMasochist", count: 1, interval: 1.5 },
+                    { id: "masochist", count: 5, interval: 1 },
+                    { id: "giantZombieFairy", count: 1, interval: 1 },
+                    { id: "zombieFairy", count: 3, interval: 0.5 },
+                    { id: "armouredSlime", count: 1, interval: 0.5 },
+                    { id: "giantGhost", count: 1, interval: 1 },
+                    { id: "ghost", count: 5, interval: 1 }
+                ],
+                reward: 800
+            }
         ]
     },
 } as const satisfies Record<string, LevelWaves>;
