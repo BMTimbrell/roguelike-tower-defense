@@ -2,8 +2,9 @@ import type { Color, GameObj, KAPLAYCtx, Vec2 } from "kaplay";
 import type { EnemyGameObj, TotemGameObj, TotemId, TowerGameObj } from "../types";
 import { TILE_SIZE, TOTEMS } from "../constants";
 import { updateSpeed } from "./Enemy";
-import { gameStateAtom, hoveredTotemAtom, store } from "../store";
+import { cachedSaveAtom, gameStateAtom, hoveredTotemAtom, store } from "../store";
 import { playSfx } from "../utils/soundHelpers";
+import { tryShowTutorial } from "../utils/tutorialHelpers";
 
 export default function makeTotem(k: KAPLAYCtx, id: TotemId, pos: Vec2) {
     const totem: TotemGameObj = k.add([
@@ -26,6 +27,12 @@ export default function makeTotem(k: KAPLAYCtx, id: TotemId, pos: Vec2) {
         "totem"
     ]);
 
+    // totem tutorial
+    const save = store.get(cachedSaveAtom);
+    if (save) {
+        tryShowTutorial("totem", save);
+    }
+
     totem.onUpdate(() => {
         if (totem.captureProgress >= totem.requiredDamage && !totem.isCaptured) {
             captureTotem(totem);
@@ -38,10 +45,11 @@ export default function makeTotem(k: KAPLAYCtx, id: TotemId, pos: Vec2) {
     });
 
     function captureTotem(totem: TotemGameObj) {
+
         totem.isCaptured = true;
         totem.play("tower");
 
-        playSfx(k, "totem magic");
+        playSfx(k, "totem magic", 1, totem.pos);
 
         for (const enemy of totem.affectedEnemies) {
             removeTotemEffect(enemy, totem);
@@ -133,7 +141,8 @@ export default function makeTotem(k: KAPLAYCtx, id: TotemId, pos: Vec2) {
 
                     if (totem.captureTower) {
                         p.opacity = 0;
-                        if (!bondBeam) {
+
+                        if (!totem.isCaptured && !bondBeam) {
                             bondBeam = k.add([
                                 k.sprite(`${id} totem orb`, { anim: "appear" }),
                                 k.pos(totem.pos),
@@ -144,10 +153,22 @@ export default function makeTotem(k: KAPLAYCtx, id: TotemId, pos: Vec2) {
 
                             bondBeam.onAnimEnd(() => {
                                 if (!bondBeam || !totem.captureTower) return;
+
                                 bondBeam.frame++;
-                                bondBeam.angle = totem.pos.sub(totem.captureTower.pos.add(totem.captureTower.footprint.w * TILE_SIZE / 2)).angle();
-                                bondBeam.width = totem.pos.dist(totem.captureTower.pos.add(totem.captureTower.footprint.w * TILE_SIZE / 2)) * 2;
+                                bondBeam.angle = totem.pos.sub(
+                                    totem.captureTower.pos.add(
+                                        totem.captureTower.footprint.w * TILE_SIZE / 2
+                                    )
+                                ).angle();
+
+                                bondBeam.width = totem.pos.dist(
+                                    totem.captureTower.pos.add(
+                                        totem.captureTower.footprint.w * TILE_SIZE / 2
+                                    )
+                                ) * 2;
                             });
+
+                            playSfx(k, "totem bind", 1, totem.pos);
                         }
 
                     } else {
@@ -156,8 +177,10 @@ export default function makeTotem(k: KAPLAYCtx, id: TotemId, pos: Vec2) {
                     }
 
                     if (!totem.captureTower || totem.isCaptured) {
-                        if (bondBeam) k.destroy(bondBeam);
-                        bondBeam = null;
+                        if (bondBeam) {
+                            k.destroy(bondBeam);
+                            bondBeam = null;
+                        }
                     }
                 }
             }

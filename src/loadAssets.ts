@@ -18,6 +18,7 @@ export default function loadAssets(k: KAPLAYCtx) {
     k.loadSprite("desert2-2", "sprites/desert2-2.png");
     k.loadSprite("desert3", "sprites/desert3.png");
     k.loadSprite("hell1", "sprites/hell1.png");
+    k.loadSprite("hell1-2", "sprites/hell1-2.png");
     k.loadSprite("tree", "sprites/tree2.png");
     k.loadSprite("gold", "sprites/coin.png");
     k.loadSprite("heart", "sprites/heart.png");
@@ -1913,6 +1914,7 @@ export default function loadAssets(k: KAPLAYCtx) {
     k.loadSound("drinking", "sounds/soundEffects/drinking.mp3");
     k.loadSound("rock smash", "sounds/soundEffects/rock-smash.mp3");
     k.loadSound("totem magic", "sounds/soundEffects/totem-magic.mp3");
+    k.loadSound("totem bind", "sounds/soundEffects/totem-bind.mp3");
 
     //music
     k.loadSound("main title", "sounds/music/The-Crown-of-Aethelgard.mp3");

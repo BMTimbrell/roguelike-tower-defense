@@ -10,7 +10,15 @@ import { playSfx, playUISound } from "./soundHelpers";
 
 export default function setTowerUI(k: KAPLAYCtx, type: "combat" | "farm", tower: TowerGameObj) {
     if (type === "combat") {
-        const baseDamage = tower.stats.damage;
+        const damageTowerBuff = tower.towerBuffs
+            .filter(b => b.type === "damage")
+            .reduce((acc, b) => acc + b.multiplier, 0);
+
+        const baseDamage = Math.round(tower.stats.damage * (1 + damageTowerBuff));
+        const fireRateMultiplier = tower.towerBuffs
+            .filter(b => b.type === "fireRate")
+            .reduce((acc, b) => acc * b.multiplier, 1);
+
 
         let bonusDamage = 0;
 
@@ -102,8 +110,10 @@ export default function setTowerUI(k: KAPLAYCtx, type: "combat" | "farm", tower:
                 name: tower.name,
                 stats: {
                     ...tower.stats,
+                    damage: baseDamage,
+                    fireInterval: tower.stats.fireInterval * fireRateMultiplier,
                     ...(tower.timeData || tower.charge || tower.overheat?.current || tower.killStacks || tower.battery || tower.hasThirst ? {
-                        fireInterval: tower.stats.fireInterval *
+                        fireInterval: tower.stats.fireInterval * fireRateMultiplier *
                             (tower.timeData?.timeScaling.interval ? tower.timeData.timeMultiplier : 1) *
                             (1 - (tower.charge?.currentCharge ?? 0)) *
                             (tower.isThirsty ? 2 : 1),

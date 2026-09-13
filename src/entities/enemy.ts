@@ -664,6 +664,8 @@ export default function makeEnemy(
     });
 
     enemy.onStateUpdate("cast", () => {
+        if (enemy.isDying) return;
+
         if (castTimer > 0) castTimer -= store.get(gameStateAtom).timeScale * k.dt();
         if (castTimer <= 0) {
             enemy.enterState("move");
@@ -734,7 +736,7 @@ export default function makeEnemy(
 
             if (target && enemy.hp() < (enemy.maxHP() ?? 100) && !enemy.isBat) {
                 suckBloodTimer += enemy.suckBloodCooldown;
-                playSfx(k, "blood splatter");
+                playSfx(k, "blood splatter", 1, target.pos);
                 createBloodParticles(
                     k,
                     target,
@@ -1145,7 +1147,7 @@ export default function makeEnemy(
                 createDeathParticles(k, enemy.pos, reaper);
 
                 waitScaled(k, 0.25, () => {
-                    reaper.heal(enemyId === "giantGrimReaper" ? 30 : 10);
+                    reaper.heal(enemyId === "giantGrimReaper" ? 50 : 15);
                     const healEffect = k.add([
                         k.sprite("heal effect", { anim: "heal" }),
                         k.pos(reaper.pos),

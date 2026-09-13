@@ -67,7 +67,8 @@ export const TUTORIAL_VERSIONS = {
     towerUpgrade: 1,
     heroCharge: 1,
     armour: 1,
-    thirst: 1
+    thirst: 1,
+    totem: 1
 };
 export type TutorialStep = {
     title?: string;
@@ -123,6 +124,25 @@ export const TUTORIALS = {
                 title: "Desert Heat",
                 text: "Fortunately there is now a water bottle card in your deck. But maybe there is another way to get water...",
                 images: ["water-bottles.png"]
+            }
+        ]
+    },
+    totem: {
+        steps: [
+            {
+                title: "Totems",
+                text: "Satan has placed totems that buff enemies in range.",
+                images: ["totem-tutorial-2.png"]
+            },
+            {
+                title: "Totems",
+                text: "However they are made by Satan after all, so they thrive on pain and suffering. You can convert it to your side if a tower proves its worth.",
+                images: ["totem-tutorial-3.png"]
+            },
+            {
+                title: "Totems",
+                text: "Place a tower adjacent to a totem to bind it to the totem. Once the tower deals enough damage, it will gain its power and the totem will stop buffing enemies.",
+                images: ["totem-tutorial-4.png", "totem-tutorial-5.png"]
             }
         ]
     }
@@ -2323,6 +2343,7 @@ export const LEVEL_WAVES = {
         startDelay: 120,
         music: "hell biome",
         shop: true,
+        challenge: true,
         waves: [
             {
                 spawns: [
@@ -2447,6 +2468,7 @@ export const LEVEL_WAVES = {
         startDelay: 120,
         music: "hell biome",
         shop: true,
+        challenge: true,
         waves: [
             {
                 spawns: [
@@ -2607,7 +2629,7 @@ export const WORLDS: World[] = [
             ["desert1", "desert1-2"],
             ["desert2", "desert2-2"],
             ["desert3", "desert3"],
-            ["hell1", "hell1"],
+            ["hell1-2", "hell1-2"],
             ["hell2", "hell2-2"],
             ["hell3", "hell3"]
         ]
@@ -7608,7 +7630,7 @@ export const TOTEMS: Record<TotemId, TotemDef> = {
 
         particleColor: "#DF7126",
 
-        radius: 3.5,
+        radius: 4,
         requiredDamage: 1000
     },
     lightning: {
