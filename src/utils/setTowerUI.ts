@@ -14,6 +14,11 @@ export default function setTowerUI(k: KAPLAYCtx, type: "combat" | "farm", tower:
             .filter(b => b.type === "damage")
             .reduce((acc, b) => acc + b.multiplier, 0);
 
+        const critDamageTowerBuff = tower.towerBuffs
+            .filter(b => b.type === "critDamage")
+            .reduce((acc, b) => acc + b.multiplier, 0);
+        const critDamage = tower.stats.critDamage * (1 + critDamageTowerBuff);
+
         const baseDamage = Math.round(tower.stats.damage * (1 + damageTowerBuff));
         const fireRateMultiplier = tower.towerBuffs
             .filter(b => b.type === "fireRate")
@@ -111,6 +116,7 @@ export default function setTowerUI(k: KAPLAYCtx, type: "combat" | "farm", tower:
                 stats: {
                     ...tower.stats,
                     damage: baseDamage,
+                    critDamage,
                     fireInterval: tower.stats.fireInterval * fireRateMultiplier,
                     ...(tower.timeData || tower.charge || tower.overheat?.current || tower.killStacks || tower.battery || tower.hasThirst ? {
                         fireInterval: tower.stats.fireInterval * fireRateMultiplier *

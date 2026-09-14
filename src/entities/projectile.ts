@@ -238,11 +238,17 @@ export default function makeProjectile(k: KAPLAYCtx, opts: {
                             .filter(b => b.type === "damage")
                             .reduce((acc, b) => acc + b.multiplier, 0);
                         const damageMult = 1 + getBuffValue(owner, "damage") + damageTowerBuff;
+
+                        const critDamageTowerBuff = owner.towerBuffs
+                            .filter(b => b.type === "critDamage")
+                            .reduce((acc, b) => acc + b.multiplier, 0);
+                        const critDamageMult = 1 + getBuffValue(owner, "critDamage") + critDamageTowerBuff;
+
                         const { isCrit, damage: newDamage } = calcDamage({
                             bonusDamage: 0,
                             bonusCritChance: target.has("curse") ? CURSE_CRIT + (k.get("hero")[0]?.hasCurseBuff ? 10 : 0) : 0,
                             critChance: owner.stats.critChance + (getBuffValue(owner, "critChance") * 100),
-                            critDamage: owner.stats.critDamage * (1 + getBuffValue(owner, "critDamage")),
+                            critDamage: owner.stats.critDamage * critDamageMult,
                             damage: owner.stats.damage,
                             damageMultiplier: damageMult
                         });

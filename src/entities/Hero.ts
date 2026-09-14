@@ -309,11 +309,16 @@ export default function makeHero(k: KAPLAYCtx,
                 const damageTowerBuff = hero.towerBuffs
                     .filter(b => b.type === "damage")
                     .reduce((acc, b) => acc + b.multiplier, 0);
-
                 const damage = Math.round(hero.stats.damage * (1 + damageTowerBuff));
+
                 const fireRateMultiplier = hero.towerBuffs
                     .filter(b => b.type === "fireRate")
                     .reduce((acc, b) => acc * b.multiplier, 1);
+
+                const critDamageTowerBuff = hero.towerBuffs
+                    .filter(b => b.type === "critDamage")
+                    .reduce((acc, b) => acc + b.multiplier, 0);
+                const critDamage = hero.stats.critDamage * (1 + critDamageTowerBuff);
 
                 store.set(gameStateAtom, prev => ({
                     ...prev,
@@ -324,7 +329,8 @@ export default function makeHero(k: KAPLAYCtx,
                         name: hero.name,
                         stats: {
                             ...hero.stats,
-                            damage: damage,
+                            damage,
+                            critDamage,
                             fireInterval: hero.stats.fireInterval * (hero.isThirsty ? 2 : 1) * fireRateMultiplier
                         },
                         element: hero.element,

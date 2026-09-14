@@ -583,6 +583,11 @@ export default function makeUnitCombat(
                 .reduce((acc, b) => acc + b.multiplier, 0);
             const damageMult = 1 + getBuffValue(opts.owner as TowerGameObj, "damage") + damageTowerBuff;
 
+            const critDamageTowerBuff = opts.owner.towerBuffs
+                .filter(b => b.type === "critDamage")
+                .reduce((acc, b) => acc + b.multiplier, 0);
+            const critDamageMult = 1 + getBuffValue(opts.owner as TowerGameObj, "critDamage") + critDamageTowerBuff;
+
             // laser ramp up charge damage
             let bonusDamage = 0;
 
@@ -599,7 +604,7 @@ export default function makeUnitCombat(
                 bonusDamage,
                 bonusCritChance: enemy.has("curse") ? CURSE_CRIT + (k.get("hero")[0]?.hasCurseBuff ? 10 : 0) : 0,
                 critChance: opts.stats.critChance + (getBuffValue(opts.owner as TowerGameObj, "critChance") * 100),
-                critDamage: opts.stats.critDamage * (1 + getBuffValue(opts.owner as TowerGameObj, "critDamage")),
+                critDamage: opts.stats.critDamage * critDamageMult,
                 damage: ctx.damage,
                 damageMultiplier: damageMult
             });
@@ -660,7 +665,7 @@ export default function makeUnitCombat(
                     bonusDamage,
                     bonusCritChance: bonusCrit,
                     critChance: opts.stats.critChance + (getBuffValue(opts.owner as TowerGameObj, "critChance") * 100),
-                    critDamage: opts.stats.critDamage * (1 + getBuffValue(opts.owner as TowerGameObj, "critDamage")),
+                    critDamage: opts.stats.critDamage * critDamageMult,
                     damage: ctx.damage,
                     damageMultiplier: damageMult
                 });
@@ -722,6 +727,11 @@ export default function makeUnitCombat(
                 .reduce((acc, b) => acc + b.multiplier, 0);
             const damageMult = 1 + getBuffValue(opts.owner as TowerGameObj, "damage") + damageTowerBuff;
 
+            const critDamageTowerBuff = opts.owner.towerBuffs
+                .filter(b => b.type === "critDamage")
+                .reduce((acc, b) => acc + b.multiplier, 0);
+            const critDamageMult = 1 + getBuffValue(opts.owner as TowerGameObj, "critDamage") + critDamageTowerBuff;
+
             if (!ctx.isSummon) {
                 makePathEntity(k, {
                     ownerId: opts.owner.instanceId,
@@ -730,7 +740,7 @@ export default function makeUnitCombat(
                     damage: opts.stats.damage,
                     damageMultiplier: damageMult,
                     critChance: opts.stats.critChance + (getBuffValue(opts.owner as TowerGameObj, "critChance") * 100),
-                    critDamage: opts.stats.critDamage * (1 + getBuffValue(opts.owner as TowerGameObj, "critDamage")),
+                    critDamage: opts.stats.critDamage * critDamageMult,
                     element: opts.owner.element,
                     projectileId: opts.projectile ?? "basic"
                 });

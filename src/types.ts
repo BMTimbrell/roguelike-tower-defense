@@ -82,7 +82,7 @@ export type TowerBuff =
     }
     | {
         type: "range";
-        number: number;
+        amount: number;
         timeLeft?: number;
     }
     | {
@@ -92,6 +92,16 @@ export type TowerBuff =
     } | 
     {
         type: "critChance";
+        timeLeft?: number;
+        amount: number;
+    } |
+    {
+        type: "flatDamage";
+        timeLeft?: number;
+        amount: number;
+    } |
+    {
+        type: "critDamage";
         timeLeft?: number;
         multiplier: number;
     };
@@ -340,6 +350,7 @@ export type EnemyGameObj = GameObj<
     isDying: boolean;
     armour: number;
     shellBroken: boolean;
+    enemyId: EnemyId;
     maxArmour: number;
     healer?: {
         amount: number;
@@ -1132,7 +1143,9 @@ export type TotemId =
     | "flame"
     | "lightning"
     | "dark"
-    | "light";
+    | "light"
+    | "ice"
+    | "poison";
 
 export type TotemEffect =
     | {
@@ -1152,6 +1165,14 @@ export type TotemEffect =
     {
         type: "armour";
         amount: number;
+        description: string;
+    } |
+    {
+        type: "icePuddle";
+        description: string;
+    } |
+    {
+        type: "poisonMist";
         description: string;
     };
 

@@ -57,23 +57,23 @@ export default function spawnSummon(k: KAPLAYCtx, ctx: AttackContext, id: Summon
 
         let bonusDamage = 0;
 
-        // if (name === "Chomper") {
-        //     const maxHp = enemy?.maxHP() ?? 1;
-        //     const hp = enemy?.hp() ?? 0;
-        //     const remainingHealthPercent = hp / maxHp;
+        const damageTowerBuff = ctx.attacker.towerBuffs
+            .filter(b => b.type === "damage")
+            .reduce((acc, b) => acc + b.multiplier, 0);
+        const damageMult = 1 + getBuffValue(ctx.attacker as TowerGameObj, "damage") + damageTowerBuff;
 
-        //     if (remainingHealthPercent >= 0.8) {
-        //         bonusDamage = ctx.damage;
-        //     }
-        // }
+        const critDamageTowerBuff = ctx.attacker.towerBuffs
+            .filter(b => b.type === "critDamage")
+            .reduce((acc, b) => acc + b.multiplier, 0);
+        const critDamageMult = 1 + getBuffValue(ctx.attacker as TowerGameObj, "critDamage") + critDamageTowerBuff;
 
         const { isCrit, damage } = calcDamage({
             bonusDamage,
             bonusCritChance: enemy.has("curse") ? CURSE_CRIT + (k.get("hero")[0]?.hasCurseBuff ? 10 : 0) : 0,
             critChance: ctx.attacker.stats.critChance + (getBuffValue(ctx.attacker as TowerGameObj, "critChance") * 100),
-            critDamage: ctx.attacker.stats.critDamage * (1 + getBuffValue(ctx.attacker as TowerGameObj, "critDamage")),
+            critDamage: ctx.attacker.stats.critDamage * critDamageMult,
             damage: summon.damage,
-            damageMultiplier: 1 + getBuffValue(ctx.attacker as TowerGameObj, "damage")
+            damageMultiplier: damageMult
         });
 
         hurtEnemy(k, {
@@ -134,9 +134,11 @@ export default function spawnSummon(k: KAPLAYCtx, ctx: AttackContext, id: Summon
             }
         }
 
-        const fireRateMultiplier = ctx.attacker.towerBuffs
-            .filter(b => b.type === "fireRate")
-            .reduce((acc, b) => acc * b.multiplier, 1);
+        const fireRateMultiplier = (1 - getBuffValue(ctx.attacker as TowerGameObj, "fireRate")) *
+            ctx.attacker.towerBuffs
+                .filter(b => b.type === "fireRate")
+                .reduce((acc, b) => acc * b.multiplier, 1);
+                
         const interval = summon.fireInterval * fireRateMultiplier * (ctx.attacker.isThirsty ? 2 : 1);
 
         if (summon.attackTimer > interval) summon.attackTimer = interval;

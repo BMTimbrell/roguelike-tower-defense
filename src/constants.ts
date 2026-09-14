@@ -192,7 +192,7 @@ export const UPGRADES: Upgrade[] = [{
     stat: "damage",
     name: "Damage",
     icon: "sprites/damage-icon.png",
-    amount: 6,
+    amount: 7,
     cost: 3,
     percentage: false
 },
@@ -7704,11 +7704,11 @@ export const TOTEMS: Record<TotemId, TotemDef> = {
             buffs: [{
                 type: "bonusDamage",
                 element: "Light",
-                multiplier: 0.2
+                multiplier: 0.1
             },
             {
                 type: "range",
-                number: 2
+                amount: 2
             }],
             description: "+2 range and 10% bonus light damage",
         },
@@ -7729,18 +7729,68 @@ export const TOTEMS: Record<TotemId, TotemDef> = {
         playerBuff: {
             buffs: [{
                 type: "bonusDamage",
-                multiplier: 0.2,
+                multiplier: 0.1,
                 element: "Dark"
             },
             {
                 type: "critChance",
-                multiplier: 0.5
+                amount: 25
             }],
             description: "+25% crit chance and 10% bonus dark damage"
         },
         particleColor: "#800080",
 
         radius: 3.5,
+        requiredDamage: 1500
+    },
+    ice: {
+        name: "Ice Totem",
+
+        enemyEffect: {
+            type: "icePuddle",
+            description: "Enemies spawn ice puddles on death",
+        },
+
+        playerBuff: {
+            buffs: [{
+                type: "bonusDamage",
+                multiplier: 0.1,
+                element: "Ice"
+            },
+            {
+                type: "critDamage",
+                multiplier: 1.4
+            }],
+            description: "+140% crit damage and 10% bonus ice damage"
+        },
+        particleColor: "#00FFFF",
+
+        radius: 3.5,
+        requiredDamage: 5
+    },
+    poison: {
+        name: "Poison Totem",
+
+        enemyEffect: {
+            type: "poisonMist",
+            description: "Enemies emit a poisonous mist on death, disabling all nearby towers",
+        },
+
+        playerBuff: {
+            buffs: [{
+                type: "bonusDamage",
+                multiplier: 0.1,
+                element: "Poison"
+            },
+            {
+                type: "flatDamage",
+                amount: 5
+            }],
+            description: "+5 damage and 10% bonus poison damage"
+        },
+        particleColor: "#00FF00",
+
+        radius: 4,
         requiredDamage: 1500
     }
 };

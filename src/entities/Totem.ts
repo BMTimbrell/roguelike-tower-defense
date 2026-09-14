@@ -1,6 +1,6 @@
 import type { Color, GameObj, KAPLAYCtx, Vec2 } from "kaplay";
 import type { EnemyGameObj, SelectedTowerUI, TotemGameObj, TotemId, TowerGameObj } from "../types";
-import { TILE_SIZE, TOTEMS } from "../constants";
+import { ENEMIES, TILE_SIZE, TOTEMS, type EnemyId } from "../constants";
 import { updateSpeed } from "./Enemy";
 import { cachedSaveAtom, gameStateAtom, hoveredTotemAtom, store } from "../store";
 import { playSfx } from "../utils/soundHelpers";
@@ -208,6 +208,7 @@ export function recalculateTotemStats(enemy: EnemyGameObj) {
     enemy.healthRegen = 0;
     enemy.armourRegen = 0;
     enemy.statusImmunity = false;
+    enemy.spawnIce = "spawnIce" in ENEMIES[enemy.enemyId as EnemyId];
 
     for (const totem of enemy.totemEffects) {
         const effect = totem.enemyEffect;
@@ -233,6 +234,11 @@ export function recalculateTotemStats(enemy: EnemyGameObj) {
                 });
             }
         }
+
+        if (effect.type === "icePuddle") {
+            enemy.spawnIce = true;
+        }
+
     }
 
     updateSpeed.call(enemy);
@@ -242,9 +248,13 @@ function applyPlayerBlessing(totem: TotemGameObj) {
     totem.playerBuff.buffs.forEach(buff => {
         if (totem.captureTower) {
             if (buff.type === "range") {
-                totem.captureTower.stats.range += buff.number;
+                totem.captureTower.stats.range += buff.amount;
+                return;
+            } else if (buff.type === "critChance") {
+                totem.captureTower.stats.critChance += buff.amount;
                 return;
             }
+
             totem.captureTower.towerBuffs.push(buff);
         }
     });

@@ -1856,6 +1856,36 @@ export default function loadAssets(k: KAPLAYCtx) {
             appear: { from: 0, to: 10, loop: false }
         }
     });
+    k.loadSprite("poison totem", "sprites/poison-totem.png", {
+        sliceX: 2,
+        sliceY: 1,
+        anims: {
+            enemy: 0,
+            tower: 1
+        }
+    });
+    k.loadSprite("poison totem orb", "sprites/poison-totem-orb.png", {
+        sliceX: 12,
+        sliceY: 1,
+        anims: {
+            appear: { from: 0, to: 10, loop: false }
+        }
+    });
+    k.loadSprite("ice totem", "sprites/ice-totem.png", {
+        sliceX: 2,
+        sliceY: 1,
+        anims: {
+            enemy: 0,
+            tower: 1
+        }
+    });
+    k.loadSprite("ice totem orb", "sprites/ice-totem-orb.png", {
+        sliceX: 12,
+        sliceY: 1,
+        anims: {
+            appear: { from: 0, to: 10, loop: false }
+        }
+    });
     k.loadSprite("tower placement icon", "sprites/tower-placement-icon.png");
     k.loadSprite("occultist circle", "sprites/occultist-circle.png");
 

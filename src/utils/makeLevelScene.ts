@@ -880,7 +880,7 @@ export default function makeLevelScene(k: KAPLAYCtx, sceneName: Scene) {
             ?.objects
             ?.forEach(obj => {
                 if (obj.name) {
-                    makeTotem(k, obj.name.toLowerCase() as TotemId, k.vec2(obj.x, obj.y));
+                    makeTotem(k, /*obj.name*/"ice", k.vec2(obj.x, obj.y));
                     tileGrid[obj.y / TILE_SIZE][obj.x / TILE_SIZE].blocked = true;
                 }
             });

@@ -61,6 +61,7 @@ export default function makeEnemy(
             segmentStart: waypoints[0],
             segmentProgress: 0,
             baseSpeed: baseSpeed,
+            enemyId,
             speed: baseSpeed,
             damage: ENEMIES[enemyId].damage,
             isDying: false,
@@ -114,7 +115,7 @@ export default function makeEnemy(
                 maxShieldHp: (ENEMIES[enemyId].shieldHp as number) * (difficulty === "hard" ? HARD_SHIELD_MULT : difficulty === "expert" ? 1.3 : 1)
             } :
                 {}),
-            ...("spawnIce" in ENEMIES[enemyId] ? { spawnIce: ENEMIES[enemyId].spawnIce as boolean } : {}),
+            spawnIce: "spawnIce" in ENEMIES[enemyId] ? true : false,
             ...("hasLargeSoul" in ENEMIES[enemyId] ? { hasLargeSoul: ENEMIES[enemyId].hasLargeSoul as boolean } : {}),
             ...("shieldSprite" in ENEMIES[enemyId] ? { shieldSprite: ENEMIES[enemyId].shieldSprite as string } : {}),
             ...("shootSound" in ENEMIES[enemyId] ? { shootSound: ENEMIES[enemyId].shootSound as string } : {}),

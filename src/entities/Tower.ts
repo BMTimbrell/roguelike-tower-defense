@@ -275,11 +275,17 @@ export default function makeTower(
                                 .reduce((acc, b) => acc + b.multiplier, 0);
                             const damageMult = 1 + getBuffValue(tower, "damage") + damageTowerBuff;
 
+                            const critDamageTowerBuff = tower.towerBuffs
+                                .filter(b => b.type === "critDamage")
+                                .reduce((acc, b) => acc + b.multiplier, 0);
+
+                            const critDamageMult = 1 + getBuffValue(tower, "critDamage") + critDamageTowerBuff;
+
                             const { isCrit, damage } = calcDamage({
                                 bonusDamage: 0,
                                 bonusCritChance: enemy.has("curse") ? CURSE_CRIT + (k.get("hero")[0]?.hasCurseBuff ? 10 : 0) : 0,
                                 critChance: tower.stats.critChance + (getBuffValue(tower, "critChance") * 100),
-                                critDamage: tower.stats.critDamage * (1 + getBuffValue(tower, "critDamage")),
+                                critDamage: tower.stats.critDamage * critDamageMult,
                                 damage: tower.stats.damage,
                                 damageMultiplier: damageMult
                             });
@@ -378,6 +384,12 @@ export default function makeTower(
                             .reduce((acc, b) => acc + b.multiplier, 0);
                         const damageMult = 1 + getBuffValue(tower, "damage") + damageTowerBuff;
 
+                        const critDamageTowerBuff = tower.towerBuffs
+                            .filter(b => b.type === "critDamage")
+                            .reduce((acc, b) => acc + b.multiplier, 0);
+
+                        const critDamageMult = 1 + getBuffValue(tower, "critDamage") + critDamageTowerBuff;
+
                         const { isCrit, damage } = calcDamage({
                             bonusDamage: 0,
                             bonusCritChance:
@@ -390,7 +402,7 @@ export default function makeTower(
                                 (getBuffValue(tower, "critChance") * 100),
                             critDamage:
                                 tower.stats.critDamage *
-                                (1 + getBuffValue(tower, "critDamage")),
+                                critDamageMult,
                             damage: tower.stats.damage,
                             damageMultiplier: damageMult
                         });
