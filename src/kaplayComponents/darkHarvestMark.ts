@@ -21,8 +21,8 @@ export default function darkHarvestEffect(k: KAPLAYCtx, duration: number): DarkH
 
         require: ["statusEffect"],
 
-        refreshMark() {
-            timer = duration;
+        refreshMark(this: EnemyGameObj) {
+            timer = duration * this.debuffDurationMultiplier;
         },
 
         darkHarvestMark() {

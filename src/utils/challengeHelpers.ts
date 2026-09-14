@@ -38,8 +38,8 @@ export function generateChallenges() {
 
     randomIndex = Math.floor(Math.random() * towers.length);
     const randomTower = towers[randomIndex];
-    const baseTarget = 75;
-    const target = Math.round(baseTarget / Math.pow(randomTower.cost, 0.6));
+    const baseTarget = 80;
+    const target = Math.min(Math.round(baseTarget / Math.pow(randomTower.cost, 0.6)), 6);
 
     challenges.push({
         id: "place_tower",
@@ -81,6 +81,30 @@ export function generateChallenges() {
                 }
             ],
             reward: 30
+        },
+        {
+            id: "no_chest",
+            description: "Don't open any chests",
+            type: "restriction",
+            conditions: [
+                {
+                    event: "OPEN_CHEST",
+                    fail: true
+                }
+            ],
+            reward: 60
+        },
+        {
+            id: "no_lives_lost",
+            description: "Don't lose any lives",
+            type: "restriction",
+            conditions: [
+                {
+                    event: "LOSE_LIFE",
+                    fail: true
+                }
+            ],
+            reward: 40
         }
     );
 

@@ -21,7 +21,7 @@ export default function burnEffect(k: KAPLAYCtx, duration: number): BurnComp {
         require: ["health", "pos", "statusEffect"],
 
         refreshBurn(this: GameObj<{ debuffDurationMultiplier: number; }>) {
-            timer = duration * this.debuffDurationMultiplier;
+            timer = Math.max(timer, duration * this.debuffDurationMultiplier);
         },
 
         burn() {

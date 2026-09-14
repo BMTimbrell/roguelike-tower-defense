@@ -23,6 +23,7 @@ import desert2_2 from './scenes/desert2-2';
 import desert3 from './scenes/desert3';
 import hell1 from './scenes/hell1';
 import hell1_2 from './scenes/hell1-2';
+import hell2 from './scenes/hell-2';
 
 export default async function initGame() {
     // focus back on canvas when clicking on html elements
@@ -63,6 +64,8 @@ export default async function initGame() {
     hell1(k);
 
     hell1_2(k);
+
+    hell2(k);
 
     mainMenu(k);
 

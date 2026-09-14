@@ -17,8 +17,8 @@ export default function blindEffect(k: KAPLAYCtx, duration: number): CurseComp {
 
         require: ["statusEffect"],
 
-        refreshBlind() {
-            timer = duration;
+        refreshBlind(this: GameObj<{ debuffDurationMultiplier: number; }>) {
+            timer = duration * this.debuffDurationMultiplier;
         },
 
         blind() {

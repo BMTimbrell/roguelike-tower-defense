@@ -93,7 +93,7 @@ export function castSpell(k: KAPLAYCtx, spell: Spell, opts?: { target?: Vec2; to
 
             k.get("targetable").forEach(enemy => {
                 if (enemy.pos.dist(target ?? k.vec2(0, 0)) <= TILE_SIZE * (spell.range ?? 3)) {
-                    if (enemy.invincible) return;
+                    if (enemy.invincible || enemy.statusImmunity) return;
 
                     const duration = 5;
                     const loop = k.loop(0.15, () => {
@@ -139,7 +139,6 @@ export function castSpell(k: KAPLAYCtx, spell: Spell, opts?: { target?: Vec2; to
                 tower.stats.range += 2;
             });
 
-
             const moteLoop = k.loop(0.02, () => {
                 spawnLightMote(k);
             });
@@ -168,10 +167,13 @@ export function castSpell(k: KAPLAYCtx, spell: Spell, opts?: { target?: Vec2; to
 
                     const chill = enemy.has("chill");
                     const stacks = 10;
-                    if (chill) {
-                        enemy.addChillStack(stacks, stacks, false);
-                    } else if (!enemy.is("cactus")) {
-                        enemy.use(chillEffect(k, 2, stacks, stacks));
+
+                    if (!enemy.statusImmunity) {
+                        if (chill) {
+                            enemy.addChillStack(stacks, stacks, false);
+                        } else if (!enemy.is("cactus")) {
+                            enemy.use(chillEffect(k, 2, stacks, stacks));
+                        }
                     }
 
                     hurtEnemy(k, {

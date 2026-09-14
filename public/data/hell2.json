@@ -107,7 +107,7 @@
                 {
                  "height":0,
                  "id":3,
-                 "name":"Light",
+                 "name":"light",
                  "point":true,
                  "rotation":0,
                  "type":"",
@@ -119,7 +119,7 @@
                 {
                  "height":0,
                  "id":4,
-                 "name":"Dark",
+                 "name":"dark",
                  "point":true,
                  "rotation":0,
                  "type":"",

@@ -98,6 +98,8 @@ export default function makeEnemy(
             shellBroken: false,
             killer: null,
             healthRegen: 0,
+            armourRegen: 0,
+            statusImmunity: false,
             stunResistanceDuration: 3,
             goldDropped: ENEMIES[enemyId].goldDropped,
             stunResistanceTimer: 0,
@@ -313,8 +315,10 @@ export default function makeEnemy(
         }
     });
 
-    let regenTimer = 0;
-    const regenTick = 1;
+    let healthRegenTimer = 0;
+    const healthRegenTick = 1;
+    let armourRegenTimer = 0;
+    const armourRegenTick = 1;
 
     let painTimer = 0;
     let painInterval = enemyId === "masochist" || enemyId === "giantMasochist" ? 0.5 : undefined;
@@ -350,9 +354,9 @@ export default function makeEnemy(
         if (painInterval && painTimer > 0) painTimer -= k.dt() * store.get(gameStateAtom).timeScale;
 
         if (enemy.healthRegen > 0) {
-            regenTimer -= k.dt() * store.get(gameStateAtom).timeScale;
-            if (regenTimer <= 0) {
-                regenTimer += regenTick;
+            healthRegenTimer -= k.dt() * store.get(gameStateAtom).timeScale;
+            if (healthRegenTimer <= 0) {
+                healthRegenTimer += healthRegenTick;
                 if (!enemy.has("curse")) {
                     enemy.heal((enemy.maxHP() ?? 10) * enemy.healthRegen);
                     const healEffect = k.add([
@@ -369,6 +373,32 @@ export default function makeEnemy(
 
                     healEffect.onAnimEnd(() => k.destroy(healEffect));
                 }
+            }
+        }
+
+        if (enemy.armourRegen > 0) {
+            armourRegenTimer -= k.dt() * store.get(gameStateAtom).timeScale;
+            if (armourRegenTimer <= 0) {
+                armourRegenTimer += armourRegenTick;
+
+                enemy.armour += enemy.armourRegen;
+                enemy.maxArmour += enemy.armourRegen;
+
+                const armourEffect = k.add([
+                    k.sprite("shield"),
+                    k.pos(enemy.pos),
+                    k.anchor("center"),
+                    lifespan(k, 1),
+                    k.z(999),
+                    k.opacity(1),
+                    {
+                        update() {
+                            armourEffect.pos = enemy.pos;
+                            armourEffect.opacity -= k.dt() * store.get(gameStateAtom).timeScale;
+                        }
+                    }
+                ]);
+
             }
         }
 
@@ -910,7 +940,12 @@ export default function makeEnemy(
             enemy.segmentProgress = 0;
 
             if (enemy.pathIndex >= enemy.path.length - 1) {
+                store.get(gameStateAtom).challengeManager.handleEvent({
+                    type: "LOSE_LIFE"
+                });
+
                 k.destroy(enemy);
+
                 store.set(gameStateAtom, prev => ({
                     ...prev,
                     health: prev.health - enemy.damage,

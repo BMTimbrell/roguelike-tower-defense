@@ -12,3 +12,14 @@
     font-size: 1.25em;
     margin-bottom: 0.25em;
 }
+
+.description {
+    display: flex;
+    align-items: center;
+}
+
+.description-container {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25em;
+}

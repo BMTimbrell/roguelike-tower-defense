@@ -19,6 +19,7 @@ export default function loadAssets(k: KAPLAYCtx) {
     k.loadSprite("desert3", "sprites/desert3.png");
     k.loadSprite("hell1", "sprites/hell1.png");
     k.loadSprite("hell1-2", "sprites/hell1-2.png");
+    k.loadSprite("hell2", "sprites/hell2.png");
     k.loadSprite("tree", "sprites/tree2.png");
     k.loadSprite("gold", "sprites/coin.png");
     k.loadSprite("heart", "sprites/heart.png");
@@ -1819,6 +1820,36 @@ export default function loadAssets(k: KAPLAYCtx) {
         }
     });
     k.loadSprite("lightning totem orb", "sprites/lightning-totem-orb.png", {
+        sliceX: 12,
+        sliceY: 1,
+        anims: {
+            appear: { from: 0, to: 10, loop: false }
+        }
+    });
+    k.loadSprite("light totem", "sprites/light-totem.png", {
+        sliceX: 2,
+        sliceY: 1,
+        anims: {
+            enemy: 0,
+            tower: 1
+        }
+    });
+    k.loadSprite("light totem orb", "sprites/light-totem-orb.png", {
+        sliceX: 12,
+        sliceY: 1,
+        anims: {
+            appear: { from: 0, to: 10, loop: false }
+        }
+    });
+    k.loadSprite("dark totem", "sprites/dark-totem.png", {
+        sliceX: 2,
+        sliceY: 1,
+        anims: {
+            enemy: 0,
+            tower: 1
+        }
+    });
+    k.loadSprite("dark totem orb", "sprites/dark-totem-orb.png", {
         sliceX: 12,
         sliceY: 1,
         anims: {

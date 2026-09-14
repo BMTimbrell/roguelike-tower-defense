@@ -422,6 +422,7 @@ export type EnemyGameObj = GameObj<
     swarmVisual?: SwarmVisual;
     totemEffects: Set<TotemGameObj>;
     healthRegen: number;
+    armourRegen: number;
     batDuration?: number;
     batCooldown?: number;
     suckBloodCooldown?: number;
@@ -434,6 +435,7 @@ export type EnemyGameObj = GameObj<
     castRange?: number;
     castDuration?: number;
     blockSources: Set<EnemyGameObj>;
+    statusImmunity: boolean;
 };
 
 export type SwarmVisual = {
@@ -905,6 +907,8 @@ export type DamageResult = {
 export type GameEvent =
     | { type: "BUILD_TOWER"; towerId: TowerId; waveActive: boolean }
     | { type: "DRAW_CARD" }
+    | { type: "OPEN_CHEST" }
+    | { type: "LOSE_LIFE"}
     | { type: "DEAL_DAMAGE"; damageType: ElementName; amount: number };
 
 export type ChallengeDef = {

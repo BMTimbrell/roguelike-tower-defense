@@ -1,5 +1,5 @@
 import type { KAPLAYCtx, Comp, GameObj} from "kaplay";
-import type { StatusEffectResult } from "../types";
+import type { EnemyGameObj, StatusEffectResult } from "../types";
 import type { StatusEffect, StatusEffectComp } from "./statusEffect";
 import { gameStateAtom, store } from "../store";
 
@@ -17,8 +17,8 @@ export default function curseEffect(k: KAPLAYCtx, duration: number): CurseComp {
 
         require: ["statusEffect"],
 
-        refreshCurse() {
-            timer = duration;
+        refreshCurse(this: EnemyGameObj) {
+            timer = Math.max(timer, duration * this.debuffDurationMultiplier);
         },
 
         curse() {

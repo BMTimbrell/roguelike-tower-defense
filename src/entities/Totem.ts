@@ -206,6 +206,8 @@ export function removeTotemEffect(enemy: EnemyGameObj, totem: TotemGameObj) {
 export function recalculateTotemStats(enemy: EnemyGameObj) {
     enemy.speedMultipliers.totem = 1;
     enemy.healthRegen = 0;
+    enemy.armourRegen = 0;
+    enemy.statusImmunity = false;
 
     for (const totem of enemy.totemEffects) {
         const effect = totem.enemyEffect;
@@ -217,6 +219,20 @@ export function recalculateTotemStats(enemy: EnemyGameObj) {
         if (effect.type === "health") {
             enemy.healthRegen += effect.amount;
         }
+
+        if (effect.type === "armour") {
+            enemy.armourRegen += effect.amount;
+        }
+
+        if (effect.type === "statusImmunity") {
+            enemy.statusImmunity = true;
+            
+            if (enemy.statuses.length) {
+                enemy.statuses.forEach(s => {
+                    if (enemy.has(s)) enemy.unuse(s);
+                });
+            }
+        }
     }
 
     updateSpeed.call(enemy);
@@ -224,8 +240,13 @@ export function recalculateTotemStats(enemy: EnemyGameObj) {
 
 function applyPlayerBlessing(totem: TotemGameObj) {
     totem.playerBuff.buffs.forEach(buff => {
-        if (totem.captureTower) totem.captureTower.towerBuffs.push(buff);
-    
+        if (totem.captureTower) {
+            if (buff.type === "range") {
+                totem.captureTower.stats.range += buff.number;
+                return;
+            }
+            totem.captureTower.towerBuffs.push(buff);
+        }
     });
 }
 

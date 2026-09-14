@@ -125,6 +125,7 @@ export default function hurtEnemy(k: KAPLAYCtx, opts: {
 
     if (
         !target.stunResistance &&
+        !target.statusImmunity &&
         attacker?.name === "Hammer Tower" &&
         !target.isDying && Math.random() < effectiveDamage * 0.002 &&
         !(target.shieldHp && k.get("shield").length)

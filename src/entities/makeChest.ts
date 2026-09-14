@@ -1,5 +1,5 @@
 import type { KAPLAYCtx, Vec2 } from "kaplay";
-import { chestAtom, store } from "../store";
+import { chestAtom, gameStateAtom, store } from "../store";
 import { playUISound } from "../utils/soundHelpers";
 
 export default function makeChest(k: KAPLAYCtx, pos: Vec2) {
@@ -62,6 +62,10 @@ export default function makeChest(k: KAPLAYCtx, pos: Vec2) {
     });
 
     chest.onClick(() => {
+        store.get(gameStateAtom).challengeManager.handleEvent({
+            type: "OPEN_CHEST"
+        });
+        
         playUISound(k, "open chest");
         store.set(chestAtom, prev => ({ ...prev, visible: true }));
         k.destroy(chest);
