@@ -89,6 +89,11 @@ export type TowerBuff =
         type: "damage";
         timeLeft?: number;
         multiplier: number;
+    } | 
+    {
+        type: "critChance";
+        timeLeft?: number;
+        multiplier: number;
     };
 
 export type SeedId = "chili" | "starfruit" | "nightshade";
@@ -1132,12 +1137,16 @@ export type TotemEffect =
         description: string;
     }
     | {
-        type: "regen";
-        amount: number;
+        type: "statusImmunity";
         description: string;
     }
     | {
         type: "health";
+        amount: number;
+        description: string;
+    } |
+    {
+        type: "armour";
         amount: number;
         description: string;
     };

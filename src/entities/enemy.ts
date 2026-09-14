@@ -34,7 +34,8 @@ export default function makeEnemy(
 
     // const speedMultiplier = 1 + expertWaveMultiplier * 0.015;
     // const healthMultiplier = 1 + expertWaveMultiplier * 0.025;
-    const expertBossHealthMult = "isBoss" in ENEMIES[enemyId] && ENEMIES[enemyId].isBoss && difficulty === "expert" ? 1.1 : 1;
+    const expertBossHealthMult = "isBoss" in ENEMIES[enemyId] && ENEMIES[enemyId].isBoss && difficulty === "expert" ? 1.2 : 1;
+    const expertEnemyMult = difficulty === "expert" ? waveNumber * 1.01 : 1;
     const health = Math.round(getHPAndArmour(ENEMIES[enemyId].hp, waveNumber) * (difficulty !== "normal" ? HARD_HEALTH_MULT : 1) * expertBossHealthMult);
 
     const baseSpeed = getEnemySpeed(ENEMIES[enemyId].speed, waveNumber);
@@ -330,7 +331,7 @@ export default function makeEnemy(
                 enemy.soulCount = 0;
                 let didShoot = false;
                 (k.get("tower") as TowerGameObj[]).forEach(tower => {
-                    if (tower.pos.add(tower.footprint.w * TILE_SIZE / 2).dist(enemy.pos) <= TILE_SIZE * 4) {
+                    if (tower.pos.add(tower.footprint.w * TILE_SIZE / 2).dist(enemy.pos) <= TILE_SIZE * 5) {
                         makeEnemyProjectile(k, {
                             id: "ghostProjectile",
                             pos: enemy.pos,
@@ -1147,7 +1148,7 @@ export default function makeEnemy(
                 createDeathParticles(k, enemy.pos, reaper);
 
                 waitScaled(k, 0.25, () => {
-                    reaper.heal(enemyId === "giantGrimReaper" ? 50 : 15);
+                    reaper.heal(enemyId === "giantGrimReaper" ? 80 : 20);
                     const healEffect = k.add([
                         k.sprite("heal effect", { anim: "heal" }),
                         k.pos(reaper.pos),

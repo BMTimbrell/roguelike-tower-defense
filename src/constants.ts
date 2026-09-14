@@ -136,7 +136,7 @@ export const TUTORIALS = {
             },
             {
                 title: "Totems",
-                text: "However they are made by Satan after all, so they thrive on pain and suffering. You can convert it to your side if a tower proves its worth.",
+                text: "However they are made by Satan after all, so they thrive on pain and suffering. You can convert them to your side if a tower proves its worth.",
                 images: ["totem-tutorial-3.png"]
             },
             {
@@ -2585,7 +2585,7 @@ export const LEVEL_WAVES = {
                     { id: "armouredSkeleton", count: 5, interval: 1 },
                     { id: "giantFireSlime", count: 1, interval: 1 },
                     { id: "fireSlime", count: 3, interval: 0.5 },
-                    { id: "grimReaper", count: 3, interval: 1},
+                    { id: "grimReaper", count: 3, interval: 1 },
                     { id: "giantMasochist", count: 1, interval: 1.5 },
                     { id: "masochist", count: 5, interval: 1 },
                     { id: "giantZombieFairy", count: 1, interval: 1 },
@@ -2629,8 +2629,8 @@ export const WORLDS: World[] = [
             ["desert1", "desert1-2"],
             ["desert2", "desert2-2"],
             ["desert3", "desert3"],
-            ["hell1-2", "hell1-2"],
-            ["hell2", "hell2-2"],
+            ["hell1", "hell1-2"],
+            ["hell2", "hell2"],
             ["hell3", "hell3"]
         ]
     }
@@ -3909,7 +3909,7 @@ export const ENEMIES = {
                     pos: enemy.pos,
                     target: enemy.killer,
                     hitChance: 1,
-                    damage: 0.5
+                    damage: 0.75
                 });
 
             }
@@ -5677,7 +5677,7 @@ export const TOWERS = {
         description: "Fire rate decreases with time, but damage and splash radius increases",
         cost: 400,
         stats: {
-            damage: 12,
+            damage: 11,
             range: 5,
             fireInterval: 0.15,
             critChance: 5,
@@ -7659,12 +7659,11 @@ export const TOTEMS: Record<TotemId, TotemDef> = {
         particleColor: "#FFFF00"
     },
     light: {
-        name: "Infernal Totem",
+        name: "Light Totem",
 
         enemyEffect: {
-            type: "health",
-            amount: 0.05,
-            description: "Enemies regen 5% HP per second",
+            type: "statusImmunity",
+            description: "Enemies are immune to status effects",
         },
 
         playerBuff: {
@@ -7672,21 +7671,25 @@ export const TOTEMS: Record<TotemId, TotemDef> = {
                 type: "bonusDamage",
                 element: "Light",
                 multiplier: 0.2
+            },
+            {
+                type: "range",
+                number: 2
             }],
-            description: "+20% damage",
+            description: "+2 range and 10% bonus light damage",
         },
 
         radius: TILE_SIZE * 4,
-        requiredDamage: 1000,
+        requiredDamage: 1500,
         particleColor: "#ffff97"
     },
     dark: {
-        name: "Infernal Totem",
+        name: "Dark Totem",
 
         enemyEffect: {
             type: "health",
-            amount: 0.05,
-            description: "Enemies regen 5% HP per second",
+            amount: 5,
+            description: "Enemies gain 5 armour per second",
         },
 
         playerBuff: {
@@ -7694,12 +7697,16 @@ export const TOTEMS: Record<TotemId, TotemDef> = {
                 type: "bonusDamage",
                 multiplier: 0.2,
                 element: "Dark"
+            },
+            {
+                type: "critChance",
+                multiplier: 0.5
             }],
-            description: "+20% damage"
+            description: "+25% crit chance and 10% bonus dark damage"
         },
         particleColor: "#800080",
 
         radius: TILE_SIZE * 4,
-        requiredDamage: 1000
+        requiredDamage: 1500
     }
 };

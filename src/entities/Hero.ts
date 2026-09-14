@@ -306,6 +306,15 @@ export default function makeHero(k: KAPLAYCtx,
 
         const mouseDown = hero.onMouseDown("left", () => {
             if (hero.placed && hero.selected) {
+                const damageTowerBuff = hero.towerBuffs
+                    .filter(b => b.type === "damage")
+                    .reduce((acc, b) => acc + b.multiplier, 0);
+
+                const damage = Math.round(hero.stats.damage * (1 + damageTowerBuff));
+                const fireRateMultiplier = hero.towerBuffs
+                    .filter(b => b.type === "fireRate")
+                    .reduce((acc, b) => acc * b.multiplier, 1);
+
                 store.set(gameStateAtom, prev => ({
                     ...prev,
                     selectedUI: {
@@ -315,7 +324,8 @@ export default function makeHero(k: KAPLAYCtx,
                         name: hero.name,
                         stats: {
                             ...hero.stats,
-                            fireInterval: hero.stats.fireInterval * (hero.isThirsty ? 2 : 1)
+                            damage: damage,
+                            fireInterval: hero.stats.fireInterval * (hero.isThirsty ? 2 : 1) * fireRateMultiplier
                         },
                         element: hero.element,
                         setPriority: (priority: TargetPriority) => {
