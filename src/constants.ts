@@ -19,6 +19,8 @@ import type { KAPLAYCtx } from "kaplay";
 import makeEnemyProjectile from "./entities/EnemyProjectile";
 import { rotateVector } from "./utils/targetingHelpers";
 import makeFloatingText from "./entities/FloatingText";
+import getBuffValue from "./utils/getBuffValue";
+import calcDamage from "./utils/calcDamage";
 
 export const NORMAL_PLAYER_HEATLH = 20;
 export const HARD_PLAYER_HEATLH = 15;
@@ -2605,7 +2607,7 @@ export const LEVEL_WAVES = {
         waves: [
             {
                 spawns: [
-                    { id: "imp", count: 5, interval: 1 },
+                    { id: "giantSkeleton", count: 100, interval: 5 },
                 ],
                 reward: 100
             }
@@ -3425,7 +3427,7 @@ export const ENEMIES = {
                                 if (!enemy.killer) return;
 
                                 playSfx(k, enemy.shootSound ?? "squish", 2, enemy.pos);
- 
+
                                 makeEnemyProjectile(k, {
                                     id: enemy.attacker!.projectile as ProjectileId,
                                     pos: enemy.pos.add(rotatedOffset),
@@ -5606,11 +5608,34 @@ export const TOWERS = {
                                     (k.get("targetable") as EnemyGameObj[]).forEach(enemy => {
                                         if (enemy.pos.dist(puddle.pos) < TILE_SIZE / 2 && !enemy.invincible) {
 
+                                            const damageTowerBuff = ctx.attacker.towerBuffs
+                                                .filter(b => b.type === "damage")
+                                                .reduce((acc, b) => acc + b.multiplier, 0);
+                                            const damageMult = 1 + getBuffValue(ctx.attacker as TowerGameObj, "damage") + damageTowerBuff;
+
+                                            const critDamageTowerBuff = ctx.attacker.towerBuffs
+                                                .filter(b => b.type === "critDamage")
+                                                .reduce((acc, b) => acc + b.multiplier, 0);
+                                            const critDamageMult = 1 + getBuffValue(ctx.attacker as TowerGameObj, "critDamage") + critDamageTowerBuff;
+
+                                            const bonusDamage = ctx.attacker.towerBuffs
+                                                .filter(b => b.type === "flatDamage")
+                                                .reduce((acc, b) => acc + b.amount, 0);
+
+                                            const { isCrit, damage } = calcDamage({
+                                                bonusDamage,
+                                                bonusCritChance: enemy.has("curse") ? CURSE_CRIT + (k.get("hero")[0]?.hasCurseBuff ? 10 : 0) : 0,
+                                                critChance: ctx.attacker.stats.critChance + (getBuffValue(ctx.attacker as TowerGameObj, "critChance") * 100),
+                                                critDamage: ctx.attacker.stats.critDamage * critDamageMult,
+                                                damage: ctx.damage,
+                                                damageMultiplier: damageMult
+                                            });
+
                                             hurtEnemy(k, {
                                                 target: enemy,
-                                                damage: Math.round(ctx.damage * 0.25),
+                                                damage: Math.round(damage * 0.25),
                                                 element: ctx.element,
-                                                isCrit: false,
+                                                isCrit: isCrit,
                                                 attacker: ctx.attacker as TowerGameObj
                                             });
                                         }
@@ -7766,7 +7791,7 @@ export const TOTEMS: Record<TotemId, TotemDef> = {
         particleColor: "#00FFFF",
 
         radius: 3.5,
-        requiredDamage: 5
+        requiredDamage: 1500
     },
     poison: {
         name: "Poison Totem",

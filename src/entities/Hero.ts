@@ -309,7 +309,11 @@ export default function makeHero(k: KAPLAYCtx,
                 const damageTowerBuff = hero.towerBuffs
                     .filter(b => b.type === "damage")
                     .reduce((acc, b) => acc + b.multiplier, 0);
-                const damage = Math.round(hero.stats.damage * (1 + damageTowerBuff));
+                const bonusDamage = hero.towerBuffs
+                    .filter(b => b.type === "flatDamage")
+                    .reduce((acc, b) => acc + b.amount, 0);
+
+                const damage = Math.round((hero.stats.damage + bonusDamage) * (1 + damageTowerBuff));
 
                 const fireRateMultiplier = hero.towerBuffs
                     .filter(b => b.type === "fireRate")

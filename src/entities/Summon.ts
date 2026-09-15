@@ -55,7 +55,9 @@ export default function spawnSummon(k: KAPLAYCtx, ctx: AttackContext, id: Summon
 
         if (shootSound) playSfx(k, shootSound, 1, summon.pos);
 
-        let bonusDamage = 0;
+        const bonusDamage = ctx.attacker.towerBuffs
+            .filter(b => b.type === "flatDamage")
+            .reduce((acc, b) => acc + b.amount, 0);
 
         const damageTowerBuff = ctx.attacker.towerBuffs
             .filter(b => b.type === "damage")
@@ -138,7 +140,7 @@ export default function spawnSummon(k: KAPLAYCtx, ctx: AttackContext, id: Summon
             ctx.attacker.towerBuffs
                 .filter(b => b.type === "fireRate")
                 .reduce((acc, b) => acc * b.multiplier, 1);
-                
+
         const interval = summon.fireInterval * fireRateMultiplier * (ctx.attacker.isThirsty ? 2 : 1);
 
         if (summon.attackTimer > interval) summon.attackTimer = interval;

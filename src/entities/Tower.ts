@@ -280,9 +280,12 @@ export default function makeTower(
                                 .reduce((acc, b) => acc + b.multiplier, 0);
 
                             const critDamageMult = 1 + getBuffValue(tower, "critDamage") + critDamageTowerBuff;
+                            const bonusDamage = tower.towerBuffs
+                                .filter(b => b.type === "flatDamage")
+                                .reduce((acc, b) => acc + b.amount, 0);
 
                             const { isCrit, damage } = calcDamage({
-                                bonusDamage: 0,
+                                bonusDamage,
                                 bonusCritChance: enemy.has("curse") ? CURSE_CRIT + (k.get("hero")[0]?.hasCurseBuff ? 10 : 0) : 0,
                                 critChance: tower.stats.critChance + (getBuffValue(tower, "critChance") * 100),
                                 critDamage: tower.stats.critDamage * critDamageMult,
@@ -390,8 +393,12 @@ export default function makeTower(
 
                         const critDamageMult = 1 + getBuffValue(tower, "critDamage") + critDamageTowerBuff;
 
+                        const bonusDamage = tower.towerBuffs
+                            .filter(b => b.type === "flatDamage")
+                            .reduce((acc, b) => acc + b.amount, 0);
+
                         const { isCrit, damage } = calcDamage({
-                            bonusDamage: 0,
+                            bonusDamage,
                             bonusCritChance:
                                 target.has("curse")
                                     ? CURSE_CRIT +

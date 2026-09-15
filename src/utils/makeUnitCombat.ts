@@ -600,6 +600,10 @@ export default function makeUnitCombat(
                 bonusDamage = heat.current * 0.3;
             }
 
+            bonusDamage += opts.owner.towerBuffs
+                .filter(b => b.type === "flatDamage")
+                .reduce((acc, b) => acc + b.amount, 0);
+
             const { isCrit, damage } = calcDamage({
                 bonusDamage,
                 bonusCritChance: enemy.has("curse") ? CURSE_CRIT + (k.get("hero")[0]?.hasCurseBuff ? 10 : 0) : 0,
@@ -650,7 +654,10 @@ export default function makeUnitCombat(
             opts.owner.effects?.forEach(e => e.secondEffect?.(ctx));
 
             for (const p of ctx.projectiles) {
-                const bonusDamage = p?.bonusDamage ?? 0;
+                const bonusDamage = (p?.bonusDamage ?? 0) + opts.owner.towerBuffs
+                    .filter(b => b.type === "flatDamage")
+                    .reduce((acc, b) => acc + b.amount, 0);
+
                 let bonusCrit = p?.bonusCrit ?? 0;
                 const spread = opts.owner?.spread ?? 0;
                 const finalAngle = p.angle + k.rand(-spread, spread);

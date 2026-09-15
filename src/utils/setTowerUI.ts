@@ -19,7 +19,11 @@ export default function setTowerUI(k: KAPLAYCtx, type: "combat" | "farm", tower:
             .reduce((acc, b) => acc + b.multiplier, 0);
         const critDamage = tower.stats.critDamage * (1 + critDamageTowerBuff);
 
-        const baseDamage = Math.round(tower.stats.damage * (1 + damageTowerBuff));
+        const bonusBuffDamage = tower.towerBuffs
+                .filter(b => b.type === "flatDamage")
+                .reduce((acc, b) => acc + b.amount, 0);
+
+        const baseDamage = Math.round((tower.stats.damage + bonusBuffDamage) * (1 + damageTowerBuff));
         const fireRateMultiplier = tower.towerBuffs
             .filter(b => b.type === "fireRate")
             .reduce((acc, b) => acc * b.multiplier, 1);

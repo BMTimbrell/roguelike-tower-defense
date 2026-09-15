@@ -352,6 +352,7 @@ export type EnemyGameObj = GameObj<
     shellBroken: boolean;
     enemyId: EnemyId;
     maxArmour: number;
+    spawnPoisonMist: boolean;
     healer?: {
         amount: number;
         range: number;

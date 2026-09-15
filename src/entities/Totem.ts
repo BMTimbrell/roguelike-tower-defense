@@ -209,6 +209,7 @@ export function recalculateTotemStats(enemy: EnemyGameObj) {
     enemy.armourRegen = 0;
     enemy.statusImmunity = false;
     enemy.spawnIce = "spawnIce" in ENEMIES[enemy.enemyId as EnemyId];
+    enemy.spawnPoisonMist = false;
 
     for (const totem of enemy.totemEffects) {
         const effect = totem.enemyEffect;
@@ -237,6 +238,10 @@ export function recalculateTotemStats(enemy: EnemyGameObj) {
 
         if (effect.type === "icePuddle") {
             enemy.spawnIce = true;
+        }
+
+        if (effect.type === "poisonMist") {
+            enemy.spawnPoisonMist = true;
         }
 
     }

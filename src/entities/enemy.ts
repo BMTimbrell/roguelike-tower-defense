@@ -115,7 +115,8 @@ export default function makeEnemy(
                 maxShieldHp: (ENEMIES[enemyId].shieldHp as number) * (difficulty === "hard" ? HARD_SHIELD_MULT : difficulty === "expert" ? 1.3 : 1)
             } :
                 {}),
-            spawnIce: "spawnIce" in ENEMIES[enemyId] ? true : false,
+            spawnIce: "spawnIce" in ENEMIES[enemyId],
+            spawnPoisonMist: false,
             ...("hasLargeSoul" in ENEMIES[enemyId] ? { hasLargeSoul: ENEMIES[enemyId].hasLargeSoul as boolean } : {}),
             ...("shieldSprite" in ENEMIES[enemyId] ? { shieldSprite: ENEMIES[enemyId].shieldSprite as string } : {}),
             ...("shootSound" in ENEMIES[enemyId] ? { shootSound: ENEMIES[enemyId].shootSound as string } : {}),
@@ -364,6 +365,7 @@ export default function makeEnemy(
                         k.sprite("heal effect", { anim: "heal" }),
                         k.pos(enemy.pos),
                         k.anchor("center"),
+                        k.z(999),
                         k.opacity(1),
                         {
                             update() {
@@ -783,6 +785,7 @@ export default function makeEnemy(
                         k.sprite("heal effect", { anim: "heal" }),
                         k.pos(enemy.pos),
                         k.anchor("center"),
+                        k.z(999),
                         k.opacity(1),
                         {
                             update() {
@@ -1102,6 +1105,7 @@ export default function makeEnemy(
                         k.sprite("heal effect", { anim: "heal" }),
                         k.pos(e.pos),
                         k.anchor("center"),
+                        k.z(999),
                         k.opacity(1),
                         {
                             update() {
@@ -1172,6 +1176,20 @@ export default function makeEnemy(
 
         if (enemy.isDying) return;
 
+        if (enemy.spawnPoisonMist) {
+            poisonDeathEffect(k, enemy.pos);
+            k.get("tower").forEach(tower => {
+                if (enemy.pos.dist(tower.pos.add(tower.footprint.w * TILE_SIZE / 2)) <= (TILE_SIZE * (1.5 + (tower.footprint.w - 1) / 2))) {
+                    tower.disabledTimeLeft = Math.max(
+                        tower.disabledTimeLeft ?? 0,
+                        1
+                    );
+
+                    tower.enterState("disabled");
+                }
+            });
+        }
+
         // reaper harvesting souls
         const reapers = k.get("grimreaper") as EnemyGameObj[];
 
@@ -1189,6 +1207,7 @@ export default function makeEnemy(
                         k.sprite("heal effect", { anim: "heal" }),
                         k.pos(reaper.pos),
                         k.anchor("center"),
+                        k.z(999),
                         k.opacity(1),
                         {
                             update() {
@@ -1630,4 +1649,53 @@ function empowerReaper(k: KAPLAYCtx, reaper: EnemyGameObj) {
             }
         }
     });
+}
+
+function poisonDeathEffect(k: KAPLAYCtx, pos: Vec2) {
+    const particleCount = 8;
+
+    for (let i = 0; i < particleCount; i++) {
+        const angle = k.rand(0, Math.PI * 2);
+        const distance = k.rand(4, 12);
+
+        const particle = k.add([
+            k.rect(k.rand(18, 36), k.rand(18, 36)),
+            k.pos(
+                pos.x + Math.cos(angle) * distance,
+                pos.y + Math.sin(angle) * distance
+            ),
+            k.color(80, 180, 80),
+            k.opacity(0.5),
+            k.scale(1),
+            k.anchor("center"),
+            k.z(100),
+        ]);
+
+        const startScale = particle.scale.clone();
+
+        let elapsed = 0;
+        const duration = 0.5;
+
+        particle.onUpdate(() => {
+            elapsed += k.dt() * store.get(gameStateAtom).timeScale;
+
+            const t = elapsed / duration;
+
+            // Expand
+            particle.scale = startScale.scale(1 + t * 2);
+
+            // Fade out
+            particle.opacity = 0.5 * (1 - t);
+
+            // Slowly drift outward
+            particle.move(
+                Math.cos(angle) * 8 * k.dt(),
+                Math.sin(angle) * 8 * k.dt()
+            );
+
+            if (elapsed >= duration) {
+                k.destroy(particle);
+            }
+        });
+    }
 }

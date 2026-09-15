@@ -50,8 +50,9 @@ export function spawnExplosiveFireballParticles(k: KAPLAYCtx, pos: Vec2) {
 
 export function spawnFlameParticle(k: KAPLAYCtx, pos: Vec2) {
     const particle = k.add([
-        k.circle(3),
+        k.rect(2, 2),
         k.pos(pos),
+        k.anchor("center"),
         k.color(255, 180, 50),
         k.opacity(0.8),
         k.scale(1),
