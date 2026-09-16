@@ -1,24 +1,25 @@
 import { useAtom } from "jotai";
-import { hoveredTotemAtom, mapAtom } from "../../store";
+import { hoveredHellMapEntityAtom, mapAtom } from "../../store";
 import styles from './TotemPopup.module.css';
-import { TOTEMS } from "../../constants";
+import { OBELISKS, TOTEMS } from "../../constants";
 
 export default function TotemPopup() {
-    const [totem] = useAtom(hoveredTotemAtom);
+    const [mapEntity] = useAtom(hoveredHellMapEntityAtom);
+    const isTotem = mapEntity?.type === "totem";
     const [map] = useAtom(mapAtom);
     const fontScale = map.fontScale;
 
     return (
-        <div style={{ top: totem?.pos.y, left: totem?.pos.x, fontSize: `${12 * fontScale}px` }} className={styles.container}>
-            <div className={styles.heading}>{totem?.id && TOTEMS[totem.id].name}</div>
+        <div style={{ top: mapEntity?.pos.y, left: mapEntity?.pos.x, fontSize: `${12 * fontScale}px` }} className={styles.container}>
+            <div className={styles.heading}>{mapEntity?.id && (isTotem ? TOTEMS[mapEntity.id] : OBELISKS[mapEntity.id]).name}</div>
             <div className={styles["description-container"]}>
-                <div className={styles.description}>
+                {isTotem && <div className={styles.description}>
                     <img style={{ marginRight: "4px" }} width={`${14 * map.iconScale}px`} src="sprites/enemy-totem-icon.png" />
-                    <div>{totem?.id && TOTEMS[totem.id].enemyEffect.description}</div>
-                </div>
+                    <div>{mapEntity?.id && TOTEMS[mapEntity.id].enemyEffect.description}</div>
+                </div>}
                 <div className={styles.description}>
                     <img width={`${14 * map.iconScale}px`} src="sprites/totem-tower-icon.png" />
-                    <div>{totem?.id && TOTEMS[totem.id].playerBuff.description}</div>
+                    <div>{mapEntity?.id && (isTotem ? TOTEMS[mapEntity.id].playerBuff : OBELISKS[mapEntity.id]).description}</div>
                 </div>
             </div>
         </div>

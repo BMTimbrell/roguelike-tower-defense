@@ -1,5 +1,5 @@
 import type { KAPLAYCtx } from "kaplay";
-import { altarAtom, challengesAtom, chestAtom, gameStateAtom, hoveredTotemAtom, rewardsAtom, shopAtom, shopChoiceUIAtom, store } from "../store";
+import { altarAtom, challengesAtom, chestAtom, gameStateAtom, hoveredHellMapEntityAtom, rewardsAtom, shopAtom, shopChoiceUIAtom, store } from "../store";
 import initCam from "../utils/initCam";
 import type { HeroGameObj, LevelWaves, Scene, Upgrade } from "../types";
 import { BASE_DRAW_COST, LEVEL_REWARDS, LEVEL_WAVES, TOWERS, UPGRADES, WORLDS, type LevelId, type TowerId } from "../constants";
@@ -49,7 +49,7 @@ export default function levelTransition(k: KAPLAYCtx) {
             visible: false
         }));
 
-        store.set(hoveredTotemAtom, null);
+        store.set(hoveredHellMapEntityAtom, null);
 
         const heroSprite = k.add([
             k.sprite(`${hero.heroId} celebrating`, { anim: "celebrate" }),

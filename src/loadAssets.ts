@@ -1695,6 +1695,7 @@ export default function loadAssets(k: KAPLAYCtx) {
     k.loadSprite("treasure chest", "sprites/treasure-chest.png");
     k.loadSprite("blurred circle", "sprites/blurred-circle.png");
     k.loadSprite("boss icon", "sprites/boss-icon.png");
+    k.loadSprite("corrupted tile", "sprites/corrupted-tile.png");
     k.loadSprite("snow", "sprites/snow.png");
     k.loadSprite("lava tile", "sprites/lava3.png");
     k.loadSprite("stinger", "sprites/bee-stinger.png");
@@ -1886,6 +1887,56 @@ export default function loadAssets(k: KAPLAYCtx) {
             appear: { from: 0, to: 10, loop: false }
         }
     });
+
+    k.loadSprite("flame obelisk", "sprites/flame-obelisk.png", {
+        sliceX: 5,
+        sliceY: 1,
+        anims: {
+            idle: 0,
+            destroy: { from: 0, to: 4 }
+        }
+    });
+    k.loadSprite("light obelisk", "sprites/light-obelisk.png", {
+        sliceX: 5,
+        sliceY: 1,
+        anims: {
+            idle: 0,
+            destroy: { from: 0, to: 4 }
+        }
+    });
+    k.loadSprite("dark obelisk", "sprites/dark-obelisk.png", {
+        sliceX: 5,
+        sliceY: 1,
+        anims: {
+            idle: 0,
+            destroy: { from: 0, to: 4 }
+        }
+    });
+    k.loadSprite("ice obelisk", "sprites/ice-obelisk.png", {
+        sliceX: 5,
+        sliceY: 1,
+        anims: {
+            idle: 0,
+            destroy: { from: 0, to: 4 }
+        }
+    });
+    k.loadSprite("lightning obelisk", "sprites/lightning-obelisk.png", {
+        sliceX: 5,
+        sliceY: 1,
+        anims: {
+            idle: 0,
+            destroy: { from: 0, to: 4 }
+        }
+    });
+    k.loadSprite("poison obelisk", "sprites/poison-obelisk.png", {
+        sliceX: 5,
+        sliceY: 1,
+        anims: {
+            idle: 0,
+            destroy: { from: 0, to: 4 }
+        }
+    });
+
     k.loadSprite("tower placement icon", "sprites/tower-placement-icon.png");
     k.loadSprite("occultist circle", "sprites/occultist-circle.png");
 

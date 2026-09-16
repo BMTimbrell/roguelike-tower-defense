@@ -16,7 +16,8 @@ export default function PriorityButton({
 }) {
     const [gameState] = useAtom(gameStateAtom);
     const cactusPriority: TargetPriority[] = gameState.context?.get("cactus").length ? ["Cactus"] : [];
-    const priorities: TargetPriority[] = ["Most Progress", "Least Progress", "Highest HP", "Lowest HP", "Closest", "Furthest", ...cactusPriority];
+    const obeliskPriority: TargetPriority[] = gameState.context?.get("obelisk").length ? ["Obelisk"] : [];
+    const priorities: TargetPriority[] = ["Most Progress", "Least Progress", "Highest HP", "Lowest HP", "Closest", "Furthest", ...cactusPriority, ...obeliskPriority];
     let priorityIndex = priorities.findIndex(p => p === priority);
     const [hovered, setHovered] = useState(false);
 

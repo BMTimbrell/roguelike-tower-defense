@@ -1,4 +1,4 @@
-import type { Upgrade, LevelWaves, EnemyConfig, TowerDef, ElementDef, ElementName, ProjectileDef, HeroDef, HeroSkillDefBase, TowerGameObj, Seed, Scenes, Summon, EnemyGameObj, ChallengeDef, Spell, Requirement, World, TotemId, TotemDef } from "./types";
+import type { Upgrade, LevelWaves, EnemyConfig, TowerDef, ElementDef, ElementName, ProjectileDef, HeroDef, HeroSkillDefBase, TowerGameObj, Seed, Scenes, Summon, EnemyGameObj, ChallengeDef, Spell, Requirement, World, TotemId, TotemDef, ObeliskId, ObeliskDef } from "./types";
 import burnEffect from "./kaplayComponents/burnEffect";
 import calcFireInterval from "./utils/calcFireInterval";
 import poisonEffect from "./kaplayComponents/poisonEffect";
@@ -2353,116 +2353,116 @@ export const LEVEL_WAVES = {
                 ],
                 reward: 100
             },
-            {
-                spawns: [
-                    { id: "imp", count: 5, interval: 1 },
-                    { id: "orc", count: 2, interval: 1 }
-                ],
-                reward: 200
-            },
-            {
-                spawns: [
-                    { id: "demon", count: 1, interval: 1 },
-                    { id: "orc", count: 3, interval: 1.5 },
-                    { id: "imp", count: 5, interval: 1 },
-                    { id: "zombieFairy", count: 1, interval: 1 }
-                ],
-                reward: 300
-            },
-            {
-                spawns: [
-                    { id: "demon", count: 1, interval: 1 },
-                    { id: "occultist", count: 1, interval: 1 },
-                    { id: "demon", count: 1, interval: 1 },
-                    { id: "armouredOrc", count: 1, interval: 2 },
-                    { id: "orc", count: 5, interval: 1.5 },
-                    { id: "zombieFairy", count: 1, interval: 1 },
-                    { id: "giantImp", count: 1, interval: 1 },
-                    { id: "imp", count: 5, interval: 0.75 },
-                    { id: "hellWolf", count: 1, interval: 1 },
-                    { id: "zombieFairy", count: 1, interval: 1 }
-                ],
-                reward: 400
-            },
-            {
-                spawns: [
-                    { id: "occultist", count: 3, interval: 1 },
-                    { id: "armouredOrc", count: 3, interval: 1 },
-                    { id: "orc", count: 3, interval: 1 },
-                    { id: "demon", count: 3, interval: 1 },
-                    { id: "redZombieFairy", count: 1, interval: 1 },
-                    { id: "giantImp", count: 1, interval: 1 },
-                    { id: "imp", count: 5, interval: 0.5 },
-                    { id: "spider", count: 5, interval: 1 },
-                    { id: "occultist", count: 1, interval: 1 },
-                    { id: "hellWolf", count: 1, interval: 1 },
-                    { id: "redZombieFairy", count: 1, interval: 1 }
-                ],
-                reward: 500
-            },
-            {
-                spawns: [
-                    { id: "giantDemon", count: 1, interval: 1 },
-                    { id: "occultist", count: 1, interval: 1 },
-                    { id: "armouredDemon", count: 3, interval: 1.5 },
-                    { id: "occultist", count: 1, interval: 1 },
-                    { id: "hellWolf", count: 1, interval: 1 },
-                    { id: "demon", count: 5, interval: 1 },
-                    { id: "redZombieFairy", count: 1, interval: 1 },
-                    { id: "occultist", count: 1, interval: 1 },
-                    { id: "hellWolf", count: 1, interval: 1 },
-                    { id: "giantImp", count: 1, interval: 1 },
-                    { id: "imp", count: 5, interval: 0.5 },
-                    { id: "redZombieFairy", count: 1, interval: 1 },
-                    { id: "occultist", count: 1, interval: 1 },
-                    { id: "spider", count: 5, interval: 1 },
-                    { id: "occultist", count: 1, interval: 1 },
-                    { id: "hellWolf", count: 1, interval: 1 },
-                    { id: "redZombieFairy", count: 1, interval: 1 }
-                ],
-                reward: 600
-            },
-            {
-                spawns: [
-                    { id: "giantArmouredDemon", count: 1, interval: 1.5 },
-                    { id: "occultist", count: 2, interval: 1 },
-                    { id: "armouredDemon", count: 5, interval: 1 },
-                    { id: "occultist", count: 2, interval: 1 },
-                    { id: "hellWolf", count: 1, interval: 1 },
-                    { id: "redZombieFairy", count: 1, interval: 1 },
-                    { id: "giantImp", count: 1, interval: 1 },
-                    { id: "imp", count: 3, interval: 0.5 },
-                    { id: "giantDemon", count: 1, interval: 1 },
-                    { id: "demon", count: 5, interval: 0.75 },
-                    { id: "occultist", count: 2, interval: 1 },
-                    { id: "hellWolf", count: 1, interval: 1 },
-                    { id: "giantZombieFairy", count: 1, interval: 1 },
-                    { id: "zombieFairy", count: 3, interval: 0.5 },
-                    { id: "occultist", count: 3, interval: 1.5 }
-                ],
-                reward: 700
-            },
-            {
-                spawns: [
-                    { id: "giantOccultist", count: 1, interval: 1.5 },
-                    { id: "occultist", count: 3, interval: 1 },
-                    { id: "giantArmouredDemon", count: 1, interval: 1 },
-                    { id: "occultist", count: 2, interval: 1 },
-                    { id: "hellWolf", count: 1, interval: 1 },
-                    { id: "redZombieFairy", count: 1, interval: 1 },
-                    { id: "armouredDemon", count: 5, interval: 1 },
-                    { id: "giantImp", count: 1, interval: 1 },
-                    { id: "imp", count: 3, interval: 0.5 },
-                    { id: "giantDemon", count: 1, interval: 1.5 },
-                    { id: "occultist", count: 2, interval: 1 },
-                    { id: "demon", count: 3, interval: 1 },
-                    { id: "occultist", count: 1, interval: 1 },
-                    { id: "redZombieFairy", count: 1, interval: 1 },
-                    { id: "giantHellWolf", count: 1, interval: 1 },
-                    { id: "hellWolf", count: 2, interval: 1 }
-                ],
-                reward: 800
-            }
+            // {
+            //     spawns: [
+            //         { id: "imp", count: 5, interval: 1 },
+            //         { id: "orc", count: 2, interval: 1 }
+            //     ],
+            //     reward: 200
+            // },
+            // {
+            //     spawns: [
+            //         { id: "demon", count: 1, interval: 1 },
+            //         { id: "orc", count: 3, interval: 1.5 },
+            //         { id: "imp", count: 5, interval: 1 },
+            //         { id: "zombieFairy", count: 1, interval: 1 }
+            //     ],
+            //     reward: 300
+            // },
+            // {
+            //     spawns: [
+            //         { id: "demon", count: 1, interval: 1 },
+            //         { id: "occultist", count: 1, interval: 1 },
+            //         { id: "demon", count: 1, interval: 1 },
+            //         { id: "armouredOrc", count: 1, interval: 2 },
+            //         { id: "orc", count: 5, interval: 1.5 },
+            //         { id: "zombieFairy", count: 1, interval: 1 },
+            //         { id: "giantImp", count: 1, interval: 1 },
+            //         { id: "imp", count: 5, interval: 0.75 },
+            //         { id: "hellWolf", count: 1, interval: 1 },
+            //         { id: "zombieFairy", count: 1, interval: 1 }
+            //     ],
+            //     reward: 400
+            // },
+            // {
+            //     spawns: [
+            //         { id: "occultist", count: 3, interval: 1 },
+            //         { id: "armouredOrc", count: 3, interval: 1 },
+            //         { id: "orc", count: 3, interval: 1 },
+            //         { id: "demon", count: 3, interval: 1 },
+            //         { id: "redZombieFairy", count: 1, interval: 1 },
+            //         { id: "giantImp", count: 1, interval: 1 },
+            //         { id: "imp", count: 5, interval: 0.5 },
+            //         { id: "spider", count: 5, interval: 1 },
+            //         { id: "occultist", count: 1, interval: 1 },
+            //         { id: "hellWolf", count: 1, interval: 1 },
+            //         { id: "redZombieFairy", count: 1, interval: 1 }
+            //     ],
+            //     reward: 500
+            // },
+            // {
+            //     spawns: [
+            //         { id: "giantDemon", count: 1, interval: 1 },
+            //         { id: "occultist", count: 1, interval: 1 },
+            //         { id: "armouredDemon", count: 3, interval: 1.5 },
+            //         { id: "occultist", count: 1, interval: 1 },
+            //         { id: "hellWolf", count: 1, interval: 1 },
+            //         { id: "demon", count: 5, interval: 1 },
+            //         { id: "redZombieFairy", count: 1, interval: 1 },
+            //         { id: "occultist", count: 1, interval: 1 },
+            //         { id: "hellWolf", count: 1, interval: 1 },
+            //         { id: "giantImp", count: 1, interval: 1 },
+            //         { id: "imp", count: 5, interval: 0.5 },
+            //         { id: "redZombieFairy", count: 1, interval: 1 },
+            //         { id: "occultist", count: 1, interval: 1 },
+            //         { id: "spider", count: 5, interval: 1 },
+            //         { id: "occultist", count: 1, interval: 1 },
+            //         { id: "hellWolf", count: 1, interval: 1 },
+            //         { id: "redZombieFairy", count: 1, interval: 1 }
+            //     ],
+            //     reward: 600
+            // },
+            // {
+            //     spawns: [
+            //         { id: "giantArmouredDemon", count: 1, interval: 1.5 },
+            //         { id: "occultist", count: 2, interval: 1 },
+            //         { id: "armouredDemon", count: 5, interval: 1 },
+            //         { id: "occultist", count: 2, interval: 1 },
+            //         { id: "hellWolf", count: 1, interval: 1 },
+            //         { id: "redZombieFairy", count: 1, interval: 1 },
+            //         { id: "giantImp", count: 1, interval: 1 },
+            //         { id: "imp", count: 3, interval: 0.5 },
+            //         { id: "giantDemon", count: 1, interval: 1 },
+            //         { id: "demon", count: 5, interval: 0.75 },
+            //         { id: "occultist", count: 2, interval: 1 },
+            //         { id: "hellWolf", count: 1, interval: 1 },
+            //         { id: "giantZombieFairy", count: 1, interval: 1 },
+            //         { id: "zombieFairy", count: 3, interval: 0.5 },
+            //         { id: "occultist", count: 3, interval: 1.5 }
+            //     ],
+            //     reward: 700
+            // },
+            // {
+            //     spawns: [
+            //         { id: "giantOccultist", count: 1, interval: 1.5 },
+            //         { id: "occultist", count: 3, interval: 1 },
+            //         { id: "giantArmouredDemon", count: 1, interval: 1 },
+            //         { id: "occultist", count: 2, interval: 1 },
+            //         { id: "hellWolf", count: 1, interval: 1 },
+            //         { id: "redZombieFairy", count: 1, interval: 1 },
+            //         { id: "armouredDemon", count: 5, interval: 1 },
+            //         { id: "giantImp", count: 1, interval: 1 },
+            //         { id: "imp", count: 3, interval: 0.5 },
+            //         { id: "giantDemon", count: 1, interval: 1.5 },
+            //         { id: "occultist", count: 2, interval: 1 },
+            //         { id: "demon", count: 3, interval: 1 },
+            //         { id: "occultist", count: 1, interval: 1 },
+            //         { id: "redZombieFairy", count: 1, interval: 1 },
+            //         { id: "giantHellWolf", count: 1, interval: 1 },
+            //         { id: "hellWolf", count: 2, interval: 1 }
+            //     ],
+            //     reward: 800
+            // }
         ]
     },
     "world2-level4-2": {
@@ -2607,7 +2607,25 @@ export const LEVEL_WAVES = {
         waves: [
             {
                 spawns: [
-                    { id: "giantSkeleton", count: 100, interval: 5 },
+                    { id: "fireSlime", count: 2, interval: 1 },
+                ],
+                reward: 100
+            },
+            {
+                spawns: [
+                    { id: "fireSlime", count: 2, interval: 1 },
+                ],
+                reward: 100
+            },
+            {
+                spawns: [
+                    { id: "fireSlime", count: 2, interval: 1 },
+                ],
+                reward: 100
+            },
+            {
+                spawns: [
+                    { id: "fireSlime", count: 2, interval: 1 },
                 ],
                 reward: 100
             }
@@ -7819,3 +7837,42 @@ export const TOTEMS: Record<TotemId, TotemDef> = {
         requiredDamage: 1500
     }
 };
+
+export const OBELISKS: Record<ObeliskId, ObeliskDef> = {
+    flame: {
+        name: "Fire Obelisk",
+        element: "Fire",
+        particleColor: "#DF7126",
+        description: "+20% bonus fire damage when destroyed"
+    },
+    lightning: {
+        name: "Electric Obelisk",
+        element: "Electric",
+        particleColor: "#FFFF00",
+        description: "+20% bonus electric damage when destroyed"
+    },
+    ice: {
+        name: "Ice Obelisk",
+        element: "Ice",
+        particleColor: "#00FFFF",
+        description: "+20% bonus ice damage"
+    },
+    poison: {
+        name: "Poison Obelisk",
+        element: "Poison",
+        particleColor: "#00FF00",
+        description: "+20% bonus poison damage"
+    },
+    light: {
+        name: "Light Obelisk",
+        element: "Light",
+        particleColor: "#ffff97",
+        description: "+20% bonus light damage"
+    },
+    dark: {
+        name: "Dark Obelisk",
+        element: "Dark",
+        particleColor: "#800080",
+        description: "+20% bonus dark damage"
+    }
+}

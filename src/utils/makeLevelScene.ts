@@ -1,5 +1,5 @@
 import type { GameObj, KAPLAYCtx } from "kaplay";
-import type { MapData, PathTile, Scene, Tile, TotemId, TowerGameObj } from "../types";
+import type { MapData, ObeliskGameObj, ObeliskId, PathTile, Scene, Tile, TotemId, TowerGameObj } from "../types";
 import showLevelStats from "./showLevelStats";
 import initCam from "./initCam";
 import generateFog from "./generateFog";
@@ -25,6 +25,7 @@ import healthBar from "../kaplayComponents/healthBar";
 import { waitScaled } from "./timerFunctions";
 import { tryShowTutorial } from "./tutorialHelpers";
 import makeTotem from "../entities/Totem";
+import makeObelisk, { corruptRandomTiles } from "../entities/Obelisk";
 
 export default function makeLevelScene(k: KAPLAYCtx, sceneName: Scene) {
 
@@ -427,6 +428,8 @@ export default function makeLevelScene(k: KAPLAYCtx, sceneName: Scene) {
                         if (spawner?.waveIndex + 1 === index) chimney.opacity = 1;
                         else chimney.opacity = 0;
                     });
+
+                    (k.get("obelisk") as ObeliskGameObj[]).forEach(obelisk => corruptRandomTiles(k, obelisk, tileGrid));
                 }
 
             });
@@ -880,7 +883,18 @@ export default function makeLevelScene(k: KAPLAYCtx, sceneName: Scene) {
             ?.objects
             ?.forEach(obj => {
                 if (obj.name) {
-                    makeTotem(k, "poison", k.vec2(obj.x, obj.y));
+                    makeTotem(k, obj.name as TotemId, k.vec2(obj.x, obj.y));
+                    tileGrid[obj.y / TILE_SIZE][obj.x / TILE_SIZE].blocked = true;
+                }
+            });
+        
+        // obelisk
+        mapData.layers
+            .find(layer => layer.name === "Obelisks")
+            ?.objects
+            ?.forEach(obj => {
+                if (obj.name) {
+                    makeObelisk(k, obj.name as ObeliskId, k.vec2(obj.x, obj.y), tileGrid);
                     tileGrid[obj.y / TILE_SIZE][obj.x / TILE_SIZE].blocked = true;
                 }
             });

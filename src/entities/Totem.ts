@@ -1,8 +1,8 @@
 import type { Color, GameObj, KAPLAYCtx, Vec2 } from "kaplay";
-import type { EnemyGameObj, SelectedTowerUI, TotemGameObj, TotemId, TowerGameObj } from "../types";
-import { ENEMIES, TILE_SIZE, TOTEMS, type EnemyId } from "../constants";
+import type { EnemyGameObj, ObeliskGameObj, TotemGameObj, TotemId, TowerGameObj } from "../types";
+import { ENEMIES, OBELISKS, TILE_SIZE, TOTEMS, type EnemyId } from "../constants";
 import { updateSpeed } from "./Enemy";
-import { cachedSaveAtom, gameStateAtom, hoveredTotemAtom, store } from "../store";
+import { cachedSaveAtom, gameStateAtom, hoveredHellMapEntityAtom, store } from "../store";
 import { playSfx } from "../utils/soundHelpers";
 import { tryShowTutorial } from "../utils/tutorialHelpers";
 
@@ -113,16 +113,17 @@ export default function makeTotem(k: KAPLAYCtx, id: TotemId, pos: Vec2) {
             totemRange.opacity = 0.2;
         }
 
-        store.set(hoveredTotemAtom, prev => ({
+        store.set(hoveredHellMapEntityAtom, prev => ({
             ...prev,
             id,
+            type: "totem",
             pos: { x: totem.screenPos().x, y: totem.screenPos().y }
         }));
     });
 
     totem.onCollideEnd("cursor", () => {
         totemRange.opacity = 0;
-        store.set(hoveredTotemAtom, null);
+        store.set(hoveredHellMapEntityAtom, null);
     });
 
     const points = [k.vec2(-TILE_SIZE, 0), k.vec2(0, -TILE_SIZE), k.vec2(TILE_SIZE, 0), k.vec2(0, TILE_SIZE)];
@@ -273,12 +274,12 @@ type TotemPowerEffectOptions = {
 
 export function captureTotemEffect(
     k: KAPLAYCtx,
-    totem: TotemGameObj,
+    totem: TotemGameObj | ObeliskGameObj,
     tower: TowerGameObj,
     options: TotemPowerEffectOptions = {},
 ) {
     const {
-        color = k.Color.fromHex(TOTEMS[totem.totemId].particleColor) as Color,
+        color = k.Color.fromHex(("totemId" in totem ? TOTEMS[totem.totemId] : OBELISKS[totem.obeliskId]).particleColor) as Color,
         particleCount = 8,
         duration = 0.65,
     } = options;

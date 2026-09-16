@@ -97,6 +97,13 @@ export function selectTarget(
                     bestDist = dist;
                 }
                 break;
+
+            case "Obelisk":
+                if (e.is("obelisk") && dist < bestDist) {
+                    best = e;
+                    bestDist = dist;
+                }
+                break;
         }
     }
 

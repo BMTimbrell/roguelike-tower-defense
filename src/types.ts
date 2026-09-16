@@ -1,6 +1,6 @@
 import { type MouseEventHandler } from "react";
 import { TILE_SIZE, type EnemyId, type HeroId, type LevelId, type ProjectileId, type SkillId, type TowerId } from "./constants";
-import type { Vec2, GameObj, KAPLAYCtx, HealthComp, SpriteComp, StateComp, RotateComp, PosComp, ZComp, OpacityComp, ButtonBinding, MouseButton, Key, AreaComp, Color, ScaleComp, KEventController } from "kaplay";
+import type { Vec2, GameObj, KAPLAYCtx, HealthComp, SpriteComp, StateComp, RotateComp, PosComp, ZComp, OpacityComp, ButtonBinding, MouseButton, Key, AreaComp, ScaleComp, KEventController } from "kaplay";
 import { frostAoeBurst } from "./utils/makeUnitCombat";
 import type { StatusEffectComp } from "./kaplayComponents/statusEffect";
 import type { ChallengeManager } from "./utils/challengeHelpers";
@@ -49,6 +49,12 @@ export type PathTile = {
     tile: Tile;
 };
 
+export type CorruptedTile = {
+    x: number;
+    y: number;
+    tile: Tile;
+};
+
 export type TowerStats = {
     damage: number;
     range: number;
@@ -89,7 +95,7 @@ export type TowerBuff =
         type: "damage";
         timeLeft?: number;
         multiplier: number;
-    } | 
+    } |
     {
         type: "critChance";
         timeLeft?: number;
@@ -511,7 +517,7 @@ export type TowerButton = Pick<TowerDef, 'name' | 'cost' | 'stats' | 'element' |
     onClick: MouseEventHandler<HTMLButtonElement>;
 };
 
-export type TargetPriority = "Most Progress" | "Least Progress" | "Highest HP" | "Lowest HP" | "Closest" | "Furthest" | null | "Cactus";
+export type TargetPriority = "Most Progress" | "Least Progress" | "Highest HP" | "Lowest HP" | "Closest" | "Furthest" | null | "Cactus" | "Obelisk";
 
 export type SelectedUnitUI = {
     name: string;
@@ -920,7 +926,7 @@ export type GameEvent =
     | { type: "BUILD_TOWER"; towerId: TowerId; waveActive: boolean }
     | { type: "DRAW_CARD" }
     | { type: "OPEN_CHEST" }
-    | { type: "LOSE_LIFE"}
+    | { type: "LOSE_LIFE" }
     | { type: "DEAL_DAMAGE"; damageType: ElementName; amount: number };
 
 export type ChallengeDef = {
@@ -1195,8 +1201,9 @@ export type TotemDef = {
     particleColor: string;
 };
 
-export type HoveredTotem = {
-    id: TotemId;
+export type HoveredHellMapEntity = {
+    id: TotemId | ObeliskId;
+    type: "totem" | "obelisk";
     pos: { x: number; y: number; };
 };
 
@@ -1210,4 +1217,40 @@ export type TotemGameObj = GameObj & {
     affectedEnemies: Set<EnemyGameObj>;
     enemyEffect: TotemEffect;
     playerBuff: PlayerBuff;
+};
+
+export type ObeliskId =
+    | "flame"
+    | "lightning"
+    | "dark"
+    | "light"
+    | "ice"
+    | "poison";
+
+export type ObeliskDef = {
+    name: string;
+    element: ElementName;
+    particleColor: string;
+    description: string;
+};
+
+export type ObeliskGameObj = GameObj<
+    HealthComp | 
+    AreaComp | 
+    PosComp |
+    SpriteComp
+> & {
+    obeliskId: ObeliskId;
+    range: number;
+    statusImmunity: boolean;
+    darkHarvestDamage: number;
+    isDying: boolean;
+    towerBuff: TowerBuff;
+    killer: TowerGameObj | null;
+    corruptedTiles: CorruptedTile[];
+};
+
+export type HoveredObelisk = {
+    id: TotemId;
+    pos: { x: number; y: number; };
 };
