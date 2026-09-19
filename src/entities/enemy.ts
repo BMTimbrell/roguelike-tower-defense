@@ -143,7 +143,7 @@ export default function makeEnemy(
             ...("castDuration" in ENEMIES[enemyId] ? { castDuration: ENEMIES[enemyId].castDuration as number } : {}),
             blockSources: new Set<EnemyGameObj>()
         },
-        k.state("move", ["move", "stunned", "attack", "idle", "escape", "hidden", "shield", "shellBreak", "cast"]),
+        k.state("move", ["move", "stunned", "attack", "idle", "escape", "hidden", "shield", "shellBreak", "cast", "roar"]),
         statusEffect(),
         k.z(1),
         "enemy",
@@ -242,6 +242,17 @@ export default function makeEnemy(
         }
     });
 
+    let roarTarget: TowerGameObj | null;
+
+    enemy.onStateEnter("roar", ({ killer }) => {
+        roarTarget = killer as TowerGameObj;
+        enemy.play("roar");
+        playSfx(k, "satan roar");
+
+        enemy.checkpointDuration = Math.max(4, enemy.checkpointTimer ?? 2);
+        enemy.checkpointTimer = enemy.checkpointDuration;
+    });
+
     enemy.onAnimEnd(anim => {
         if (anim === "die") {
             if (enemy.sprite === "rock titan") {
@@ -288,6 +299,19 @@ export default function makeEnemy(
             enemy.baseSpeed *= (ENEMIES[enemyId].breakShell as { speedMultiplier: number; }).speedMultiplier;
             updateSpeed.call(enemy);
             enemy.enterState("move");
+        } else if (anim === "roar") {
+            makeEnemyProjectile(k, {
+                id: 'sun',
+                pos: enemy.pos,
+                target: roarTarget || (k.get("tower") as TowerGameObj[])[0],
+                hitChance: enemy.has("blind") ? 0.3 : 1
+            });
+            attackTimer = 2;
+
+            if (enemy?.boss?.reachedStopIndex) {
+                enemy.enterState("attack");
+            }
+            else enemy.enterState("move");
         }
     });
 
@@ -327,11 +351,7 @@ export default function makeEnemy(
 
     enemy.onUpdate(() => {
         if (enemy.isDying) return;
-        if (store.get(gameStateAtom).waveActive) updateTotemMembership(k, enemy);
-        else {
-            enemy.armourRegen = 0;
-            enemy.healthRegen = 0;
-        }
+        updateTotemMembership(k, enemy);
 
         if (enemy.soulCount && enemy.soulCount >= 5) {
             if (enemyId === "grimReaper") {
@@ -481,6 +501,11 @@ export default function makeEnemy(
         }
     });
 
+    enemy.onStateEnd("hidden", () => {
+        enemy.invincible = false;
+        enemy.hidden = false;
+    });
+
     enemy.onStateEnter("stunned", () => {
         playSfx(k, "dizzy", 1, enemy.pos);
 
@@ -522,7 +547,6 @@ export default function makeEnemy(
         if (enemy.checkpointTimer) {
             enemy.checkpointTimer -= k.dt() * timeScale;
             if (enemy.checkpointTimer <= 0 && enemy.getCurAnim()?.name !== "die") {
-                enemy.checkpointTimer = enemy.checkpointDuration;
                 if (enemy.boss?.bossMechanic === "escape") enemy.enterState("escape");
                 if (enemy.boss?.bossMechanic === "shield") enemy.enterState("shield");
             }
@@ -557,9 +581,23 @@ export default function makeEnemy(
         }
     });
 
+    let satanMist: GameObj | null = null;
+
     enemy.onStateEnter("escape", () => {
         enemy.angle = 0;
         enemy.play("escape");
+
+        if (enemyId === "satan") {
+            playSfx(k, "satan mist")
+            satanMist = makeSatanMist(k, enemy);
+        }
+    });
+
+    enemy.onStateEnd("hidden", () => {
+        if (satanMist) {
+            k.destroy(satanMist);
+            satanMist = null;
+        }
     });
 
     enemy.onStateUpdate("escape", () => {
@@ -1507,9 +1545,14 @@ function updateTotemMembership(k: KAPLAYCtx, enemy: EnemyGameObj) {
 
         const affected = totem.affectedEnemies.has(enemy);
 
-        if (inRange && !affected) {
+        if (inRange && !affected && store.get(gameStateAtom).waveActive && enemy.state !== "hidden") {
             addTotemEffect(enemy, totem);
-        } else if (!inRange && affected) {
+        } else if (
+            (
+                !inRange || 
+                !store.get(gameStateAtom).waveActive || 
+                enemy.state === "hidden"
+            ) && affected) {
             removeTotemEffect(enemy, totem);
         }
     }
@@ -1702,4 +1745,58 @@ function poisonDeathEffect(k: KAPLAYCtx, pos: Vec2) {
             }
         });
     }
+}
+
+function makeSatanMist(k: KAPLAYCtx, enemy: EnemyGameObj) {
+    const mist = k.add([
+        k.pos(enemy.pos),
+        k.z(999),
+        {
+            update() {
+                mist.pos = enemy.pos;
+            }
+        },
+        "satanMist"
+    ]);
+
+    k.loop(0.1, () => {
+        if (!mist.exists()) return;
+
+        const angle = Math.random() * Math.PI * 2;
+        const distance = Math.random() * 30;
+
+        const particle = k.add([
+            k.rect(
+                20 + Math.floor(Math.random() * 40),
+                20 + Math.floor(Math.random() * 40)
+            ),
+            k.pos(
+                enemy.pos.x + Math.cos(angle) * distance,
+                enemy.pos.y + Math.sin(angle) * distance
+            ),
+            k.color(15, 10, 20),
+            k.anchor("center"),
+            k.opacity(0.5 + Math.random() * 0.3),
+            k.z(998),
+            {
+                lifetime: 0,
+                maxLifetime: 1 + Math.random() * 0.8,
+                update() {
+                    particle.lifetime += k.dt();
+
+                    particle.pos.y -= 10 * k.dt();
+                    particle.pos.x += Math.sin(particle.lifetime * 5) * 5 * k.dt();
+
+                    particle.opacity = 0.7 *
+                        (1 - particle.lifetime / particle.maxLifetime);
+
+                    if (particle.lifetime >= particle.maxLifetime) {
+                        k.destroy(particle);
+                    }
+                }
+            }
+        ]);
+    });
+
+    return mist;
 }

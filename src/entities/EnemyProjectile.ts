@@ -86,6 +86,9 @@ export default function makeEnemyProjectile(k: KAPLAYCtx, opts: {
             if (id === "giantFireball") {
                 makeProjectileAoe(k, "fireball", 12, target);
                 playSfx(k, "fireball", 1, targetPos);
+            } else if (id === "sun") {
+                makeProjectileAoe(k, "giantFireball", 8, target);
+                playSfx(k, "fireball", 1, targetPos);
             }
 
             const impactSound = (PROJECTILES[id] as { impactSound: string }).impactSound;
@@ -126,14 +129,14 @@ export default function makeEnemyProjectile(k: KAPLAYCtx, opts: {
 
 }
 
-function makeProjectileAoe(k: KAPLAYCtx, id: ProjectileId, num: number, target: TowerGameObj | HeroGameObj) {
+function makeProjectileAoe(k: KAPLAYCtx, id: ProjectileId, num: number, target?: TowerGameObj | HeroGameObj, targetVec?: Vec2) {
     for (let i = 0; i < num; i++) {
         const angle = (Math.PI * 2 * i) / num;
         const dir = k.vec2(Math.cos(angle), Math.sin(angle));
-        const start = target.pos.add(target.footprint.w * TILE_SIZE / 2);
+        const start = target ? target?.pos.add(target.footprint.w * TILE_SIZE / 2) : targetVec;
 
         const fireball = k.add([
-            k.sprite(id),
+            k.sprite(PROJECTILES[id].sprite),
             k.pos(start),
             k.rotate((angle * 180) / Math.PI),
             k.anchor("center"),
@@ -143,7 +146,7 @@ function makeProjectileAoe(k: KAPLAYCtx, id: ProjectileId, num: number, target: 
         ]);
 
         const speed = 300 * TILE_SIZE;
-        const maxDistance = 2.3 * TILE_SIZE;
+        const maxDistance = (id === "giantFireball" ? 3 : 2.3) * TILE_SIZE;
 
         fireball.onUpdate(() => {
             const movement = dir.scale(speed * k.dt() * store.get(gameStateAtom).timeScale);
@@ -163,7 +166,7 @@ function makeProjectileAoe(k: KAPLAYCtx, id: ProjectileId, num: number, target: 
                             pos: fireball.pos
                         });
                     } else {
-                        const duration = 1;
+                        const duration = id === "giantFireball" ? 2 : 1;
                         tower.disabledTimeLeft = Math.max(
                             tower.disabledTimeLeft ?? 0,
                             duration
@@ -171,10 +174,13 @@ function makeProjectileAoe(k: KAPLAYCtx, id: ProjectileId, num: number, target: 
 
                         tower.enterState("disabled");
                     }
+
+                    if (id === "giantFireball") makeProjectileAoe(k, "fireball", 12, tower as TowerGameObj);
                 }
             });
 
             if (fireball.pos.dist(start) >= maxDistance) {
+                if (id === "giantFireball") makeProjectileAoe(k, "fireball", 12, undefined, fireball.pos);
                 k.destroy(fireball);
             }
         });

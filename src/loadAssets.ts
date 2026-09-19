@@ -439,6 +439,7 @@ export default function loadAssets(k: KAPLAYCtx) {
     k.loadSprite("slimeball", "sprites/slimeball.png");
     k.loadSprite("fireball", "sprites/fireball.png");
     k.loadSprite("giant fireball", "sprites/giant-fireball.png");
+    k.loadSprite("sun", "sprites/sun.png");
     k.loadSprite("light orb", "sprites/light-orb.png");
     k.loadSprite("crow", "sprites/crow.png", {
         sliceX: 4,
@@ -1660,13 +1661,14 @@ export default function loadAssets(k: KAPLAYCtx) {
 
     k.loadSprite("satan", "sprites/satan.png", {
         sliceX: 7,
-        sliceY: 4,
+        sliceY: 5,
         anims: {
             idle: { from: 14, to: 15, loop: true, speed: 5 },
             move: { from: 0, to: 3, loop: true, speed: 5 },
             die: { from: 21, to: 27, loop: false, speed: 5 },
             escape: { from: 7, to: 8, loop: false, speed: 1 },
-            attack: { from: 7, to: 8, loop: false, speed: 7 }
+            attack: { from: 7, to: 8, loop: false, speed: 7 },
+            roar: { from: 28, to: 31, loop: false, speed: 3 }
         }
     });
 
@@ -2031,6 +2033,8 @@ export default function loadAssets(k: KAPLAYCtx) {
     k.loadSound("blood splatter", "sounds/enemies/blood-splatter.mp3");
     k.loadSound("masochist death", "sounds/enemies/creepy-laugh.mp3");
     k.loadSound("occultist spell", "sounds/enemies/occultist-spell.mp3");
+    k.loadSound("satan roar", "sounds/enemies/satan-roar.mp3");
+    k.loadSound("satan mist", "sounds/enemies/satan-mist.mp3");
 
     k.loadSound("boss drums", "sounds/soundEffects/bossApproach.wav");
     k.loadSound("level up", "sounds/soundEffects/nextLevel.mp3");

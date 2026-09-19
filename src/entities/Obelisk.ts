@@ -1,5 +1,5 @@
 import type { Color, GameObj, KAPLAYCtx, Vec2 } from "kaplay";
-import type { CorruptedTile, ObeliskGameObj, ObeliskId, Tile, TowerBuff } from "../types";
+import type { CorruptedTile, EnemyGameObj, ObeliskGameObj, ObeliskId, Tile, TowerBuff } from "../types";
 import { HARD_HEALTH_MULT, OBELISKS, TILE_SIZE } from "../constants";
 import healthBar from "../kaplayComponents/healthBar";
 import { cachedSaveAtom, gameStateAtom, hoveredHellMapEntityAtom, store } from "../store";
@@ -18,7 +18,7 @@ export default function makeObelisk(k: KAPLAYCtx, id: ObeliskId, pos: Vec2, tile
         k.z(pos.y),
         k.rotate(0),
         statusEffect(),
-        k.health(obeliskHealth, obeliskHealth),
+        k.health(50, obeliskHealth),
         k.pos(pos.add(TILE_SIZE / 2)),
         {
             obeliskId: id,
@@ -75,6 +75,13 @@ export default function makeObelisk(k: KAPLAYCtx, id: ObeliskId, pos: Vec2, tile
     ]);
 
     obelisk.onDestroy(() => {
+        const satan = (k.get("satan-enemy") as EnemyGameObj[])[0];
+        if (satan) {
+            if (satan.state !== "roar") {
+                satan.enterState("roar", ({ killer: obelisk.killer ?? k.get("tower")[0] }));
+            }
+        }
+
         k.destroy(obeliskRange);
     });
 

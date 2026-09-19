@@ -6699,6 +6699,12 @@ export const PROJECTILES = {
         speed: 100,
         splashRadius: 0
     },
+    sun: {
+        sprite: "sun",
+        homing: true,
+        speed: 70,
+        splashRadius: 0
+    },
     lightOrb: {
         sprite: "light orb",
         homing: true,
