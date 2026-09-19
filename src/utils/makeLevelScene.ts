@@ -6,7 +6,7 @@ import generateFog from "./generateFog";
 import drawCards from "./drawCards";
 import { cachedSaveAtom, challengesAtom, controlsAtom, gameSpeedUIAtom, gameStateAtom, pauseMenuAtom, store } from "../store";
 import makeFloatingText from "../entities/FloatingText";
-import { HARD_HEALTH_MULT, LEVEL_WAVES, MAX_HAND_SIZE, ROUND_DRAW_NUM, STUN_DURATION, TILE_SIZE, type LevelId } from "../constants";
+import { HARD_HEALTH_MULT, LEVEL_WAVES, MAX_HAND_SIZE, OBELISKS, ROUND_DRAW_NUM, STUN_DURATION, TILE_SIZE, type LevelId } from "../constants";
 import { addSelectTowerListener } from "../entities/Tower";
 import { makeLavaManager } from "./lavaHelpers";
 import makeWaveSpawner from "../entities/WaveSpawner";
@@ -504,7 +504,7 @@ export default function makeLevelScene(k: KAPLAYCtx, sceneName: Scene) {
                     const tile = tileGrid[y][x];
 
                     if (tile.hasCactus) {
-                        const health = store.get(gameStateAtom).difficulty === "normal" ? 200 : 240;
+                        const health = store.get(gameStateAtom).difficulty === "normal" ? 200 : store.get(gameStateAtom).difficulty === "hard" ? 240 : 260;
                         const cactus = k.add([
                             k.sprite("cactus"),
                             k.pos(x * TILE_SIZE + TILE_SIZE / 2, y * TILE_SIZE + TILE_SIZE / 2),
@@ -883,20 +883,20 @@ export default function makeLevelScene(k: KAPLAYCtx, sceneName: Scene) {
             ?.objects
             ?.forEach(obj => {
                 if (obj.name) {
-                    makeTotem(k, obj.name as TotemId, k.vec2(obj.x, obj.y));
+                    makeTotem(k, obj.name.toLowerCase() as TotemId, k.vec2(obj.x, obj.y));
                     tileGrid[obj.y / TILE_SIZE][obj.x / TILE_SIZE].blocked = true;
                 }
             });
-        
+
         // obelisk
         mapData.layers
             .find(layer => layer.name === "Obelisks")
             ?.objects
             ?.forEach(obj => {
-                if (obj.name) {
-                    makeObelisk(k, obj.name as ObeliskId, k.vec2(obj.x, obj.y), tileGrid);
-                    tileGrid[obj.y / TILE_SIZE][obj.x / TILE_SIZE].blocked = true;
-                }
+                const randomObeliskId = Object.keys(OBELISKS)[Math.floor(Math.random() * Object.keys(OBELISKS).length)] as ObeliskId;
+
+                makeObelisk(k, randomObeliskId, k.vec2(obj.x, obj.y), tileGrid);
+                tileGrid[obj.y / TILE_SIZE][obj.x / TILE_SIZE].blocked = true;
             });
 
         // challenges

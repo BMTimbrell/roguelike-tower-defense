@@ -327,7 +327,11 @@ export default function makeEnemy(
 
     enemy.onUpdate(() => {
         if (enemy.isDying) return;
-        updateTotemMembership(k, enemy);
+        if (store.get(gameStateAtom).waveActive) updateTotemMembership(k, enemy);
+        else {
+            enemy.armourRegen = 0;
+            enemy.healthRegen = 0;
+        }
 
         if (enemy.soulCount && enemy.soulCount >= 5) {
             if (enemyId === "grimReaper") {
@@ -1499,7 +1503,7 @@ function updateTotemMembership(k: KAPLAYCtx, enemy: EnemyGameObj) {
         if (totem.isCaptured) continue;
 
         const inRange =
-            enemy.pos.dist(totem.pos) <= totem.range * TILE_SIZE;
+            enemy.pos.dist(totem.pos) <= totem.range * TILE_SIZE + TOWER_RANGE_TOLERANCE;
 
         const affected = totem.affectedEnemies.has(enemy);
 

@@ -19,7 +19,7 @@ export default function makeTotem(k: KAPLAYCtx, id: TotemId, pos: Vec2) {
             captureProgress: 0,
             captureTower: null,
             range: TOTEMS[id].radius,
-            requiredDamage: TOTEMS[id].requiredDamage * (store.get(gameStateAtom).difficulty === "hard" ? 1.2 : store.get(gameStateAtom).difficulty === "expert" ? 1.4 : 1),
+            requiredDamage: TOTEMS[id].requiredDamage * (store.get(gameStateAtom).difficulty === "hard" ? 1.25 : store.get(gameStateAtom).difficulty === "expert" ? 1.4 : 1),
             affectedEnemies: new Set<EnemyGameObj>(),
             enemyEffect: TOTEMS[id].enemyEffect,
             playerBuff: TOTEMS[id].playerBuff

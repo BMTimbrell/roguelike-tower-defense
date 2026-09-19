@@ -2,12 +2,15 @@ import type { Color, GameObj, KAPLAYCtx, Vec2 } from "kaplay";
 import type { CorruptedTile, ObeliskGameObj, ObeliskId, Tile, TowerBuff } from "../types";
 import { HARD_HEALTH_MULT, OBELISKS, TILE_SIZE } from "../constants";
 import healthBar from "../kaplayComponents/healthBar";
-import { gameStateAtom, hoveredHellMapEntityAtom, store } from "../store";
+import { cachedSaveAtom, gameStateAtom, hoveredHellMapEntityAtom, store } from "../store";
 import statusEffect from "../kaplayComponents/statusEffect";
 import { captureTotemEffect } from "./Totem";
 import { playSfx } from "../utils/soundHelpers";
+import { tryShowTutorial } from "../utils/tutorialHelpers";
 
 export default function makeObelisk(k: KAPLAYCtx, id: ObeliskId, pos: Vec2, tileGrid: Tile[][]) {
+    const obeliskHealth = 600 * (store.get(gameStateAtom).difficulty === "hard" ? 1.2 : store.get(gameStateAtom).difficulty === "expert" ? 1.4 : 1);
+
     const obelisk: ObeliskGameObj = k.add([
         k.sprite(`${id} obelisk`, { anim: "idle" }),
         k.area({ shape: new k.Rect(k.vec2(0), 20, 20) }),
@@ -15,7 +18,7 @@ export default function makeObelisk(k: KAPLAYCtx, id: ObeliskId, pos: Vec2, tile
         k.z(pos.y),
         k.rotate(0),
         statusEffect(),
-        k.health(5, 5),
+        k.health(obeliskHealth, obeliskHealth),
         k.pos(pos.add(TILE_SIZE / 2)),
         {
             obeliskId: id,
@@ -35,6 +38,12 @@ export default function makeObelisk(k: KAPLAYCtx, id: ObeliskId, pos: Vec2, tile
         "obelisk",
         "targetable"
     ]);
+
+    // totem tutorial
+    const save = store.get(cachedSaveAtom);
+    if (save) {
+        tryShowTutorial("obelisk", save);
+    }
 
     obelisk.onHurt(amount => {
         if (amount === undefined) return;
@@ -64,6 +73,10 @@ export default function makeObelisk(k: KAPLAYCtx, id: ObeliskId, pos: Vec2, tile
         k.outline(1),
         k.pos(obelisk.pos)
     ]);
+
+    obelisk.onDestroy(() => {
+        k.destroy(obeliskRange);
+    });
 
     obelisk.onCollideEnd("cursor", () => {
         obeliskRange.opacity = 0;
@@ -228,7 +241,7 @@ export function corruptRandomTiles(
 
         corrupted.tile.blocked = true;
         obelisk.corruptedTiles.push(corrupted);
-   
+
         k.add([
             k.sprite("corrupted tile"),
             k.pos(corrupted.x * TILE_SIZE, corrupted.y * TILE_SIZE),

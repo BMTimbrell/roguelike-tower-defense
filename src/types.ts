@@ -1048,7 +1048,8 @@ export type TutorialId =
     | "armour"
     | "heroCharge"
     | "thirst"
-    | "totem";
+    | "totem"
+    | "obelisk";
 
 export type SeenTutorials =
     Partial<Record<TutorialId, number>>;

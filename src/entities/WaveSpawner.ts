@@ -358,6 +358,7 @@ export default function makeWaveSpawner(k: KAPLAYCtx, levelId: LevelId, waypoint
                             k.color("#000000"),
                             k.opacity(1),
                             k.fixed(),
+                            k.z(999999),
                             "textOutline",
                             k.anchor("center"),
                             {
@@ -385,6 +386,7 @@ export default function makeWaveSpawner(k: KAPLAYCtx, levelId: LevelId, waypoint
                         }),
                         k.opacity(1),
                         k.anchor("center"),
+                        k.z(9999999),
                         k.fixed(),
                         {
                             time: 0,

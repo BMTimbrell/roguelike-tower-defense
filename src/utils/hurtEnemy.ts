@@ -151,10 +151,10 @@ export default function hurtEnemy(k: KAPLAYCtx, opts: {
         }
     }
 
-    const totem = k.get("totem").find(t => t.captureTower === attacker);
+    const totems = k.get("totem").filter(t => t.captureTower === attacker);
 
-    if (totem) {
-        totem.captureProgress += effectiveDamage;
+    if (totems.length) {
+        totems.forEach(totem => totem.captureProgress += effectiveDamage);
     }
 
     // spawn ghost for necromancer

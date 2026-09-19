@@ -24,7 +24,7 @@ export default function makeEnemyProjectile(k: KAPLAYCtx, opts: {
         k.rotate(0),
         k.offscreen({ destroy: true }),
         {
-            speed: 200
+            speed: PROJECTILES[id].speed
         },
         k.z(9999)
     ]);
@@ -38,7 +38,7 @@ export default function makeEnemyProjectile(k: KAPLAYCtx, opts: {
     let reachedTarget = false;
 
     projectile.onUpdate(() => {
-        if (projectile.getCurAnim()?.name === "appear") return; 
+        if (projectile.getCurAnim()?.name === "appear") return;
 
         const timeScale = store.get(gameStateAtom).timeScale;
         const hitRadius = 4;
@@ -83,6 +83,11 @@ export default function makeEnemyProjectile(k: KAPLAYCtx, opts: {
                 });
             }
 
+            if (id === "giantFireball") {
+                makeProjectileAoe(k, "fireball", 12, target);
+                playSfx(k, "fireball", 1, targetPos);
+            }
+
             const impactSound = (PROJECTILES[id] as { impactSound: string }).impactSound;
 
             if (impactSound) {
@@ -119,4 +124,59 @@ export default function makeEnemyProjectile(k: KAPLAYCtx, opts: {
         }
     });
 
+}
+
+function makeProjectileAoe(k: KAPLAYCtx, id: ProjectileId, num: number, target: TowerGameObj | HeroGameObj) {
+    for (let i = 0; i < num; i++) {
+        const angle = (Math.PI * 2 * i) / num;
+        const dir = k.vec2(Math.cos(angle), Math.sin(angle));
+        const start = target.pos.add(target.footprint.w * TILE_SIZE / 2);
+
+        const fireball = k.add([
+            k.sprite(id),
+            k.pos(start),
+            k.rotate((angle * 180) / Math.PI),
+            k.anchor("center"),
+            {
+                travelled: 0
+            }
+        ]);
+
+        const speed = 300 * TILE_SIZE;
+        const maxDistance = 2.3 * TILE_SIZE;
+
+        fireball.onUpdate(() => {
+            const movement = dir.scale(speed * k.dt() * store.get(gameStateAtom).timeScale);
+
+            fireball.move(movement);
+
+            k.get("tower").forEach(tower => {
+                if (tower === target) return;
+
+                if (fireball.pos.dist(tower.pos.add(tower.footprint.w * TILE_SIZE / 2)) <= tower.footprint.w * TILE_SIZE / 2) {
+                    k.destroy(fireball);
+                    if (tower.hasBlock) {
+                        makeFloatingText(k, {
+                            text: "Block",
+                            color: "#FFFFFF",
+                            size: 12,
+                            pos: fireball.pos
+                        });
+                    } else {
+                        const duration = 1;
+                        tower.disabledTimeLeft = Math.max(
+                            tower.disabledTimeLeft ?? 0,
+                            duration
+                        );
+
+                        tower.enterState("disabled");
+                    }
+                }
+            });
+
+            if (fireball.pos.dist(start) >= maxDistance) {
+                k.destroy(fireball);
+            }
+        });
+    }
 }

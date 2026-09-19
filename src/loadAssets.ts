@@ -20,6 +20,8 @@ export default function loadAssets(k: KAPLAYCtx) {
     k.loadSprite("hell1", "sprites/hell1.png");
     k.loadSprite("hell1-2", "sprites/hell1-2.png");
     k.loadSprite("hell2", "sprites/hell2.png");
+    k.loadSprite("hell2-2", "sprites/hell2-2.png");
+    k.loadSprite("hell3", "sprites/hell3.png");
     k.loadSprite("tree", "sprites/tree2.png");
     k.loadSprite("gold", "sprites/coin.png");
     k.loadSprite("heart", "sprites/heart.png");
@@ -436,6 +438,7 @@ export default function loadAssets(k: KAPLAYCtx) {
     k.loadSprite("basic projectile", "sprites/basic-projectile.png");
     k.loadSprite("slimeball", "sprites/slimeball.png");
     k.loadSprite("fireball", "sprites/fireball.png");
+    k.loadSprite("giant fireball", "sprites/giant-fireball.png");
     k.loadSprite("light orb", "sprites/light-orb.png");
     k.loadSprite("crow", "sprites/crow.png", {
         sliceX: 4,
@@ -1655,6 +1658,18 @@ export default function loadAssets(k: KAPLAYCtx) {
         }
     });
 
+    k.loadSprite("satan", "sprites/satan.png", {
+        sliceX: 7,
+        sliceY: 4,
+        anims: {
+            idle: { from: 14, to: 15, loop: true, speed: 5 },
+            move: { from: 0, to: 3, loop: true, speed: 5 },
+            die: { from: 21, to: 27, loop: false, speed: 5 },
+            escape: { from: 7, to: 8, loop: false, speed: 1 },
+            attack: { from: 7, to: 8, loop: false, speed: 7 }
+        }
+    });
+
     k.loadSprite("poison", "sprites/poison-icon.png");
     k.loadSprite("burn", "sprites/burn-icon.png");
     k.loadSprite("chill", "sprites/chill-icon.png");
@@ -2037,4 +2052,5 @@ export default function loadAssets(k: KAPLAYCtx) {
     k.loadSound("desert biome", "sounds/music/Shadows of the Dune King.mp3");
     k.loadSound("desert boss", "sounds/music/The Rotting Rite.mp3");
     k.loadSound("hell biome", "sounds/music/poorartistt-evil-cinematic-music-no-copyright-415161.mp3");
+    k.loadSound("hell boss", "sounds/music/The Cursed Pyramid.mp3");
 }

@@ -242,7 +242,13 @@ function getTargetPriority(e: EnemyGameObj, priority: TargetPriority) {
         return e.is("cactus") ? 3 : 2;
     }
 
+    if (priority === "Obelisk") {
+        return e.is("obelisk") ? 3 : 2;
+    }
+
     if (e.is("cactus")) return 1;
+
+    if (e.is("obelisk")) return 1;
 
     return 2;
 }
