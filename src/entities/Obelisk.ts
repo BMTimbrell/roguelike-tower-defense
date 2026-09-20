@@ -18,7 +18,7 @@ export default function makeObelisk(k: KAPLAYCtx, id: ObeliskId, pos: Vec2, tile
         k.z(pos.y),
         k.rotate(0),
         statusEffect(),
-        k.health(50, obeliskHealth),
+        k.health(obeliskHealth, obeliskHealth),
         k.pos(pos.add(TILE_SIZE / 2)),
         {
             obeliskId: id,

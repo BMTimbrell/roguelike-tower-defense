@@ -1666,8 +1666,8 @@ export default function loadAssets(k: KAPLAYCtx) {
             idle: { from: 14, to: 15, loop: true, speed: 5 },
             move: { from: 0, to: 3, loop: true, speed: 5 },
             die: { from: 21, to: 27, loop: false, speed: 5 },
-            escape: { from: 7, to: 8, loop: false, speed: 1 },
-            attack: { from: 7, to: 8, loop: false, speed: 7 },
+            escape: { from: 7, to: 8, loop: false, speed: 3 },
+            attack: { from: 8, to: 8, loop: false, speed: 3 },
             roar: { from: 28, to: 31, loop: false, speed: 3 }
         }
     });
@@ -2018,6 +2018,7 @@ export default function loadAssets(k: KAPLAYCtx) {
     k.loadSound("monster death2", "sounds/enemies/monster-death2.mp3");
     k.loadSound("monster death3", "sounds/enemies/monster-death3.mp3");
     k.loadSound("monster death4", "sounds/enemies/monster-death5.mp3");
+    k.loadSound("satan death", "sounds/enemies/monster-death5.mp3");
     k.loadSound("skeleton death", "sounds/enemies/skeleton-death.mp3");
     k.loadSound("fairy death", "sounds/enemies/fairy-death.mp3");
     k.loadSound("fairy death2", "sounds/enemies/fairy-death2.mp3");

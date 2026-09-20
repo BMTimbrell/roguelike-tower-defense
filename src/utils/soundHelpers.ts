@@ -48,7 +48,8 @@ const SOUND_VOLUMES: Record<string, number> = {
     "rock smash": 2,
     "monster death4": 10,
     "totem magic": 2,
-    "masochist death": 0.35
+    "masochist death": 0.35,
+    "satan death": 3
 };
 
 export function playUISound(

@@ -60,6 +60,13 @@ export default function makeTotem(k: KAPLAYCtx, id: TotemId, pos: Vec2) {
         applyPlayerBlessing(totem);
 
         if (totem.captureTower) captureTotemEffect(k, totem, totem.captureTower);
+
+        const satan = (k.get("satan-enemy") as EnemyGameObj[])[0];
+        if (satan) {
+            if (satan.state !== "roar") {
+                satan.enterState("roar", ({ killer: totem.captureTower ?? k.get("tower")[0] }));
+            }
+        }
     }
 
     const barWidth = totem.width * 0.5;
@@ -229,7 +236,7 @@ export function recalculateTotemStats(enemy: EnemyGameObj) {
 
         if (effect.type === "statusImmunity") {
             enemy.statusImmunity = true;
-            
+
             if (enemy.statuses.length) {
                 enemy.statuses.forEach(s => {
                     if (enemy.has(s)) enemy.unuse(s);
