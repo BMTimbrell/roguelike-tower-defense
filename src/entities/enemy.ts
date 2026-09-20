@@ -443,9 +443,12 @@ export default function makeEnemy(
     });
 
     if (enemy.swarmVisual) {
-        const locusts = createSwarmVisuals(k, enemy, enemy.swarmVisual.swarmCount);
+        const locusts = createSwarmVisuals(k, enemy, enemy.swarmVisual.swarmCount, enemyId === "beeSwarm");
+        enemy.damage = locusts.length;
+
         enemy.onUpdate(() => {
             updateSwarmVisuals(enemy, locusts);
+            enemy.damage = locusts.length;
         });
 
         enemy.onHurt((amount) => {
@@ -468,13 +471,13 @@ export default function makeEnemy(
             const deaths = oldCount - newCount;
 
             for (let i = 0; i < deaths && locusts.length > 1; i++) {
-                killSwarmLocust(k, locusts);
+                killSwarmLocust(k, locusts, enemyId === "beeSwarm");
             }
         });
 
         enemy.onDeath(() => {
             while (locusts.length > 0) {
-                killSwarmLocust(k, locusts);
+                killSwarmLocust(k, locusts, enemyId === "beeSwarm");
             }
         });
 
@@ -1442,7 +1445,8 @@ type SwarmLocust = {
 function createSwarmVisuals(
     k: KAPLAYCtx,
     swarm: GameObj,
-    count: number
+    count: number,
+    bees?: boolean
 ): SwarmLocust[] {
     const LOCUST_POSITIONS = [
         { x: -14, y: -7 },
@@ -1458,12 +1462,33 @@ function createSwarmVisuals(
         { x: 17, y: 12 },
     ];
 
+    const BEE_POSITIONS = [
+        { x: -16, y: -12 },
+        { x: -5, y: -15 },
+        { x: 7, y: -14 },
+        { x: 18, y: -8 },
+
+        { x: -22, y: -2 },
+        { x: -10, y: -3 },
+        { x: 2, y: -5 },
+        { x: 14, y: -1 },
+        { x: 23, y: 4 },
+
+        { x: -17, y: 7 },
+        { x: -5, y: 8 },
+        { x: 7, y: 6 },
+        { x: 17, y: 10 },
+
+        { x: -9, y: 16 },
+        { x: 5, y: 15 },
+    ];
+
     const locusts: SwarmLocust[] = [];
 
     for (let i = 0; i < count; i++) {
         const offset = k.vec2(
-            LOCUST_POSITIONS[i].x,
-            LOCUST_POSITIONS[i].y
+            (bees ? BEE_POSITIONS[i] : LOCUST_POSITIONS[i]).x,
+            (bees ? BEE_POSITIONS[i] : LOCUST_POSITIONS[i]).y
         );
 
         const locust = k.add([
@@ -1507,6 +1532,7 @@ function updateSwarmVisuals(
 function killSwarmLocust(
     k: KAPLAYCtx,
     locusts: SwarmLocust[],
+    bees: boolean
 ) {
 
     const index = Math.floor(Math.random() * locusts.length);
@@ -1518,13 +1544,13 @@ function killSwarmLocust(
 
     locust.obj.destroy();
 
-    spawnDyingLocust(k, deathPos, locust.obj.angle);
+    spawnDyingLocust(k, deathPos, locust.obj.angle, bees);
 }
 
-function spawnDyingLocust(k: KAPLAYCtx, pos: Vec2, angle: number) {
+function spawnDyingLocust(k: KAPLAYCtx, pos: Vec2, angle: number, bees: boolean) {
     const locust = k.add([
         k.pos(pos),
-        k.sprite("locust", {
+        k.sprite(bees ? "bee" : "locust", {
             anim: "die"
         }),
         k.rotate(angle),
@@ -1549,8 +1575,8 @@ function updateTotemMembership(k: KAPLAYCtx, enemy: EnemyGameObj) {
             addTotemEffect(enemy, totem);
         } else if (
             (
-                !inRange || 
-                !store.get(gameStateAtom).waveActive || 
+                !inRange ||
+                !store.get(gameStateAtom).waveActive ||
                 enemy.state === "hidden"
             ) && affected) {
             removeTotemEffect(enemy, totem);

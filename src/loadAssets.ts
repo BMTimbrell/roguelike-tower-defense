@@ -786,6 +786,7 @@ export default function loadAssets(k: KAPLAYCtx) {
         anims: {
             idle: 0,
             move: { from: 0, to: 3, loop: true, speed: 10 },
+            "move2": { from: 3, to: 0, loop: true, speed: 7 },
             die: { from: 6, to: 11, loop: false }
         }
     });

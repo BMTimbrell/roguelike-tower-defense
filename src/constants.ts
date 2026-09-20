@@ -663,7 +663,7 @@ export const LEVEL_WAVES = {
         startDelay: 120,
         music: "forest boss",
         boss: {
-            id: "slimeKing",
+            id: "beeQueen",
             bossStops: [0, 1, 3, 5, 7, 9, 11, 17]
         },
         waves: [
@@ -3077,7 +3077,7 @@ export const LEVEL_WAVES = {
                     { id: "spider", count: 3, interval: 0.5 },
                     { id: "giantGhost", count: 1, interval: 1 },
                     { id: "ghost", count: 3, interval: 0.5 },
-                    { id: "hellWolf", count: 1, interval: 1 }
+                    { id: "hellWolf", count: 3, interval: 3 }
                 ],
                 reward: 700
             }
@@ -3448,8 +3448,21 @@ export const ENEMIES = {
             attackCooldown: 6.5
         },
         spawnOnDeath: {
-            id: "bee",
-            amount: 20
+            id: "beeSwarm",
+            amount: 1
+        }
+    },
+    beeSwarm: {
+        hp: 120,
+        damage: 1,
+        goldDropped: 3,
+        chestValue: 0.75,
+        deathSound: "monster death3",
+        speed: 75,
+        sprite: "hammer tower",
+        swarmVisual: {
+            sprite: "bee",
+            swarmCount: 15
         }
     },
     iceSlime: {
@@ -3954,7 +3967,7 @@ export const ENEMIES = {
         }
     },
     locustSwarm: {
-        hp: 100,
+        hp: 120,
         damage: 1,
         goldDropped: 3,
         chestValue: 0.75,
@@ -4521,7 +4534,7 @@ export const ENEMIES = {
         sprite: "satan",
         bossMechanic: "escape",
         shootSound: "fireball",
-        deathSound: "monster death4",
+        deathSound: "satan death",
         isBoss: true,
         checkpointTimer: 12,
         attacker: {

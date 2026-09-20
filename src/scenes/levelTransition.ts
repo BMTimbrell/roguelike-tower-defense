@@ -64,7 +64,7 @@ export default function levelTransition(k: KAPLAYCtx) {
         ]);
 
         if (store.get(gameStateAtom).level >= 6) {
-            completeCampaign(1, store.get(gameStateAtom).difficulty);
+            completeCampaign(store.get(gameStateAtom).world, store.get(gameStateAtom).difficulty);
 
             k.wait(0.5, async () => {
                 k.add([

@@ -370,6 +370,7 @@ export type EnemyGameObj = GameObj<
     killer: TowerGameObj | HeroGameObj | null;
     spawnOnDeath?: {
         id: "slime" |
+        "beeSwarm" |
         "spiderling" |
         "spider" |
         "armouredSlime" |
@@ -712,6 +713,7 @@ export type EnemyConfig = {
     deathSound?: string;
     spawnOnDeath?: {
         id: "slime" |
+        "beeSwarm" |
         "spiderling" |
         "spider" |
         "armouredSlime" |
@@ -1070,6 +1072,13 @@ export type MetaSave = {
     }[];
 };
 
+type RunMode = "campaign" | "endless" | "heroesEndless" | "reverse";
+
+type BaseRunSave = {
+    mode: RunMode;
+    scene: Scene;
+};
+
 export type RunSave = {
     deck: Upgrade[];
     scene: Scene;
@@ -1097,6 +1106,86 @@ export type RunSave = {
     wave: LevelId;
     pathTiles: PathTile[];
     world?: 1 | 2;
+};
+
+export type EndlessRunSave = BaseRunSave & {
+    mode: "endless";
+
+    deck: Upgrade[];
+
+    towerCoins: number;
+
+    hero: {
+        id: HeroId;
+        level: number;
+        skills: SkillId[];
+    };
+
+    heroCharge: {
+        damageDealt: number;
+        charge: number;
+        damageRequired: number;
+    };
+
+    health: number;
+    maxHealth: number;
+
+    difficulty: "normal" | "hard" | "expert";
+
+    nextTowerId: number;
+    towerButtons: TowerId[];
+
+    mapData: MapData;
+    tileGrid: Tile[][];
+    pathTiles: PathTile[];
+
+    wave: number;
+
+    endlessSeed: number;
+};
+
+export type HeroesEndlessRunSave = BaseRunSave & {
+    mode: "heroesEndless";
+
+    heroes: {
+        id: HeroId;
+        level: number;
+        skills: SkillId[];
+    }[];
+
+    wave: number;
+
+    health: number;
+    maxHealth: number;
+
+    difficulty: "normal" | "hard" | "expert";
+
+    mapData: MapData;
+    tileGrid: Tile[][];
+    pathTiles: PathTile[];
+
+    endlessSeed: number;
+};
+
+export type ReverseRunSave = BaseRunSave & {
+    mode: "reverse";
+
+    enemyCoins: number;
+
+    unlockedEnemies: EnemyId[];
+
+    // enemyBuffs: EnemyBuffId[];
+
+    level: number;
+    wave: number;
+
+    difficulty: "normal" | "hard" | "expert";
+
+    mapData: MapData;
+    tileGrid: Tile[][];
+    pathTiles: PathTile[];
+
+    // Whatever state is needed to reconstruct the hero
 };
 
 export type SaveData = {
@@ -1236,8 +1325,8 @@ export type ObeliskDef = {
 };
 
 export type ObeliskGameObj = GameObj<
-    HealthComp | 
-    AreaComp | 
+    HealthComp |
+    AreaComp |
     PosComp |
     SpriteComp
 > & {
