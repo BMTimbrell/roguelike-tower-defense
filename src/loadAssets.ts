@@ -1405,7 +1405,7 @@ export default function loadAssets(k: KAPLAYCtx) {
             die: { from: 7, to: 12, loop: false }
         }
     });
-    
+
     k.loadSprite("giant fire slime", "sprites/giant-fire-slime.png", {
         sliceX: 7,
         sliceY: 2,
@@ -1957,6 +1957,25 @@ export default function loadAssets(k: KAPLAYCtx) {
 
     k.loadSprite("tower placement icon", "sprites/tower-placement-icon.png");
     k.loadSprite("occultist circle", "sprites/occultist-circle.png");
+
+    // tiles for endless
+    k.loadSpriteAtlas("sprites/grass-tileset-endless.png", {
+        grass: {
+            x: 0,
+            y: 0,
+            width: 32,
+            height: 32,
+        },
+
+        pathTiles: {
+            x: 0,
+            y: 0,
+            width: 96,
+            height: 96,
+            sliceX: 3,
+            sliceY: 3,
+        },
+    });
 
     //sounds
 

@@ -41,6 +41,7 @@ export type Tile = {
     frozen?: boolean;
     iceSprite?: string;
     glowObj?: GameObj;
+    pathFrame?: number;
 };
 
 export type PathTile = {

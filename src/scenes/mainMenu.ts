@@ -74,7 +74,7 @@ export default function mainMenu(k: KAPLAYCtx) {
 
         if (saveData?.meta) {
             const meta = saveData.meta;
-            
+
             store.set(unlockProgressionAtom, prev => ({
                 ...prev,
                 unlockedHeroes: meta.unlockedHeroes,
@@ -176,7 +176,7 @@ export default function mainMenu(k: KAPLAYCtx) {
                     const waveId = `${wavePrefix}level${1}-${rand + 1}` as LevelId;
                     const difficulty = store.get(gameStateAtom).difficulty;
                     const playerHealth = difficulty === "normal" ? NORMAL_PLAYER_HEATLH : difficulty === "hard" ? HARD_PLAYER_HEATLH : EXPERT_PLAYER_HEALTH;
-    
+
                     store.set(gameStateAtom, prev => ({
                         ...prev,
                         towerButtons: addTowers(k, ids, grid, path),
@@ -198,12 +198,12 @@ export default function mainMenu(k: KAPLAYCtx) {
                         shops: ["shop", "altar"],
                         selectedUpgrade: null
                     }));
-    
+
                     store.set(startingOptionsAtom, prev => ({
                         ...prev,
                         visible: false
                     }));
-    
+
                     k.go(sceneName satisfies Scene, { mapData, tileGrid, pathTiles, wave: waveId });
 
                 }

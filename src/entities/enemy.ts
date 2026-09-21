@@ -35,7 +35,7 @@ export default function makeEnemy(
     // const speedMultiplier = 1 + expertWaveMultiplier * 0.015;
     // const healthMultiplier = 1 + expertWaveMultiplier * 0.025;
     const expertBossHealthMult = "isBoss" in ENEMIES[enemyId] && ENEMIES[enemyId].isBoss && difficulty === "expert" ? 1.2 : 1;
-    const expertEnemyMult = difficulty === "expert" ? waveNumber * 1.01 : 1;
+    const expertEnemyMult = difficulty === "expert" ? (1 + waveNumber * (waveNumber < 7 ? 0.01 : 0.015)) : 1;
     const health = Math.round(getHPAndArmour(ENEMIES[enemyId].hp, waveNumber) * (difficulty !== "normal" ? HARD_HEALTH_MULT : 1) * expertBossHealthMult);
 
     const baseSpeed = getEnemySpeed(ENEMIES[enemyId].speed, waveNumber);
