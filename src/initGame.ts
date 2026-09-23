@@ -2,7 +2,6 @@ import makeKaplayCtx from './kaplayCtx';
 import level1 from './scenes/level1';
 import loadAssets from './loadAssets';
 import levelTransition from './scenes/levelTransition';
-import type { Scene } from './types';
 import mainMenu from './scenes/mainMenu';
 import level1_2 from './scenes/level1-2';
 import level2 from './scenes/level2';
@@ -86,11 +85,11 @@ export default async function initGame() {
 
     endlessForest(k);
 
-    // k.onLoad(() => {
-    //     k.go("endlessForest");
-    // });
+    k.onLoad(() => {
+        k.go("endlessForest");
+    });
 
-    k.go("mainMenu" satisfies Scene);
+    // k.go("mainMenu" satisfies Scene);
 
     const saveData = await getSave();
 

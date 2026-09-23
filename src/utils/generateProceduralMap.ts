@@ -1,6 +1,6 @@
 import type { KAPLAYCtx, Vec2 } from "kaplay";
 import { createSeededRandom } from "./seededRandom";
-import type { PathTile, Tile } from "../types";
+import type { MapChunk, PathTile, Tile } from "../types";
 import { TILE_SIZE } from "../constants";
 
 export async function generateForestMap(
@@ -26,44 +26,70 @@ export async function generateForestMap(
         }
     }
 
-    // 2. Generate path
-    generatePath(tileGrid, rng);
+    // generate chunks
+    const chunks = createChunks(width, height);
+
+    const minEntranceY = Math.floor(height * 0.3);
+    const maxEntranceY = Math.floor(height * 0.7);
+
+    let entranceY =
+        minEntranceY +
+        Math.floor(
+            rng() *
+            (maxEntranceY - minEntranceY + 1)
+        );
+
+    for (const chunk of chunks) {
+        const result = generateValidChunkPath(
+            tileGrid,
+            chunk,
+            entranceY,
+            rng
+        );
+
+        chunk.pathTiles = result.pathTiles;
+        entranceY = result.exitY;
+    }
 
     // 3. Generate trees
     generateTrees(tileGrid, rng);
 
     // 4. Create pathTiles
-    const pathTiles: PathTile[] = [];
+    const pathTiles = chunks
+        .flatMap(chunk => chunk.pathTiles)
+        .filter((pathTile, index, array) => {
+            if (index === 0) return true;
 
-    for (let y = 0; y < height; y++) {
-        for (let x = 0; x < width; x++) {
-            const tile = tileGrid[y][x];
+            const previous = array[index - 1];
 
-            if (tile.isPath) {
-                pathTiles.push({
-                    x,
-                    y,
-                    tile
-                });
-            }
-        }
+            return (
+                pathTile.x !== previous.x ||
+                pathTile.y !== previous.y
+            );
+        });
+
+    pathTiles.forEach((pathTile, index) => {
+        pathTile.tile.pathIndex = index;
+    });
+
+
+    for (const chunk of chunks) {
+        blockHiddenChunkTiles(
+            tileGrid,
+            chunk
+        );
     }
-
-    pathTiles.sort(
-        (a, b) =>
-            (a.tile.pathIndex ?? 0) -
-            (b.tile.pathIndex ?? 0)
-    );
 
     await generateMapSprite(k, tileGrid, pathTiles);
 
-    const waypoints = generateWaypoints(k, pathTiles, width * TILE_SIZE);
+    const waypoints = generateWaypoints(k, chunks);
 
     return {
         tileGrid,
         pathTiles,
         seed,
-        waypoints
+        waypoints,
+        chunks
     };
 }
 
@@ -87,116 +113,394 @@ function generateTrees(
     }
 }
 
-function generatePath(
+function generateChunkPath(
     tileGrid: Tile[][],
+    chunk: MapChunk,
+    entranceY: number,
+    targetLength: number,
     rng: () => number
 ) {
-    const height = tileGrid.length;
-    const width = tileGrid[0].length;
+    const pathTiles: PathTile[] = [];
 
-    let x = 0;
-    let y = Math.floor(height / 2);
-    let pathIndex = 0;
+    const startX = chunk.startX;
+    const endX = chunk.startX + chunk.width - 1;
+
+    const minY = chunk.startY + 2;
+    const maxY = chunk.startY + chunk.height - 3;
+
+    let x = startX;
+    let y = entranceY;
+
+    let segments = 0;
+    const MAX_SEGMENTS = 30;
 
     function addPathTile(x: number, y: number) {
         const tile = tileGrid[y][x];
 
         tile.isPath = true;
         tile.blocked = true;
-        tile.pathIndex = pathIndex++;
+
+        pathTiles.push({
+            x,
+            y,
+            tile,
+        });
     }
 
-    // Starting tile
-    addPathTile(x, y);
+    function hasUnrelatedPathNeighbour(
+        x: number,
+        y: number,
+        allowedX: number,
+        allowedY: number
+    ) {
+        const neighbours = [
+            { x: x - 1, y },
+            { x: x + 1, y },
+            { x, y: y - 1 },
+            { x, y: y + 1 },
+        ];
 
-    while (x < width - 1) {
-        // -------------------------
-        // Horizontal section
-        // -------------------------
+        for (const neighbour of neighbours) {
+            // Outside this chunk doesn't matter here.
+            if (
+                neighbour.x < startX ||
+                neighbour.x > endX ||
+                neighbour.y < chunk.startY ||
+                neighbour.y >= chunk.startY + chunk.height
+            ) {
+                continue;
+            }
 
-        const horizontalLength =
-            4 + Math.floor(rng() * 5); // 4-8
+            // This is the tile we're deliberately connecting from.
+            if (
+                neighbour.x === allowedX &&
+                neighbour.y === allowedY
+            ) {
+                continue;
+            }
 
-        for (
-            let i = 0;
-            i < horizontalLength && x < width - 1;
-            i++
-        ) {
-            x++;
-            addPathTile(x, y);
+            if (tileGrid[neighbour.y][neighbour.x].isPath) {
+                return true;
+            }
         }
 
-        // We've reached the end
-        if (x >= width - 1) {
+        return false;
+    }
+
+    function canMoveHorizontal(
+        direction: -1 | 1,
+        length: number
+    ) {
+        let previousX = x;
+
+        for (let i = 1; i <= length; i++) {
+            const nextX = x + direction * i;
+
+            // Don't leave the chunk.
+            if (
+                nextX < startX ||
+                nextX > endX
+            ) {
+                return false;
+            }
+
+            // Don't cross an existing path.
+            if (tileGrid[y][nextX].isPath) {
+                return false;
+            }
+
+            // Don't run alongside / reconnect with an unrelated path.
+            if (
+                hasUnrelatedPathNeighbour(
+                    nextX,
+                    y,
+                    previousX,
+                    y
+                )
+            ) {
+                return false;
+            }
+
+            previousX = nextX;
+        }
+
+        return true;
+    }
+
+    function canMoveVertical(
+        direction: -1 | 1,
+        length: number
+    ) {
+        let previousY = y;
+
+        for (let i = 1; i <= length; i++) {
+            const nextY = y + direction * i;
+
+            // Keep a little space from the top/bottom of the chunk.
+            if (
+                nextY < minY ||
+                nextY > maxY
+            ) {
+                return false;
+            }
+
+            // Don't cross an existing path.
+            if (tileGrid[nextY][x].isPath) {
+                return false;
+            }
+
+            // Don't run alongside / reconnect with an unrelated path.
+            if (
+                hasUnrelatedPathNeighbour(
+                    x,
+                    nextY,
+                    x,
+                    previousY
+                )
+            ) {
+                return false;
+            }
+
+            previousY = nextY;
+        }
+
+        return true;
+    }
+
+    // -----------------------------
+    // Start
+    // -----------------------------
+
+    addPathTile(x, y);
+
+    // -----------------------------
+    // Generate sections
+    // -----------------------------
+
+    while (
+        x < endX &&
+        segments < MAX_SEGMENTS
+    ) {
+        segments++;
+
+        const distanceToExit = endX - x;
+
+        const minimumAcceptedLength =
+            targetLength - PATH_LENGTH_TOLERANCE;
+
+        const minimumFinalLength =
+            pathTiles.length + distanceToExit;
+
+        const lengthNeeded =
+            minimumAcceptedLength - minimumFinalLength;
+
+        const needsDetour =
+            minimumFinalLength < minimumAcceptedLength;
+
+        // We already have enough distance.
+        // Finish directly if possible.
+        if (!needsDetour) {
+            if (
+                distanceToExit > 0 &&
+                canMoveHorizontal(1, distanceToExit)
+            ) {
+                for (
+                    let i = 0;
+                    i < distanceToExit;
+                    i++
+                ) {
+                    x++;
+                    addPathTile(x, y);
+                }
+
+                break;
+            }
+        }
+
+        // =================================
+        // Horizontal section
+        // =================================
+
+        let horizontalDirection: -1 | 1 = 1;
+
+        if (
+            needsDetour &&
+            x >= startX + 5
+        ) {
+            const leftChance =
+                lengthNeeded >= 6
+                    ? 0.6
+                    : 0.35;
+
+            if (rng() < leftChance) {
+                horizontalDirection = -1;
+            }
+        }
+
+        let horizontalLength =
+            horizontalDirection === 1
+                ? 3 + Math.floor(rng() * 4)
+                : 2 + Math.floor(rng() * 3);
+
+        if (horizontalDirection === 1) {
+            let maxRightMovement =
+                endX - x;
+
+            // Don't reach the exit while the
+            // resulting path would still be too short.
+            if (needsDetour) {
+                maxRightMovement =
+                    Math.max(
+                        0,
+                        maxRightMovement - 1
+                    );
+            }
+
+            horizontalLength = Math.min(
+                horizontalLength,
+                maxRightMovement
+            );
+        }
+
+        let canMove =
+            horizontalLength > 0 &&
+            canMoveHorizontal(
+                horizontalDirection,
+                horizontalLength
+            );
+
+        // If backwards didn't work, try right instead.
+        if (
+            !canMove &&
+            horizontalDirection === -1
+        ) {
+            horizontalDirection = 1;
+
+            let maxRightMovement =
+                endX - x;
+
+            // Still don't allow the fallback movement
+            // to reach the exit if the path is too short.
+            if (needsDetour) {
+                maxRightMovement = Math.max(
+                    0,
+                    maxRightMovement - 1
+                );
+            }
+
+            horizontalLength = Math.min(
+                3 + Math.floor(rng() * 4),
+                maxRightMovement
+            );
+
+            canMove =
+                horizontalLength > 0 &&
+                canMoveHorizontal(
+                    horizontalDirection,
+                    horizontalLength
+                );
+        }
+
+        if (canMove) {
+            for (
+                let i = 0;
+                i < horizontalLength;
+                i++
+            ) {
+                x += horizontalDirection;
+                addPathTile(x, y);
+            }
+        }
+
+        if (x === endX) {
             break;
         }
 
-        // -------------------------
+        const newDistanceToExit = endX - x;
+
+        const newMinimumFinalLength =
+            pathTiles.length + newDistanceToExit;
+
+        const stillNeedsDetour =
+            newMinimumFinalLength <
+            targetLength - PATH_LENGTH_TOLERANCE;
+
+        if (!stillNeedsDetour) {
+            if (
+                newDistanceToExit > 0 &&
+                canMoveHorizontal(1, newDistanceToExit)
+            ) {
+                for (
+                    let i = 0;
+                    i < newDistanceToExit;
+                    i++
+                ) {
+                    x++;
+                    addPathTile(x, y);
+                }
+
+                break;
+            }
+        }
+
+        // =================================
         // Vertical section
-        // -------------------------
+        // =================================
 
         const verticalLength =
             2 + Math.floor(rng() * 4); // 2-5
 
-        // Randomly choose up/down
-        let direction = rng() < 0.5 ? -1 : 1;
+        let verticalDirection: -1 | 1 =
+            rng() < 0.5 ? -1 : 1;
 
-        // If that direction won't fit, try the other
-        if (!canMoveVertical(
-            tileGrid,
-            x,
-            y,
-            direction,
-            verticalLength
-        )) {
-            direction *= -1;
+        // Try chosen direction.
+        let canMoveVertically =
+            canMoveVertical(
+                verticalDirection,
+                verticalLength
+            );
+
+        // Try opposite direction.
+        if (!canMoveVertically) {
+            verticalDirection =
+                verticalDirection === 1 ? -1 : 1;
+
+            canMoveVertically =
+                canMoveVertical(
+                    verticalDirection,
+                    verticalLength
+                );
         }
 
-        // If neither direction works, just keep going right
-        if (!canMoveVertical(
-            tileGrid,
-            x,
-            y,
-            direction,
-            verticalLength
-        )) {
-            continue;
+        if (canMoveVertically) {
+            for (
+                let i = 0;
+                i < verticalLength;
+                i++
+            ) {
+                y += verticalDirection;
+                addPathTile(x, y);
+            }
         }
 
-        for (let i = 0; i < verticalLength; i++) {
-            y += direction;
-            addPathTile(x, y);
+        // If neither horizontal nor vertical movement was possible,
+        // we don't want to get stuck looping forever.
+        if (!canMove && !canMoveVertically) {
+            break;
         }
     }
+
+    // -----------------------------
+    // Result
+    // -----------------------------
+
+    return {
+        pathTiles,
+        exitY: y,
+        reachedExit: x === endX,
+    };
 }
 
-function canMoveVertical(
-    tileGrid: Tile[][],
-    x: number,
-    y: number,
-    direction: number,
-    length: number
-) {
-    const height = tileGrid.length;
-
-    const endY = y + direction * length;
-
-    // Keep some space from the top/bottom edges
-    if (endY < 2 || endY >= height - 2) {
-        return false;
-    }
-
-    // Don't cross an existing path
-    for (let i = 1; i <= length; i++) {
-        const checkY = y + direction * i;
-
-        if (tileGrid[checkY][x].isPath) {
-            return false;
-        }
-    }
-
-    return true;
-}
 async function generateMapSprite(k: KAPLAYCtx, tileGrid: Tile[][], pathTiles: PathTile[]) {
     const mapWidth = tileGrid[0].length;
     const mapHeight = tileGrid.length;
@@ -268,7 +572,7 @@ function assignPathFrames(pathTiles: PathTile[]) {
         const previous = pathTiles[i - 1];
         const next = pathTiles[i + 1];
 
-        // Entrance / exit
+        // Start / end
         if (!previous || !next) {
             current.tile.pathFrame = PATH_FRAMES.HORIZONTAL;
             continue;
@@ -277,41 +581,83 @@ function assignPathFrames(pathTiles: PathTile[]) {
         const incoming = getDirection(previous, current);
         const outgoing = getDirection(current, next);
 
-        if (incoming === "right" && outgoing === "right") {
+        // -------------------------
+        // Straight
+        // -------------------------
+
+        if (
+            (incoming === "right" && outgoing === "right") ||
+            (incoming === "left" && outgoing === "left")
+        ) {
             current.tile.pathFrame = PATH_FRAMES.HORIZONTAL;
         }
 
         else if (
-            (incoming === "down" && outgoing === "down") ||
-            (incoming === "up" && outgoing === "up")
+            (incoming === "up" && outgoing === "up") ||
+            (incoming === "down" && outgoing === "down")
         ) {
             current.tile.pathFrame = PATH_FRAMES.VERTICAL;
         }
 
-        else if (incoming === "right" && outgoing === "down") {
+        // -------------------------
+        // Corners
+        // -------------------------
+
+        // ┐
+        else if (
+            (incoming === "right" && outgoing === "down") ||
+            (incoming === "up" && outgoing === "left")
+        ) {
             current.tile.pathFrame = PATH_FRAMES.RIGHT_TO_DOWN;
         }
 
-        else if (incoming === "down" && outgoing === "right") {
+        // └
+        else if (
+            (incoming === "down" && outgoing === "right") ||
+            (incoming === "left" && outgoing === "up")
+        ) {
             current.tile.pathFrame = PATH_FRAMES.DOWN_TO_RIGHT;
         }
 
-        else if (incoming === "right" && outgoing === "up") {
+        // ┘
+        else if (
+            (incoming === "right" && outgoing === "up") ||
+            (incoming === "down" && outgoing === "left")
+        ) {
             current.tile.pathFrame = PATH_FRAMES.RIGHT_TO_UP;
         }
 
-        else if (incoming === "up" && outgoing === "right") {
+        // ┌
+        else if (
+            (incoming === "up" && outgoing === "right") ||
+            (incoming === "left" && outgoing === "down")
+        ) {
             current.tile.pathFrame = PATH_FRAMES.UP_TO_RIGHT;
         }
     }
 }
 
-function generateWaypoints(
+export function generateWaypoints(
     k: KAPLAYCtx,
-    pathTiles: PathTile[],
-    mapWidth: number
+    chunks: MapChunk[]
 ) {
-    if (pathTiles.length === 0) return [];
+    const revealedChunks = chunks.filter(
+        chunk => chunk.revealed
+    );
+
+    if (revealedChunks.length === 0) {
+        return [];
+    }
+
+    // Path is generated left -> right, but enemies
+    // travel right -> left.
+    const pathTiles = revealedChunks
+        .flatMap(chunk => chunk.pathTiles)
+        .reverse();
+
+    if (pathTiles.length === 0) {
+        return [];
+    }
 
     const waypoints: Vec2[] = [];
 
@@ -323,40 +669,211 @@ function generateWaypoints(
 
     const first = pathTiles[0];
 
+    // Spawn just outside the right edge of the
+    // currently revealed path.
     waypoints.push(
         k.vec2(
-            -TILE_SIZE / 2,
-            first.y * TILE_SIZE + TILE_SIZE / 2
+            first.x * TILE_SIZE +
+                TILE_SIZE +
+                TILE_SIZE / 2,
+            first.y * TILE_SIZE +
+                TILE_SIZE / 2
         )
     );
 
-    for (let i = 1; i < pathTiles.length - 1; i++) {
+    // Add corners.
+    for (
+        let i = 1;
+        i < pathTiles.length - 1;
+        i++
+    ) {
         const previous = pathTiles[i - 1];
         const current = pathTiles[i];
         const next = pathTiles[i + 1];
 
-        const incomingX = current.x - previous.x;
-        const incomingY = current.y - previous.y;
+        const incomingX =
+            current.x - previous.x;
 
-        const outgoingX = next.x - current.x;
-        const outgoingY = next.y - current.y;
+        const incomingY =
+            current.y - previous.y;
+
+        const outgoingX =
+            next.x - current.x;
+
+        const outgoingY =
+            next.y - current.y;
 
         if (
             incomingX !== outgoingX ||
             incomingY !== outgoingY
         ) {
-            waypoints.push(toWorldPos(current));
+            waypoints.push(
+                toWorldPos(current)
+            );
         }
     }
 
+    // Exit always remains to the left of chunk 0.
     const last = pathTiles[pathTiles.length - 1];
 
     waypoints.push(
         k.vec2(
-            mapWidth * TILE_SIZE + TILE_SIZE / 2,
-            last.y * TILE_SIZE + TILE_SIZE / 2
+            -TILE_SIZE / 2,
+            last.y * TILE_SIZE +
+                TILE_SIZE / 2
         )
     );
 
     return waypoints;
+}
+
+const CHUNK_WIDTH = 10;
+const CHUNK_HEIGHT = 25;
+
+function createChunks(
+    mapWidth: number,
+    mapHeight: number
+): MapChunk[] {
+    const chunks: MapChunk[] = [];
+
+    let index = 0;
+
+    for (let x = 0; x < mapWidth; x += CHUNK_WIDTH) {
+        chunks.push({
+            index,
+
+            startX: x,
+            startY: 0,
+
+            width: Math.min(CHUNK_WIDTH, mapWidth - x),
+            height: mapHeight,
+
+            revealed: index === 0,
+
+            pathTiles: []
+        });
+
+        index++;
+    }
+
+    return chunks;
+}
+
+function clearPath(pathTiles: PathTile[]) {
+    for (const pathTile of pathTiles) {
+        pathTile.tile.isPath = false;
+        pathTile.tile.blocked = false;
+        pathTile.tile.pathIndex = undefined;
+        pathTile.tile.pathFrame = undefined;
+    }
+}
+
+const MIN_TARGET_PATH_LENGTH = 18;
+const MAX_TARGET_PATH_LENGTH = 22;
+
+const PATH_LENGTH_TOLERANCE = 2;
+
+const MAX_CHUNK_GENERATION_ATTEMPTS = 50;
+
+function generateValidChunkPath(
+    tileGrid: Tile[][],
+    chunk: MapChunk,
+    entranceY: number,
+    rng: () => number
+) {
+    const targetLength =
+        MIN_TARGET_PATH_LENGTH +
+        Math.floor(
+            rng() *
+            (
+                MAX_TARGET_PATH_LENGTH -
+                MIN_TARGET_PATH_LENGTH +
+                1
+            )
+        );
+
+    for (
+        let attempt = 0;
+        attempt < MAX_CHUNK_GENERATION_ATTEMPTS;
+        attempt++
+    ) {
+        const result = generateChunkPath(
+            tileGrid,
+            chunk,
+            entranceY,
+            targetLength,
+            rng
+        );
+
+        const validLength =
+            Math.abs(
+                result.pathTiles.length -
+                targetLength
+            ) <= PATH_LENGTH_TOLERANCE;
+
+        console.log(
+            `Chunk ${chunk.index}, attempt ${attempt + 1}:`,
+            `target=${targetLength}`,
+            `length=${result.pathTiles.length}`,
+            `reachedExit=${result.reachedExit}`,
+            `validLength=${validLength}`
+        );
+
+        if (
+            result.reachedExit &&
+            validLength
+        ) {
+            return result;
+        }
+
+        clearPath(result.pathTiles);
+    }
+
+    throw new Error(
+        `Failed to generate valid path for chunk ${chunk.index}`
+    );
+}
+
+function blockHiddenChunkTiles(
+    tileGrid: Tile[][],
+    chunk: MapChunk
+) {
+    if (chunk.revealed) return;
+
+    for (
+        let y = chunk.startY;
+        y < chunk.startY + chunk.height;
+        y++
+    ) {
+        for (
+            let x = chunk.startX;
+            x < chunk.startX + chunk.width;
+            x++
+        ) {
+            tileGrid[y][x].blocked = true;
+        }
+    }
+}
+
+export function unblockRevealedChunkTiles(
+    tileGrid: Tile[][],
+    chunk: MapChunk
+) {
+    for (
+        let y = chunk.startY;
+        y < chunk.startY + chunk.height;
+        y++
+    ) {
+        for (
+            let x = chunk.startX;
+            x < chunk.startX + chunk.width;
+            x++
+        ) {
+            const tile = tileGrid[y][x];
+
+            tile.blocked =
+                tile.isPath ||
+                tile.hasTree === true;
+        }
+    }
 }

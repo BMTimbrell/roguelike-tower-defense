@@ -1,4 +1,4 @@
-import type { KAPLAYCtx, Vec2 } from "kaplay";
+import type { GameObj, KAPLAYCtx, Vec2 } from "kaplay";
 import { ELEMENTS, HEROES, LEVEL_WAVES, TILE_SIZE, type HeroId, type SkillId } from "../constants";
 import { cachedSaveAtom, gameStateAtom, store } from "../store";
 import type { HeroGameObj, PathTile, SelectedHeroUI, Song, TargetPriority, Tile, UnitEffects } from "../types";
@@ -98,6 +98,7 @@ export default function makeHero(k: KAPLAYCtx,
             hasSkeletonBuff: false,
             hasZombieBuff: false,
             hasGhostBuff: false,
+            sprite: null as null | GameObj,
             ...("melee" in HEROES[heroId] ? { melee: HEROES[heroId]?.melee } : {}),
             ...("effects" in HEROES[heroId] ? { effects: HEROES[heroId].effects as UnitEffects } : {}),
             ...("songs" in HEROES[heroId] ? { songs: HEROES[heroId].songs as Song[] } : {})
@@ -116,6 +117,8 @@ export default function makeHero(k: KAPLAYCtx,
             k.opacity(0.5),
             k.pos(TILE_SIZE / 2, TILE_SIZE / 2)
         ]);
+
+        hero.sprite = sprite;
 
         hero.width = sprite.width;
         hero.height = sprite.height;
@@ -225,6 +228,7 @@ export default function makeHero(k: KAPLAYCtx,
                 k.destroy(thirstBarBackground);
                 k.destroy(thirstBar);
                 k.destroy(waterDrop);
+                k.destroy(sprite);
             });
         }
 

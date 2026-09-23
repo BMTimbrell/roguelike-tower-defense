@@ -317,6 +317,7 @@ export default function makeTower(
                     k.sprite("phoenix", { anim: "fly" }),
                     k.pos(tower.pos),
                     k.opacity(1),
+                    k.z(999),
                     k.anchor("center"),
                     k.rotate(0),
                     {

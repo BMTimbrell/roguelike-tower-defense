@@ -2947,7 +2947,7 @@ export const LEVEL_WAVES = {
                     { id: "skeleton", count: 1, interval: 1.2 },
                     { id: "imp", count: 2, interval: 1 },
                     { id: "zombieFairy", count: 1, interval: 1 },
-                    { id: "hellWolf", count: 1, interval: 1}
+                    { id: "hellWolf", count: 1, interval: 1 }
                 ],
                 reward: 400
             },
@@ -3071,7 +3071,7 @@ export const LEVEL_WAVES = {
                     { id: "imp", count: 3, interval: 0.5 },
                     { id: "grimReaper", count: 5, interval: 0.25 },
                     { id: "redZombieFairy", count: 1, interval: 0.5 },
-                    { id: "hellWolf", count:1, interval: 0.5 },
+                    { id: "hellWolf", count: 1, interval: 0.5 },
                     { id: "armouredSlime", count: 5, interval: 0.5 },
                     { id: "giantSpider", count: 1, interval: 1 },
                     { id: "spider", count: 3, interval: 0.5 },
@@ -4543,7 +4543,51 @@ export const ENEMIES = {
             canAttack: false,
             attackCooldown: 8
         }
-    }
+    },
+    fakeSlimeKing: {
+        hp: 5000,
+        damage: 99,
+        chestValue: 5,
+        goldDropped: 50,
+        shootSound: "squish",
+        shieldHp: 540,
+        deathSound: "monster death3",
+        hasLargeSoul: true,
+        speed: 20,
+        sprite: "slime king",
+        attacker: {
+            projectile: "slimeball",
+            attackRange: 4.5,
+            canAttack: false,
+            attackCooldown: 8
+        },
+        spawnOnDeath: {
+            id: "giantSlime",
+            amount: 2,
+            offset: 30
+        }
+    },
+    fakeBeeQueen: {
+        hp: 4000,
+        damage: 99,
+        chestValue: 5,
+        deathSound: "monster death3",
+        shootSound: "bees",
+        goldDropped: 50,
+        hasLargeSoul: true,
+        speed: 25,
+        sprite: "bee queen",
+        attacker: {
+            projectile: "beeProjectile",
+            attackRange: 4.5,
+            canAttack: false,
+            attackCooldown: 6.5
+        },
+        spawnOnDeath: {
+            id: "beeSwarm",
+            amount: 1
+        }
+    },
 } as const satisfies Record<string, EnemyConfig>;
 
 export type EnemyId = keyof typeof ENEMIES;
@@ -8366,3 +8410,463 @@ export const OBELISKS: Record<ObeliskId, ObeliskDef> = {
         description: "+20% bonus dark damage when destroyed"
     }
 }
+
+export type EndlessEnemyDef = {
+    id: EnemyId;
+    cost: number;
+    unlockWave: number;
+    minGroupSize: number;
+    maxGroupSize: number;
+};
+
+export const ENDLESS_ENEMIES: EndlessEnemyDef[] = [
+    {
+        id: "fakeSlimeKing",
+        cost: 30,
+        unlockWave: 12,
+        minGroupSize: 1,
+        maxGroupSize: 1,
+    },
+    {
+        id: "fakeBeeQueen",
+        cost: 30,
+        unlockWave: 12,
+        minGroupSize: 1,
+        maxGroupSize: 1,
+    },
+    {
+        id: "bee",
+        cost: 1,
+        unlockWave: 1,
+        minGroupSize: 2,
+        maxGroupSize: 5,
+    },
+    {
+        id: "iceSlime",
+        cost: 1,
+        unlockWave: 1,
+        minGroupSize: 2,
+        maxGroupSize: 5,
+    },
+    {
+        id: "penguin",
+        cost: 1,
+        unlockWave: 1,
+        minGroupSize: 2,
+        maxGroupSize: 5,
+    },
+    {
+        id: "scorpian",
+        cost: 1,
+        unlockWave: 1,
+        minGroupSize: 2,
+        maxGroupSize: 5,
+    },
+    {
+        id: "lizard",
+        cost: 1,
+        unlockWave: 1,
+        minGroupSize: 2,
+        maxGroupSize: 5,
+    },
+    {
+        id: "fireSlime",
+        cost: 1,
+        unlockWave: 1,
+        minGroupSize: 2,
+        maxGroupSize: 5,
+    },
+    {
+        id: "imp",
+        cost: 1,
+        unlockWave: 1,
+        minGroupSize: 2,
+        maxGroupSize: 5,
+    },
+    {
+        id: "skeleton",
+        cost: 2,
+        unlockWave: 3,
+        minGroupSize: 1,
+        maxGroupSize: 6,
+    },
+    {
+        id: "snowman",
+        cost: 2,
+        unlockWave: 3,
+        minGroupSize: 1,
+        maxGroupSize: 6,
+    },
+    {
+        id: "camel",
+        cost: 2,
+        unlockWave: 3,
+        minGroupSize: 1,
+        maxGroupSize: 6,
+    },
+    {
+        id: "orc",
+        cost: 3,
+        unlockWave: 3,
+        minGroupSize: 1,
+        maxGroupSize: 6,
+    },
+    {
+        id: "polarBear",
+        cost: 3,
+        unlockWave: 3,
+        minGroupSize: 1,
+        maxGroupSize: 6,
+    },
+    {
+        id: "armouredSkeleton",
+        cost: 3,
+        unlockWave: 4,
+        minGroupSize: 1,
+        maxGroupSize: 8,
+    },
+    {
+        id: "fairy",
+        cost: 3,
+        unlockWave: 3,
+        minGroupSize: 1,
+        maxGroupSize: 1,
+    },
+    {
+        id: "zombieFairy",
+        cost: 3,
+        unlockWave: 3,
+        minGroupSize: 1,
+        maxGroupSize: 1,
+    },
+    {
+        id: "mummy",
+        cost: 3,
+        unlockWave: 4,
+        minGroupSize: 1,
+        maxGroupSize: 6,
+    },
+    {
+        id: "tortoise",
+        cost: 4,
+        unlockWave: 6,
+        minGroupSize: 1,
+        maxGroupSize: 4,
+    },
+    {
+        id: "rockGolem",
+        cost: 4,
+        unlockWave: 6,
+        minGroupSize: 1,
+        maxGroupSize: 5,
+    },
+    {
+        id: "armouredOrc",
+        cost: 4,
+        unlockWave: 4,
+        minGroupSize: 1,
+        maxGroupSize: 8,
+    },
+    {
+        id: "ghost",
+        cost: 4,
+        unlockWave: 5,
+        minGroupSize: 1,
+        maxGroupSize: 5,
+    },
+    {
+        id: "spider",
+        cost: 4,
+        unlockWave: 5,
+        minGroupSize: 1,
+        maxGroupSize: 5,
+    },
+    {
+        id: "wolf",
+        cost: 4,
+        unlockWave: 6,
+        minGroupSize: 1,
+        maxGroupSize: 1,
+    },
+    {
+        id: "hellWolf",
+        cost: 4,
+        unlockWave: 6,
+        minGroupSize: 1,
+        maxGroupSize: 1,
+    },
+
+    {
+        id: "armouredSlime",
+        cost: 4,
+        unlockWave: 6,
+        minGroupSize: 1,
+        maxGroupSize: 4,
+    },
+    {
+        id: "masochist",
+        cost: 4,
+        unlockWave: 5,
+        minGroupSize: 1,
+        maxGroupSize: 6,
+    },
+    {
+        id: "vampire",
+        cost: 4,
+        unlockWave: 6,
+        minGroupSize: 1,
+        maxGroupSize: 4,
+    },
+    {
+        id: "demon",
+        cost: 4,
+        unlockWave: 5,
+        minGroupSize: 1,
+        maxGroupSize: 8,
+    },
+    {
+        id: "grimReaper",
+        cost: 4,
+        unlockWave: 6,
+        minGroupSize: 1,
+        maxGroupSize: 3,
+    },
+    {
+        id: "occultist",
+        cost: 4,
+        unlockWave: 6,
+        minGroupSize: 1,
+        maxGroupSize: 4,
+    },
+    {
+        id: "redFairy",
+        cost: 4,
+        unlockWave: 6,
+        minGroupSize: 1,
+        maxGroupSize: 1,
+    },
+    {
+        id: "redZombieFairy",
+        cost: 4,
+        unlockWave: 6,
+        minGroupSize: 1,
+        maxGroupSize: 1,
+    },
+    {
+        id: "giantSlime",
+        cost: 5,
+        unlockWave: 5,
+        minGroupSize: 1,
+        maxGroupSize: 1,
+    },
+    {
+        id: "giantBee",
+        cost: 5,
+        unlockWave: 5,
+        minGroupSize: 1,
+        maxGroupSize: 1,
+    },
+    {
+        id: "giantIceSlime",
+        cost: 5,
+        unlockWave: 5,
+        minGroupSize: 1,
+        maxGroupSize: 1,
+    },
+    {
+        id: "giantPenguin",
+        cost: 5,
+        unlockWave: 5,
+        minGroupSize: 1,
+        maxGroupSize: 1,
+    },
+    {
+        id: "giantScorpian",
+        cost: 5,
+        unlockWave: 5,
+        minGroupSize: 1,
+        maxGroupSize: 1,
+    },
+    {
+        id: "giantLizard",
+        cost: 5,
+        unlockWave: 5,
+        minGroupSize: 1,
+        maxGroupSize: 1,
+    },
+    {
+        id: "giantFireSlime",
+        cost: 5,
+        unlockWave: 5,
+        minGroupSize: 1,
+        maxGroupSize: 1,
+    },
+    {
+        id: "giantImp",
+        cost: 5,
+        unlockWave: 5,
+        minGroupSize: 1,
+        maxGroupSize: 1,
+    },
+    {
+        id: "armouredDemon",
+        cost: 6,
+        unlockWave: 7,
+        minGroupSize: 1,
+        maxGroupSize: 10,
+    },
+    {
+        id: "giantSkeleton",
+        cost: 6,
+        unlockWave: 6,
+        minGroupSize: 1,
+        maxGroupSize: 1,
+    },
+    {
+        id: "giantOrc",
+        cost: 7,
+        unlockWave: 6,
+        minGroupSize: 1,
+        maxGroupSize: 1,
+    },
+    {
+        id: "giantSnowman",
+        cost: 6,
+        unlockWave: 6,
+        minGroupSize: 1,
+        maxGroupSize: 1,
+    },
+    {
+        id: "giantPolarBear",
+        cost: 7,
+        unlockWave: 6,
+        minGroupSize: 1,
+        maxGroupSize: 1,
+    },
+    {
+        id: "giantMummy",
+        cost: 7,
+        unlockWave: 7,
+        minGroupSize: 1,
+        maxGroupSize: 1
+    },
+    {
+        id: "giantCamel",
+        cost: 7,
+        unlockWave: 6,
+        minGroupSize: 1,
+        maxGroupSize: 1
+    },
+    {
+        id: "giantMasochist",
+        cost: 8,
+        unlockWave: 7,
+        minGroupSize: 1,
+        maxGroupSize: 1
+    },
+    {
+        id: "giantWolf",
+        cost: 9,
+        unlockWave: 8,
+        minGroupSize: 1,
+        maxGroupSize: 1
+    },
+    {
+        id: "giantHellWolf",
+        cost: 9,
+        unlockWave: 8,
+        minGroupSize: 1,
+        maxGroupSize: 1
+    },
+    {
+        id: "giantGhost",
+        cost: 9,
+        unlockWave: 8,
+        minGroupSize: 1,
+        maxGroupSize: 1
+    },
+    {
+        id: "giantDemon",
+        cost: 8,
+        unlockWave: 7,
+        minGroupSize: 1,
+        maxGroupSize: 1,
+    },
+    {
+        id: "giantVampire",
+        cost: 9,
+        unlockWave: 8,
+        minGroupSize: 1,
+        maxGroupSize: 1
+    },
+    {
+        id: "giantOccultist",
+        cost: 9,
+        unlockWave: 8,
+        minGroupSize: 1,
+        maxGroupSize: 1
+    },
+    {
+        id: "giantTortoise",
+        cost: 9,
+        unlockWave: 8,
+        minGroupSize: 1,
+        maxGroupSize: 1
+    },
+    {
+        id: "giantFairy",
+        cost: 10,
+        unlockWave: 9,
+        minGroupSize: 1,
+        maxGroupSize: 1
+    },
+    {
+        id: "giantZombieFairy",
+        cost: 10,
+        unlockWave: 9,
+        minGroupSize: 1,
+        maxGroupSize: 1
+    },
+    {
+        id: "giantSpider",
+        cost: 10,
+        unlockWave: 9,
+        minGroupSize: 1,
+        maxGroupSize: 1
+    },
+    {
+        id: "giantArmouredSlime",
+        cost: 10,
+        unlockWave: 9,
+        minGroupSize: 1,
+        maxGroupSize: 1
+    },
+    {
+        id: "giantRockGolem",
+        cost: 10,
+        unlockWave: 9,
+        minGroupSize: 1,
+        maxGroupSize: 1
+    },
+    {
+        id: "giantArmouredDemon",
+        cost: 15,
+        unlockWave: 10,
+        minGroupSize: 1,
+        maxGroupSize: 1
+    },
+    {
+        id: "giantRedFairy",
+        cost: 15,
+        unlockWave: 11,
+        minGroupSize: 1,
+        maxGroupSize: 1
+    },
+    {
+        id: "giantRedZombieFairy",
+        cost: 15,
+        unlockWave: 11,
+        minGroupSize: 1,
+        maxGroupSize: 1
+    },
+];

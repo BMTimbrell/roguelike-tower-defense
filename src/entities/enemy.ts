@@ -1523,6 +1523,11 @@ function updateSwarmVisuals(
     locusts: SwarmLocust[],
 ) {
     for (const locust of locusts) {
+        if (!swarm.exists()) {
+            locust.obj.destroy();
+            continue;
+        }
+
         if (locust.obj.exists()) {
             locust.obj.pos = swarm.pos.add(locust.offset);
         }

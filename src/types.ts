@@ -602,7 +602,8 @@ export type Scene = "level1" |
     "hell1-2" |
     "hell2" |
     "hell2-2" |
-    "hell3";
+    "hell3" |
+    "endlessForest";
 
 export type Scenes = Scene[][];
 
@@ -1114,7 +1115,7 @@ export type EndlessRunSave = BaseRunSave & {
 
     deck: Upgrade[];
 
-    towerCoins: number;
+    gold: number;
 
     hero: {
         id: HeroId;
@@ -1344,4 +1345,29 @@ export type ObeliskGameObj = GameObj<
 export type HoveredObelisk = {
     id: TotemId;
     pos: { x: number; y: number; };
+};
+
+export type MapChunk = {
+    index: number;
+
+    startX: number;
+    startY: number;
+
+    width: number;
+    height: number;
+
+    revealed: boolean;
+
+    pathTiles: PathTile[];
+};
+
+export type EndlessRewardType =
+    | "expand"
+    | "hero"
+    | "tower"
+    | "card";
+
+export type EndlessRewards = {
+    visible: boolean;
+    reward: "hero" | "tower" | "card";
 };

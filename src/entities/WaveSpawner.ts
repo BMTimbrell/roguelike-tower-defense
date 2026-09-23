@@ -93,7 +93,7 @@ export default function makeWaveSpawner(k: KAPLAYCtx, levelId: LevelId, waypoint
                     luckBonus = 1;
                 } else if (waveNumber <= 8) {
                     luckBonus = 1.5;
-                } else luckBonus = 2;
+                }
 
                 if (waveNumber > 1) {
                     store.set(gameStateAtom, prev => ({
@@ -101,7 +101,6 @@ export default function makeWaveSpawner(k: KAPLAYCtx, levelId: LevelId, waypoint
                         luck: prev.luck + 1 + luckBonus
                     }));
                 }
-
 
                 store.set(gameStateAtom, prev => ({
                     ...prev,
