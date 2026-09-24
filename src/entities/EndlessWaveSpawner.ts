@@ -15,6 +15,7 @@ import type {
 
 import {
     BASE_DRAW_COST,
+    ELEMENTS,
     ENDLESS_ENEMIES,
     MAX_HAND_SIZE,
     ROUND_DRAW_NUM,
@@ -418,6 +419,54 @@ export default function makeEndlessWaveSpawner(
                                         k.destroy(oldHero);
                                         k.add(updatedHero);
                                         updatedHero.sprite.opacity = 1;
+
+                                        if (updatedHero.changeNormalElement && !oldHero.changeNormalElement) {
+                                            k.get("tower").forEach(tower => {
+                                                if (tower.element === "Normal") {
+                                                    const elements = Object.keys(ELEMENTS).filter(e => e !== "Normal");
+                                                    const rand = k.randi(elements.length);
+                                                    tower.element = elements[rand];
+                                                }
+                                            });
+                                        }
+
+                                        if (updatedHero.heroId === "archer" && updatedHero.hasRangeBoost) updatedHero.stats.range++;
+
+                                        if (updatedHero.hasRangeBoost && !oldHero.hasRangeBoost) {
+                                            k.get("tower").forEach(tower => {
+                                                if (tower.name === "Farm Tower") return;
+                                                if (tower.heroId === "archer") return;
+
+                                                const towerCenter = tower.pos.add(k.vec2((tower.footprint.w * TILE_SIZE) / 2));
+                                                const heroCenter = updatedHero.pos.add(k.vec2(TILE_SIZE / 2));
+
+                                                if (towerCenter.dist(heroCenter) <= TILE_SIZE * tower.footprint.w) {
+                                                    tower.stats.range++
+                                                }
+                                            });
+                                        }
+
+                                        if (updatedHero.hasToxicAura) {
+                                            k.get("tower").forEach(tower => {
+                                                const towerCenter = tower.pos.add(k.vec2((tower.footprint.w * TILE_SIZE) / 2));
+                                                const heroCenter = updatedHero.pos.add(k.vec2(TILE_SIZE / 2));
+
+                                                if (towerCenter.dist(heroCenter) <= TILE_SIZE * tower.footprint.w) {
+                                                    tower.element = "Poison";
+                                                }
+                                            });
+                                        }
+
+                                        if (updatedHero.hasBlock) {
+                                            k.get("tower").forEach(tower => {
+                                                const towerCenter = tower.pos.add(k.vec2((tower.footprint.w * TILE_SIZE) / 2));
+                                                const heroCenter = updatedHero.pos.add(k.vec2(TILE_SIZE / 2));
+
+                                                if (towerCenter.dist(heroCenter) <= TILE_SIZE * tower.footprint.w) {
+                                                    tower.hasBlock = true;
+                                                }
+                                            });
+                                        }
                                     }
 
                                     store.set(rewardsAtom, prev => ({
@@ -439,7 +488,8 @@ export default function makeEndlessWaveSpawner(
 
                                 store.set(rewardsAtom, prev => ({
                                     ...prev,
-                                    visible: false
+                                    visible: false,
+                                    rewardIndex: 0
                                 }));
 
                                 store.set(gameStateAtom, prev => ({
@@ -454,6 +504,30 @@ export default function makeEndlessWaveSpawner(
                         }));
                         break;
                     case "card":
+                        store.set(rewardsAtom, prev => ({
+                            ...prev,
+                            visible: true,
+                            rewardIndex: 1,
+                            endlessCards: upgrade => {
+
+                                store.set(rewardsAtom, prev => ({
+                                    ...prev,
+                                    rewardIndex: 0,
+                                    visible: false,
+                                    endlessCards: null
+                                }));
+
+                                store.set(gameStateAtom, prev => ({
+                                    ...prev,
+                                    deck: {
+                                        ...prev.deck,
+                                        cards: [...prev.deck.cards, upgrade]
+                                    }
+                                }));
+
+                            }
+
+                        }));
                         break;
                 }
             }

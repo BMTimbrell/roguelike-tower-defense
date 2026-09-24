@@ -4552,7 +4552,7 @@ export const ENEMIES = {
         shootSound: "squish",
         shieldHp: 540,
         deathSound: "monster death3",
-        hasLargeSoul: true,
+        hasGiantSoul: true,
         speed: 20,
         sprite: "slime king",
         attacker: {
@@ -4574,7 +4574,7 @@ export const ENEMIES = {
         deathSound: "monster death3",
         shootSound: "bees",
         goldDropped: 50,
-        hasLargeSoul: true,
+        hasGiantSoul: true,
         speed: 25,
         sprite: "bee queen",
         attacker: {
@@ -8629,7 +8629,7 @@ export const ENDLESS_ENEMIES: EndlessEnemyDef[] = [
         cost: 4,
         unlockWave: 6,
         minGroupSize: 1,
-        maxGroupSize: 3,
+        maxGroupSize: 4,
     },
     {
         id: "occultist",

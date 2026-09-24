@@ -420,7 +420,7 @@ export default function makeUnitCombat(
                     k.sprite("soul"),
                     k.anchor("center"),
                     k.pos(pos),
-                    k.scale(enemy.boss ? 4 : enemy.hasLargeSoul ? 2 : 1),
+                    k.scale(enemy.boss || enemy.hasGiantSoul ? 4 : enemy.hasLargeSoul ? 2 : 1),
                     lifespan(k, 10),
                     {
                         target: center,

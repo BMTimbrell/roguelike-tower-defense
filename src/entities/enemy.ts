@@ -118,6 +118,7 @@ export default function makeEnemy(
             spawnIce: "spawnIce" in ENEMIES[enemyId],
             spawnPoisonMist: false,
             ...("hasLargeSoul" in ENEMIES[enemyId] ? { hasLargeSoul: ENEMIES[enemyId].hasLargeSoul as boolean } : {}),
+            ...("hasGiantSoul" in ENEMIES[enemyId] ? { hasLargeSoul: ENEMIES[enemyId].hasGiantSoul as boolean } : {}),
             ...("shieldSprite" in ENEMIES[enemyId] ? { shieldSprite: ENEMIES[enemyId].shieldSprite as string } : {}),
             ...("shootSound" in ENEMIES[enemyId] ? { shootSound: ENEMIES[enemyId].shootSound as string } : {}),
             ...("swarmVisual" in ENEMIES[enemyId] ? { swarmVisual: ENEMIES[enemyId].swarmVisual as SwarmVisual } : {}),
@@ -367,7 +368,7 @@ export default function makeEnemy(
                             pos: enemy.pos,
                             target: tower,
                             hitChance: enemy.has("blind") ? 0.3 : 1,
-                            damage: 1
+                            damage: 1.5
                         });
                         didShoot = true;
                     }
@@ -956,7 +957,7 @@ export default function makeEnemy(
                 store.set(gameStateAtom, prev => ({
                     ...prev,
                     health: prev.health - enemy.damage,
-                    luck: prev.luck + (enemy.damage * 0.2)
+                    luck: prev.luck + (enemy.damage * 0.1)
                 }));
 
                 if (store.get(gameStateAtom).health <= 0) {
@@ -998,7 +999,7 @@ export default function makeEnemy(
                 store.set(gameStateAtom, prev => ({
                     ...prev,
                     health: prev.health - enemy.damage,
-                    luck: prev.luck + enemy.damage * 0.2
+                    luck: prev.luck + enemy.damage * 0.1
                 }));
 
                 if (store.get(gameStateAtom).health <= 0) {

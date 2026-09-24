@@ -1,5 +1,5 @@
 import type { AudioPlay, KAPLAYCtx } from "kaplay";
-import { gameStateAtom, store, startingOptionsAtom, selectHeroUIAtom, shopChoiceUIAtom, shopAtom, altarAtom, mainMenuAtom, gameSpeedUIAtom, challengesAtom, chestAtom, unlockProgressionAtom, hoveredHellMapEntityAtom } from "../store";
+import { gameStateAtom, store, startingOptionsAtom, selectHeroUIAtom, shopChoiceUIAtom, shopAtom, altarAtom, mainMenuAtom, gameSpeedUIAtom, challengesAtom, chestAtom, unlockProgressionAtom, hoveredHellMapEntityAtom, rewardsAtom } from "../store";
 import initCam from "../utils/initCam";
 import type { MapData, PathTile, Scene, Tile, Upgrade } from "../types";
 import { CHARGE_DAMAGE_REQUIRED, EXPERT_PLAYER_HEALTH, HARD_PLAYER_HEATLH, NORMAL_PLAYER_HEATLH, WORLDS, type HeroId, type LevelId, type TowerId } from "../constants";
@@ -56,6 +56,13 @@ export default function mainMenu(k: KAPLAYCtx) {
         store.set(mainMenuAtom, prev => ({
             ...prev,
             visible: true
+        }));
+
+        store.set(rewardsAtom, prev => ({
+            ...prev,
+            rewardIndex: 0,
+            visible: false,
+            endlessCards: null
         }));
 
         store.set(hoveredHellMapEntityAtom, null);

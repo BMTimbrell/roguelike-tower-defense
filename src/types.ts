@@ -436,6 +436,7 @@ export type EnemyGameObj = GameObj<
     checkpointTimer?: number;
     checkpointDuration?: number;
     hasLargeSoul?: boolean;
+    hasGiantSoul?: boolean;
     shieldHp?: number;
     maxShieldHp?: number;
     shieldSprite?: string;
@@ -607,7 +608,10 @@ export type Scene = "level1" |
 
 export type Scenes = Scene[][];
 
+export type GameMode = "campaign" | "endless" | "reverse" | "heroesEndless";
+
 export type GameState = {
+    gameMode: GameMode;
     world: 1 | 2;
     context: KAPLAYCtx | null;
     hideUI: boolean;
@@ -707,6 +711,7 @@ export type EnemyConfig = {
     speed: number;
     sprite: string;
     hasLargeSoul?: boolean;
+    hasGiantSoul?: boolean;
     armour?: number;
     healer?: {
         amount: number;
@@ -890,6 +895,7 @@ export type Rewards = {
     visible: boolean;
     show: ["skills", "upgrades", "towers"],
     rewardIndex: number;
+    endlessCards: ((upgrade: Upgrade) => void) | null;
 };
 
 export type startingHeroUI = {

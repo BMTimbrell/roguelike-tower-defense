@@ -29,13 +29,18 @@ export default function Rewards() {
         () => [...new Set(SKILLS.filter(s => rewards.skills.includes(s.id)))],
         [rewards.skills]
     );
+
     const rewardSkills = useMemo(
         () => generateRandomRewards(3, skills),
         [skills]
     );
 
     const upgrades = useMemo(
-        () => generateRandomRewards(3, [...new Set(UPGRADES.filter(u => u.cost === cardValue))]),
+        () => generateRandomRewards(3, [...new Set(UPGRADES.filter(u => {
+            if (gameState.gameMode === "endless") {
+                return u.cost === (gameState.waveNumber > 10 && Math.random() > 0.67 ? 3 : 2);
+            } else return u.cost === cardValue
+        }))]),
         []
     );
 
@@ -93,18 +98,22 @@ export default function Rewards() {
                         key={index}
                         animationDelay={setCardAnimationDelay(index)}
                         handleClick={() => {
-                            setGameState(prev => ({
-                                ...prev,
-                                deck: {
-                                    ...prev.deck,
-                                    cards: [...prev.deck.cards, u]
-                                }
-                            }));
-
-                            setRewards(prev => ({
-                                ...prev,
-                                rewardIndex: prev.rewardIndex + 1
-                            }));
+                            if (rewards.endlessCards) {
+                                rewards.endlessCards(u);
+                            } else {
+                                setGameState(prev => ({
+                                    ...prev,
+                                    deck: {
+                                        ...prev.deck,
+                                        cards: [...prev.deck.cards, u]
+                                    }
+                                }));
+    
+                                setRewards(prev => ({
+                                    ...prev,
+                                    rewardIndex: prev.rewardIndex + 1
+                                }));
+                            }
                          }}
                         scale={fontScale}
                         popup={<UpgradePopup upgrade={u} pos={popupPos} />}

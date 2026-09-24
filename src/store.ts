@@ -4,6 +4,7 @@ import { ChallengeManager } from "./utils/challengeHelpers";
 
 export const gameStateAtom = atom<GameState>({
     world: 1,
+    gameMode: "endless",
     context: null,
     towerButtons: [],
     selectedUI: null,
@@ -63,7 +64,8 @@ export const rewardsAtom = atom<Rewards>({
     show: ["skills", "upgrades", "towers"],
     rewardIndex: 0,
     addSkill: () => { },
-    addTower: () => { }
+    addTower: () => { },
+    endlessCards: null
 });
 
 export const startingOptionsAtom = atom<StartingOptions>({
