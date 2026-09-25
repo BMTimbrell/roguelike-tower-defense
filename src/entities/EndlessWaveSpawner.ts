@@ -5,7 +5,6 @@ import type {
 
 import type {
     EndlessRewardType,
-    HeroGameObj,
     MapChunk,
     PathTile,
     Tile,
@@ -35,6 +34,7 @@ import { createSeededRandom } from "../utils/seededRandom";
 import makeHero from "./Hero";
 import updateSkills from "../utils/updateSkills";
 import addTowers from "../utils/addTowers";
+import { setBlockedTiles } from "../utils/makePlacementOnGrid";
 
 type EndlessWaveSpawnerOptions = {
     chunks: MapChunk[];
@@ -183,7 +183,7 @@ export default function makeEndlessWaveSpawner(
                 const incomeMod = k.get("hero")[0]?.incomeMod ?? 1;
                 const freeCardDraw = k.get("hero")[0]?.freeCardDraw ?? false;
 
-                const reward = Math.round(50 * store.get(gameStateAtom).waveNumber * incomeMod);
+                const reward = Math.round(getEndlessReward(store.get(gameStateAtom).waveNumber) * incomeMod);
                 const duration = 1;
 
                 const offsets = [
@@ -418,6 +418,15 @@ export default function makeEndlessWaveSpawner(
                                         updatedHero.opacity = 1;
                                         k.destroy(oldHero);
                                         k.add(updatedHero);
+                                        const gridX = Math.floor(hero.pos.x / TILE_SIZE);
+                                        const gridY = Math.floor(hero.pos.y / TILE_SIZE);
+                                        setBlockedTiles({
+                                            footprint: updatedHero.footprint,
+                                            gridX,
+                                            gridY,
+                                            tileGrid: updatedHero.tileGrid,
+                                            blocked: true
+                                        });
                                         updatedHero.sprite.opacity = 1;
 
                                         if (updatedHero.changeNormalElement && !oldHero.changeNormalElement) {
@@ -516,14 +525,14 @@ export default function makeEndlessWaveSpawner(
                                 visible: true,
                                 rewardIndex: 1,
                                 endlessCards: upgrade => {
-    
+
                                     store.set(rewardsAtom, prev => ({
                                         ...prev,
                                         rewardIndex: 0,
                                         visible: false,
                                         endlessCards: null
                                     }));
-    
+
                                     store.set(gameStateAtom, prev => ({
                                         ...prev,
                                         deck: {
@@ -531,7 +540,7 @@ export default function makeEndlessWaveSpawner(
                                             cards: [...prev.deck.cards, upgrade]
                                         }
                                     }));
-    
+
                                 }
                             }));
                         }
@@ -861,4 +870,17 @@ function getEndlessRewardType(
     return cycle[
         normalRewardsGiven % cycle.length
     ];
+}
+
+function getEndlessReward(wave: number) {
+    let result = 0;
+
+    for (let i = 0; i < wave; i++) {
+        if (i < 6) result += 50;
+        else if (i < 11) result += 100;
+        else if (i < 16) result += 200;
+        else result += 300;
+    }
+
+    return result;
 }

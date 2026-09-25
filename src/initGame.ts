@@ -26,6 +26,7 @@ import hell2 from './scenes/hell-2';
 import hell2_2 from './scenes/hell2-2';
 import hell3 from './scenes/hell3';
 import endlessForest from './scenes/endlessForest';
+import type { Scene } from './types';
 
 export default async function initGame() {
     // focus back on canvas when clicking on html elements
@@ -85,11 +86,11 @@ export default async function initGame() {
 
     endlessForest(k);
 
-    k.onLoad(() => {
-        k.go("endlessForest");
-    });
+    // k.onLoad(() => {
+    //     k.go("endlessForest");
+    // });
 
-    // k.go("mainMenu" satisfies Scene);
+    k.go("mainMenu" satisfies Scene);
 
     const saveData = await getSave();
 

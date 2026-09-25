@@ -73,8 +73,8 @@ export default function Difficulty({ onClick, onBackClick }: { onClick: React.Mo
                         }));
                     }}
                 >
-                    <div className={styles.heading}>Expert {!expertUnlocked && <img width={`${16 * scale}`} src="sprites/lock.png" />}</div>
-                    <div>For veteran players who have mastered the game's systems.</div>
+                    <div className={styles.heading}>Lunatic {!expertUnlocked && <img width={`${16 * scale}`} src="sprites/lock.png" />}</div>
+                    <div>For players who enjoy losing.</div>
                     {!expertUnlocked && (
                         <div className={styles.unlockText}>
                             Locked in demo.

@@ -6716,6 +6716,7 @@ export const HEROES = {
         shootOffset: { x: -20, y: 10 },
         projectile: null,
         canRotate: true,
+        pathEntityLimit: 50,
         targetType: "point",
         footprint: {
             w: 1,
@@ -8422,14 +8423,14 @@ export type EndlessEnemyDef = {
 export const ENDLESS_ENEMIES: EndlessEnemyDef[] = [
     {
         id: "fakeSlimeKing",
-        cost: 30,
+        cost: 50,
         unlockWave: 12,
         minGroupSize: 1,
         maxGroupSize: 1,
     },
     {
         id: "fakeBeeQueen",
-        cost: 30,
+        cost: 50,
         unlockWave: 12,
         minGroupSize: 1,
         maxGroupSize: 1,
@@ -8710,161 +8711,161 @@ export const ENDLESS_ENEMIES: EndlessEnemyDef[] = [
     },
     {
         id: "armouredDemon",
-        cost: 6,
+        cost: 8,
         unlockWave: 7,
         minGroupSize: 1,
         maxGroupSize: 10,
     },
     {
         id: "giantSkeleton",
-        cost: 6,
+        cost: 7,
         unlockWave: 6,
         minGroupSize: 1,
         maxGroupSize: 1,
     },
     {
         id: "giantOrc",
-        cost: 7,
+        cost: 8,
         unlockWave: 6,
         minGroupSize: 1,
         maxGroupSize: 1,
     },
     {
         id: "giantSnowman",
-        cost: 6,
+        cost: 7,
         unlockWave: 6,
         minGroupSize: 1,
         maxGroupSize: 1,
     },
     {
         id: "giantPolarBear",
-        cost: 7,
+        cost: 8,
         unlockWave: 6,
         minGroupSize: 1,
         maxGroupSize: 1,
     },
     {
         id: "giantMummy",
-        cost: 7,
+        cost: 8,
         unlockWave: 7,
         minGroupSize: 1,
         maxGroupSize: 1
     },
     {
         id: "giantCamel",
-        cost: 7,
+        cost: 8,
         unlockWave: 6,
         minGroupSize: 1,
         maxGroupSize: 1
     },
     {
         id: "giantMasochist",
-        cost: 8,
-        unlockWave: 7,
+        cost: 12,
+        unlockWave: 8,
         minGroupSize: 1,
         maxGroupSize: 1
     },
     {
         id: "giantWolf",
-        cost: 9,
+        cost: 13,
         unlockWave: 8,
         minGroupSize: 1,
         maxGroupSize: 1
     },
     {
         id: "giantHellWolf",
-        cost: 9,
+        cost: 13,
         unlockWave: 8,
         minGroupSize: 1,
         maxGroupSize: 1
     },
     {
         id: "giantGhost",
-        cost: 9,
+        cost: 13,
         unlockWave: 8,
         minGroupSize: 1,
         maxGroupSize: 1
     },
     {
         id: "giantDemon",
-        cost: 8,
+        cost: 12,
         unlockWave: 7,
         minGroupSize: 1,
         maxGroupSize: 1,
     },
     {
         id: "giantVampire",
-        cost: 9,
+        cost: 13,
         unlockWave: 8,
         minGroupSize: 1,
         maxGroupSize: 1
     },
     {
         id: "giantOccultist",
-        cost: 9,
+        cost: 13,
         unlockWave: 8,
         minGroupSize: 1,
         maxGroupSize: 1
     },
     {
         id: "giantTortoise",
-        cost: 9,
-        unlockWave: 8,
+        cost: 13,
+        unlockWave: 9,
         minGroupSize: 1,
         maxGroupSize: 1
     },
     {
         id: "giantFairy",
-        cost: 10,
+        cost: 14,
         unlockWave: 9,
         minGroupSize: 1,
         maxGroupSize: 1
     },
     {
         id: "giantZombieFairy",
-        cost: 10,
+        cost: 14,
         unlockWave: 9,
         minGroupSize: 1,
         maxGroupSize: 1
     },
     {
         id: "giantSpider",
-        cost: 10,
+        cost: 14,
         unlockWave: 9,
         minGroupSize: 1,
         maxGroupSize: 1
     },
     {
         id: "giantArmouredSlime",
-        cost: 10,
+        cost: 14,
         unlockWave: 9,
         minGroupSize: 1,
         maxGroupSize: 1
     },
     {
         id: "giantRockGolem",
-        cost: 10,
+        cost: 14,
         unlockWave: 9,
         minGroupSize: 1,
         maxGroupSize: 1
     },
     {
         id: "giantArmouredDemon",
-        cost: 15,
+        cost: 24,
         unlockWave: 10,
         minGroupSize: 1,
         maxGroupSize: 1
     },
     {
         id: "giantRedFairy",
-        cost: 15,
+        cost: 20,
         unlockWave: 11,
         minGroupSize: 1,
         maxGroupSize: 1
     },
     {
         id: "giantRedZombieFairy",
-        cost: 15,
+        cost: 20,
         unlockWave: 11,
         minGroupSize: 1,
         maxGroupSize: 1

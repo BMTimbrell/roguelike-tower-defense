@@ -1,5 +1,5 @@
 import type { AudioPlay, KAPLAYCtx } from "kaplay";
-import { gameStateAtom, store, startingOptionsAtom, selectHeroUIAtom, shopChoiceUIAtom, shopAtom, altarAtom, mainMenuAtom, gameSpeedUIAtom, challengesAtom, chestAtom, unlockProgressionAtom, hoveredHellMapEntityAtom, rewardsAtom } from "../store";
+import { gameStateAtom, store, startingOptionsAtom, selectHeroUIAtom, shopChoiceUIAtom, shopAtom, altarAtom, mainMenuAtom, gameSpeedUIAtom, challengesAtom, chestAtom, unlockProgressionAtom, hoveredHellMapEntityAtom, rewardsAtom, endlessMapTypeAtom } from "../store";
 import initCam from "../utils/initCam";
 import type { MapData, PathTile, Scene, Tile, Upgrade } from "../types";
 import { CHARGE_DAMAGE_REQUIRED, EXPERT_PLAYER_HEALTH, HARD_PLAYER_HEATLH, NORMAL_PLAYER_HEATLH, WORLDS, type HeroId, type LevelId, type TowerId } from "../constants";
@@ -193,10 +193,10 @@ export default function mainMenu(k: KAPLAYCtx) {
                             cards: upgrades
                         },
                         timeScale: 1,
-                        scene: "mainMenu",
                         towerCoins: 0,
                         challengeManager: new ChallengeManager(),
                         sceneIndex: 0,
+                        scene: "mainMenu",
                         level: 1,
                         luck: 1,
                         health: playerHealth,
@@ -211,8 +211,13 @@ export default function mainMenu(k: KAPLAYCtx) {
                         visible: false
                     }));
 
-                    k.go(sceneName satisfies Scene, { mapData, tileGrid, pathTiles, wave: waveId });
+                    const gameMode = store.get(gameStateAtom).gameMode;
 
+                    if (gameMode === "campaign") {
+                        k.go(sceneName satisfies Scene, { mapData, tileGrid, pathTiles, wave: waveId });
+                    } else if (gameMode === "endless") {
+                        k.go(store.get(endlessMapTypeAtom));
+                    }
                 }
             }
         }));

@@ -203,7 +203,7 @@ export default function endlessForest(k: KAPLAYCtx) {
         let makehero = makeHero(
             k,
             {
-                heroId: "archer",
+                heroId: store.get(gameStateAtom).hero?.heroId ?? "archer",
                 pos: k.toWorld(k.mousePos()),
                 tileGrid,
                 pathTiles,
@@ -224,7 +224,7 @@ export default function endlessForest(k: KAPLAYCtx) {
             waveNumber: 1,
             selectedUI: null,
             bottomBarVisible: true,
-            towerButtons: addTowers(k, ["basic", "time", "lux"], tileGrid, pathTiles),
+            towerButtons: addTowers(k, prev.towerButtons.map(t => t.id), tileGrid, pathTiles),
             upgrades,
             luck: 1,
             deck: {

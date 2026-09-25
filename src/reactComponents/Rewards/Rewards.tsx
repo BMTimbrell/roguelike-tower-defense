@@ -141,7 +141,7 @@ export default function Rewards() {
                 ))}
             </div>
 
-            <LoadoutPreviewPanel />
+            {gameState.gameMode === "campaign" && <LoadoutPreviewPanel />}
 
         </div>
     );

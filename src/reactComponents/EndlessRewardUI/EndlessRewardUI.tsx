@@ -108,7 +108,6 @@ export default function EndlessRewardUI() {
                     ))}
                 </div>
 
-                <LoadoutPreviewPanel />
                 <Modal isOpen={showRCModal} onClose={() => setShowRCModal(false)}>
                     <div className={styles["remove-card"]}>Remove a Card</div>
                     <div className={styles["rc-container"]}>

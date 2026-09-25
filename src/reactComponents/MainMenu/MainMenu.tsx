@@ -19,6 +19,7 @@ import addTowers from "../../utils/addTowers";
 import GameModes from "../GameModes/GameModes";
 import GameModeOption from "../GameModeOption/GameModeOption";
 import CampaignSelection from "../CampaignSelection/CampaignSelection";
+import EndlessModeSelection from "../EndlessModeSelection/EndlessModeSelection";
 
 export default function MainMenu() {
     type MainMenuScreen = "main" | "gameMode" | "campaign" | "difficulty" | "endless";
@@ -217,9 +218,10 @@ export default function MainMenu() {
                         setScreen("main");
                         handleClick();
                     }}>
-                        <GameModeOption 
+                        <GameModeOption
                             onClick={() => {
                                 setScreen("campaign");
+                                setGameState(prev => ({ ...prev, gameMode: "campaign" }));
                                 setGameMode("campaign");
                                 handleClick();
                             }}
@@ -231,8 +233,9 @@ export default function MainMenu() {
 
                         <GameModeOption
                             onClick={() => {
-                                setScreen("difficulty");
+                                setScreen("endless");
                                 setGameMode("endless");
+                                setGameState(prev => ({ ...prev, gameMode: "endless" }));
                                 handleClick();
                             }}
                             locked={IS_DEMO}
@@ -249,6 +252,20 @@ export default function MainMenu() {
                         onClick={() => {
                             setScreen("difficulty");
                             handleClick();
+                        }}
+                        onBackClick={() => {
+                            handleClick();
+                            setScreen("gameMode");
+                        }}
+                    />
+                )}
+
+                {screen === "endless" && (
+                    <EndlessModeSelection
+                        onClick={() => {
+                            handleClick();
+                            setSelectHeroUI(prev => ({ ...prev, visible: true }));
+                            setMenu(prev => ({ ...prev, visible: false }));
                         }}
                         onBackClick={() => {
                             handleClick();

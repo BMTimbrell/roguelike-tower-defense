@@ -42,6 +42,7 @@ export type Tile = {
     iceSprite?: string;
     glowObj?: GameObj;
     pathFrame?: number;
+    notRevealed?: boolean;
 };
 
 export type PathTile = {
@@ -1381,3 +1382,5 @@ export type EndlessRewardType =
     | "hero"
     | "tower"
     | "card";
+
+export type EndlessMapType = "endlessForest" | "endlessHell";

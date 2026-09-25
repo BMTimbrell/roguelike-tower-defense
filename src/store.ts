@@ -1,5 +1,5 @@
 import { atom, createStore } from "jotai";
-import { type startingHeroUI, type GameState, type Rewards, type StartingOptions, type ShopChoiceButtons, type Shop, type Altar, type ChallengeDef, type PauseMenu, type Controls, type MainMenu, type GameSpeedUI, type AudioState, type TutorialId, type SaveData, type MetaProgress, type UnlockToast, type HoveredHellMapEntity, type RewardChoice } from "./types";
+import { type startingHeroUI, type GameState, type Rewards, type StartingOptions, type ShopChoiceButtons, type Shop, type Altar, type ChallengeDef, type PauseMenu, type Controls, type MainMenu, type GameSpeedUI, type AudioState, type TutorialId, type SaveData, type MetaProgress, type UnlockToast, type HoveredHellMapEntity, type RewardChoice, type EndlessMapType } from "./types";
 import { ChallengeManager } from "./utils/challengeHelpers";
 
 export const gameStateAtom = atom<GameState>({
@@ -206,5 +206,7 @@ export const activeTutorialAtom = atom<TutorialId | null>(null);
 export const unlockToastAtom = atom<UnlockToast>([]);
 
 export const hoveredHellMapEntityAtom = atom<HoveredHellMapEntity | null>(null);
+
+export const endlessMapTypeAtom = atom<EndlessMapType>("endlessForest");
 
 export const store = createStore();

@@ -851,6 +851,7 @@ function blockHiddenChunkTiles(
             x++
         ) {
             tileGrid[y][x].blocked = true;
+            tileGrid[y][x].notRevealed = true;
         }
     }
 }
@@ -874,6 +875,8 @@ export function unblockRevealedChunkTiles(
             tile.blocked =
                 tile.isPath ||
                 tile.hasTree === true;
+            
+            tile.notRevealed = false;
         }
     }
 }

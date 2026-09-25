@@ -26,6 +26,7 @@ export default function spawnSummon(k: KAPLAYCtx, ctx: AttackContext, id: Summon
         k.anchor("center"),
         name,
         "summon",
+        "pathEntity",
         {
             damage: Math.round(ctx.damage * (
                 damageMult + (name === "Zombie" && ctx.attacker.hasZombieBuff ? 2 : 0)
@@ -36,7 +37,10 @@ export default function spawnSummon(k: KAPLAYCtx, ctx: AttackContext, id: Summon
             maxAttacks: maxAttacks,
             attacks: 0,
             pathIndex: (ctx.target as { type: "point"; pos: Vec2; pathIndex?: number })?.pathIndex ?? 0,
-            path: ctx.attacker.pathTiles.map(pt => k.vec2(pt.x * TILE_SIZE + TILE_SIZE / 2, pt.y * TILE_SIZE + TILE_SIZE / 2))
+            path: ctx.attacker.pathTiles.filter(pt => !pt.tile.notRevealed).map(pt => k.vec2(pt.x * TILE_SIZE + TILE_SIZE / 2, pt.y * TILE_SIZE + TILE_SIZE / 2)),
+            pathDirection: store.get(gameStateAtom).gameMode === "endless"
+                ? 1
+                : -1
         },
         k.state("move", ["move", "attack", "die"])
     ]);
@@ -149,7 +153,7 @@ export default function spawnSummon(k: KAPLAYCtx, ctx: AttackContext, id: Summon
             summon.attackTimer -= k.dt() * timeScale;
         }
 
-        const next = summon.path[summon.pathIndex - 1];
+        const next = summon.path[summon.pathIndex + summon.pathDirection];
         if (!next) return;
 
         const dir = next.sub(summon.pos).unit();
@@ -166,9 +170,16 @@ export default function spawnSummon(k: KAPLAYCtx, ctx: AttackContext, id: Summon
         }
 
         if (summon.pos.dist(next) <= 1) {
-            summon.pathIndex--;
+            summon.pathIndex += summon.pathDirection;
 
-            if (summon.pathIndex <= 0) {
+            const nextIndex =
+                summon.pathIndex +
+                summon.pathDirection;
+
+            if (
+                nextIndex < 0 ||
+                nextIndex >= summon.path.length
+            ) {
                 summon.enterState("die");
             }
         }
