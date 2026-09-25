@@ -1,4 +1,39 @@
 .container {
+    user-select: none;
+    position: absolute;
+    height: 100dvh;
+    width: 100%;
+    color: white;
     display: flex;
-    
+    gap: 2em;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.choice-container {
+    display: flex;
+    gap: 1em;
+}
+
+.choice {
+    background-color: var(--card-color);
+    padding: 1em;
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    border-radius: 0.25em;
+}
+
+.choice:hover {
+    cursor: pointer;
+    background-color: rgb(114, 114, 114);
+}
+
+.rc-container {
+    display: flex;
+    gap: 1em;
+}
+
+.remove-card {
+    text-align: center;
+    margin-bottom: 1em;
 }

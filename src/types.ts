@@ -898,6 +898,15 @@ export type Rewards = {
     endlessCards: ((upgrade: Upgrade) => void) | null;
 };
 
+export type RewardChoice = {
+    visible: boolean;
+    show: "upgrades" | "heroes";
+    choices: {
+        upgrades: ["Add Card", "Remove Card"];
+        heroes: ["Add Hero", "Level Hero"];
+    };
+};
+
 export type startingHeroUI = {
     visible: boolean;
     options: HeroId[];
@@ -1372,8 +1381,3 @@ export type EndlessRewardType =
     | "hero"
     | "tower"
     | "card";
-
-export type EndlessRewards = {
-    visible: boolean;
-    reward: "hero" | "tower" | "card";
-};

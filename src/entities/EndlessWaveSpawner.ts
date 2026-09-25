@@ -27,7 +27,7 @@ import {
 import makeEnemy from "./Enemy";
 import { revealChunk } from "../utils/generateFog";
 import { generateWaypoints } from "../utils/generateProceduralMap";
-import { store, gameStateAtom, mapAtom, rewardsAtom } from "../store";
+import { store, gameStateAtom, mapAtom, rewardsAtom, rewardChoiceAtom } from "../store";
 import makeTower from "./Tower";
 import drawCards from "../utils/drawCards";
 import { playUISound } from "../utils/soundHelpers";
@@ -504,30 +504,37 @@ export default function makeEndlessWaveSpawner(
                         }));
                         break;
                     case "card":
-                        store.set(rewardsAtom, prev => ({
-                            ...prev,
-                            visible: true,
-                            rewardIndex: 1,
-                            endlessCards: upgrade => {
-
-                                store.set(rewardsAtom, prev => ({
-                                    ...prev,
-                                    rewardIndex: 0,
-                                    visible: false,
-                                    endlessCards: null
-                                }));
-
-                                store.set(gameStateAtom, prev => ({
-                                    ...prev,
-                                    deck: {
-                                        ...prev.deck,
-                                        cards: [...prev.deck.cards, upgrade]
-                                    }
-                                }));
-
-                            }
-
-                        }));
+                        if (store.get(gameStateAtom).waveNumber > 12 && store.get(gameStateAtom).deck.cards.length >= 6) {
+                            store.set(rewardChoiceAtom, prev => ({
+                                ...prev,
+                                visible: true,
+                                show: "upgrades"
+                            }));
+                        } else {
+                            store.set(rewardsAtom, prev => ({
+                                ...prev,
+                                visible: true,
+                                rewardIndex: 1,
+                                endlessCards: upgrade => {
+    
+                                    store.set(rewardsAtom, prev => ({
+                                        ...prev,
+                                        rewardIndex: 0,
+                                        visible: false,
+                                        endlessCards: null
+                                    }));
+    
+                                    store.set(gameStateAtom, prev => ({
+                                        ...prev,
+                                        deck: {
+                                            ...prev.deck,
+                                            cards: [...prev.deck.cards, upgrade]
+                                        }
+                                    }));
+    
+                                }
+                            }));
+                        }
                         break;
                 }
             }

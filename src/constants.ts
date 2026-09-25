@@ -5989,7 +5989,7 @@ export const TOWERS = {
         cost: 350,
         stats: {
             damage: 4,
-            range: 2.5,
+            range: 3,
             fireInterval: 900,
             critChance: 5,
             critDamage: 200

@@ -123,6 +123,7 @@ export default function makePathEntity(
                     const explosion = k.add([
                         k.sprite(sprite, { anim: "explode" }),
                         k.anchor("center"),
+                        k.z(999),
                         k.pos(entity.pos)
                     ]);
 

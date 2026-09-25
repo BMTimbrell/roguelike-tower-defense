@@ -1,5 +1,5 @@
 import { useAtom } from 'jotai';
-import { activeTutorialAtom, altarAtom, challengesAtom, chestAtom, endlessRewardsAtom, gameSpeedUIAtom, gameStateAtom, hoveredHellMapEntityAtom, mainMenuAtom, rewardsAtom, selectHeroUIAtom, shopAtom, shopChoiceUIAtom, startingOptionsAtom } from './store';
+import { activeTutorialAtom, altarAtom, challengesAtom, chestAtom, gameSpeedUIAtom, gameStateAtom, hoveredHellMapEntityAtom, mainMenuAtom, rewardChoiceAtom, rewardsAtom, selectHeroUIAtom, shopAtom, shopChoiceUIAtom, startingOptionsAtom } from './store';
 import { BottomBar } from "./reactComponents/BottomBar/BottomBar";
 import SelectedTower from "./reactComponents/SelectedTower/SelectedTower";
 import SelectedHero from './reactComponents/SelectedHero/SelectedHero';
@@ -39,7 +39,7 @@ export default function ReactUI() {
     const [gameSpeedUI] = useAtom(gameSpeedUIAtom);
     const [activeTutorial] = useAtom(activeTutorialAtom);
     const [hellMapEntity] = useAtom(hoveredHellMapEntityAtom);
-    const [endlessRewards] = useAtom(endlessRewardsAtom);
+    const [rewardChoice] = useAtom(rewardChoiceAtom);
 
     if (selectedUI) {
         selectedTower = "plantedSeed" in selectedUI
@@ -92,7 +92,7 @@ export default function ReactUI() {
 
             {hellMapEntity && <TotemPopup />}
 
-            {endlessRewards.visible && <EndlessRewardUI />}
+            {rewardChoice.visible && <EndlessRewardUI />}
 
             <UnlockToast />
         </>

@@ -1137,6 +1137,7 @@ function lightningAttack(k: KAPLAYCtx, ctx: AttackContext, dmg: DamageResult) {
     const lightning = k.add([
         k.pos(0, 0),
         lifespan(k, 0.2),
+        k.z(999),
         k.opacity(1),
         {
             segments: [] as Vec2[][],

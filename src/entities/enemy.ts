@@ -1008,6 +1008,8 @@ export default function makeEnemy(
                         gameOver: true
                     }));
                 }
+
+                return;
             }
         }
 

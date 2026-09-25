@@ -1,5 +1,5 @@
 import { atom, createStore } from "jotai";
-import { type startingHeroUI, type GameState, type Rewards, type StartingOptions, type ShopChoiceButtons, type Shop, type Altar, type ChallengeDef, type PauseMenu, type Controls, type MainMenu, type GameSpeedUI, type AudioState, type TutorialId, type SaveData, type MetaProgress, type UnlockToast, type HoveredHellMapEntity, type EndlessRewards } from "./types";
+import { type startingHeroUI, type GameState, type Rewards, type StartingOptions, type ShopChoiceButtons, type Shop, type Altar, type ChallengeDef, type PauseMenu, type Controls, type MainMenu, type GameSpeedUI, type AudioState, type TutorialId, type SaveData, type MetaProgress, type UnlockToast, type HoveredHellMapEntity, type RewardChoice } from "./types";
 import { ChallengeManager } from "./utils/challengeHelpers";
 
 export const gameStateAtom = atom<GameState>({
@@ -66,6 +66,15 @@ export const rewardsAtom = atom<Rewards>({
     addSkill: () => { },
     addTower: () => { },
     endlessCards: null
+});
+
+export const rewardChoiceAtom = atom<RewardChoice>({
+    visible: false,
+    show: "upgrades",
+    choices: {
+        upgrades: ["Add Card", "Remove Card"],
+        heroes: ["Add Hero", "Level Hero"]
+    }
 });
 
 export const startingOptionsAtom = atom<StartingOptions>({
@@ -197,10 +206,5 @@ export const activeTutorialAtom = atom<TutorialId | null>(null);
 export const unlockToastAtom = atom<UnlockToast>([]);
 
 export const hoveredHellMapEntityAtom = atom<HoveredHellMapEntity | null>(null);
-
-export const endlessRewardsAtom = atom<EndlessRewards>({
-    visible: false,
-    reward: "hero"
-});
 
 export const store = createStore();
