@@ -756,8 +756,12 @@ function generateEndlessWave(
         getWaveSeed(runSeed, waveNumber)
     );
 
-    let remainingBudget =
-        getWaveBudget(waveNumber);
+    const waveBudget = getWaveBudget(waveNumber);
+
+    let remainingBudget = waveBudget;
+
+    let remainingGiantBudget =
+        waveBudget * getGiantBudgetRatio(waveNumber);
 
     const spawns: Wave["spawns"] = [];
 
@@ -765,11 +769,20 @@ function generateEndlessWave(
 
     while (remainingBudget > 0) {
         const availableEnemies =
-            ENDLESS_ENEMIES.filter(enemy =>
-                enemy.unlockWave <= waveNumber &&
-                enemy.cost * enemy.minGroupSize <= remainingBudget &&
-                enemy.id !== previousEnemyId
-            );
+            ENDLESS_ENEMIES.filter(enemy => {
+                const minGroupCost =
+                    enemy.cost * enemy.minGroupSize;
+
+                return (
+                    enemy.unlockWave <= waveNumber &&
+                    minGroupCost <= remainingBudget &&
+                    enemy.id !== previousEnemyId &&
+                    (
+                        !enemy.giant ||
+                        minGroupCost <= remainingGiantBudget
+                    )
+                );
+            });
 
         if (availableEnemies.length === 0) {
             break;
@@ -788,9 +801,18 @@ function generateEndlessWave(
                 remainingBudget / enemy.cost
             );
 
+        const maxGiantAffordable =
+            enemy.giant
+                ? Math.floor(
+                    remainingGiantBudget /
+                    enemy.cost
+                )
+                : Infinity;
+
         const maxGroupSize = Math.min(
             enemy.maxGroupSize,
-            maxAffordable
+            maxAffordable,
+            maxGiantAffordable
         );
 
         const count =
@@ -804,14 +826,20 @@ function generateEndlessWave(
                 )
             );
 
+        const groupCost =
+            count * enemy.cost;
+
         spawns.push({
             id: enemy.id,
             count,
             interval: 0.75
         });
 
-        remainingBudget -=
-            count * enemy.cost;
+        remainingBudget -= groupCost;
+
+        if (enemy.giant) {
+            remainingGiantBudget -= groupCost;
+        }
 
         previousEnemyId = enemy.id;
     }
@@ -838,8 +866,7 @@ function getWaveBudget(wave: number) {
     for (let i = 0; i < wave; i++) {
         if (i < 6) result += 5;
         else if (i < 11) result += 10;
-        else if (i < 16) result += 20;
-        else result += 30;
+        else result += 20;
     }
 
     return result;
@@ -883,4 +910,12 @@ function getEndlessReward(wave: number) {
     }
 
     return result;
+}
+
+function getGiantBudgetRatio(waveNumber: number) {
+    if (waveNumber < 5) return 0;
+    if (waveNumber < 11) return 0.2;
+    if (waveNumber < 16) return 0.25;
+
+    return 0.3;
 }

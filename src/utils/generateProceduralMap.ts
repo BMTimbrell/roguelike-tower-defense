@@ -9,7 +9,7 @@ export async function generateForestMap(
 ) {
     const rng = createSeededRandom(seed);
 
-    const width = 40;
+    const width = 50;
     const height = 25;
 
     const tileGrid: Tile[][] = [];

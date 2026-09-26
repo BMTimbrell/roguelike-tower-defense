@@ -295,7 +295,9 @@ export default function makeEnemy(
         } else if (anim === "escape") {
             enemy.enterState("hidden");
         } else if (anim === "attack" || anim === "createShield") {
-            enemy.play("idle");
+            if (!enemy.boss) {
+                enemy.play("move");
+            } else enemy.play("idle");
         } else if (anim === "shellBreak" && "breakShell" in ENEMIES[enemyId]) {
             enemy.baseSpeed *= (ENEMIES[enemyId].breakShell as { speedMultiplier: number; }).speedMultiplier;
             updateSpeed.call(enemy);
@@ -432,11 +434,11 @@ export default function makeEnemy(
 
         if (enemy.state === "stunned") return;
 
-        if (enemyId === "rockTitan" && enemy.maxHP() && enemy.hp() / enemy.maxHP()! <= 0.66 && enemy.sprite === "rock titan") {
+        if ((enemyId === "rockTitan" || enemyId === "fakeRockTitan") && enemy.maxHP() && enemy.hp() / enemy.maxHP()! <= 0.66 && enemy.sprite === "rock titan") {
             playSfx(k, "rock smash", 0.75, enemy.pos);
             enemy.play("die");
             enemy.isDying = true;
-        } else if (enemyId === "rockTitan" && enemy.maxHP() && enemy.hp() / enemy.maxHP()! <= 0.33 && enemy.sprite === "headless rock titan") {
+        } else if ((enemyId === "rockTitan" || enemyId === "fakeRockTitan") && enemy.maxHP() && enemy.hp() / enemy.maxHP()! <= 0.33 && enemy.sprite === "headless rock titan") {
             playSfx(k, "rock smash", 0.75, enemy.pos);
             enemy.play("die");
             enemy.isDying = true;
@@ -1036,11 +1038,14 @@ export default function makeEnemy(
                     enemy.angle * Math.PI / 180
                 ) : 0;
 
+                if (enemy.hasAnim("attack")) enemy.play("attack");
+
                 makeEnemyProjectile(k, {
                     id: enemy.attacker!.projectile as ProjectileId,
                     pos: enemy.pos.add(rotatedOffset),
                     target: towers[index],
-                    hitChance: enemy.has("blind") ? 0.3 : 1
+                    hitChance: enemy.has("blind") ? 0.3 : 1,
+                    summonAnim: (ENEMIES[enemyId] as { attacker?: { summonAnim?: string; } }).attacker?.summonAnim ?? undefined
                 });
 
                 attackTimer += enemy.attacker!.attackCooldown;

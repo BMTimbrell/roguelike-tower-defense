@@ -51,7 +51,7 @@ export function castSpell(k: KAPLAYCtx, spell: Spell, opts?: { target?: Vec2; to
 
             const damage = getAoeSpellDamage(20, store.get(gameStateAtom).waveNumber)
 
-            spawnBurningGround(k, { target: target ?? k.vec2(0), range: 3 * TILE_SIZE, damage: damage * 0.1 });
+            spawnBurningGround(k, { target: target ?? k.vec2(0), range: 3 * TILE_SIZE, damage: damage * 0.05 });
 
             spellProgress();
 
@@ -649,9 +649,9 @@ function getAoeSpellDamage(base: number, wave: number) {
     for (let i = 2; i <= wave; i++) {
         let growth = 0;
 
-        if (i <= 3) growth = 0.3;
-        else if (i <= 9) growth = 0.4;
-        else growth = 0.3;
+        if (i <= 3) growth = 0.2;
+        else if (i <= 9) growth = 0.3;
+        else growth = 0.2;
 
         damage *= 1 + growth;
     }
@@ -780,7 +780,7 @@ function spawnBurningGround(k: KAPLAYCtx, opts: { target: Vec2; range: number; d
                 if (enemy.pos.dist(fire.pos) <= fire.range) {
                     hurtEnemy(k, {
                         target: enemy,
-                        damage,
+                        damage: Math.max(1, damage),
                         element: "Fire",
                         isCrit: false,
                     });

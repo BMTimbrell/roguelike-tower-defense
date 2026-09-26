@@ -4047,7 +4047,7 @@ export const ENEMIES = {
         deathSound: "monster death3"
     },
     rockTitan: {
-        hp: 6000,
+        hp: 5000,
         damage: 99,
         goldDropped: 50,
         chestValue: 5,
@@ -4586,6 +4586,112 @@ export const ENEMIES = {
         spawnOnDeath: {
             id: "beeSwarm",
             amount: 1
+        }
+    },
+    fakePlagueMummy: {
+        hp: 5000,
+        damage: 99,
+        goldDropped: 50,
+        chestValue: 5,
+        hasGiantSoul: true,
+        shootSound: "mummy summon",
+        attacker: {
+            projectile: "locustSwarm",
+            summonAnim: "appear",
+            attackRange: 5.5,
+            canAttack: false,
+            attackCooldown: 8
+        },
+        speed: 15,
+        sprite: "plague mummy",
+        deathSound: "mummy death",
+        noDestroyOnDieAnimation: true,
+        onDeath(k: KAPLAYCtx, enemy: EnemyGameObj) {
+            enemy.z = 0;
+
+            if (enemy.killer) {
+
+                makeEnemyProjectile(k, {
+                    id: "locustMiddleFinger",
+                    pos: enemy.pos,
+                    target: enemy.killer,
+                    hitChance: 1,
+                    summonAnim: "appear",
+                    destroyDelay: 1.5
+                });
+
+            }
+
+            waitScaled(k, 2.5, () => {
+                enemy.onUpdate(() => {
+                    enemy.opacity -= k.dt() * store.get(gameStateAtom).timeScale * 1;
+                });
+                waitScaled(k, 0.8, () => {
+                    enemy.destroy();
+                });
+            });
+        }
+    },
+    fakeRockTitan: {
+        hp: 5000,
+        damage: 99,
+        goldDropped: 50,
+        chestValue: 5,
+        shootSound: "arrow",
+        hasGiantSoul: true,
+        attacker: {
+            projectile: "boulder",
+            attackRange: 5,
+            canAttack: false,
+            attackCooldown: 8
+        },
+        speed: 13,
+        sprite: "rock titan",
+        deathSound: "rock smash",
+        noDestroyOnDieAnimation: true,
+        onDeath(k: KAPLAYCtx, enemy: EnemyGameObj) {
+            enemy.z = 0;
+
+            enemy.onAnimEnd(anim => {
+                if (anim === "die") {
+                    makeEnemy(k, "armlessRockTitan", enemy.path, enemy.pathIndex, enemy.pos);
+                    k.destroy(enemy);
+                }
+            });
+        }
+    },
+    fakeEvilSanta: {
+        hp: 6500,
+        damage: 99,
+        goldDropped: 50,
+        chestValue: 5,
+        speed: 20,
+        sprite: "evil santa",
+        hasGiantSoul: true,
+        shootSound: "arrow",
+        deathSound: "santa death",
+        attacker: {
+            projectile: "present",
+            attackRange: 6,
+            canAttack: false,
+            attackCooldown: 8
+        }
+    },
+    fakeSatan: {
+        hp: 6500,
+        damage: 99,
+        goldDropped: 50,
+        chestValue: 5,
+        speed: 20,
+        sprite: "satan",
+        shootSound: "fireball",
+        deathSound: "satan death",
+        hasGiantSoul: true,
+        attacker: {
+            projectile: "giantFireball",
+            attackRange: 6,
+            canAttack: false,
+            attackCooldown: 8
         }
     },
 } as const satisfies Record<string, EnemyConfig>;
@@ -6989,14 +7095,14 @@ export const PROJECTILES = {
     locustSwarm: {
         sprite: "locust swarm",
         homing: true,
-        speed: 10,
+        speed: 200,
         splashRadius: 1.2,
         noRotate: true
     },
     locustMiddleFinger: {
         sprite: "locust middle finger",
         homing: true,
-        speed: 1,
+        speed: 70,
         splashRadius: 1.2,
         noRotate: true
     },
@@ -8415,6 +8521,7 @@ export const OBELISKS: Record<ObeliskId, ObeliskDef> = {
 export type EndlessEnemyDef = {
     id: EnemyId;
     cost: number;
+    giant?: boolean;
     unlockWave: number;
     minGroupSize: number;
     maxGroupSize: number;
@@ -8423,15 +8530,49 @@ export type EndlessEnemyDef = {
 export const ENDLESS_ENEMIES: EndlessEnemyDef[] = [
     {
         id: "fakeSlimeKing",
-        cost: 50,
+        cost: 48,
+        giant: true,
         unlockWave: 12,
         minGroupSize: 1,
         maxGroupSize: 1,
     },
     {
         id: "fakeBeeQueen",
-        cost: 50,
+        cost: 48,
+        giant: true,
         unlockWave: 12,
+        minGroupSize: 1,
+        maxGroupSize: 1,
+    },
+    {
+        id: "fakePlagueMummy",
+        cost: 48,
+        giant: true,
+        unlockWave: 12,
+        minGroupSize: 1,
+        maxGroupSize: 1,
+    },
+    {
+        id: "fakeRockTitan",
+        cost: 48,
+        giant: true,
+        unlockWave: 12,
+        minGroupSize: 1,
+        maxGroupSize: 1,
+    },
+    {
+        id: "fakeEvilSanta",
+        cost: 65,
+        giant: true,
+        unlockWave: 15,
+        minGroupSize: 1,
+        maxGroupSize: 1,
+    },
+    {
+        id: "fakeSatan",
+        cost: 65,
+        giant: true,
+        unlockWave: 15,
         minGroupSize: 1,
         maxGroupSize: 1,
     },
@@ -8656,6 +8797,7 @@ export const ENDLESS_ENEMIES: EndlessEnemyDef[] = [
     {
         id: "giantSlime",
         cost: 5,
+        giant: true,
         unlockWave: 5,
         minGroupSize: 1,
         maxGroupSize: 1,
@@ -8663,6 +8805,7 @@ export const ENDLESS_ENEMIES: EndlessEnemyDef[] = [
     {
         id: "giantBee",
         cost: 5,
+        giant: true,
         unlockWave: 5,
         minGroupSize: 1,
         maxGroupSize: 1,
@@ -8670,6 +8813,7 @@ export const ENDLESS_ENEMIES: EndlessEnemyDef[] = [
     {
         id: "giantIceSlime",
         cost: 5,
+        giant: true,
         unlockWave: 5,
         minGroupSize: 1,
         maxGroupSize: 1,
@@ -8677,6 +8821,7 @@ export const ENDLESS_ENEMIES: EndlessEnemyDef[] = [
     {
         id: "giantPenguin",
         cost: 5,
+        giant: true,
         unlockWave: 5,
         minGroupSize: 1,
         maxGroupSize: 1,
@@ -8684,6 +8829,7 @@ export const ENDLESS_ENEMIES: EndlessEnemyDef[] = [
     {
         id: "giantScorpian",
         cost: 5,
+        giant: true,
         unlockWave: 5,
         minGroupSize: 1,
         maxGroupSize: 1,
@@ -8691,6 +8837,7 @@ export const ENDLESS_ENEMIES: EndlessEnemyDef[] = [
     {
         id: "giantLizard",
         cost: 5,
+        giant: true,
         unlockWave: 5,
         minGroupSize: 1,
         maxGroupSize: 1,
@@ -8698,6 +8845,7 @@ export const ENDLESS_ENEMIES: EndlessEnemyDef[] = [
     {
         id: "giantFireSlime",
         cost: 5,
+        giant: true,
         unlockWave: 5,
         minGroupSize: 1,
         maxGroupSize: 1,
@@ -8705,6 +8853,7 @@ export const ENDLESS_ENEMIES: EndlessEnemyDef[] = [
     {
         id: "giantImp",
         cost: 5,
+        giant: true,
         unlockWave: 5,
         minGroupSize: 1,
         maxGroupSize: 1,
@@ -8719,6 +8868,7 @@ export const ENDLESS_ENEMIES: EndlessEnemyDef[] = [
     {
         id: "giantSkeleton",
         cost: 7,
+        giant: true,
         unlockWave: 6,
         minGroupSize: 1,
         maxGroupSize: 1,
@@ -8726,6 +8876,7 @@ export const ENDLESS_ENEMIES: EndlessEnemyDef[] = [
     {
         id: "giantOrc",
         cost: 8,
+        giant: true,
         unlockWave: 6,
         minGroupSize: 1,
         maxGroupSize: 1,
@@ -8733,6 +8884,7 @@ export const ENDLESS_ENEMIES: EndlessEnemyDef[] = [
     {
         id: "giantSnowman",
         cost: 7,
+        giant: true,
         unlockWave: 6,
         minGroupSize: 1,
         maxGroupSize: 1,
@@ -8740,6 +8892,7 @@ export const ENDLESS_ENEMIES: EndlessEnemyDef[] = [
     {
         id: "giantPolarBear",
         cost: 8,
+        giant: true,
         unlockWave: 6,
         minGroupSize: 1,
         maxGroupSize: 1,
@@ -8747,6 +8900,7 @@ export const ENDLESS_ENEMIES: EndlessEnemyDef[] = [
     {
         id: "giantMummy",
         cost: 8,
+        giant: true,
         unlockWave: 7,
         minGroupSize: 1,
         maxGroupSize: 1
@@ -8754,6 +8908,7 @@ export const ENDLESS_ENEMIES: EndlessEnemyDef[] = [
     {
         id: "giantCamel",
         cost: 8,
+        giant: true,
         unlockWave: 6,
         minGroupSize: 1,
         maxGroupSize: 1
@@ -8761,6 +8916,7 @@ export const ENDLESS_ENEMIES: EndlessEnemyDef[] = [
     {
         id: "giantMasochist",
         cost: 12,
+        giant: true,
         unlockWave: 8,
         minGroupSize: 1,
         maxGroupSize: 1
@@ -8768,6 +8924,7 @@ export const ENDLESS_ENEMIES: EndlessEnemyDef[] = [
     {
         id: "giantWolf",
         cost: 13,
+        giant: true,
         unlockWave: 8,
         minGroupSize: 1,
         maxGroupSize: 1
@@ -8775,6 +8932,7 @@ export const ENDLESS_ENEMIES: EndlessEnemyDef[] = [
     {
         id: "giantHellWolf",
         cost: 13,
+        giant: true,
         unlockWave: 8,
         minGroupSize: 1,
         maxGroupSize: 1
@@ -8782,6 +8940,7 @@ export const ENDLESS_ENEMIES: EndlessEnemyDef[] = [
     {
         id: "giantGhost",
         cost: 13,
+        giant: true,
         unlockWave: 8,
         minGroupSize: 1,
         maxGroupSize: 1
@@ -8789,6 +8948,7 @@ export const ENDLESS_ENEMIES: EndlessEnemyDef[] = [
     {
         id: "giantDemon",
         cost: 12,
+        giant: true,
         unlockWave: 7,
         minGroupSize: 1,
         maxGroupSize: 1,
@@ -8796,6 +8956,7 @@ export const ENDLESS_ENEMIES: EndlessEnemyDef[] = [
     {
         id: "giantVampire",
         cost: 13,
+        giant: true,
         unlockWave: 8,
         minGroupSize: 1,
         maxGroupSize: 1
@@ -8803,6 +8964,7 @@ export const ENDLESS_ENEMIES: EndlessEnemyDef[] = [
     {
         id: "giantOccultist",
         cost: 13,
+        giant: true,
         unlockWave: 8,
         minGroupSize: 1,
         maxGroupSize: 1
@@ -8810,6 +8972,7 @@ export const ENDLESS_ENEMIES: EndlessEnemyDef[] = [
     {
         id: "giantTortoise",
         cost: 13,
+        giant: true,
         unlockWave: 9,
         minGroupSize: 1,
         maxGroupSize: 1
@@ -8817,6 +8980,7 @@ export const ENDLESS_ENEMIES: EndlessEnemyDef[] = [
     {
         id: "giantFairy",
         cost: 14,
+        giant: true,
         unlockWave: 9,
         minGroupSize: 1,
         maxGroupSize: 1
@@ -8824,6 +8988,7 @@ export const ENDLESS_ENEMIES: EndlessEnemyDef[] = [
     {
         id: "giantZombieFairy",
         cost: 14,
+        giant: true,
         unlockWave: 9,
         minGroupSize: 1,
         maxGroupSize: 1
@@ -8831,6 +8996,7 @@ export const ENDLESS_ENEMIES: EndlessEnemyDef[] = [
     {
         id: "giantSpider",
         cost: 14,
+        giant: true,
         unlockWave: 9,
         minGroupSize: 1,
         maxGroupSize: 1
@@ -8838,6 +9004,7 @@ export const ENDLESS_ENEMIES: EndlessEnemyDef[] = [
     {
         id: "giantArmouredSlime",
         cost: 14,
+        giant: true,
         unlockWave: 9,
         minGroupSize: 1,
         maxGroupSize: 1
@@ -8845,6 +9012,7 @@ export const ENDLESS_ENEMIES: EndlessEnemyDef[] = [
     {
         id: "giantRockGolem",
         cost: 14,
+        giant: true,
         unlockWave: 9,
         minGroupSize: 1,
         maxGroupSize: 1
@@ -8852,6 +9020,7 @@ export const ENDLESS_ENEMIES: EndlessEnemyDef[] = [
     {
         id: "giantArmouredDemon",
         cost: 24,
+        giant: true,
         unlockWave: 10,
         minGroupSize: 1,
         maxGroupSize: 1
@@ -8859,6 +9028,7 @@ export const ENDLESS_ENEMIES: EndlessEnemyDef[] = [
     {
         id: "giantRedFairy",
         cost: 20,
+        giant: true,
         unlockWave: 11,
         minGroupSize: 1,
         maxGroupSize: 1
@@ -8866,6 +9036,7 @@ export const ENDLESS_ENEMIES: EndlessEnemyDef[] = [
     {
         id: "giantRedZombieFairy",
         cost: 20,
+        giant: true,
         unlockWave: 11,
         minGroupSize: 1,
         maxGroupSize: 1
