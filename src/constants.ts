@@ -8947,7 +8947,7 @@ export const ENDLESS_ENEMIES: EndlessEnemyDef[] = [
     },
     {
         id: "giantDemon",
-        cost: 12,
+        cost: 13,
         giant: true,
         unlockWave: 7,
         minGroupSize: 1,
@@ -9027,7 +9027,7 @@ export const ENDLESS_ENEMIES: EndlessEnemyDef[] = [
     },
     {
         id: "giantRedFairy",
-        cost: 20,
+        cost: 24,
         giant: true,
         unlockWave: 11,
         minGroupSize: 1,
@@ -9035,7 +9035,7 @@ export const ENDLESS_ENEMIES: EndlessEnemyDef[] = [
     },
     {
         id: "giantRedZombieFairy",
-        cost: 20,
+        cost: 24,
         giant: true,
         unlockWave: 11,
         minGroupSize: 1,

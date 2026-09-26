@@ -1377,10 +1377,9 @@ export type MapChunk = {
     pathTiles: PathTile[];
 };
 
-export type EndlessRewardType =
-    | "expand"
-    | "hero"
-    | "tower"
-    | "card";
+export type EndlessReward = {
+    type: "hero" | "tower" | "card" | null;
+    expand: boolean;
+};
 
 export type EndlessMapType = "endlessForest" | "endlessHell";

@@ -4,7 +4,7 @@ import type {
 } from "kaplay";
 
 import type {
-    EndlessRewardType,
+    EndlessReward,
     MapChunk,
     PathTile,
     Tile,
@@ -339,28 +339,29 @@ export default function makeEndlessWaveSpawner(
                 const waveNumber = store.get(gameStateAtom).waveNumber;
                 const endlessReward = getEndlessRewardType(waveNumber);
 
-                switch (endlessReward) {
-                    case "expand":
-                        const nextChunk = chunks.find(
-                            chunk => !chunk.revealed
+                if (endlessReward.expand) {
+                    const nextChunk = chunks.find(
+                        chunk => !chunk.revealed
+                    );
+
+                    if (nextChunk) {
+                        revealChunk(
+                            k,
+                            nextChunk,
+                            tileGrid
                         );
 
-                        if (nextChunk) {
-                            revealChunk(
-                                k,
-                                nextChunk,
-                                tileGrid
-                            );
+                        // Entrance has moved, so rebuild
+                        // the route.
+                        waypoints = generateWaypoints(
+                            k,
+                            chunks
+                        );
 
-                            // Entrance has moved, so rebuild
-                            // the route.
-                            waypoints = generateWaypoints(
-                                k,
-                                chunks
-                            );
+                    }
+                }
 
-                        }
-                        break;
+                switch (endlessReward.type) {
                     case "hero":
                         const hero = store.get(gameStateAtom).hero;
 
@@ -866,7 +867,9 @@ function getWaveBudget(wave: number) {
     for (let i = 0; i < wave; i++) {
         if (i < 6) result += 5;
         else if (i < 11) result += 10;
-        else result += 20;
+        else if (i < 16) result += 20;
+        else if (i < 21) result += 25;
+        else result += 30;
     }
 
     return result;
@@ -874,12 +877,16 @@ function getWaveBudget(wave: number) {
 
 function getEndlessRewardType(
     waveNumber: number
-): EndlessRewardType {
-    const isExpansionWave =
+): EndlessReward {
+    const expand =
         (waveNumber - 1) % 5 === 0;
 
-    if (isExpansionWave) {
-        return "expand";
+    // First wave is expand only
+    if (waveNumber === 1) {
+        return {
+            type: null,
+            expand: true
+        };
     }
 
     const cycle = [
@@ -888,15 +895,10 @@ function getEndlessRewardType(
         "card"
     ] as const;
 
-    const expansionCount =
-        Math.floor((waveNumber - 1) / 5) + 1;
-
-    const normalRewardsGiven =
-        waveNumber - 1 - expansionCount;
-
-    return cycle[
-        normalRewardsGiven % cycle.length
-    ];
+    return {
+        type: cycle[(waveNumber - 2) % cycle.length],
+        expand
+    };
 }
 
 function getEndlessReward(wave: number) {
@@ -916,6 +918,7 @@ function getGiantBudgetRatio(waveNumber: number) {
     if (waveNumber < 5) return 0;
     if (waveNumber < 11) return 0.2;
     if (waveNumber < 16) return 0.25;
+    else if (waveNumber < 25) return 0.3;
 
-    return 0.3;
+    return 0.35;
 }
