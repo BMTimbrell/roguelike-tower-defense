@@ -1,7 +1,7 @@
 import { useAtom } from 'jotai';
 import { gameStateAtom, mapAtom, rewardsAtom } from '../../store';
 import styles from './Rewards.module.css';
-import { SKILLS, TOWERS, UPGRADES, type TowerId } from '../../constants';
+import { GENERIC_SKILLS, SKILLS, TOWERS, UPGRADES, type TowerId } from '../../constants';
 import Card from '../Card/Card';
 import setCardAnimationDelay from '../../utils/setCardAnimationDelay';
 import { useMemo, useState } from 'react';
@@ -30,19 +30,79 @@ export default function Rewards() {
         [rewards.skills]
     );
 
-    const rewardSkills = useMemo(
-        () => generateRandomRewards(3, skills),
-        [skills]
-    );
+    const rewardSkills = useMemo(() => {
+        const normalSkills =
+            generateRandomRewards(
+                Math.min(3, skills.length),
+                skills
+            );
 
-    const upgrades = useMemo(
-        () => generateRandomRewards(3, [...new Set(UPGRADES.filter(u => {
-            if (gameState.gameMode === "endless") {
-                return u.cost === (gameState.waveNumber > 10 && Math.random() > 0.67 ? 3 : 2);
-            } else return u.cost === cardValue
-        }))]),
-        []
-    );
+        const slotsRemaining =
+            3 - normalSkills.length;
+
+        if (slotsRemaining === 0) {
+            return normalSkills;
+        }
+
+        const genericSkills =
+            generateRandomRewards(
+                slotsRemaining,
+                GENERIC_SKILLS
+            );
+
+        return [
+            ...normalSkills,
+            ...genericSkills
+        ];
+    }, [skills]);
+
+    const upgrades = useMemo(() => {
+        if (gameState.gameMode !== "endless") {
+            return generateRandomRewards(
+                3,
+                UPGRADES.filter(u => u.cost === cardValue)
+            );
+        }
+
+        const result: Upgrade[] = [];
+
+        while (result.length < 3) {
+            const cost =
+                gameState.waveNumber > 10 &&
+                    Math.random() > 0.67
+                    ? 3
+                    : 2;
+
+            const available = UPGRADES.filter(
+                u =>
+                    u.cost === cost &&
+                    !result.includes(u)
+            );
+
+            // Fallback in case there are no remaining cards
+            // of the randomly selected cost.
+            const fallback = UPGRADES.filter(
+                u =>
+                    (u.cost === 2 || u.cost === 3) &&
+                    !result.includes(u)
+            );
+
+            const pool =
+                available.length > 0
+                    ? available
+                    : fallback;
+
+            if (pool.length === 0) break;
+
+            result.push(
+                pool[
+                Math.floor(Math.random() * pool.length)
+                ]
+            );
+        }
+
+        return result;
+    }, []);
 
     const towers = useMemo(
         () => generateRandomRewards(3, [
@@ -51,7 +111,7 @@ export default function Rewards() {
                     filter(([, value]) => {
                         const singleTileChance = Math.random();
 
-                        return value.footprint.w === (singleTileChance < 0.15 ? 1 : 2) && 
+                        return value.footprint.w === (singleTileChance < 0.15 ? 1 : 2) &&
                             value.source !== "farm" &&
                             !gameState.towerButtons.some(tb => tb.name === value.name);
                     }
@@ -69,11 +129,12 @@ export default function Rewards() {
             const index = Math.floor(Math.random() * rArr.length);
             result.add(rArr[index]);
         }
+
         return [...result];
     }
 
     return (
-        <div 
+        <div
             className={styles.container}
             style={{ fontSize: `${16 * fontScale}px` }}
         >
@@ -108,13 +169,13 @@ export default function Rewards() {
                                         cards: [...prev.deck.cards, u]
                                     }
                                 }));
-    
+
                                 setRewards(prev => ({
                                     ...prev,
                                     rewardIndex: prev.rewardIndex + 1
                                 }));
                             }
-                         }}
+                        }}
                         scale={fontScale}
                         popup={<UpgradePopup upgrade={u} pos={popupPos} />}
                         setPopupPos={setPopupPos}
@@ -131,7 +192,7 @@ export default function Rewards() {
                         animationDelay={setCardAnimationDelay(index)}
                         handleClick={() => {
                             rewards.addTower(Object.keys(t)[0] as TowerId);
-                         }}
+                        }}
                         scale={fontScale}
                     >
                         <div className={styles["card-contents"]}>

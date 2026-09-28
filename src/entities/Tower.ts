@@ -48,6 +48,8 @@ export default function makeTower(
         priority
     } = TOWERS[towerId];
 
+    let runSave = store.get(cachedSaveAtom)?.run;
+
     const tower: TowerGameObj = k.add([
         k.sprite(baseSprite),
         k.pos(pos),
@@ -80,7 +82,7 @@ export default function makeTower(
             drinkingEffectTimer: 0,
             towerBuffs: [],
             upgrades: [],
-            hasThirst: (LEVEL_WAVES[store.get(cachedSaveAtom)?.run?.wave ?? "level1-1"] as { thirst?: boolean; })?.thirst ?? false,
+            hasThirst: ((runSave?.mode === "campaign" && LEVEL_WAVES[runSave.wave ?? "level1-1"]) as { thirst?: boolean; })?.thirst ?? false,
             ...("effects" in TOWERS[towerId] ? { effects: TOWERS[towerId].effects as UnitEffects } : {}),
             ...("shootSound" in TOWERS[towerId] ? { shootSound: TOWERS[towerId].shootSound as string } : {}),
             ...("farmData" in TOWERS[towerId] ? {

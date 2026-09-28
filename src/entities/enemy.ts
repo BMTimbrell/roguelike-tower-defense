@@ -280,7 +280,7 @@ export default function makeEnemy(
                 return;
             }
 
-            const luckGain = 0.01 * enemy.goldDropped;
+            const luckGain = 0.0025 * enemy.goldDropped;
             store.set(gameStateAtom, prev => ({
                 ...prev,
                 luck: prev.luck + luckGain
@@ -550,7 +550,7 @@ export default function makeEnemy(
             enemy.stunResistanceTimer -= k.dt() * timeScale;
         } else enemy.stunResistance = false;
 
-        if (enemy.checkpointTimer) {
+        if (enemy.checkpointTimer !== undefined) {
             enemy.checkpointTimer -= k.dt() * timeScale;
             if (enemy.checkpointTimer <= 0 && enemy.getCurAnim()?.name !== "die") {
                 if (enemy.boss?.bossMechanic === "escape") enemy.enterState("escape");
@@ -685,7 +685,10 @@ export default function makeEnemy(
         if (!enemy.shieldHp || enemy.shieldHp <= 0) {
             if (enemy.maxShieldHp) {
                 enemy.maxShieldHp *= 2;
-                if (enemy.checkpointDuration !== undefined) enemy.checkpointDuration = Math.max(2, enemy.checkpointDuration / 2);
+                if (enemy.checkpointDuration !== undefined)  {
+                    enemy.checkpointDuration = Math.max(2, enemy.checkpointDuration / 2);
+                    enemy.checkpointTimer = enemy.checkpointDuration;
+                }
             }
             enemy.enterState("attack");
         }

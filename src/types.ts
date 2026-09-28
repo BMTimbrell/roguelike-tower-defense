@@ -312,6 +312,7 @@ export type HeroSkillDefBase = {
     description: string;
     apply: (hero: HeroGameObj) => void;
     icon: string;
+    generic?: boolean;
 };
 
 export type HeroSkillDef = Omit<HeroSkillDefBase, "requires"> & {
@@ -613,6 +614,7 @@ export type GameMode = "campaign" | "endless" | "reverse" | "heroesEndless";
 
 export type GameState = {
     gameMode: GameMode;
+    seed: number;
     world: 1 | 2;
     context: KAPLAYCtx | null;
     hideUI: boolean;
@@ -1097,9 +1099,10 @@ type BaseRunSave = {
     scene: Scene;
 };
 
-export type RunSave = {
+export type CampaignRunSave = BaseRunSave & {
+    mode: "campaign";
+    seed: number;
     deck: Upgrade[];
-    scene: Scene;
     towerCoins: number;
     hero: {
         id: HeroId;
@@ -1126,10 +1129,58 @@ export type RunSave = {
     world?: 1 | 2;
 };
 
+// export type RunSave = {
+//     deck: Upgrade[];
+//     scene: Scene;
+//     towerCoins: number;
+//     hero: {
+//         id: HeroId;
+//         level: number;
+//         skills: SkillId[];
+//     };
+//     sceneIndex: number;
+//     level: number;
+//     health: number;
+//     maxHealth: number;
+//     shops: ("shop" | "altar")[];
+//     heroCharge: {
+//         damageDealt: number;
+//         charge: number;
+//         damageRequired: number;
+//     };
+//     difficulty: "normal" | "hard" | "expert";
+//     nextTowerId: number;
+//     towerButtons: TowerId[];
+//     mapData: MapData;
+//     tileGrid: Tile[][];
+//     wave: LevelId;
+//     pathTiles: PathTile[];
+//     world?: 1 | 2;
+// };
+
+export type RunSave =
+    | CampaignRunSave
+    | EndlessRunSave
+    | HeroesEndlessRunSave;
+
+type SavedTower = {
+    instanceId: string;
+    towerId: TowerId;
+
+    tileX: number;
+    tileY: number;
+
+    upgrades: Upgrade[];
+
+    // Any persistent tower-specific state
+};
+
 export type EndlessRunSave = BaseRunSave & {
     mode: "endless";
 
     deck: Upgrade[];
+
+    hand: Card[];
 
     gold: number;
 
@@ -1137,6 +1188,9 @@ export type EndlessRunSave = BaseRunSave & {
         id: HeroId;
         level: number;
         skills: SkillId[];
+
+        tileX: number;
+        tileY: number;
     };
 
     heroCharge: {
@@ -1145,19 +1199,24 @@ export type EndlessRunSave = BaseRunSave & {
         damageRequired: number;
     };
 
+    towers: SavedTower[];
+    chests: { x: number; y: number; }[];
+
     health: number;
     maxHealth: number;
-
-    difficulty: "normal" | "hard" | "expert";
 
     nextTowerId: number;
     towerButtons: TowerId[];
 
-    mapData: MapData;
-    tileGrid: Tile[][];
-    pathTiles: PathTile[];
+    mapChanges: {
+        destroyedTrees: { x: number; y: number; }[];
+        destroyedObelisks: { x: number; y: number; }[];
+        capturedTotems: { x: number; y: number; }[];
+    };
 
     wave: number;
+
+    luck: number;
 
     endlessSeed: number;
 };
@@ -1175,12 +1234,6 @@ export type HeroesEndlessRunSave = BaseRunSave & {
 
     health: number;
     maxHealth: number;
-
-    difficulty: "normal" | "hard" | "expert";
-
-    mapData: MapData;
-    tileGrid: Tile[][];
-    pathTiles: PathTile[];
 
     endlessSeed: number;
 };
@@ -1216,15 +1269,28 @@ export type SaveData = {
     run?: RunSave;
 };
 
-export type SaveDataV1 = Omit<SaveData, "meta"> & {
+export type SaveDataV1 = Omit<SaveData, "meta" | "run"> & {
     meta: Pick<MetaSave, "unlockedHeroes">;
+    run?: LegacyRunSave;
 };
 
-export type SaveDataV2 = Omit<SaveData, "meta"> & {
+export type SaveDataV2 = Omit<SaveData, "meta" | "run"> & {
     meta: Pick<MetaSave, "unlockedHeroes" | "seenTutorials">;
+    run?: LegacyRunSave;
 };
 
-export type SaveDataV3 = SaveData;
+export type LegacyRunSave = Omit<
+    CampaignRunSave,
+    "mode" |
+    "seed"
+>
+
+export type SaveDataV3 =
+    Omit<SaveData, "run"> & {
+        run?: LegacyRunSave;
+    };
+
+export type SaveDataV4 = SaveData;
 
 export type MetaProgress = {
     spellsCast: number;

@@ -27,7 +27,7 @@ export const HARD_PLAYER_HEATLH = 15;
 export const EXPERT_PLAYER_HEALTH = 10;
 export const IS_DEMO =
     import.meta.env.VITE_BUILD_TYPE === "demo";
-export const CURRENT_SAVE_VERSION = 3;
+export const CURRENT_SAVE_VERSION = 4;
 export const TILE_SIZE = 32;
 export const TOWER_RANGE_TOLERANCE = 5;
 export const MAX_TOWER_UPGRADES = 5;
@@ -410,7 +410,7 @@ export const LEVEL_WAVES = {
                     { id: "skeleton", count: 3, interval: 1 },
                     { id: "slime", count: 5, interval: 0.75 }
                 ],
-                reward: 100
+                reward: 80
             },
             {
                 spawns: [
@@ -418,7 +418,7 @@ export const LEVEL_WAVES = {
                     { id: "skeleton", count: 5, interval: 1 },
                     { id: "fairy", count: 1, interval: 1 }
                 ],
-                reward: 200
+                reward: 150
             },
             {
                 spawns: [
@@ -428,7 +428,7 @@ export const LEVEL_WAVES = {
                     { id: "skeleton", count: 5, interval: 1 },
                     { id: "fairy", count: 1, interval: 1 }
                 ],
-                reward: 300
+                reward: 220
             },
             {
                 spawns: [
@@ -463,7 +463,7 @@ export const LEVEL_WAVES = {
                     { id: "orc", count: 1, interval: 1.5 },
                     { id: "bee", count: 5, interval: 1 }
                 ],
-                reward: 100
+                reward: 80
             },
             {
                 spawns: [
@@ -471,7 +471,7 @@ export const LEVEL_WAVES = {
                     { id: "orc", count: 2, interval: 1.5 },
                     { id: "bee", count: 8, interval: 1 },
                 ],
-                reward: 200
+                reward: 150
             },
             {
                 spawns: [
@@ -481,7 +481,7 @@ export const LEVEL_WAVES = {
                     { id: "orc", count: 8, interval: 1.5 },
                     { id: "fairy", count: 1, interval: 1 }
                 ],
-                reward: 300
+                reward: 220
             },
             {
                 spawns: [
@@ -500,7 +500,7 @@ export const LEVEL_WAVES = {
     },
 
     "level2-1": {
-        startingGold: 150,
+        startingGold: 120,
         startDelay: 120,
         music: "forest biome",
         waves: [
@@ -516,7 +516,7 @@ export const LEVEL_WAVES = {
                     { id: "slime", count: 20, interval: 0.5 },
                     { id: "skeleton", count: 5, interval: 1 }
                 ],
-                reward: 100
+                reward: 80
             },
             {
                 spawns: [
@@ -526,7 +526,7 @@ export const LEVEL_WAVES = {
                     { id: "skeleton", count: 9, interval: 1 },
                     { id: "fairy", count: 1, interval: 1 }
                 ],
-                reward: 200
+                reward: 150
             },
             {
                 spawns: [
@@ -537,7 +537,7 @@ export const LEVEL_WAVES = {
                     { id: "skeleton", count: 15, interval: 0.5 },
                     { id: "fairy", count: 1, interval: 1 }
                 ],
-                reward: 300
+                reward: 220
             },
             {
                 spawns: [
@@ -556,7 +556,7 @@ export const LEVEL_WAVES = {
                     { id: "skeleton", count: 5, interval: 0.5 },
                     { id: "fairy", count: 1, interval: 1 }
                 ],
-                reward: 400
+                reward: 280
             },
             {
                 spawns: [
@@ -577,13 +577,13 @@ export const LEVEL_WAVES = {
                     { id: "ghost", count: 5, interval: 1.5 },
                     { id: "redFairy", count: 1, interval: 1 }
                 ],
-                reward: 500
+                reward: 0
             }
         ],
     },
 
     "level2-2": {
-        startingGold: 150,
+        startingGold: 120,
         startDelay: 120,
         music: "forest biome",
         waves: [
@@ -599,7 +599,7 @@ export const LEVEL_WAVES = {
                     { id: "orc", count: 5, interval: 1.5 },
                     { id: "bee", count: 20, interval: 0.5 }
                 ],
-                reward: 100
+                reward: 80
             },
             {
                 spawns: [
@@ -607,7 +607,7 @@ export const LEVEL_WAVES = {
                     { id: "orc", count: 10, interval: 1.5 },
                     { id: "fairy", count: 1, interval: 1 }
                 ],
-                reward: 200
+                reward: 150
             },
             {
                 spawns: [
@@ -617,7 +617,7 @@ export const LEVEL_WAVES = {
                     { id: "orc", count: 8, interval: 1.5 },
                     { id: "fairy", count: 1, interval: 1 }
                 ],
-                reward: 300
+                reward: 220
             },
             {
                 spawns: [
@@ -634,7 +634,7 @@ export const LEVEL_WAVES = {
                     { id: "orc", count: 5, interval: 1 },
                     { id: "fairy", count: 1, interval: 1 }
                 ],
-                reward: 400
+                reward: 280
             },
             {
                 spawns: [
@@ -654,16 +654,16 @@ export const LEVEL_WAVES = {
                     { id: "redFairy", count: 1, interval: 1 },
                     { id: "spider", count: 2, interval: 1.5 }
                 ],
-                reward: 500
+                reward: 0
             }
         ],
     },
     "level3-1": {
-        startingGold: 200,
+        startingGold: 150,
         startDelay: 120,
         music: "forest boss",
         boss: {
-            id: "beeQueen",
+            id: "slimeKing",
             bossStops: [0, 1, 3, 5, 7, 9, 11, 17]
         },
         waves: [
@@ -672,7 +672,7 @@ export const LEVEL_WAVES = {
                     { id: "skeleton", count: 2, interval: 1 },
                     { id: "slime", count: 10, interval: 0.5 },
                 ],
-                reward: 100
+                reward: 80
             },
             {
                 spawns: [
@@ -680,7 +680,7 @@ export const LEVEL_WAVES = {
                     { id: "skeleton", count: 3, interval: 1 },
                     { id: "slime", count: 20, interval: 1 },
                 ],
-                reward: 200
+                reward: 150
             },
             {
                 spawns: [
@@ -689,7 +689,7 @@ export const LEVEL_WAVES = {
                     { id: "fairy", count: 1, interval: 1 },
                     { id: "skeleton", count: 5, interval: 1 }
                 ],
-                reward: 300
+                reward: 240
             },
             {
                 spawns: [
@@ -701,7 +701,7 @@ export const LEVEL_WAVES = {
                     { id: "fairy", count: 1, interval: 1 },
                     { id: "skeleton", count: 4, interval: 0.5 },
                 ],
-                reward: 400
+                reward: 320
             },
             {
                 spawns: [
@@ -718,7 +718,7 @@ export const LEVEL_WAVES = {
                     { id: "skeleton", count: 5, interval: 0.5 },
                     { id: "fairy", count: 1, interval: 1 }
                 ],
-                reward: 500
+                reward: 360
             },
             {
                 spawns: [
@@ -744,7 +744,7 @@ export const LEVEL_WAVES = {
                     { id: "skeleton", count: 2, interval: 0.5 },
                     { id: "redFairy", count: 1, interval: 1 }
                 ],
-                reward: 600
+                reward: 450
             },
             {
                 spawns: [
@@ -771,12 +771,12 @@ export const LEVEL_WAVES = {
                     { id: "redFairy", count: 1, interval: 1 },
                     { id: "ghost", count: 5, interval: 1.5 },
                 ],
-                reward: 700
+                reward: 0
             }
         ],
     },
     "level3-2": {
-        startingGold: 200,
+        startingGold: 150,
         startDelay: 120,
         music: "forest boss",
         boss: {
@@ -789,14 +789,14 @@ export const LEVEL_WAVES = {
                     { id: "orc", count: 1, interval: 1 },
                     { id: "bee", count: 10, interval: 0.75 },
                 ],
-                reward: 100
+                reward: 80
             },
             {
                 spawns: [
                     { id: "orc", count: 3, interval: 1 },
                     { id: "bee", count: 20, interval: 1 },
                 ],
-                reward: 200
+                reward: 150
             },
             {
                 spawns: [
@@ -805,7 +805,7 @@ export const LEVEL_WAVES = {
                     { id: "fairy", count: 1, interval: 1 },
                     { id: "orc", count: 3, interval: 1 }
                 ],
-                reward: 300
+                reward: 240
             },
             {
                 spawns: [
@@ -818,7 +818,7 @@ export const LEVEL_WAVES = {
                     { id: "fairy", count: 1, interval: 1 },
                     { id: "orc", count: 3, interval: 1 },
                 ],
-                reward: 400
+                reward: 320
             },
             {
                 spawns: [
@@ -838,7 +838,7 @@ export const LEVEL_WAVES = {
                     { id: "orc", count: 3, interval: 1 },
                     { id: "fairy", count: 1, interval: 1 }
                 ],
-                reward: 500
+                reward: 360
             },
             {
                 spawns: [
@@ -862,7 +862,7 @@ export const LEVEL_WAVES = {
                     { id: "redFairy", count: 1, interval: 1 },
                     { id: "wolf", count: 1, interval: 1 },
                 ],
-                reward: 600
+                reward: 450
             },
             {
                 spawns: [
@@ -888,12 +888,12 @@ export const LEVEL_WAVES = {
                     { id: "bee", count: 3, interval: 0.5 },
                     { id: "wolf", count: 1, interval: 1 },
                 ],
-                reward: 700
+                reward: 0
             }
         ],
     },
     "level4-1": {
-        startingGold: 150,
+        startingGold: 120,
         startDelay: 120,
         startingFreezeAmount: 4,
         music: "snow biome",
@@ -904,7 +904,7 @@ export const LEVEL_WAVES = {
                 spawns: [
                     { id: "iceSlime", count: 6, interval: 1 }
                 ],
-                reward: 100
+                reward: 80
             },
             {
                 spawns: [
@@ -913,7 +913,7 @@ export const LEVEL_WAVES = {
                     { id: "iceSlime", count: 3, interval: 1 },
                     { id: "skeleton", count: 2, interval: 1 }
                 ],
-                reward: 150
+                reward: 120
             },
             {
                 spawns: [
@@ -925,7 +925,7 @@ export const LEVEL_WAVES = {
                     { id: "fairy", count: 1, interval: 1 },
                     { id: "polarBear", count: 1, interval: 1 }
                 ],
-                reward: 200
+                reward: 150
             },
             {
                 spawns: [
@@ -942,7 +942,7 @@ export const LEVEL_WAVES = {
                     { id: "ghost", count: 2, interval: 1.5 },
                     { id: "polarBear", count: 1, interval: 1 },
                 ],
-                reward: 300
+                reward: 240
             },
             {
                 spawns: [
@@ -966,7 +966,7 @@ export const LEVEL_WAVES = {
                     { id: "fairy", count: 1, interval: 1 },
 
                 ],
-                reward: 400
+                reward: 320
             },
             {
                 spawns: [
@@ -990,7 +990,7 @@ export const LEVEL_WAVES = {
                     { id: "fairy", count: 1, interval: 1.2 },
                     { id: "polarBear", count: 5, interval: 1.5 }
                 ],
-                reward: 500
+                reward: 360
             },
             {
                 spawns: [
@@ -1019,7 +1019,7 @@ export const LEVEL_WAVES = {
                     { id: "redFairy", count: 1, interval: 1 }
 
                 ],
-                reward: 600
+                reward: 420
             },
             {
                 spawns: [
@@ -1050,12 +1050,12 @@ export const LEVEL_WAVES = {
                     { id: "iceSlime", count: 3, interval: 0.5 },
                     { id: "ghost", count: 3, interval: 1.5 }
                 ],
-                reward: 700
+                reward: 0
             }
         ],
     },
     "level4-2": {
-        startingGold: 150,
+        startingGold: 120,
         startDelay: 120,
         startingFreezeAmount: 4,
         music: "snow biome",
@@ -1066,7 +1066,7 @@ export const LEVEL_WAVES = {
                 spawns: [
                     { id: "penguin", count: 5, interval: 1 }
                 ],
-                reward: 100
+                reward: 80
             },
             {
                 spawns: [
@@ -1075,7 +1075,7 @@ export const LEVEL_WAVES = {
                     { id: "penguin", count: 3, interval: 1 },
                     { id: "snowman", count: 1, interval: 1 }
                 ],
-                reward: 150
+                reward: 120
             },
             {
                 spawns: [
@@ -1087,7 +1087,7 @@ export const LEVEL_WAVES = {
                     { id: "fairy", count: 1, interval: 1 },
                     { id: "snowman", count: 2, interval: 1 }
                 ],
-                reward: 200
+                reward: 150
             },
             {
                 spawns: [
@@ -1100,7 +1100,7 @@ export const LEVEL_WAVES = {
                     { id: "fairy", count: 1, interval: 1 },
                     { id: "orc", count: 5, interval: 1 }
                 ],
-                reward: 300
+                reward: 240
             },
             {
                 spawns: [
@@ -1119,7 +1119,7 @@ export const LEVEL_WAVES = {
                     { id: "fairy", count: 1, interval: 1 }
 
                 ],
-                reward: 400
+                reward: 320
             },
             {
                 spawns: [
@@ -1143,7 +1143,7 @@ export const LEVEL_WAVES = {
                     { id: "spider", count: 3, interval: 1 },
                     { id: "fairy", count: 1, interval: 1 },
                 ],
-                reward: 500
+                reward: 360
             },
             {
                 spawns: [
@@ -1170,7 +1170,7 @@ export const LEVEL_WAVES = {
                     { id: "redFairy", count: 1, interval: 1 },
                     { id: "wolf", count: 1, interval: 1 }
                 ],
-                reward: 600
+                reward: 400
             },
             {
                 spawns: [
@@ -1198,12 +1198,12 @@ export const LEVEL_WAVES = {
                     { id: "redFairy", count: 1, interval: 1 },
                     { id: "wolf", count: 1, interval: 1 }
                 ],
-                reward: 700
+                reward: 0
             }
         ],
     },
     "level5-1": {
-        startingGold: 150,
+        startingGold: 120,
         startDelay: 120,
         startingFreezeAmount: 6,
         music: "snow biome",
@@ -1212,7 +1212,7 @@ export const LEVEL_WAVES = {
                 spawns: [
                     { id: "iceSlime", count: 5, interval: 1 }
                 ],
-                reward: 100
+                reward: 80
             },
             {
                 spawns: [
@@ -1223,7 +1223,7 @@ export const LEVEL_WAVES = {
                     { id: "iceSlime", count: 2, interval: 1 },
                     { id: "skeleton", count: 3, interval: 1 }
                 ],
-                reward: 150
+                reward: 120
             },
             {
                 spawns: [
@@ -1234,7 +1234,7 @@ export const LEVEL_WAVES = {
                     { id: "iceSlime", count: 2, interval: 1 },
                     { id: "polarBear", count: 3, interval: 2 },
                 ],
-                reward: 200
+                reward: 150
             },
             {
                 spawns: [
@@ -1255,7 +1255,7 @@ export const LEVEL_WAVES = {
                     { id: "fairy", count: 2, interval: 1 },
                     { id: "ghost", count: 3, interval: 1 }
                 ],
-                reward: 300
+                reward: 240
             },
             {
                 spawns: [
@@ -1280,7 +1280,7 @@ export const LEVEL_WAVES = {
                     { id: "ghost", count: 5, interval: 1 },
                     { id: "fairy", count: 1, interval: 1 }
                 ],
-                reward: 400
+                reward: 320
             },
             {
                 spawns: [
@@ -1307,7 +1307,7 @@ export const LEVEL_WAVES = {
                     { id: "polarBear", count: 5, interval: 1 },
                     { id: "redFairy", count: 1, interval: 1 }
                 ],
-                reward: 500
+                reward: 400
             },
             {
                 spawns: [
@@ -1334,7 +1334,7 @@ export const LEVEL_WAVES = {
                     { id: "polarBear", count: 5, interval: 1 },
                     { id: "redFairy", count: 1, interval: 1 },
                 ],
-                reward: 600
+                reward: 420
             },
             {
                 spawns: [
@@ -1368,7 +1368,7 @@ export const LEVEL_WAVES = {
                     { id: "armouredSlime", count: 3, interval: 1 },
                     { id: "ghost", count: 3, interval: 1 }
                 ],
-                reward: 700
+                reward: 460
             },
             {
                 spawns: [
@@ -1402,12 +1402,12 @@ export const LEVEL_WAVES = {
                     { id: "polarBear", count: 3, interval: 0.5 },
                     { id: "redFairy", count: 1, interval: 1 },
                 ],
-                reward: 800
+                reward: 0
             }
         ],
     },
     "level5-2": {
-        startingGold: 150,
+        startingGold: 120,
         startDelay: 120,
         startingFreezeAmount: 6,
         music: "snow biome",
@@ -1416,7 +1416,7 @@ export const LEVEL_WAVES = {
                 spawns: [
                     { id: "penguin", count: 4, interval: 1 }
                 ],
-                reward: 100
+                reward: 80
             },
             {
                 spawns: [
@@ -1426,7 +1426,7 @@ export const LEVEL_WAVES = {
                     { id: "snowman", count: 2, interval: 1 },
                     { id: "orc", count: 1, interval: 1 }
                 ],
-                reward: 150
+                reward: 120
             },
             {
                 spawns: [
@@ -1436,7 +1436,7 @@ export const LEVEL_WAVES = {
                     { id: "penguin", count: 2, interval: 1 },
                     { id: "snowman", count: 6, interval: 2 },
                 ],
-                reward: 200
+                reward: 150
             },
             {
                 spawns: [
@@ -1455,7 +1455,7 @@ export const LEVEL_WAVES = {
                     { id: "fairy", count: 2, interval: 1 },
                     { id: "spider", count: 3, interval: 1 }
                 ],
-                reward: 300
+                reward: 240
             },
             {
                 spawns: [
@@ -1479,7 +1479,7 @@ export const LEVEL_WAVES = {
                     { id: "spider", count: 4, interval: 1 },
                     { id: "wolf", count: 1, interval: 1 }
                 ],
-                reward: 400
+                reward: 320
             },
             {
                 spawns: [
@@ -1508,7 +1508,7 @@ export const LEVEL_WAVES = {
                     { id: "spider", count: 2, interval: 1.25 },
                     { id: "wolf", count: 1, interval: 1 },
                 ],
-                reward: 500
+                reward: 400
             },
             {
                 spawns: [
@@ -1538,7 +1538,7 @@ export const LEVEL_WAVES = {
                     { id: "redFairy", count: 1, interval: 1 },
                     { id: "wolf", count: 1, interval: 1 }
                 ],
-                reward: 600
+                reward: 420
             },
             {
                 spawns: [
@@ -1570,7 +1570,7 @@ export const LEVEL_WAVES = {
                     { id: "snowman", count: 5, interval: 0.5 },
                     { id: "wolf", count: 1, interval: 1 }
                 ],
-                reward: 700
+                reward: 420
             },
             {
                 spawns: [
@@ -1602,12 +1602,12 @@ export const LEVEL_WAVES = {
                     { id: "redFairy", count: 1, interval: 1.5 },
                     { id: "wolf", count: 1, interval: 1 },
                 ],
-                reward: 700
+                reward: 0
             }
         ],
     },
     "level6-1": {
-        startingGold: 200,
+        startingGold: 150,
         startDelay: 120,
         startingFreezeAmount: 10,
         music: "snow boss",
@@ -1624,7 +1624,7 @@ export const LEVEL_WAVES = {
                     { id: "skeleton", count: 1, interval: 1 },
                     { id: "orc", count: 1, interval: 1 }
                 ],
-                reward: 100
+                reward: 80
             },
             {
                 spawns: [
@@ -1637,7 +1637,7 @@ export const LEVEL_WAVES = {
                     { id: "skeleton", count: 2, interval: 1 },
                     { id: "orc", count: 1, interval: 1 }
                 ],
-                reward: 200
+                reward: 150
             },
             {
                 spawns: [
@@ -1651,7 +1651,7 @@ export const LEVEL_WAVES = {
                     { id: "iceSlime", count: 2, interval: 1 },
                     { id: "polarBear", count: 3, interval: 1 },
                 ],
-                reward: 300
+                reward: 240
             },
             {
                 spawns: [
@@ -1671,7 +1671,7 @@ export const LEVEL_WAVES = {
                     { id: "polarBear", count: 2, interval: 1 },
                     { id: "fairy", count: 1, interval: 1 }
                 ],
-                reward: 400
+                reward: 320
             },
             {
                 spawns: [
@@ -1698,7 +1698,7 @@ export const LEVEL_WAVES = {
                     { id: "spider", count: 2, interval: 1 },
                     { id: "redFairy", count: 1, interval: 1 },
                 ],
-                reward: 500
+                reward: 360
             },
             {
                 spawns: [
@@ -1730,7 +1730,7 @@ export const LEVEL_WAVES = {
                     { id: "skeleton", count: 5, interval: 0.5 },
                     { id: "redFairy", count: 1, interval: 1 }
                 ],
-                reward: 600
+                reward: 420
             },
             {
                 spawns: [
@@ -1769,7 +1769,7 @@ export const LEVEL_WAVES = {
                     { id: "orc", count: 5, interval: 0.5 },
                     { id: "wolf", count: 1, interval: 1 }
                 ],
-                reward: 700
+                reward: 500
             },
             {
                 spawns: [
@@ -1805,7 +1805,7 @@ export const LEVEL_WAVES = {
                     { id: "redFairy", count: 1, interval: 1 },
                     { id: "wolf", count: 1, interval: 1 }
                 ],
-                reward: 800
+                reward: 540
             },
             {
                 spawns: [
@@ -1850,7 +1850,7 @@ export const LEVEL_WAVES = {
                     { id: "giantWolf", count: 1, interval: 2 },
                     { id: "wolf", count: 1, interval: 1 }
                 ],
-                reward: 50
+                reward: 0
             }
         ],
     },
@@ -4180,7 +4180,7 @@ export const ENEMIES = {
                 const fireball = k.add([
                     k.sprite("fireball"),
                     k.pos(enemy.pos),
-                    k.rotate((angle * 180) / Math.PI),
+                    k.rotate((angle * 180) / Math.PI + 180),
                     k.anchor("center"),
                     {
                         travelled: 0
@@ -8207,7 +8207,58 @@ export const SKILLS = [
     }
 ] as const satisfies HeroSkillDefBase[];
 
-export type SkillId = typeof SKILLS[number]["id"];
+export const GENERIC_SKILLS = [
+    {
+        id: "generic-range",
+        name: "Range +1",
+        heroIds: ["archer", "assassin", "knight", "merchant", "necromancer", "songstress", "witch", "wizard"],
+        description: "Increase range by 1 tile",
+        generic: true,
+        apply: hero => {
+            hero.stats.range += 1;
+        },
+        icon: "sprites/range-icon.png"
+    },
+    {
+        id: "generic-damage",
+        heroIds: ["archer", "assassin", "knight", "merchant", "necromancer", "songstress", "witch", "wizard"],
+        name: "Damage +25%",
+        generic: true,
+        description: "Increase damage by 25%",
+        apply: hero => {
+            hero.stats.damage += Math.round(hero.stats.damage * 0.25);
+        },
+        icon: "sprites/damage-icon.png"
+    },
+    {
+        id: "generic-fire-rate",
+        heroIds: ["archer", "wizard", "knight", "assassin", "merchant", "witch", "songstress", "necromancer"],
+        name: "Fire Rate +25%",
+        generic: true,
+        description: "Increase fire rate by 25%",
+        apply: hero => {
+            const fireInterval = hero.stats.fireInterval;
+            const newFireInterval = calcFireInterval(fireInterval, 25);
+            hero.stats.fireInterval = newFireInterval;
+        },
+        icon: "sprites/firerate-icon.png"
+    },
+    {
+        id: "generic-crit-damage",
+        heroIds: ["archer", "wizard", "knight", "merchant", "witch", "songstress", "necromancer"],
+        name: "Crit Damage +65%",
+        generic: true,
+        description: "Increase crit damage by 65%",
+        apply: hero => {
+            hero.stats.critDamage *= 1.65;
+        },
+        icon: "sprites/critdamage-icon.png"
+    }
+] as const satisfies HeroSkillDefBase[];
+
+export type SkillId =
+    | typeof SKILLS[number]["id"]
+    | typeof GENERIC_SKILLS[number]["id"];
 
 export const SEEDS: Seed = {
     chili: {

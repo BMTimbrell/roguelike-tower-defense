@@ -11,3 +11,11 @@ export function createSeededRandom(seed: number) {
         return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
     };
 }
+
+export function getChallengeSeed(runSeed: number, levelIndex: number) {
+    return (runSeed + levelIndex * 0x9E3779B9 + 0x12345678) >>> 0;
+}
+
+export function getObeliskSeed(runSeed: number, levelIndex: number) {
+    return (runSeed + levelIndex * 0x9E3779B9 + 0x87654321) >>> 0;
+}

@@ -1,9 +1,9 @@
 import type { KAPLAYCtx } from "kaplay";
 import { generateForestMap } from "../utils/generateProceduralMap";
 import initCam from "../utils/initCam";
-import { LEVEL_WAVES, MAX_HAND_SIZE, ROUND_DRAW_NUM, TILE_SIZE } from "../constants";
+import { MAX_HAND_SIZE, ROUND_DRAW_NUM, TILE_SIZE } from "../constants";
 import onAction from "../utils/onAction";
-import { controlsAtom, gameSpeedUIAtom, gameStateAtom, pauseMenuAtom, store } from "../store";
+import { cachedSaveAtom, controlsAtom, gameSpeedUIAtom, gameStateAtom, pauseMenuAtom, store } from "../store";
 import generateFog from "../utils/generateFog";
 import isButtonDown from "../utils/isButtonDown";
 import { playMusic } from "../utils/soundHelpers";
@@ -12,17 +12,22 @@ import drawCards from "../utils/drawCards";
 import makeFloatingText from "../entities/FloatingText";
 import addTowers from "../utils/addTowers";
 import { castSpell } from "../utils/spellHelpers";
-import type { TowerGameObj } from "../types";
+import type { Card, TowerGameObj } from "../types";
 import { addSelectTowerListener } from "../entities/Tower";
 import { makeLavaManager } from "../utils/lavaHelpers";
 import showLevelStats from "../utils/showLevelStats";
 import makeEndlessWaveSpawner from "../entities/EndlessWaveSpawner";
 import setGameSpeed from "../utils/setGameSpeed";
 import makeHero from "../entities/Hero";
+import { getSave, saveRun } from "../platform/save";
 
 export default function endlessForest(k: KAPLAYCtx) {
     k.scene("endlessForest", async () => {
-        const seed = Math.floor(Math.random() * 2 ** 32);
+        const save = await getSave();
+
+        store.set(cachedSaveAtom, save);
+
+        const seed = save?.run?.mode === "endless" ? save.run.endlessSeed : Math.floor(Math.random() * 2 ** 32);
         const { tileGrid, pathTiles, waypoints, chunks } = await generateForestMap(k, seed);
 
         // Compute screen bounds and save in store
@@ -211,22 +216,30 @@ export default function endlessForest(k: KAPLAYCtx) {
             }
         );
 
-        // makehero.skillIds = makehero.skills;
+        let gold = 100;
+        let upgrades: Card[] = drawCards(k, store.get(gameStateAtom).deck.cards, ROUND_DRAW_NUM);
+        let waveNumber = 1;
+        let luck = 1;
 
-        // updateSkills(makehero);
+        if (save?.run?.mode === "endless") {
+            gold = save.run.gold;
+            upgrades = save.run.hand;
+            waveNumber = save.run.wave;
+            luck = save.run.luck;
+        }
 
-        const upgrades = drawCards(k, store.get(gameStateAtom).deck.cards, ROUND_DRAW_NUM);
+
         store.set(gameStateAtom, prev => ({
             ...prev,
             scene: "endlessForest",
-            gold: LEVEL_WAVES["level1-2"].startingGold,
+            gold,
             tileGrid,
-            waveNumber: 1,
+            waveNumber,
             selectedUI: null,
             bottomBarVisible: true,
             towerButtons: addTowers(k, prev.towerButtons.map(t => t.id), tileGrid, pathTiles),
             upgrades,
-            luck: 1,
+            luck,
             deck: {
                 ...prev.deck,
                 drawCard: () => {
@@ -261,7 +274,7 @@ export default function endlessForest(k: KAPLAYCtx) {
                     store.get(gameStateAtom).challengeManager.handleEvent({
                         type: "DRAW_CARD"
                     });
-                },
+                }
             },
             handVersion: 0,
             hero: makehero,
@@ -390,6 +403,40 @@ export default function endlessForest(k: KAPLAYCtx) {
             });
         }
 
+        if (save?.run?.mode !== "endless") {
+            await saveRun({
+                mode: "endless",
+                scene: "endlessForest",
+                gold: store.get(gameStateAtom).gold,
+                deck: store.get(gameStateAtom).deck.cards,
+                hand: store.get(gameStateAtom).upgrades,
+                health: store.get(gameStateAtom).health,
+                maxHealth: store.get(gameStateAtom).maxHealth,
+                hero: {
+                    id: store.get(gameStateAtom).hero?.heroId ?? "archer",
+                    level: store.get(gameStateAtom).hero?.level ?? 1,
+                    skills: store.get(gameStateAtom).hero?.skillIds ?? [],
+                    tileX: 0,
+                    tileY: 0
+                },
+                heroCharge: store.get(gameStateAtom).heroCharge,
+                nextTowerId: store.get(gameStateAtom).nextTowerId,
+                towerButtons: store.get(gameStateAtom).towerButtons.map(tb => tb.id),
+                wave: store.get(gameStateAtom).waveNumber,
+                endlessSeed: seed,
+                mapChanges: {
+                    destroyedTrees: [],
+                    destroyedObelisks: [],
+                    capturedTotems: []
+                },
+                luck: 1,
+                chests: [],
+                towers: []
+            });
+        } 
+
+
         makeEndlessWaveSpawner(k, { chunks, tileGrid, waypoints, seed, pathTiles });
+
     });
 }

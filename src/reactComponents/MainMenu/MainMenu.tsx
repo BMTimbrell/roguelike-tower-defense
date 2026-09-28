@@ -27,8 +27,6 @@ export default function MainMenu() {
     const [showSettings, setShowSettings] = useState(false);
     const [gameMode, setGameMode] =
         useState<"campaign" | "endless" | null>(null);
-    const [campaign, setCampaign] =
-        useState<"world1" | "world2" | null>(null);
     const [screen, setScreen] = useState<MainMenuScreen>("main");
     const [, setSelectHeroUI] = useAtom(selectHeroUIAtom);
     const [, setMenu] = useAtom(mainMenuAtom)
@@ -72,70 +70,80 @@ export default function MainMenu() {
                             const saveData = save.run;
                             if (!saveData || !k) return;
 
-                            let hero = makeHero(
-                                k,
-                                {
-                                    heroId: saveData.hero.id,
-                                    pos: k.toWorld(k.mousePos()),
-                                    tileGrid: saveData.tileGrid,
-                                    pathTiles: saveData.pathTiles,
-                                    level: saveData.hero.level
-                                }
-                            );
-
-                            hero.skillIds = saveData.hero.skills;
-
-                            updateSkills(hero);
-
-                            setMenu(prev => ({ ...prev, visible: false }));
-                            setGameState(prev => ({
-                                ...prev,
-                                timeScale: 1,
-                                world: saveData.world ?? 1,
-                                towerCoins: saveData.towerCoins,
-                                sceneIndex: saveData.sceneIndex,
-                                level: saveData.level,
-                                health: saveData.health,
-                                maxHealth: saveData.maxHealth,
-                                waveNumber: 0,
-                                luck: 1,
-                                shops: saveData.shops,
-                                waveActive: false,
-                                heroCharge: saveData.heroCharge,
-                                deck: {
-                                    drawCard: () => { },
-                                    drawCost: 10,
-                                    cards: saveData.deck
-                                },
-                                selectedUpgrade: null,
-                                difficulty: saveData.difficulty,
-                                challengeManager: new ChallengeManager(),
-                                nextTowerId: saveData.nextTowerId,
-                                towerButtons: addTowers(k, saveData.towerButtons, saveData.tileGrid, saveData.pathTiles),
-                                hero,
-                                heroButton: {
-                                    ...prev.heroButton,
-                                    onClick: () => {
-                                        if (k.get("hero")[0]) k.destroy(k.get("hero")[0]);
-                                        else {
-                                            setGameState(prev => ({
-                                                ...prev,
-                                                selectedUpgrade: null
-                                            }));
-                                            k.add(hero);
+                            switch (saveData.mode) {
+                                case "campaign":
+                                    let hero = makeHero(
+                                        k,
+                                        {
+                                            heroId: saveData.hero.id,
+                                            pos: k.toWorld(k.mousePos()),
+                                            tileGrid: saveData.tileGrid,
+                                            pathTiles: saveData.pathTiles,
+                                            level: saveData.hero.level
                                         }
-                                    }
-                                }
-                            }));
+                                    );
+        
+                                    hero.skillIds = saveData.hero.skills;
+        
+                                    updateSkills(hero);
+        
+                                    setMenu(prev => ({ ...prev, visible: false }));
+                                    setGameState(prev => ({
+                                        ...prev,
+                                        timeScale: 1,
+                                        seed: saveData.seed,
+                                        gameMode: "campaign",
+                                        world: saveData.world ?? 1,
+                                        towerCoins: saveData.towerCoins,
+                                        sceneIndex: saveData.sceneIndex,
+                                        level: saveData.level,
+                                        health: saveData.health,
+                                        maxHealth: saveData.maxHealth,
+                                        waveNumber: 0,
+                                        luck: 1,
+                                        shops: saveData.shops,
+                                        waveActive: false,
+                                        heroCharge: saveData.heroCharge,
+                                        deck: {
+                                            drawCard: () => { },
+                                            drawCost: 10,
+                                            cards: saveData.deck
+                                        },
+                                        selectedUpgrade: null,
+                                        difficulty: saveData.difficulty,
+                                        challengeManager: new ChallengeManager(),
+                                        nextTowerId: saveData.nextTowerId,
+                                        towerButtons: addTowers(k, saveData.towerButtons, saveData.tileGrid, saveData.pathTiles),
+                                        hero,
+                                        heroButton: {
+                                            ...prev.heroButton,
+                                            onClick: () => {
+                                                if (k.get("hero")[0]) k.destroy(k.get("hero")[0]);
+                                                else {
+                                                    setGameState(prev => ({
+                                                        ...prev,
+                                                        selectedUpgrade: null
+                                                    }));
+                                                    k.add(hero);
+                                                }
+                                            }
+                                        }
+                                    }));
+        
+                                    goToNextScene(k, {
+                                        sceneName: saveData.scene,
+                                        mapData: saveData.mapData,
+                                        tileGrid: saveData.tileGrid,
+                                        pathTiles: saveData.pathTiles,
+                                        wave: saveData.wave
+                                    });
 
-                            goToNextScene(k, {
-                                sceneName: saveData.scene,
-                                mapData: saveData.mapData,
-                                tileGrid: saveData.tileGrid,
-                                pathTiles: saveData.pathTiles,
-                                wave: saveData.wave
-                            });
+                                    break;
 
+                                case "endless":
+                                    break;
+
+                            }
                         }}
                         onMouseEnter={onHover}
                     >

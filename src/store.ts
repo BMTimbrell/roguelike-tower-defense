@@ -4,6 +4,7 @@ import { ChallengeManager } from "./utils/challengeHelpers";
 
 export const gameStateAtom = atom<GameState>({
     world: 1,
+    seed: Math.floor(Math.random() * 2 ** 32),
     gameMode: "endless",
     context: null,
     towerButtons: [],

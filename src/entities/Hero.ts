@@ -1,5 +1,5 @@
 import type { GameObj, KAPLAYCtx, Vec2 } from "kaplay";
-import { ELEMENTS, HEROES, LEVEL_WAVES, TILE_SIZE, type HeroId, type SkillId } from "../constants";
+import { ELEMENTS, GENERIC_SKILLS, HEROES, LEVEL_WAVES, TILE_SIZE, type HeroId, type SkillId } from "../constants";
 import { cachedSaveAtom, gameStateAtom, store } from "../store";
 import type { HeroGameObj, PathTile, SelectedHeroUI, Song, TargetPriority, Tile, UnitEffects } from "../types";
 import makeUnitCombat from "../utils/makeUnitCombat";
@@ -36,6 +36,8 @@ export default function makeHero(k: KAPLAYCtx,
         targetType,
         levelUpOffset
     } = HEROES[heroId];
+
+    let runSave = store.get(cachedSaveAtom)?.run;
 
     const hero: HeroGameObj = k.make([
         k.pos(pos),
@@ -74,7 +76,7 @@ export default function makeHero(k: KAPLAYCtx,
             footprint: { w: 1, h: 1 },
             element,
             effects: [],
-            hasThirst: (LEVEL_WAVES[store.get(cachedSaveAtom)?.run?.wave ?? "level1-1"] as { thirst?: boolean; })?.thirst ?? false,
+            hasThirst: ((runSave?.mode === "campaign" && LEVEL_WAVES[runSave.wave ?? "level1-1"]) as { thirst?: boolean; })?.thirst ?? false,
             canRotate,
             ...("shootSound" in HEROES[heroId] ? { shootSound: HEROES[heroId].shootSound as string } : {}),
             disabledUntil: 0,
@@ -123,7 +125,13 @@ export default function makeHero(k: KAPLAYCtx,
         hero.width = sprite.width;
         hero.height = sprite.height;
 
-        hero.skillIds.forEach(sId => SKILLS.find(s => s.id === sId)?.apply(hero));
+        hero.skillIds.forEach(sId => {
+            const skill =
+                SKILLS.find(s => s.id === sId) ??
+                GENERIC_SKILLS.find(s => s.id === sId);
+
+            skill?.apply(hero);
+        });
 
         const combat = makeUnitCombat(k, {
             owner: hero,
@@ -168,7 +176,9 @@ export default function makeHero(k: KAPLAYCtx,
             if (combat.gun.getCurAnim()?.speed) combat.gun.getCurAnim()!.speed = 0;
         });
 
-        hero.hasThirst = (LEVEL_WAVES[store.get(cachedSaveAtom)?.run?.wave ?? "level1-1"] as { thirst?: boolean; })?.thirst ?? false;
+        runSave = store.get(cachedSaveAtom)?.run;
+
+        if(runSave?.mode === "campaign") hero.hasThirst = (LEVEL_WAVES[runSave?.wave ?? "level1-1"] as { thirst?: boolean; })?.thirst ?? false;
 
         if (hero.hasThirst) {
             const barWidth = hero.width * 0.8;

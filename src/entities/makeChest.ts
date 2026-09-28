@@ -9,6 +9,7 @@ export default function makeChest(k: KAPLAYCtx, pos: Vec2) {
         k.area(),
         k.z(99),
         k.anchor("center"),
+        "chest",
         k.color(255, 255, 0)
     ]);
 

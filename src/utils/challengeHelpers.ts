@@ -1,5 +1,6 @@
 import { gameStateAtom, store } from "../store";
 import type { ChallengeDef, ChallengeState, GameEvent } from "../types";
+import { createSeededRandom, getChallengeSeed } from "./seededRandom";
 
 export function generateChallenges() {
     const damageTypes = [...new Set(store.get(gameStateAtom).towerButtons.map(tb => tb.element).filter(element => element !== "Normal"))];
@@ -8,14 +9,18 @@ export function generateChallenges() {
     const challenges: ChallengeDef[] = [];
     const result = new Set<ChallengeDef>();
 
+    const rng = createSeededRandom(
+        getChallengeSeed(store.get(gameStateAtom).seed, store.get(gameStateAtom).level)
+    );
+
     let randomIndex = 0;
 
     if (damageTypes.length > 0) {
-        randomIndex = Math.floor(Math.random() * damageTypes.length);
+        randomIndex = Math.floor(rng() * damageTypes.length);
         const randomDamageType = damageTypes[randomIndex];
         const damageTypeAmount = store.get(gameStateAtom).towerButtons.map(tb => tb.element).filter(dt => dt === randomDamageType).length;
         const difficulty = store.get(gameStateAtom).difficulty;
-        const tier = Math.random() < 0.5 ? "normal" : "hard";
+        const tier = rng() < 0.5 ? "normal" : "hard";
         const baseTarget = (tier === "normal" ? 4000 : 8000) * (difficulty === "normal" ? 1 : difficulty === "hard" ? 1.3 : 1.4);
         const target = Math.round(baseTarget * Math.pow(damageTypeAmount, 0.65));
 
@@ -36,7 +41,7 @@ export function generateChallenges() {
         });
     }
 
-    randomIndex = Math.floor(Math.random() * towers.length);
+    randomIndex = Math.floor(rng() * towers.length);
     const randomTower = towers[randomIndex];
     const baseTarget = 80;
     const target = Math.min(Math.round(baseTarget / Math.pow(randomTower.cost, 0.6)), 6);
@@ -109,7 +114,7 @@ export function generateChallenges() {
     );
 
     while (result.size < 3) {
-        const randomIndex = Math.floor(Math.random() * challenges.length);
+        const randomIndex = Math.floor(rng() * challenges.length);
         result.add(challenges[randomIndex]);
     }
 

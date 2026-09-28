@@ -10,7 +10,7 @@ import generateMap from "../utils/generateMap";
 import makeHero from "../entities/Hero";
 import { playMusic } from "../utils/soundHelpers";
 import { ChallengeManager } from "../utils/challengeHelpers";
-import { getSave } from "../platform/save";
+import { getSave, saveRun } from "../platform/save";
 
 export default function mainMenu(k: KAPLAYCtx) {
     let music: AudioPlay | null = null;
@@ -173,7 +173,7 @@ export default function mainMenu(k: KAPLAYCtx) {
         store.set(startingOptionsAtom, prev => ({
             ...prev,
             options,
-            addLoadout: (ids, upgrades) => {
+            addLoadout: async (ids, upgrades) => {
                 if (tileGrid && pathTiles && mapData && sceneName) {
                     const grid = tileGrid;
                     const path = pathTiles;
@@ -216,6 +216,7 @@ export default function mainMenu(k: KAPLAYCtx) {
                     if (gameMode === "campaign") {
                         k.go(sceneName satisfies Scene, { mapData, tileGrid, pathTiles, wave: waveId });
                     } else if (gameMode === "endless") {
+                        await saveRun(undefined);
                         k.go(store.get(endlessMapTypeAtom));
                     }
                 }

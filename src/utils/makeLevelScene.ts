@@ -26,6 +26,7 @@ import { waitScaled } from "./timerFunctions";
 import { tryShowTutorial } from "./tutorialHelpers";
 import makeTotem from "../entities/Totem";
 import makeObelisk, { corruptRandomTiles } from "../entities/Obelisk";
+import { createSeededRandom, getObeliskSeed } from "./seededRandom";
 
 export default function makeLevelScene(k: KAPLAYCtx, sceneName: Scene) {
 
@@ -284,6 +285,8 @@ export default function makeLevelScene(k: KAPLAYCtx, sceneName: Scene) {
 
         await saveRun({
             world: store.get(gameStateAtom).world,
+            mode: "campaign",
+            seed: store.get(gameStateAtom).seed,
             deck: store.get(gameStateAtom).deck.cards,
             scene: sceneName,
             towerCoins: store.get(gameStateAtom).towerCoins,
@@ -889,11 +892,14 @@ export default function makeLevelScene(k: KAPLAYCtx, sceneName: Scene) {
             });
 
         // obelisk
+        const rng = createSeededRandom(
+            getObeliskSeed(store.get(gameStateAtom).seed, store.get(gameStateAtom).level)
+        );
         mapData.layers
             .find(layer => layer.name === "Obelisks")
             ?.objects
             ?.forEach(obj => {
-                const randomObeliskId = Object.keys(OBELISKS)[Math.floor(Math.random() * Object.keys(OBELISKS).length)] as ObeliskId;
+                const randomObeliskId = Object.keys(OBELISKS)[Math.floor(rng() * Object.keys(OBELISKS).length)] as ObeliskId;
 
                 makeObelisk(k, randomObeliskId, k.vec2(obj.x, obj.y), tileGrid);
                 tileGrid[obj.y / TILE_SIZE][obj.x / TILE_SIZE].blocked = true;

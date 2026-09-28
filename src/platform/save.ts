@@ -1,6 +1,6 @@
 import type { Key, MouseButton } from "kaplay";
 import { CURRENT_SAVE_VERSION, type HeroId, type LevelId, type SkillId, type TowerId } from "../constants";
-import type { MapData, MetaSave, PathTile, RunSave, SaveData, SaveDataV1, SaveDataV2, SaveDataV3, Scene, SettingsSave, Tile, Upgrade } from "../types";
+import type { MapData, MetaSave, PathTile, RunSave, SaveData, SaveDataV1, SaveDataV2, SaveDataV3, SaveDataV4, Scene, SettingsSave, Tile, Upgrade } from "../types";
 import { isDesktop } from "./platform";
 
 export async function getSave(): Promise<SaveData | null> {
@@ -20,7 +20,8 @@ export async function getSave(): Promise<SaveData | null> {
 
         if (isSaveData(save)) return save;
         return null;
-    } catch {
+    } catch (error) {
+        console.error("Failed to load save:", error);
         return null;
     }
 }
@@ -143,6 +144,10 @@ function migrate(save: any): SaveData {
                 save = migrateV2ToV3(save);
                 break;
 
+            case 3:
+                save = migrateV3ToV4(save);
+                break;
+
             default:
                 throw new Error(
                     `Unknown save version ${save.version}`
@@ -181,6 +186,24 @@ function migrateV2ToV3(save: SaveDataV2): SaveDataV3 {
             campaignLevelsCompleted: 0,
             completedCampaigns: [{ world: 1, difficulty: "normal" }]
         }
+    };
+}
+
+function migrateV3ToV4(
+    save: SaveDataV3
+): SaveDataV4 {
+    const { run, ...rest } = save;
+
+    return {
+        ...rest,
+        version: 4,
+        run: run
+            ? {
+                ...run,
+                mode: "campaign",
+                seed: Math.floor(Math.random() * 2 ** 32)
+            }
+            : undefined
     };
 }
 

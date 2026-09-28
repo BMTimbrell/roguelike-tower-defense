@@ -2,6 +2,7 @@ import type { KAPLAYCtx, Vec2 } from "kaplay";
 import { createSeededRandom } from "./seededRandom";
 import type { MapChunk, PathTile, Tile } from "../types";
 import { TILE_SIZE } from "../constants";
+import { cachedSaveAtom, gameStateAtom, store } from "../store";
 
 export async function generateForestMap(
     k: KAPLAYCtx,
@@ -101,7 +102,11 @@ function generateTrees(
         for (let x = 0; x < tileGrid[y].length; x++) {
             const tile = tileGrid[y][x];
 
-            if (tile.isPath) {
+            const runSave = store.get(cachedSaveAtom)?.run;
+
+            const destroyedTrees = runSave?.mode === "endless" ? runSave.mapChanges.destroyedTrees : [];
+
+            if (tile.isPath || destroyedTrees.some(tree => tree.x === x && tree.y === y)) {
                 continue;
             }
 
@@ -730,11 +735,20 @@ export function generateWaypoints(
 const CHUNK_WIDTH = 10;
 const CHUNK_HEIGHT = 25;
 
+function getRevealedChunkCount(waveNumber: number) {
+    if (waveNumber === 1) return 1;
+
+    return 2 + Math.floor((waveNumber - 2) / 5);
+}
+
 function createChunks(
     mapWidth: number,
     mapHeight: number
 ): MapChunk[] {
     const chunks: MapChunk[] = [];
+
+    const revealedChunkCount =
+        getRevealedChunkCount(store.get(gameStateAtom).waveNumber);
 
     let index = 0;
 
@@ -748,7 +762,7 @@ function createChunks(
             width: Math.min(CHUNK_WIDTH, mapWidth - x),
             height: mapHeight,
 
-            revealed: index === 0,
+            revealed: index < revealedChunkCount,
 
             pathTiles: []
         });

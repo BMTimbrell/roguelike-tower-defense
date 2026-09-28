@@ -39,6 +39,7 @@ export default function makeUnitCombat(
     let meleeHandle: GameObj | null = null;
     let meleeHead: GameObj | null = null;
     let activeBeam: GameObj | null = null;
+    let flameEffect: ReturnType<typeof createFlameParticles> | undefined;
 
     const gun = k.add([
         k.sprite(opts.gunSprite, { anim: "idle" }),
@@ -99,6 +100,8 @@ export default function makeUnitCombat(
 
     opts.owner.onStateEnter("disabled", () => {
         destroyBeam();
+        flameEffect?.destroy();
+        flameEffect = undefined;
     });
 
     const rangeCircle = k.add([
@@ -790,6 +793,8 @@ export default function makeUnitCombat(
         if (!store.get(gameStateAtom).waveActive) {
             gun.angle = 0;
             if (activeBeam) destroyBeam();
+            flameEffect?.destroy();
+            flameEffect = undefined;
             return;
         }
 
@@ -805,14 +810,42 @@ export default function makeUnitCombat(
         } else gun.angle = 0;
 
         if (target && opts.owner.continuousEffect && target.type === "enemy") {
-            const rotatedOffset = rotateVector(
-                k,
-                k.vec2(opts.shootOffset.x, opts.shootOffset.y),
-                gun.angle * Math.PI / 180
-            );
+            if (
+                target &&
+                opts.owner.continuousEffect &&
+                target.type === "enemy"
+            ) {
+                if (!flameEffect) {
+                    flameEffect = createFlameParticles(
+                        k,
 
-            const origin = gun.pos.add(rotatedOffset);
-            spawnFlameParticles(k, origin, target.enemy, opts.stats.range * TILE_SIZE - origin.dist(rangeCircle.pos), opts.owner.continuousEffect);
+                        // Current muzzle position
+                        () => {
+                            const rotatedOffset = rotateVector(
+                                k,
+                                k.vec2(
+                                    opts.shootOffset.x,
+                                    opts.shootOffset.y
+                                ),
+                                gun.angle * Math.PI / 180
+                            );
+
+                            return gun.pos.add(rotatedOffset);
+                        },
+
+                        // Current gun direction
+                        () => gun.angle,
+
+                        () => opts.stats.range * TILE_SIZE -
+                            gun.pos.dist(rangeCircle.pos),
+
+                        opts.owner.continuousEffect
+                    );
+                }
+            }
+        } else {
+            flameEffect?.destroy();
+            flameEffect = undefined;
         }
 
         // regular shooting
@@ -946,8 +979,10 @@ export default function makeUnitCombat(
         update,
         destroy() {
             opts.owner.activeProjectile && k.destroy(opts.owner.activeProjectile);
-            k.destroy(gun)
-            k.destroy(rangeCircle)
+            k.destroy(gun);
+            k.destroy(rangeCircle);
+            flameEffect?.destroy();
+            flameEffect = undefined;
         },
     };
 
@@ -1388,6 +1423,219 @@ function spawnFlameParticles(
             }
         ]);
     }
+}
+
+function createFlameParticles(
+    k: KAPLAYCtx,
+    getOrigin: () => Vec2,
+    getAngle: () => number,
+    getRange: () => number,
+    sprite: string
+) {
+    const baseRange = 3 * TILE_SIZE;
+    const baseParticles = 16;
+
+    const rangeMultiplier = getRange() / baseRange;
+
+    const particleCount = Math.round(
+        baseParticles * Math.sqrt(rangeMultiplier)
+    );
+
+    const smokeParticles: GameObj[] = [];
+
+    const smokeCount = Math.min(
+        10,
+        Math.round(6 * Math.sqrt(getRange() / baseRange))
+    );
+
+    const coneAngle = 20;
+    const half = coneAngle / 2;
+
+    const flames: GameObj[] = [];
+
+    for (let i = 0; i < particleCount; i++) {
+        const flame = k.add([
+            k.sprite(sprite),
+            k.pos(getOrigin()),
+            k.anchor("center"),
+            k.z(999),
+            k.opacity(0),
+            k.scale(0.5),
+            {
+                progress: i / particleCount,
+                speed: k.rand(1.8, 2.5),
+                angleOffset: k.rand(-half, half),
+
+                reset(initial = false) {
+                    if (!initial) {
+                        flame.progress = 0;
+                    }
+
+                    flame.speed = k.rand(1.8, 2.5);
+                    flame.angleOffset = k.rand(-half, half);
+                },
+
+                update() {
+                    const dt =
+                        k.dt() *
+                        store.get(gameStateAtom).timeScale;
+
+                    flame.progress += dt * flame.speed;
+
+                    if (flame.progress >= 1) {
+                        flame.reset();
+                    }
+
+                    const origin = getOrigin();
+
+                    // Same direction as actual cone attack
+                    const angle =
+                        (getAngle() + 180 + flame.angleOffset) *
+                        Math.PI / 180;
+
+                    const dir = k.vec2(
+                        Math.cos(angle),
+                        Math.sin(angle)
+                    );
+
+                    const range = getRange();
+
+                    const distance =
+                        (range - 32) * flame.progress;
+
+                    flame.pos = origin.add(
+                        dir.scale(distance)
+                    );
+
+                    // Larger towards outside of cone
+                    // const size =
+                    //     0.6 + flame.progress * 2.2;
+
+                    const rangeMultiplier = getRange() / baseRange;
+
+                    const maxSize =
+                        2.8 * Math.sqrt(rangeMultiplier);
+
+                    const size =
+                        0.6 + (maxSize - 0.6) * flame.progress;
+
+                    flame.scale = k.vec2(size);
+
+                    const fadeIn =
+                        Math.min(flame.progress / 0.08, 1);
+
+                    const fadeOut =
+                        Math.min(
+                            (1 - flame.progress) / 0.2,
+                            1
+                        );
+
+                    flame.opacity =
+                        Math.min(fadeIn, fadeOut) * 0.9;
+
+                    flame.pos.y -=
+                        12 * flame.progress;
+                }
+            }
+        ]);
+
+        flames.push(flame);
+    }
+
+    for (let i = 0; i < smokeCount; i++) {
+        const smoke = k.add([
+            k.rect(4, 4),
+            k.color("#5a5a5a"),
+            k.pos(getOrigin()),
+            k.anchor("center"),
+            k.opacity(0),
+            k.z(999),
+            k.scale(1),
+            {
+                progress: i / smokeCount,
+                angleOffset: k.rand(-half, half),
+
+                reset() {
+                    smoke.progress = 0;
+                    smoke.angleOffset = k.rand(-half, half);
+                },
+
+                update() {
+                    const dt =
+                        k.dt() *
+                        store.get(gameStateAtom).timeScale;
+
+                    smoke.progress += dt * 0.8;
+
+                    if (smoke.progress >= 1) {
+                        smoke.reset();
+                    }
+
+                    const origin = getOrigin();
+
+                    const angle =
+                        (
+                            getAngle() +
+                            180 +
+                            smoke.angleOffset
+                        ) *
+                        Math.PI / 180;
+
+                    const dir = k.vec2(
+                        Math.cos(angle),
+                        Math.sin(angle)
+                    );
+
+                    // Smoke starts near end of flame cone
+                    const range = getRange();
+                    const endPadding = 40 / Math.sqrt(rangeMultiplier);
+                    const smokeEnd = range - endPadding;
+
+                    // And only moves through final section
+                    const smokeDistance =
+                        range * 0.72 +
+                        (smokeEnd - range * 0.72) *
+                        smoke.progress;
+
+                    smoke.pos = origin.add(
+                        dir.scale(smokeDistance)
+                    );
+
+                    // Drift upwards
+                    smoke.pos.y -=
+                        10 + smoke.progress * 12;
+
+                    // Expand
+                    const size =
+                        1.2 + smoke.progress * 1.5;
+
+                    smoke.scale = k.vec2(size);
+
+                    // Fade away
+                    smoke.opacity =
+                        0.35 * (1 - smoke.progress);
+                }
+            }
+        ]);
+
+        smokeParticles.push(smoke);
+    }
+
+    return {
+        destroy() {
+            for (const flame of flames) {
+                if (flame.exists()) {
+                    k.destroy(flame);
+                }
+            }
+
+            for (const smoke of smokeParticles) {
+                if (smoke.exists()) {
+                    k.destroy(smoke);
+                }
+            }
+        }
+    };
 }
 
 function rampLaserAttack(

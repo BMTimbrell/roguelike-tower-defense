@@ -138,7 +138,7 @@ function makeProjectileAoe(k: KAPLAYCtx, id: ProjectileId, num: number, target?:
         const fireball = k.add([
             k.sprite(PROJECTILES[id].sprite),
             k.pos(start),
-            k.rotate((angle * 180) / Math.PI),
+            k.rotate((angle * 180) / Math.PI + 180),
             k.anchor("center"),
             {
                 travelled: 0

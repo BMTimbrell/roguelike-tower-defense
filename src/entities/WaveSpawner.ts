@@ -61,6 +61,7 @@ export default function makeWaveSpawner(k: KAPLAYCtx, levelId: LevelId, waypoint
                                 k.pos(bossStop),
                                 k.anchor("center"),
                                 k.scale(1),
+                                k.z(2),
                                 {
                                     update() {
                                         bossIcon.scale = k.vec2(1 + Math.sin(k.time() * 3) * 0.1);
@@ -87,13 +88,13 @@ export default function makeWaveSpawner(k: KAPLAYCtx, levelId: LevelId, waypoint
                 spawning = true;
                 const waveNumber = spawner.waveIndex + 1;
                 let luckBonus = 0;
-                if (waveNumber < 5) {
-                    luckBonus = 0;
-                } else if (waveNumber <= 6) {
-                    luckBonus = 1;
-                } else if (waveNumber <= 8) {
-                    luckBonus = 1.5;
-                }
+                // if (waveNumber < 5) {
+                //     luckBonus = 0;
+                // } else if (waveNumber < 7) {
+                //     luckBonus = 0.2;
+                // } else if (waveNumber <= 9) {
+                //     luckBonus = 0.5;
+                // }
 
                 if (waveNumber > 1) {
                     store.set(gameStateAtom, prev => ({
