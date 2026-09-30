@@ -951,7 +951,8 @@ async function saveEndlessCheckpoint(k: KAPLAYCtx, seed: number) {
         towerId: tower.towerId,
         tileX: tower.pos.x / TILE_SIZE,
         tileY: tower.pos.y / TILE_SIZE,
-        upgrades: tower.upgrades
+        upgrades: tower.upgrades,
+        unlockedUpgradeSlots: tower.unlockedUpgradeSlots
     }));
 
     await saveRun({

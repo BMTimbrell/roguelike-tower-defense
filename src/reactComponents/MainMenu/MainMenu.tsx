@@ -141,7 +141,58 @@ export default function MainMenu() {
                                     break;
 
                                 case "endless":
-                                    break;
+                                    const endlessHero = makeHero(
+                                        k,
+                                        {
+                                            heroId: saveData.hero.id,
+                                            pos: k.toWorld(k.mousePos()),
+                                            tileGrid: [],
+                                            pathTiles: [],
+                                            level: saveData.hero.level
+                                        }
+                                    );
+        
+                                    endlessHero.skillIds = saveData.hero.skills;
+        
+                                    updateSkills(endlessHero);
+        
+                                    setMenu(prev => ({ ...prev, visible: false }));
+                                    setGameState(prev => ({
+                                        ...prev,
+                                        timeScale: 1,
+                                        seed: saveData.endlessSeed,
+                                        gameMode: "endless",
+                                        health: saveData.health,
+                                        maxHealth: saveData.maxHealth,
+                                        waveNumber: saveData.wave,
+                                        luck: saveData.luck,
+                                        waveActive: false,
+                                        heroCharge: saveData.heroCharge,
+                                        deck: {
+                                            drawCard: () => { },
+                                            drawCost: 10,
+                                            cards: saveData.deck
+                                        },
+                                        selectedUpgrade: null,
+                                        nextTowerId: saveData.nextTowerId,
+                                        towerButtons: [],
+                                        hero: endlessHero,
+                                        heroButton: {
+                                            ...prev.heroButton,
+                                            onClick: () => {
+                                                if (k.get("hero")[0]) k.destroy(k.get("hero")[0]);
+                                                else {
+                                                    setGameState(prev => ({
+                                                        ...prev,
+                                                        selectedUpgrade: null
+                                                    }));
+                                                    k.add(endlessHero);
+                                                }
+                                            }
+                                        }
+                                    }));
+
+                                    k.go("endlessForest");
 
                             }
                         }}

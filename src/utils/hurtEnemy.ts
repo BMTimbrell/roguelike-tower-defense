@@ -98,8 +98,15 @@ export default function hurtEnemy(k: KAPLAYCtx, opts: {
         amount: damage
     });
 
-    if (attacker?.towerBuffs.some(b => b.type === "toxicInfusion")) {
-        spawnPoisonCloud(k, { damage: Math.max(1, Math.round(effectiveDamage * 0.25)), target: target.pos });
+    if (
+        attacker?.towerBuffs.some(b => b.type === "toxicInfusion") &&
+        !statusDamage &&
+        !damageFromBuff
+    ) {
+        spawnPoisonCloud(k, {
+            damage: Math.max(1, Math.round(effectiveDamage * 0.25)),
+            target: target.pos
+        });
     }
 
     if (!statusDamage) {

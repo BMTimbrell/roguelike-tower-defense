@@ -88,19 +88,16 @@ export default function makeWaveSpawner(k: KAPLAYCtx, levelId: LevelId, waypoint
                 spawning = true;
                 const waveNumber = spawner.waveIndex + 1;
                 let luckBonus = 0;
-                // if (waveNumber < 5) {
-                //     luckBonus = 0;
-                // } else if (waveNumber < 7) {
-                //     luckBonus = 0.2;
-                // } else if (waveNumber <= 9) {
-                //     luckBonus = 0.5;
-                // }
+                if (waveNumber < 6) {
+                     luckBonus = 1;
+                }
 
                 if (waveNumber > 1) {
                     store.set(gameStateAtom, prev => ({
                         ...prev,
-                        luck: prev.luck + 1 + luckBonus
+                        luck: prev.luck + luckBonus
                     }));
+                    console.log(store.get(gameStateAtom).luck)
                 }
 
                 store.set(gameStateAtom, prev => ({

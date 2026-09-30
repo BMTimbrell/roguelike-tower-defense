@@ -137,6 +137,8 @@ export function castSpell(k: KAPLAYCtx, spell: Spell, opts?: { target?: Vec2; to
 
             affectedTowers.forEach(tower => {
                 tower.stats.range += 2;
+
+                tower.temporaryRange = (tower.temporaryRange ?? 0) + 2;
             });
 
             const moteLoop = k.loop(0.02, () => {
@@ -146,6 +148,7 @@ export function castSpell(k: KAPLAYCtx, spell: Spell, opts?: { target?: Vec2; to
             waitScaled(k, spellDuration, () => {
                 affectedTowers.forEach(tower => {
                     tower.stats.range -= 2;
+                    tower.temporaryRange = (tower.temporaryRange ?? 0) - 2;
                 });
                 k.get("light mote").forEach(mote => k.destroy(mote));
                 moteLoop.cancel();
@@ -211,19 +214,32 @@ export function castSpell(k: KAPLAYCtx, spell: Spell, opts?: { target?: Vec2; to
             if (tower) {
                 const overchargeDuration = 5;
                 tower.selected = false;
-                tower.towerBuffs.push(
-                    {
-                        type: "bonusDamage",
-                        element: "Electric",
-                        multiplier: 0.2,
-                        timeLeft: overchargeDuration
-                    },
-                    {
-                        type: "fireRate",
-                        multiplier: 0.5,
-                        timeLeft: overchargeDuration
-                    }
+                const existingOverchargeBuffs = tower.towerBuffs.filter(
+                    buff => "source" in buff && buff.source === "overcharge"
                 );
+
+                if (existingOverchargeBuffs.length) {
+                    // Extend the existing Overcharge
+                    for (const buff of existingOverchargeBuffs) {
+                        buff.timeLeft = (buff.timeLeft ?? 0) + overchargeDuration;
+                    }
+                } else {
+                    tower.towerBuffs.push(
+                        {
+                            type: "bonusDamage",
+                            element: "Electric",
+                            multiplier: 0.2,
+                            timeLeft: overchargeDuration,
+                            source: "overcharge"
+                        },
+                        {
+                            type: "fireRate",
+                            multiplier: 0.5,
+                            timeLeft: overchargeDuration,
+                            source: "overcharge"
+                        }
+                    );
+                }
 
                 playUISound(k, "electric shock", 0.5);
 
@@ -524,30 +540,47 @@ function spawnElectricSpark(k: KAPLAYCtx, tower: TowerGameObj) {
     );
 }
 
-export function generateRandomSpells(amount: number, arr: Spell[]) {
+function createSpell(spell: Spell): Spell {
+    const copy = { ...spell };
+
+    if (copy.effect === "gold") {
+        const amounts = [20, 30, 40, 50, 60];
+        copy.amount = amounts[Math.floor(Math.random() * amounts.length)];
+        copy.description = `Gain ${copy.amount} gold`;
+    } else if (copy.effect === "heal") {
+        const uses = [1, 1, 2, 2, 3];
+        copy.uses = uses[Math.floor(Math.random() * uses.length)];
+    }
+
+    return copy;
+}
+
+export function generateRandomSpells(
+    amount: number,
+    arr: Spell[],
+    unique = true
+) {
     if (!arr.length) return [];
-    const result = new Set<Spell>();
 
-    const spellPool = arr.map(spell => {
-        const copy = { ...spell };
+    if (!unique) {
+        const result: Spell[] = [];
 
-        if (copy.effect === "gold") {
-            const amounts = [20, 30, 40, 50, 60];
-            copy.amount = amounts[Math.floor(Math.random() * amounts.length)];
-            copy.description = `Gain ${copy.amount} gold`;
-        } else if (copy.effect === "heal") {
-            const uses = [1, 1, 2, 2, 3];
-            copy.uses = uses[Math.floor(Math.random() * uses.length)];
+        for (let i = 0; i < amount; i++) {
+            const spell = arr[Math.floor(Math.random() * arr.length)];
+            result.push(createSpell(spell));
         }
 
-        return copy;
-    });
-
-    while (result.size < Math.min(amount, spellPool.length)) {
-        const index = Math.floor(Math.random() * spellPool.length);
-        result.add(spellPool[index]);
+        return result;
     }
-    return [...result];
+
+    const selected = new Set<Spell>();
+
+    while (selected.size < Math.min(amount, arr.length)) {
+        const index = Math.floor(Math.random() * arr.length);
+        selected.add(arr[index]);
+    }
+
+    return [...selected].map(createSpell);
 }
 
 export function spawnPoisonCloud(k: KAPLAYCtx, opts: { damage: number; target: Vec2; }) {

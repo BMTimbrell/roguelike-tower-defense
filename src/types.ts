@@ -78,6 +78,7 @@ export type TowerBuff =
         element: ElementName;
         multiplier: number;
         timeLeft?: number;
+        source?: string;
     }
     | {
         type: "toxicInfusion",
@@ -87,6 +88,7 @@ export type TowerBuff =
         type: "fireRate";
         multiplier: number;
         timeLeft?: number;
+        source?: string;
     }
     | {
         type: "range";
@@ -243,6 +245,7 @@ export type UnitInstance = {
     chargeStacks?: Charge;
     towerBuffs: TowerBuff[];
     hasThirst: boolean;
+    temporaryRange?: number;
 };
 
 export type TimeData = {
@@ -1169,6 +1172,8 @@ type SavedTower = {
 
     tileX: number;
     tileY: number;
+
+    unlockedUpgradeSlots: number;
 
     upgrades: Upgrade[];
 

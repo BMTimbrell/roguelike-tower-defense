@@ -7,7 +7,6 @@ import { cachedSaveAtom, controlsAtom, gameSpeedUIAtom, gameStateAtom, pauseMenu
 import generateFog from "../utils/generateFog";
 import isButtonDown from "../utils/isButtonDown";
 import { playMusic } from "../utils/soundHelpers";
-import updateSkills from "../utils/updateSkills";
 import drawCards from "../utils/drawCards";
 import makeFloatingText from "../entities/FloatingText";
 import addTowers from "../utils/addTowers";
@@ -205,29 +204,32 @@ export default function endlessForest(k: KAPLAYCtx) {
             }
         }
 
-        let makehero = makeHero(
+        const hero = makeHero(
             k,
             {
                 heroId: store.get(gameStateAtom).hero?.heroId ?? "archer",
                 pos: k.toWorld(k.mousePos()),
                 tileGrid,
                 pathTiles,
-                level: 1
+                level: store.get(gameStateAtom).hero?.level ?? 1
             }
         );
+
+        hero.skillIds = store.get(gameStateAtom).hero?.skillIds ?? [];
 
         let gold = 100;
         let upgrades: Card[] = drawCards(k, store.get(gameStateAtom).deck.cards, ROUND_DRAW_NUM);
         let waveNumber = 1;
         let luck = 1;
+        let towerButtons = store.get(gameStateAtom).towerButtons.map(t => t.id);
 
         if (save?.run?.mode === "endless") {
             gold = save.run.gold;
             upgrades = save.run.hand;
             waveNumber = save.run.wave;
             luck = save.run.luck;
+            towerButtons = save.run.towerButtons;
         }
-
 
         store.set(gameStateAtom, prev => ({
             ...prev,
@@ -237,7 +239,7 @@ export default function endlessForest(k: KAPLAYCtx) {
             waveNumber,
             selectedUI: null,
             bottomBarVisible: true,
-            towerButtons: addTowers(k, prev.towerButtons.map(t => t.id), tileGrid, pathTiles),
+            towerButtons: addTowers(k, towerButtons, tileGrid, pathTiles),
             upgrades,
             luck,
             deck: {
@@ -277,7 +279,7 @@ export default function endlessForest(k: KAPLAYCtx) {
                 }
             },
             handVersion: 0,
-            hero: makehero,
+            hero,
             heroButton: {
                 ...prev.heroButton,
                 onClick: () => {
@@ -287,16 +289,11 @@ export default function endlessForest(k: KAPLAYCtx) {
                             ...prev,
                             selectedUpgrade: null
                         }));
-                        k.add(makehero);
+                        k.add(hero);
                     }
                 }
             }
         }));
-
-        const hero = store.get(gameStateAtom).hero;
-        if (hero) {
-            updateSkills(hero);
-        }
 
         addSelectTowerListener(k);
         makeLavaManager(k);
