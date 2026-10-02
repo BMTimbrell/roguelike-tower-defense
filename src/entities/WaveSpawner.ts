@@ -97,7 +97,6 @@ export default function makeWaveSpawner(k: KAPLAYCtx, levelId: LevelId, waypoint
                         ...prev,
                         luck: prev.luck + luckBonus
                     }));
-                    console.log(store.get(gameStateAtom).luck)
                 }
 
                 store.set(gameStateAtom, prev => ({
@@ -447,6 +446,11 @@ export default function makeWaveSpawner(k: KAPLAYCtx, levelId: LevelId, waypoint
                                 tileGrid: e.tileGrid,
                                 pathTiles: e.pathTiles
                             });
+
+                            store.set(gameStateAtom, prev => ({
+                                ...prev,
+                                nextTowerId: prev.nextTowerId + 1
+                            }));
 
                             k.destroy(e);
                             plant.placed = true;

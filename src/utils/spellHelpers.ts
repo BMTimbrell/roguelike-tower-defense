@@ -1,6 +1,6 @@
 import type { GameObj, KAPLAYCtx, Vec2 } from "kaplay";
 import type { EnemyGameObj, Spell, TowerGameObj } from "../types";
-import { gameStateAtom, store } from "../store";
+import { endlessMapStateAtom, gameStateAtom, store } from "../store";
 import { ELEMENTS, TILE_SIZE } from "../constants";
 import hurtEnemy from "./hurtEnemy";
 import healthBar from "../kaplayComponents/healthBar";
@@ -221,7 +221,7 @@ export function castSpell(k: KAPLAYCtx, spell: Spell, opts?: { target?: Vec2; to
                 if (existingOverchargeBuffs.length) {
                     // Extend the existing Overcharge
                     for (const buff of existingOverchargeBuffs) {
-                        buff.timeLeft = (buff.timeLeft ?? 0) + overchargeDuration;
+                        buff.timeLeft = overchargeDuration;
                     }
                 } else {
                     tower.towerBuffs.push(
@@ -558,7 +558,8 @@ function createSpell(spell: Spell): Spell {
 export function generateRandomSpells(
     amount: number,
     arr: Spell[],
-    unique = true
+    unique = true,
+    rng: () => number = Math.random
 ) {
     if (!arr.length) return [];
 
@@ -566,7 +567,7 @@ export function generateRandomSpells(
         const result: Spell[] = [];
 
         for (let i = 0; i < amount; i++) {
-            const spell = arr[Math.floor(Math.random() * arr.length)];
+            const spell = arr[Math.floor(rng() * arr.length)];
             result.push(createSpell(spell));
         }
 
@@ -576,7 +577,7 @@ export function generateRandomSpells(
     const selected = new Set<Spell>();
 
     while (selected.size < Math.min(amount, arr.length)) {
-        const index = Math.floor(Math.random() * arr.length);
+        const index = Math.floor(rng() * arr.length);
         selected.add(arr[index]);
     }
 
@@ -845,6 +846,8 @@ function spawnBurningGround(k: KAPLAYCtx, opts: { target: Vec2; range: number; d
         tree.pos.dist(fire.pos) <= range
     );
 
+    let destroyedTrees: { x: number; y: number; }[];
+
     trees.forEach(tree => {
         if (!tree.burning) {
             tree.burning = true;
@@ -876,6 +879,16 @@ function spawnBurningGround(k: KAPLAYCtx, opts: { target: Vec2; range: number; d
                 tree.tile.blocked = false;
 
                 tree.destroy();
+
+                if (store.get(gameStateAtom).gameMode === "endless") {
+                    store.set(endlessMapStateAtom, prev => ({
+                        ...prev,
+                        destroyedTrees: [
+                            ...prev.destroyedTrees,
+                            { x: tree.pos.x / TILE_SIZE, y: tree.pos.y / TILE_SIZE }
+                        ]
+                    }))
+                }
             });
         }
     });

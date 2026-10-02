@@ -122,7 +122,6 @@ export default function makeTower(
 
     const combat = makeUnitCombat(k, {
         owner: tower,
-        stats: tower.stats,
         projectile,
         gunSprite,
         gunOffset: k.vec2(gunOffset.x, gunOffset.y),
@@ -224,236 +223,7 @@ export default function makeTower(
                 waveActive: store.get(gameStateAtom).waveActive
             });
 
-            // lava
-            if ((TOWERS[towerId] as Record<"lavaTiles", []>).lavaTiles) {
-                tower.lavaTiles ??= getLavaTiles(k, tower.pos, tower.stats.range * TILE_SIZE, tower.tileGrid);
-                tower.lavaTiles.forEach(pos => makeLavaTile(k, pos, tower));
-                combat.gun.play("pouring");
-            }
-
-            if (towerId === "orbit") {
-                const orbiter = k.add([
-                    k.pos(tower.pos.x, tower.pos.y),
-                    k.sprite("planet"),
-                    k.anchor("center"),
-                    {
-                        angle: 0,
-                        r: 80,
-                        hitEnemies: new Set<EnemyGameObj>(),
-                        speed: 2 * Math.PI,
-                        towerId: tower.instanceId
-                    },
-                    "orbiter"
-                ]);
-
-                orbiter.onUpdate(() => {
-                    const timeScale = store.get(gameStateAtom).timeScale;
-                    orbiter.r = tower.stats.range * TILE_SIZE;
-                    const fireRateBuff = getBuffValue(tower, "fireRate");
-                    const fireRateMultiplier = tower.towerBuffs
-                        .filter(b => b.type === "fireRate")
-                        .reduce((acc, b) => acc * b.multiplier, 1);
-
-                    if (tower.state === "disabled") {
-                        orbiter.speed = 0;
-                        return;
-                    }
-
-                    orbiter.speed = 2 * Math.PI / (((1 - fireRateBuff) * fireRateMultiplier) * tower.stats.fireInterval * (tower.isThirsty ? 2 : 1));
-                    orbiter.angle += orbiter.speed * k.dt() * timeScale;
-
-                    const cx = tower.pos.x + (tower.footprint.w * TILE_SIZE) / 2;
-                    const cy = tower.pos.y + (tower.footprint.h * TILE_SIZE) / 2;
-
-                    orbiter.pos.x = cx + Math.cos(orbiter.angle) * orbiter.r;
-                    orbiter.pos.y = cy + Math.sin(orbiter.angle) * orbiter.r;
-
-                    (k.get("targetable") as EnemyGameObj[]).forEach(enemy => {
-                        if (orbiter.hitEnemies.has(enemy)) return;
-
-                        if (enemy.pos.dist(orbiter.pos) < TILE_SIZE * 0.75 && store.get(gameStateAtom).waveActive) {
-                            const damageTowerBuff = tower.towerBuffs
-                                .filter(b => b.type === "damage")
-                                .reduce((acc, b) => acc + b.multiplier, 0);
-                            const damageMult = 1 + getBuffValue(tower, "damage") + damageTowerBuff;
-
-                            const critDamageTowerBuff = tower.towerBuffs
-                                .filter(b => b.type === "critDamage")
-                                .reduce((acc, b) => acc + b.multiplier, 0);
-
-                            const critDamageMult = 1 + getBuffValue(tower, "critDamage") + critDamageTowerBuff;
-                            const bonusDamage = tower.towerBuffs
-                                .filter(b => b.type === "flatDamage")
-                                .reduce((acc, b) => acc + b.amount, 0);
-
-                            const { isCrit, damage } = calcDamage({
-                                bonusDamage,
-                                bonusCritChance: enemy.has("curse") ? CURSE_CRIT + (k.get("hero")[0]?.hasCurseBuff ? 10 : 0) : 0,
-                                critChance: tower.stats.critChance + (getBuffValue(tower, "critChance") * 100),
-                                critDamage: tower.stats.critDamage * critDamageMult,
-                                damage: tower.stats.damage,
-                                damageMultiplier: damageMult
-                            });
-                            orbiter.hitEnemies.add(enemy);
-                            waitScaled(k, 1, () => orbiter.hitEnemies.delete(enemy));
-                            hurtEnemy(k, {
-                                target: enemy,
-                                damage,
-                                isCrit,
-                                element: tower.element,
-                                attacker: tower
-                            });
-
-                            playSfx(k, "smash", 1, enemy.pos);
-                        }
-                    });
-
-                });
-
-                tower.onDestroy(() => {
-                    k.destroy(orbiter);
-                });
-            } else if (towerId === "phoenix") {
-
-                const phoenix = k.add([
-                    k.sprite("phoenix", { anim: "fly" }),
-                    k.pos(tower.pos),
-                    k.opacity(1),
-                    k.z(999),
-                    k.anchor("center"),
-                    k.rotate(0),
-                    {
-                        orbitAngle: 0,
-                        r: 80,
-                        speed: 2 * Math.PI,
-                        fireTimer: 0,
-                        towerId: tower.instanceId
-                    },
-                    "phoenix"
-                ]);
-
-                phoenix.onUpdate(() => {
-                    const timeScale = store.get(gameStateAtom).timeScale;
-
-                    phoenix.opacity = tower.state === "disabled" ? 0 : 1;
-
-                    if (tower.state === "disabled") return;
-
-                    // orbit speed
-                    const fireRateBuff = getBuffValue(tower, "fireRate");
-                    const fireRateMultiplier = tower.towerBuffs
-                        .filter(b => b.type === "fireRate")
-                        .reduce((acc, b) => acc * b.multiplier, 1);
-
-                    const fireInterval = (((1 - fireRateBuff) * fireRateMultiplier) * tower.stats.fireInterval * (tower.isThirsty ? 2 : 1));
-
-                    phoenix.speed =
-                        2 * Math.PI /
-                        fireInterval;
-
-                    phoenix.orbitAngle += phoenix.speed * k.dt() * timeScale;
-
-                    phoenix.angle = (phoenix.orbitAngle * 180) / Math.PI - 90;
-
-                    phoenix.r = tower.stats.range * TILE_SIZE;
-
-                    const cx =
-                        tower.pos.x + (tower.footprint.w * TILE_SIZE) / 2;
-
-                    const cy =
-                        tower.pos.y + (tower.footprint.h * TILE_SIZE) / 2;
-
-                    phoenix.pos.x =
-                        cx + Math.cos(phoenix.orbitAngle) * phoenix.r;
-
-                    phoenix.pos.y =
-                        cy + Math.sin(phoenix.orbitAngle) * phoenix.r;
-
-                    if (phoenix.fireTimer > fireInterval) phoenix.fireTimer = fireInterval;
-
-                    if (phoenix.fireTimer > 0) {
-                        phoenix.fireTimer -= k.dt() * timeScale;
-                    }
-
-                    if (phoenix.fireTimer <= 0 && store.get(gameStateAtom).waveActive) {
-
-                        const enemies = k.get("targetable") as EnemyGameObj[];
-
-                        const target = selectTarget(enemies, { ...tower, stats: { ...tower.stats, range: 3 } }, phoenix.pos);
-
-                        if (!target) return;
-
-                        phoenix.fireTimer += (fireInterval / 12);
-
-                        const damageTowerBuff = tower.towerBuffs
-                            .filter(b => b.type === "damage")
-                            .reduce((acc, b) => acc + b.multiplier, 0);
-                        const damageMult = 1 + getBuffValue(tower, "damage") + damageTowerBuff;
-
-                        const critDamageTowerBuff = tower.towerBuffs
-                            .filter(b => b.type === "critDamage")
-                            .reduce((acc, b) => acc + b.multiplier, 0);
-
-                        const critDamageMult = 1 + getBuffValue(tower, "critDamage") + critDamageTowerBuff;
-
-                        const bonusDamage = tower.towerBuffs
-                            .filter(b => b.type === "flatDamage")
-                            .reduce((acc, b) => acc + b.amount, 0);
-
-                        const { isCrit, damage } = calcDamage({
-                            bonusDamage,
-                            bonusCritChance:
-                                target.has("curse")
-                                    ? CURSE_CRIT +
-                                    (k.get("hero")[0]?.hasCurseBuff ? 10 : 0)
-                                    : 0,
-                            critChance:
-                                tower.stats.critChance +
-                                (getBuffValue(tower, "critChance") * 100),
-                            critDamage:
-                                tower.stats.critDamage *
-                                critDamageMult,
-                            damage: tower.stats.damage,
-                            damageMultiplier: damageMult
-                        });
-
-                        const rotatedOffset = rotateVector(
-                            k,
-                            k.vec2(-15, 0),
-                            phoenix.angle * Math.PI / 180
-                        );
-
-                        playSfx(k, TOWERS[towerId]?.shootSound, 1, phoenix.pos);
-
-                        makeProjectile(k, {
-                            id: "fireball",
-                            pos: phoenix.pos.add(rotatedOffset),
-                            target,
-                            damage,
-                            crit: isCrit,
-                            angle: phoenix.pos.angle(target.pos),
-                            element: "Fire",
-                            homing: true,
-                            turnSpeed: 6,
-                            scale: 1,
-                            splashRadius: 0,
-                            owner: tower as TowerGameObj
-                        });
-                    }
-                });
-
-                tower.onDestroy(() => {
-                    k.destroy(phoenix);
-                });
-            }
-
-            if (k.get("hero").some(hero => hero.changeNormalElement)) {
-                if (tower.element === "Normal") {
-                    const elements = Object.keys(ELEMENTS).filter(e => e !== "Normal") as ElementName[];
-                    const rand = k.randi(elements.length);
-                    tower.element = elements[rand];
-                }
-            }
+            confirmTowerPlacement(k, tower);
 
             if (k.get("hero").some(hero => hero.hasRangeBoost)) {
                 const hero = k.get("hero")[0];
@@ -465,27 +235,6 @@ export default function makeTower(
                     if (towerCenter.dist(heroCenter) <= TILE_SIZE * tower.footprint.w) {
                         tower.stats.range++;
                     }
-                }
-            }
-
-            if (k.get("hero").some(hero => hero.hasToxicAura)) {
-                const hero = k.get("hero")[0];
-
-                const towerCenter = tower.pos.add(k.vec2((tower.footprint.w * TILE_SIZE) / 2));
-                const heroCenter = hero.pos.add(k.vec2(TILE_SIZE / 2));
-
-                if (towerCenter.dist(heroCenter) <= TILE_SIZE * tower.footprint.w) {
-                    tower.element = "Poison";
-                }
-            }
-
-            if (k.get("hero").some(hero => hero.hasBlock)) {
-                const hero = k.get("hero")[0];
-                const towerCenter = tower.pos.add(k.vec2((tower.footprint.w * TILE_SIZE) / 2));
-                const heroCenter = hero.pos.add(k.vec2(TILE_SIZE / 2));
-
-                if (towerCenter.dist(heroCenter) <= TILE_SIZE * tower.footprint.w) {
-                    tower.hasBlock = true;
                 }
             }
 
@@ -781,7 +530,7 @@ export default function makeTower(
         }
 
         if (combat.gun.hasAnim("pouring")) combat.gun.play("pouring");
-        else combat.gun.play("idle");
+        else if(!tower.farmData) combat.gun.play("idle");
 
         if (!tower.lavaTiles) return;
 
@@ -815,3 +564,256 @@ function getBuffIcon(type: BuffType) {
     }
 }
 
+export function confirmTowerPlacement(k: KAPLAYCtx, tower: TowerGameObj) {
+    const towerId = tower.towerId;
+    // lava
+    if ((TOWERS[towerId] as Record<"lavaTiles", []>).lavaTiles) {
+        tower.lavaTiles ??= getLavaTiles(k, tower.pos, tower.stats.range * TILE_SIZE, tower.tileGrid);
+        tower.lavaTiles.forEach(pos => makeLavaTile(k, pos, tower));
+    }
+
+    if (towerId === "orbit") {
+        const orbiter = k.add([
+            k.pos(tower.pos.x, tower.pos.y),
+            k.sprite("planet"),
+            k.anchor("center"),
+            {
+                angle: 0,
+                r: 80,
+                hitEnemies: new Set<EnemyGameObj>(),
+                speed: 2 * Math.PI,
+                towerId: tower.instanceId
+            },
+            "orbiter"
+        ]);
+
+        orbiter.onUpdate(() => {
+            const timeScale = store.get(gameStateAtom).timeScale;
+            orbiter.r = tower.stats.range * TILE_SIZE;
+            const fireRateBuff = getBuffValue(tower, "fireRate");
+            const fireRateMultiplier = tower.towerBuffs
+                .filter(b => b.type === "fireRate")
+                .reduce((acc, b) => acc * b.multiplier, 1);
+
+            if (tower.state === "disabled") {
+                orbiter.speed = 0;
+                return;
+            }
+
+            orbiter.speed = 2 * Math.PI / (((1 - fireRateBuff) * fireRateMultiplier) * tower.stats.fireInterval * (tower.isThirsty ? 2 : 1));
+            orbiter.angle += orbiter.speed * k.dt() * timeScale;
+
+            const cx = tower.pos.x + (tower.footprint.w * TILE_SIZE) / 2;
+            const cy = tower.pos.y + (tower.footprint.h * TILE_SIZE) / 2;
+
+            orbiter.pos.x = cx + Math.cos(orbiter.angle) * orbiter.r;
+            orbiter.pos.y = cy + Math.sin(orbiter.angle) * orbiter.r;
+
+            (k.get("targetable") as EnemyGameObj[]).forEach(enemy => {
+                if (orbiter.hitEnemies.has(enemy)) return;
+
+                if (enemy.pos.dist(orbiter.pos) < TILE_SIZE * 0.75 && store.get(gameStateAtom).waveActive) {
+                    const damageTowerBuff = tower.towerBuffs
+                        .filter(b => b.type === "damage")
+                        .reduce((acc, b) => acc + b.multiplier, 0);
+                    const damageMult = 1 + getBuffValue(tower, "damage") + damageTowerBuff;
+
+                    const critDamageTowerBuff = tower.towerBuffs
+                        .filter(b => b.type === "critDamage")
+                        .reduce((acc, b) => acc + b.multiplier, 0);
+
+                    const critDamageMult = 1 + getBuffValue(tower, "critDamage") + critDamageTowerBuff;
+                    const bonusDamage = tower.towerBuffs
+                        .filter(b => b.type === "flatDamage")
+                        .reduce((acc, b) => acc + b.amount, 0);
+
+                    const { isCrit, damage } = calcDamage({
+                        bonusDamage,
+                        bonusCritChance: enemy.has("curse") ? CURSE_CRIT + (k.get("hero")[0]?.hasCurseBuff ? 10 : 0) : 0,
+                        critChance: tower.stats.critChance + (getBuffValue(tower, "critChance") * 100),
+                        critDamage: tower.stats.critDamage * critDamageMult,
+                        damage: tower.stats.damage,
+                        damageMultiplier: damageMult
+                    });
+                    orbiter.hitEnemies.add(enemy);
+                    waitScaled(k, 1, () => orbiter.hitEnemies.delete(enemy));
+                    hurtEnemy(k, {
+                        target: enemy,
+                        damage,
+                        isCrit,
+                        element: tower.element,
+                        attacker: tower
+                    });
+
+                    playSfx(k, "smash", 1, enemy.pos);
+                }
+            });
+
+        });
+
+        tower.onDestroy(() => {
+            k.destroy(orbiter);
+        });
+    } else if (towerId === "phoenix") {
+
+        const phoenix = k.add([
+            k.sprite("phoenix", { anim: "fly" }),
+            k.pos(tower.pos),
+            k.opacity(1),
+            k.z(999),
+            k.anchor("center"),
+            k.rotate(0),
+            {
+                orbitAngle: 0,
+                r: 80,
+                speed: 2 * Math.PI,
+                fireTimer: 0,
+                towerId: tower.instanceId
+            },
+            "phoenix"
+        ]);
+
+        phoenix.onUpdate(() => {
+            const timeScale = store.get(gameStateAtom).timeScale;
+
+            phoenix.opacity = tower.state === "disabled" ? 0 : 1;
+
+            if (tower.state === "disabled") return;
+
+            // orbit speed
+            const fireRateBuff = getBuffValue(tower, "fireRate");
+            const fireRateMultiplier = tower.towerBuffs
+                .filter(b => b.type === "fireRate")
+                .reduce((acc, b) => acc * b.multiplier, 1);
+
+            const fireInterval = (((1 - fireRateBuff) * fireRateMultiplier) * tower.stats.fireInterval * (tower.isThirsty ? 2 : 1));
+
+            phoenix.speed =
+                2 * Math.PI /
+                fireInterval;
+
+            phoenix.orbitAngle += phoenix.speed * k.dt() * timeScale;
+
+            phoenix.angle = (phoenix.orbitAngle * 180) / Math.PI - 90;
+
+            phoenix.r = tower.stats.range * TILE_SIZE;
+
+            const cx =
+                tower.pos.x + (tower.footprint.w * TILE_SIZE) / 2;
+
+            const cy =
+                tower.pos.y + (tower.footprint.h * TILE_SIZE) / 2;
+
+            phoenix.pos.x =
+                cx + Math.cos(phoenix.orbitAngle) * phoenix.r;
+
+            phoenix.pos.y =
+                cy + Math.sin(phoenix.orbitAngle) * phoenix.r;
+
+            if (phoenix.fireTimer > fireInterval) phoenix.fireTimer = fireInterval;
+
+            if (phoenix.fireTimer > 0) {
+                phoenix.fireTimer -= k.dt() * timeScale;
+            }
+
+            if (phoenix.fireTimer <= 0 && store.get(gameStateAtom).waveActive) {
+
+                const enemies = k.get("targetable") as EnemyGameObj[];
+
+                const target = selectTarget(enemies, { ...tower, stats: { ...tower.stats, range: 3 } }, phoenix.pos);
+
+                if (!target) return;
+
+                phoenix.fireTimer += (fireInterval / 12);
+
+                const damageTowerBuff = tower.towerBuffs
+                    .filter(b => b.type === "damage")
+                    .reduce((acc, b) => acc + b.multiplier, 0);
+                const damageMult = 1 + getBuffValue(tower, "damage") + damageTowerBuff;
+
+                const critDamageTowerBuff = tower.towerBuffs
+                    .filter(b => b.type === "critDamage")
+                    .reduce((acc, b) => acc + b.multiplier, 0);
+
+                const critDamageMult = 1 + getBuffValue(tower, "critDamage") + critDamageTowerBuff;
+
+                const bonusDamage = tower.towerBuffs
+                    .filter(b => b.type === "flatDamage")
+                    .reduce((acc, b) => acc + b.amount, 0);
+
+                const { isCrit, damage } = calcDamage({
+                    bonusDamage,
+                    bonusCritChance:
+                        target.has("curse")
+                            ? CURSE_CRIT +
+                            (k.get("hero")[0]?.hasCurseBuff ? 10 : 0)
+                            : 0,
+                    critChance:
+                        tower.stats.critChance +
+                        (getBuffValue(tower, "critChance") * 100),
+                    critDamage:
+                        tower.stats.critDamage *
+                        critDamageMult,
+                    damage: tower.stats.damage,
+                    damageMultiplier: damageMult
+                });
+
+                const rotatedOffset = rotateVector(
+                    k,
+                    k.vec2(-15, 0),
+                    phoenix.angle * Math.PI / 180
+                );
+
+                playSfx(k, TOWERS[towerId]?.shootSound, 1, phoenix.pos);
+
+                makeProjectile(k, {
+                    id: "fireball",
+                    pos: phoenix.pos.add(rotatedOffset),
+                    target,
+                    damage,
+                    crit: isCrit,
+                    angle: phoenix.pos.angle(target.pos),
+                    element: "Fire",
+                    homing: true,
+                    turnSpeed: 6,
+                    scale: 1,
+                    splashRadius: 0,
+                    owner: tower as TowerGameObj
+                });
+            }
+        });
+
+        tower.onDestroy(() => {
+            k.destroy(phoenix);
+        });
+    }
+
+    if (k.get("hero").some(hero => hero.changeNormalElement)) {
+        if (tower.element === "Normal") {
+            const elements = Object.keys(ELEMENTS).filter(e => e !== "Normal") as ElementName[];
+            const rand = k.randi(elements.length);
+            tower.element = elements[rand];
+        }
+    }
+
+    if (k.get("hero").some(hero => hero.hasToxicAura)) {
+        const hero = k.get("hero")[0];
+
+        const towerCenter = tower.pos.add(k.vec2((tower.footprint.w * TILE_SIZE) / 2));
+        const heroCenter = hero.pos.add(k.vec2(TILE_SIZE / 2));
+
+        if (towerCenter.dist(heroCenter) <= TILE_SIZE * tower.footprint.w) {
+            tower.element = "Poison";
+        }
+    }
+
+    if (k.get("hero").some(hero => hero.hasBlock)) {
+        const hero = k.get("hero")[0];
+        const towerCenter = tower.pos.add(k.vec2((tower.footprint.w * TILE_SIZE) / 2));
+        const heroCenter = hero.pos.add(k.vec2(TILE_SIZE / 2));
+
+        if (towerCenter.dist(heroCenter) <= TILE_SIZE * tower.footprint.w) {
+            tower.hasBlock = true;
+        }
+    }
+}

@@ -2,7 +2,7 @@ import type { KAPLAYCtx, Vec2 } from "kaplay";
 import { createSeededRandom } from "./seededRandom";
 import type { MapChunk, PathTile, Tile } from "../types";
 import { TILE_SIZE } from "../constants";
-import { cachedSaveAtom, gameStateAtom, store } from "../store";
+import { endlessMapStateAtom, gameStateAtom, store } from "../store";
 
 export async function generateForestMap(
     k: KAPLAYCtx,
@@ -98,19 +98,22 @@ function generateTrees(
     tileGrid: Tile[][],
     rng: () => number
 ) {
+    const destroyedTrees = store.get(endlessMapStateAtom).destroyedTrees;
+
     for (let y = 0; y < tileGrid.length; y++) {
         for (let x = 0; x < tileGrid[y].length; x++) {
             const tile = tileGrid[y][x];
 
-            const runSave = store.get(cachedSaveAtom)?.run;
-
-            const destroyedTrees = runSave?.mode === "endless" ? runSave.mapChanges.destroyedTrees : [];
-
-            if (tile.isPath || destroyedTrees.some(tree => tree.x === x && tree.y === y)) {
+            if (tile.isPath) {
                 continue;
             }
+            const shouldHaveTree = rng() < 0.2;
 
-            if (rng() < 0.2) {
+            const wasDestroyed = destroyedTrees.some(
+                tree => tree.x === x && tree.y === y
+            );
+
+            if (shouldHaveTree && !wasDestroyed) {
                 tile.hasTree = true;
                 tile.blocked = true;
             }
@@ -679,10 +682,10 @@ export function generateWaypoints(
     waypoints.push(
         k.vec2(
             first.x * TILE_SIZE +
-                TILE_SIZE +
-                TILE_SIZE / 2,
+            TILE_SIZE +
+            TILE_SIZE / 2,
             first.y * TILE_SIZE +
-                TILE_SIZE / 2
+            TILE_SIZE / 2
         )
     );
 
@@ -725,7 +728,7 @@ export function generateWaypoints(
         k.vec2(
             -TILE_SIZE / 2,
             last.y * TILE_SIZE +
-                TILE_SIZE / 2
+            TILE_SIZE / 2
         )
     );
 
@@ -736,9 +739,7 @@ const CHUNK_WIDTH = 10;
 const CHUNK_HEIGHT = 25;
 
 function getRevealedChunkCount(waveNumber: number) {
-    if (waveNumber === 1) return 1;
-
-    return 2 + Math.floor((waveNumber - 2) / 5);
+    return 1 + Math.ceil(waveNumber / 5);
 }
 
 function createChunks(
@@ -889,7 +890,7 @@ export function unblockRevealedChunkTiles(
             tile.blocked =
                 tile.isPath ||
                 tile.hasTree === true;
-            
+
             tile.notRevealed = false;
         }
     }

@@ -20,13 +20,6 @@ export default function makeUnitCombat(
     k: KAPLAYCtx,
     opts: {
         owner: TowerGameObj | HeroGameObj;
-        stats: {
-            damage: number;
-            range: number;
-            fireInterval: number;
-            critChance: number;
-            critDamage: number;
-        };
         projectile: ProjectileId | null;
         gunSprite: string;
         gunOffset: Vec2;
@@ -107,7 +100,7 @@ export default function makeUnitCombat(
     const rangeCircle = k.add([
         k.pos(),
         k.color(255, 255, 255),
-        k.circle(opts.stats.range * TILE_SIZE),
+        k.circle(opts.owner.stats.range * TILE_SIZE),
         k.outline(1),
         k.opacity(0.2),
         k.z(1)
@@ -473,7 +466,7 @@ export default function makeUnitCombat(
         gun.opacity = opts.owner.opacity;
         if (!opts.owner.placed) gun.use(k.color(opts.owner.color.r, opts.owner.color.g, opts.owner.color.b));
         rangeCircle.pos = opts.owner.pos.add((opts.owner.footprint.w * TILE_SIZE) / 2, (opts.owner.footprint.h * TILE_SIZE) / 2);
-        rangeCircle.use(k.circle(opts.stats.range * TILE_SIZE));
+        rangeCircle.use(k.circle(opts.owner.stats.range * TILE_SIZE));
         rangeCircle.hidden = !opts.owner.selected && !opts.owner.hovered;
 
         if (opts.owner.activeProjectile === null) gun.play("idle");
@@ -532,7 +525,7 @@ export default function makeUnitCombat(
                     const hp = enemy.hp() ?? 0;
                     const missingHealthPercent = 1 - hp / maxHp;
 
-                    projectile.bonusDamage = opts.stats.damage * missingHealthPercent;
+                    projectile.bonusDamage = opts.owner.stats.damage * missingHealthPercent;
                 }
             }
 
@@ -554,7 +547,7 @@ export default function makeUnitCombat(
                 target,
                 origin: gun.pos,
                 gun: gun,
-                damage: opts.stats.damage + (
+                damage: opts.owner.stats.damage + (
                     opts.owner.timeData?.timeScaling?.damage ?
                         opts.owner.timeData.timeMultiplier ** opts.owner.timeData.timeScaling.damagePow - 1 : 0
                 ) + killBonus,
@@ -610,8 +603,8 @@ export default function makeUnitCombat(
             const { isCrit, damage } = calcDamage({
                 bonusDamage,
                 bonusCritChance: enemy.has("curse") ? CURSE_CRIT + (k.get("hero")[0]?.hasCurseBuff ? 10 : 0) : 0,
-                critChance: opts.stats.critChance + (getBuffValue(opts.owner as TowerGameObj, "critChance") * 100),
-                critDamage: opts.stats.critDamage * critDamageMult,
+                critChance: opts.owner.stats.critChance + (getBuffValue(opts.owner as TowerGameObj, "critChance") * 100),
+                critDamage: opts.owner.stats.critDamage * critDamageMult,
                 damage: ctx.damage,
                 damageMultiplier: damageMult
             });
@@ -674,8 +667,8 @@ export default function makeUnitCombat(
                 const { isCrit, damage } = calcDamage({
                     bonusDamage,
                     bonusCritChance: bonusCrit,
-                    critChance: opts.stats.critChance + (getBuffValue(opts.owner as TowerGameObj, "critChance") * 100),
-                    critDamage: opts.stats.critDamage * critDamageMult,
+                    critChance: opts.owner.stats.critChance + (getBuffValue(opts.owner as TowerGameObj, "critChance") * 100),
+                    critDamage: opts.owner.stats.critDamage * critDamageMult,
                     damage: ctx.damage,
                     damageMultiplier: damageMult
                 });
@@ -723,7 +716,7 @@ export default function makeUnitCombat(
                 target,
                 origin: gun.pos,
                 gun: gun,
-                damage: opts.stats.damage,
+                damage: opts.owner.stats.damage,
                 element: opts.owner.element,
                 visualEffect: null,
                 attackType: "projectile",
@@ -747,10 +740,10 @@ export default function makeUnitCombat(
                     ownerId: opts.owner.instanceId,
                     from: opts.owner.pos.add((opts.owner.footprint.w * TILE_SIZE) / 2, (opts.owner.footprint.h * TILE_SIZE) / 2),
                     targetPos: target.pos,
-                    damage: opts.stats.damage,
+                    damage: opts.owner.stats.damage,
                     damageMultiplier: damageMult,
-                    critChance: opts.stats.critChance + (getBuffValue(opts.owner as TowerGameObj, "critChance") * 100),
-                    critDamage: opts.stats.critDamage * critDamageMult,
+                    critChance: opts.owner.stats.critChance + (getBuffValue(opts.owner as TowerGameObj, "critChance") * 100),
+                    critDamage: opts.owner.stats.critDamage * critDamageMult,
                     element: opts.owner.element,
                     projectileId: opts.projectile ?? "basic"
                 });
@@ -836,7 +829,7 @@ export default function makeUnitCombat(
                         // Current gun direction
                         () => gun.angle,
 
-                        () => opts.stats.range * TILE_SIZE -
+                        () => opts.owner.stats.range * TILE_SIZE -
                             gun.pos.dist(rangeCircle.pos),
 
                         opts.owner.continuousEffect

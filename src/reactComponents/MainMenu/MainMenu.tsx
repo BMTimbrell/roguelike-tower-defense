@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import Modal from "../Modal/Modal";
-import { gameStateAtom, mainMenuAtom, mapAtom, selectHeroUIAtom } from "../../store";
+import { endlessMapStateAtom, gameStateAtom, mainMenuAtom, mapAtom, selectHeroUIAtom } from "../../store";
 import { useAtom } from "jotai";
 import Settings from "../Settings/Settings";
 import Button from "../Button/Button";
@@ -33,6 +33,7 @@ export default function MainMenu() {
     const [map] = useAtom(mapAtom);
     const [save, setSave] = useState<SaveData | null>(null);
     const [gameState, setGameState] = useAtom(gameStateAtom);
+    const [, setEndlessMapState] = useAtom(endlessMapStateAtom)
     const fontScale = map.fontScale;
     const header = showSettings && <div style={{
         fontSize: `${16 * fontScale * 1.2}px`, marginBottom: "0.5em",
@@ -82,11 +83,11 @@ export default function MainMenu() {
                                             level: saveData.hero.level
                                         }
                                     );
-        
+
                                     hero.skillIds = saveData.hero.skills;
-        
+
                                     updateSkills(hero);
-        
+
                                     setMenu(prev => ({ ...prev, visible: false }));
                                     setGameState(prev => ({
                                         ...prev,
@@ -129,7 +130,7 @@ export default function MainMenu() {
                                             }
                                         }
                                     }));
-        
+
                                     goToNextScene(k, {
                                         sceneName: saveData.scene,
                                         mapData: saveData.mapData,
@@ -151,11 +152,11 @@ export default function MainMenu() {
                                             level: saveData.hero.level
                                         }
                                     );
-        
+
                                     endlessHero.skillIds = saveData.hero.skills;
-        
+
                                     updateSkills(endlessHero);
-        
+
                                     setMenu(prev => ({ ...prev, visible: false }));
                                     setGameState(prev => ({
                                         ...prev,
@@ -191,6 +192,12 @@ export default function MainMenu() {
                                             }
                                         }
                                     }));
+
+                                    setEndlessMapState({
+                                        destroyedTrees: saveData.mapChanges.destroyedTrees,
+                                        destroyedObelisks: saveData.mapChanges.destroyedObelisks,
+                                        capturedTotems: saveData.mapChanges.capturedTotems
+                                    });
 
                                     k.go("endlessForest");
 

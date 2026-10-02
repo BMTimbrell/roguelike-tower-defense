@@ -19,3 +19,16 @@ export function getChallengeSeed(runSeed: number, levelIndex: number) {
 export function getObeliskSeed(runSeed: number, levelIndex: number) {
     return (runSeed + levelIndex * 0x9E3779B9 + 0x87654321) >>> 0;
 }
+
+export function getChestSeed(
+    runSeed: number,
+    x: number,
+    y: number
+) {
+    return (
+        runSeed +
+        x * 0x9E3779B9 +
+        y * 0x85EBCA6B +
+        0x2468ACE0
+    ) >>> 0;
+}

@@ -7,17 +7,32 @@ import { chestAtom, gameStateAtom, mapAtom } from '../../store';
 import { useAtom } from 'jotai';
 import Card from '../Card/Card';
 import { castSpell, generateRandomSpells } from '../../utils/spellHelpers';
+import { createSeededRandom, getChestSeed } from '../../utils/seededRandom';
 
 export default function ChestCards() {
     const [gameState, setGameState] = useAtom(gameStateAtom);
     const [map] = useAtom(mapAtom);
     const scale = map.fontScale;
-    const [, setChestCards] = useAtom(chestAtom);
-    const spells = useMemo(
-        () => generateRandomSpells(3, SPELLS),
-        []
-    );
+    const [chestCards, setChestCards] = useAtom(chestAtom);
+    const spells = useMemo(() => {
+        const rng =
+            gameState.gameMode === "endless"
+                ? createSeededRandom(
+                    getChestSeed(
+                        gameState.seed,
+                        chestCards.chestPos.x,
+                        chestCards.chestPos.y
+                    )
+                )
+                : Math.random;
 
+        return generateRandomSpells(
+            3,
+            SPELLS,
+            true,
+            rng
+        );
+    }, []);
     function addCardToHand(card: Spell) {
         setChestCards(prev => ({
             ...prev,

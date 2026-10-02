@@ -63,20 +63,28 @@ export default function hurtEnemy(k: KAPLAYCtx, opts: {
         if (hasDarkHarvest) target.darkHarvestDamage += effectiveDamage;
     }
 
-    if (attacker?.killStacks !== undefined && attacker.killStacks < SCYTHE_MAX_KILL_STACKS && target.hp() <= 0) {
+    if (
+        attacker?.killStacks !== undefined &&
+        attacker.killStacks < SCYTHE_MAX_KILL_STACKS &&
+        target.hp() <= 0
+    ) {
         attacker.killStacks++;
-        if (attacker.killStacks === 1) {
-            k.add([
+
+        const tag = `killStackText${attacker.instanceId}`;
+        let stackText = k.get(tag)[0];
+
+        if (!stackText) {
+            stackText = k.add([
                 k.pos(attacker.pos),
                 k.text("" + attacker.killStacks, {
                     size: 12,
                     font: "free pixel"
                 }),
                 k.color(ELEMENTS[element].color),
-                `killStackText${attacker.instanceId}`
+                tag
             ]);
         } else {
-            k.get(`killStackText${attacker.instanceId}`)[0].text = "" + attacker.killStacks;
+            stackText.text = "" + attacker.killStacks;
         }
     }
 
@@ -146,7 +154,7 @@ export default function hurtEnemy(k: KAPLAYCtx, opts: {
     const batteries = k.get("tower").filter(t => t.battery);
 
     for (const b of batteries) {
-        const dist = b.pos.dist(target.pos);
+        const dist = b.pos.add(b.footprint.w * TILE_SIZE / 2).dist(target.pos);
 
         if (dist <= b.stats.range * TILE_SIZE + TOWER_RANGE_TOLERANCE) {
             const stored = Math.max(1, damageDealt * b.battery.storePct);

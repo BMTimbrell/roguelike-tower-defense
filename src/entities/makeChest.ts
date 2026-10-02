@@ -68,7 +68,7 @@ export default function makeChest(k: KAPLAYCtx, pos: Vec2) {
         });
         
         playUISound(k, "open chest");
-        store.set(chestAtom, prev => ({ ...prev, visible: true }));
+        store.set(chestAtom, prev => ({ ...prev, visible: true, chestPos: { x: pos.x, y: pos.y } }));
         k.destroy(chest);
         k.get("*").forEach(obj => obj.paused = true);
     });

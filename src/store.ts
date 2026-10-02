@@ -1,5 +1,5 @@
 import { atom, createStore } from "jotai";
-import { type startingHeroUI, type GameState, type Rewards, type StartingOptions, type ShopChoiceButtons, type Shop, type Altar, type ChallengeDef, type PauseMenu, type Controls, type MainMenu, type GameSpeedUI, type AudioState, type TutorialId, type SaveData, type MetaProgress, type UnlockToast, type HoveredHellMapEntity, type RewardChoice, type EndlessMapType } from "./types";
+import { type startingHeroUI, type GameState, type Rewards, type StartingOptions, type ShopChoiceButtons, type Shop, type Altar, type ChallengeDef, type PauseMenu, type Controls, type MainMenu, type GameSpeedUI, type AudioState, type TutorialId, type SaveData, type MetaProgress, type UnlockToast, type HoveredHellMapEntity, type RewardChoice, type EndlessMapType, type EndlessMapState } from "./types";
 import { ChallengeManager } from "./utils/challengeHelpers";
 
 export const gameStateAtom = atom<GameState>({
@@ -12,8 +12,8 @@ export const gameStateAtom = atom<GameState>({
     waveActive: false,
     waveNumber: 0,
     nextTowerId: 0,
-    health: 999,
-    maxHealth: 999,
+    health: 20,
+    maxHealth: 20,
     hideUI: false,
     luck: 1,
     gold: 100,
@@ -51,7 +51,8 @@ export const gameStateAtom = atom<GameState>({
 });
 
 export const chestAtom = atom({
-    visible: false
+    visible: false,
+    chestPos: { x: 0, y: 0 }
 });
 
 export const mapAtom = atom({
@@ -209,5 +210,11 @@ export const unlockToastAtom = atom<UnlockToast>([]);
 export const hoveredHellMapEntityAtom = atom<HoveredHellMapEntity | null>(null);
 
 export const endlessMapTypeAtom = atom<EndlessMapType>("endlessForest");
+
+export const endlessMapStateAtom = atom<EndlessMapState>({
+    destroyedTrees: [],
+    destroyedObelisks: [],
+    capturedTotems: []
+});
 
 export const store = createStore();

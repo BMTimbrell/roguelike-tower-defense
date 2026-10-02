@@ -1,7 +1,7 @@
 import type { KAPLAYCtx } from "kaplay";
 import { generateForestMap } from "../utils/generateProceduralMap";
 import initCam from "../utils/initCam";
-import { MAX_HAND_SIZE, ROUND_DRAW_NUM, TILE_SIZE } from "../constants";
+import { ELEMENTS, MAX_HAND_SIZE, ROUND_DRAW_NUM, TILE_SIZE } from "../constants";
 import onAction from "../utils/onAction";
 import { cachedSaveAtom, controlsAtom, gameSpeedUIAtom, gameStateAtom, pauseMenuAtom, store } from "../store";
 import generateFog from "../utils/generateFog";
@@ -12,13 +12,17 @@ import makeFloatingText from "../entities/FloatingText";
 import addTowers from "../utils/addTowers";
 import { castSpell } from "../utils/spellHelpers";
 import type { Card, TowerGameObj } from "../types";
-import { addSelectTowerListener } from "../entities/Tower";
+import makeTower, { addSelectTowerListener, confirmTowerPlacement } from "../entities/Tower";
 import { makeLavaManager } from "../utils/lavaHelpers";
 import showLevelStats from "../utils/showLevelStats";
 import makeEndlessWaveSpawner from "../entities/EndlessWaveSpawner";
 import setGameSpeed from "../utils/setGameSpeed";
 import makeHero from "../entities/Hero";
 import { getSave, saveRun } from "../platform/save";
+import makeChest from "../entities/makeChest";
+import updateSkills from "../utils/updateSkills";
+import { calcUpgradeCost } from "../utils/calcUpgradeCost";
+import { setBlockedTiles } from "../utils/makePlacementOnGrid";
 
 export default function endlessForest(k: KAPLAYCtx) {
     k.scene("endlessForest", async () => {
@@ -217,9 +221,11 @@ export default function endlessForest(k: KAPLAYCtx) {
 
         hero.skillIds = store.get(gameStateAtom).hero?.skillIds ?? [];
 
+        updateSkills(hero);
+
         let gold = 100;
         let upgrades: Card[] = drawCards(k, store.get(gameStateAtom).deck.cards, ROUND_DRAW_NUM);
-        let waveNumber = 1;
+        let waveNumber = 0;
         let luck = 1;
         let towerButtons = store.get(gameStateAtom).towerButtons.map(t => t.id);
 
@@ -229,11 +235,31 @@ export default function endlessForest(k: KAPLAYCtx) {
             waveNumber = save.run.wave;
             luck = save.run.luck;
             towerButtons = save.run.towerButtons;
+
+            if (save.run.hero.tileX >= 0 && save.run.hero.tileY >= 0) {
+                k.add(hero);
+                hero.pos = k.vec2(save.run.hero.tileX * TILE_SIZE, save.run.hero.tileY * TILE_SIZE);
+                hero.placed = true;
+                hero.opacity = 1;
+                hero.sprite.opacity = 1;
+                hero.selected = false;
+                hero.hovered = false;
+                if (hero.hasRangeBoost) hero.stats.range++;
+                tileGrid[save.run.hero.tileY][save.run.hero.tileX].blocked = true;
+                store.set(gameStateAtom, prev => ({
+                    ...prev,
+                    heroButton: {
+                        ...prev.heroButton,
+                        visible: false
+                    }
+                }));
+            }
         }
 
         store.set(gameStateAtom, prev => ({
             ...prev,
             scene: "endlessForest",
+            seed,
             gold,
             tileGrid,
             waveNumber,
@@ -413,27 +439,87 @@ export default function endlessForest(k: KAPLAYCtx) {
                     id: store.get(gameStateAtom).hero?.heroId ?? "archer",
                     level: store.get(gameStateAtom).hero?.level ?? 1,
                     skills: store.get(gameStateAtom).hero?.skillIds ?? [],
-                    tileX: 0,
-                    tileY: 0
+                    tileX: -1,
+                    tileY: -1
                 },
                 heroCharge: store.get(gameStateAtom).heroCharge,
                 nextTowerId: store.get(gameStateAtom).nextTowerId,
                 towerButtons: store.get(gameStateAtom).towerButtons.map(tb => tb.id),
-                wave: store.get(gameStateAtom).waveNumber,
+                wave: 0,
                 endlessSeed: seed,
                 mapChanges: {
                     destroyedTrees: [],
                     destroyedObelisks: [],
                     capturedTotems: []
                 },
-                luck: 1,
+                luck: 100,
                 chests: [],
                 towers: []
             });
-        } 
+        } else {
+            save.run.chests.forEach(chest => makeChest(k, k.vec2(chest.x, chest.y)));
+            save.run.towers.forEach(t => {
+                const tower = makeTower(k, {
+                    towerId: t.towerId,
+                    pos: k.vec2(t.tileX * TILE_SIZE, t.tileY * TILE_SIZE),
+                    tileGrid,
+                    pathTiles
+                });
 
+                tower.unlockedUpgradeSlots = t.unlockedUpgradeSlots;
+                tower.upgradeCost = calcUpgradeCost(tower.cost, tower.unlockedUpgradeSlots);
+                tower.upgrades = t.upgrades;
+                tower.placed = true;
+                tower.opacity = 1;
+                tower.selected = false;
+                tower.hovered = false;
+                tower.instanceId = t.instanceId;
+                tower.stats = t.stats;
+
+                if (t.battery) {
+                    tower.battery = t.battery;
+                }
+
+                if (t.killStacks) {
+                    tower.killStacks = t.killStacks;
+                    makeKillStackText(k, tower);
+                }
+
+                if (t.farmData) {
+                    tower.farmData = t.farmData;
+                    if (t.farmData.turnsRemaining) tower.gun?.play(`grow${3 - t.farmData.turnsRemaining}`);
+                }
+
+                setBlockedTiles({
+                    footprint: tower.footprint,
+                    gridX: t.tileX,
+                    gridY: t.tileY,
+                    tileGrid: tower.tileGrid,
+                    blocked: true
+                });
+
+                confirmTowerPlacement(k, tower);
+
+            });
+        }
 
         makeEndlessWaveSpawner(k, { chunks, tileGrid, waypoints, seed, pathTiles });
-
     });
+}
+
+function makeKillStackText(
+    k: KAPLAYCtx,
+    tower: TowerGameObj
+) {
+    if (!tower.killStacks) return;
+
+    k.add([
+        k.pos(tower.pos),
+        k.text("" + tower.killStacks, {
+            size: 12,
+            font: "free pixel"
+        }),
+        k.color(ELEMENTS[tower.element].color),
+        `killStackText${tower.instanceId}`
+    ]);
 }

@@ -1173,11 +1173,24 @@ type SavedTower = {
     tileX: number;
     tileY: number;
 
+    stats: TowerStats;
+
     unlockedUpgradeSlots: number;
 
     upgrades: Upgrade[];
 
-    // Any persistent tower-specific state
+    battery?: {
+        charge: number;
+        maxCharge: number;
+        storePct: number;
+    };
+
+    killStacks?: number;
+
+    farmData?: {
+        plantedSeed: SeedId | null;
+        turnsRemaining: 1 | 2 | 3 | null;
+    };
 };
 
 export type EndlessRunSave = BaseRunSave & {
@@ -1454,3 +1467,9 @@ export type EndlessReward = {
 };
 
 export type EndlessMapType = "endlessForest" | "endlessHell";
+
+export type EndlessMapState = {
+    destroyedTrees: { x: number; y: number }[];
+    destroyedObelisks: { x: number; y: number }[];
+    capturedTotems: { x: number; y: number }[]
+};
