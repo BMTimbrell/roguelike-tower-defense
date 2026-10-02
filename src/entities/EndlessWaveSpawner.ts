@@ -963,7 +963,8 @@ async function saveEndlessCheckpoint(k: KAPLAYCtx, seed: number) {
         unlockedUpgradeSlots: tower.unlockedUpgradeSlots,
         battery: tower.battery ? tower.battery : undefined,
         killStacks: tower.killStacks ? tower.killStacks : undefined,
-        farmData: tower.farmData ? tower.farmData : undefined
+        farmData: tower.farmData ? tower.farmData : undefined,
+        deathCharge: tower.deathCharge ? tower.deathCharge : undefined
     }));
 
     let tileX = -1;

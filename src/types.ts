@@ -1191,6 +1191,11 @@ type SavedTower = {
         plantedSeed: SeedId | null;
         turnsRemaining: 1 | 2 | 3 | null;
     };
+
+    deathCharge?: {
+        current: number;
+        required: number;
+    };
 };
 
 export type EndlessRunSave = BaseRunSave & {

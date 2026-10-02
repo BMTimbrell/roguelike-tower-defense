@@ -490,6 +490,10 @@ export default function endlessForest(k: KAPLAYCtx) {
                     if (t.farmData.turnsRemaining) tower.gun?.play(`grow${3 - t.farmData.turnsRemaining}`);
                 }
 
+                if (t.deathCharge) {
+                    tower.deathCharge = t.deathCharge;
+                }
+
                 setBlockedTiles({
                     footprint: tower.footprint,
                     gridX: t.tileX,
