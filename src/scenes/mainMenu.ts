@@ -1,5 +1,22 @@
-import type { AudioPlay, KAPLAYCtx } from "kaplay";
-import { gameStateAtom, store, startingOptionsAtom, selectHeroUIAtom, shopChoiceUIAtom, shopAtom, altarAtom, mainMenuAtom, gameSpeedUIAtom, challengesAtom, chestAtom, unlockProgressionAtom, hoveredHellMapEntityAtom, rewardsAtom, endlessMapTypeAtom, endlessMapStateAtom } from "../store";
+import type { KAPLAYCtx } from "kaplay";
+import { 
+    gameStateAtom, 
+    store, 
+    startingOptionsAtom, 
+    selectHeroUIAtom, 
+    shopChoiceUIAtom, 
+    shopAtom, 
+    altarAtom, 
+    mainMenuAtom, 
+    gameSpeedUIAtom, 
+    challengesAtom, 
+    chestAtom, 
+    unlockProgressionAtom, 
+    hoveredHellMapEntityAtom, 
+    rewardsAtom, 
+    endlessMapTypeAtom, 
+    endlessMapStateAtom 
+} from "../store";
 import initCam from "../utils/initCam";
 import type { MapData, PathTile, Scene, Tile, Upgrade } from "../types";
 import { CHARGE_DAMAGE_REQUIRED, EXPERT_PLAYER_HEALTH, HARD_PLAYER_HEATLH, NORMAL_PLAYER_HEATLH, WORLDS, type HeroId, type LevelId, type TowerId } from "../constants";
@@ -13,15 +30,9 @@ import { ChallengeManager } from "../utils/challengeHelpers";
 import { getSave, saveRun } from "../platform/save";
 
 export default function mainMenu(k: KAPLAYCtx) {
-    let music: AudioPlay | null = null;
 
     k.scene("mainMenu" satisfies Scene, async () => {
-
-        if (!music) {
-            playMusic(k, "main title").then(m => {
-                music = m;
-            });
-        }
+        void playMusic(k, "main title");
 
         let rand = k.randi();
 

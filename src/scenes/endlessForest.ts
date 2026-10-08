@@ -1,7 +1,7 @@
 import type { KAPLAYCtx } from "kaplay";
-import { generateForestMap } from "../utils/generateProceduralMap";
+import { generateForestMap, startEndlessMusic } from "../utils/generateProceduralMap";
 import initCam from "../utils/initCam";
-import { ELEMENTS, MAX_HAND_SIZE, ROUND_DRAW_NUM, TILE_SIZE } from "../constants";
+import { ELEMENTS, ENDLESS_MUSIC, MAX_HAND_SIZE, ROUND_DRAW_NUM, TILE_SIZE } from "../constants";
 import onAction from "../utils/onAction";
 import { cachedSaveAtom, controlsAtom, gameSpeedUIAtom, gameStateAtom, pauseMenuAtom, store } from "../store";
 import generateFog from "../utils/generateFog";
@@ -31,7 +31,7 @@ export default function endlessForest(k: KAPLAYCtx) {
         store.set(cachedSaveAtom, save);
 
         const seed = save?.run?.mode === "endless" ? save.run.endlessSeed : Math.floor(Math.random() * 2 ** 32);
-        const { tileGrid, pathTiles, waypoints, chunks } = await generateForestMap(k, seed);
+        const { tileGrid, pathTiles, waypoints, chunks, orientation } = await generateForestMap(k, seed);
 
         // Compute screen bounds and save in store
         const mapWorldWidth = tileGrid[0].length * TILE_SIZE;
@@ -244,6 +244,7 @@ export default function endlessForest(k: KAPLAYCtx) {
                 hero.sprite.opacity = 1;
                 hero.selected = false;
                 hero.hovered = false;
+                hero.priority = save.run.hero.priority;
                 if (hero.hasRangeBoost) hero.stats.range++;
                 tileGrid[save.run.hero.tileY][save.run.hero.tileX].blocked = true;
                 store.set(gameStateAtom, prev => ({
@@ -439,6 +440,7 @@ export default function endlessForest(k: KAPLAYCtx) {
                     id: store.get(gameStateAtom).hero?.heroId ?? "archer",
                     level: store.get(gameStateAtom).hero?.level ?? 1,
                     skills: store.get(gameStateAtom).hero?.skillIds ?? [],
+                    priority: store.get(gameStateAtom).hero?.priority ?? null,
                     tileX: -1,
                     tileY: -1
                 },
@@ -452,7 +454,7 @@ export default function endlessForest(k: KAPLAYCtx) {
                     destroyedObelisks: [],
                     capturedTotems: []
                 },
-                luck: 100,
+                luck: store.get(gameStateAtom).luck,
                 chests: [],
                 towers: []
             });
@@ -475,6 +477,7 @@ export default function endlessForest(k: KAPLAYCtx) {
                 tower.hovered = false;
                 tower.instanceId = t.instanceId;
                 tower.stats = t.stats;
+                tower.priority = t.priority;
 
                 if (t.battery) {
                     tower.battery = t.battery;
@@ -507,7 +510,10 @@ export default function endlessForest(k: KAPLAYCtx) {
             });
         }
 
-        makeEndlessWaveSpawner(k, { chunks, tileGrid, waypoints, seed, pathTiles });
+        startEndlessMusic(k);
+
+        makeEndlessWaveSpawner(k, { chunks, tileGrid, waypoints, seed, pathTiles, orientation });
+
     });
 }
 

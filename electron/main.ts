@@ -4,7 +4,7 @@ import { fileURLToPath } from "url";
 import fs from "fs/promises";
 import steamworks from "steamworks.js";
 
-const client = steamworks.init(4877630);
+const client = steamworks.init(4851710);
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
@@ -23,6 +23,7 @@ async function createWindow() {
         },
         icon: path.join(process.resourcesPath, "icon.ico")
     });
+
     win.setMenu(null);
 
     // fullscreen true by default
@@ -34,6 +35,7 @@ async function createWindow() {
 
     win.loadFile(path.join(__dirname, "../dist/index.html"));
 }
+
 
 const savePath = path.join(
     app.getPath("userData"),

@@ -685,8 +685,9 @@ function getAoeSpellDamage(base: number, wave: number) {
 
         if (i <= 3) growth = 0.2;
         else if (i <= 9) growth = 0.3;
-        else if (i < 18) growth = 0.2;
-        else growth = 0.1;
+        else if (i < 15) growth = 0.2;
+        else if (i < 20) growth = 0.1;
+        else growth = 0.05;
 
         damage *= 1 + growth;
     }

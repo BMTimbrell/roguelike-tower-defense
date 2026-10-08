@@ -1,17 +1,22 @@
 import type { KAPLAYCtx, Vec2 } from "kaplay";
-import { createSeededRandom } from "./seededRandom";
+import { createSeededRandom, getMapOrientation, type MapOrientation } from "./seededRandom";
 import type { MapChunk, PathTile, Tile } from "../types";
-import { TILE_SIZE } from "../constants";
+import { ENDLESS_MUSIC, TILE_SIZE } from "../constants";
 import { endlessMapStateAtom, gameStateAtom, store } from "../store";
+import { clearMusic, playMusic, sleep } from "./soundHelpers";
 
 export async function generateForestMap(
     k: KAPLAYCtx,
     seed: number
 ) {
     const rng = createSeededRandom(seed);
+    const orientation = getMapOrientation(seed);
 
-    const width = 50;
-    const height = 25;
+    const width = orientation === "horizontal" ? 50 : 25;
+    const height = orientation === "horizontal" ? 25 : 50;
+
+    // const width = 50;
+    // const height = 25;
 
     const tileGrid: Tile[][] = [];
 
@@ -28,28 +33,29 @@ export async function generateForestMap(
     }
 
     // generate chunks
-    const chunks = createChunks(width, height);
+    const chunks = createChunks(width, height, orientation);
 
-    const minEntranceY = Math.floor(height * 0.3);
-    const maxEntranceY = Math.floor(height * 0.7);
+    const sidewaysLength =
+        orientation === "horizontal" ? height : width;
 
-    let entranceY =
-        minEntranceY +
-        Math.floor(
-            rng() *
-            (maxEntranceY - minEntranceY + 1)
-        );
+    const minEntrance = Math.floor(sidewaysLength * 0.3);
+    const maxEntrance = Math.floor(sidewaysLength * 0.7);
+
+
+    let entrance = minEntrance +
+        Math.floor(rng() * (maxEntrance - minEntrance + 1));
 
     for (const chunk of chunks) {
         const result = generateValidChunkPath(
             tileGrid,
             chunk,
-            entranceY,
-            rng
+            entrance,
+            rng,
+            orientation
         );
 
         chunk.pathTiles = result.pathTiles;
-        entranceY = result.exitY;
+        entrance = result.exitY;
     }
 
     // 3. Generate trees
@@ -81,16 +87,17 @@ export async function generateForestMap(
         );
     }
 
-    await generateMapSprite(k, tileGrid, pathTiles);
+    await generateMapSprite(k, tileGrid, pathTiles, orientation);
 
-    const waypoints = generateWaypoints(k, chunks);
+    const waypoints = generateWaypoints(k, chunks, orientation);
 
     return {
         tileGrid,
         pathTiles,
         seed,
         waypoints,
-        chunks
+        chunks,
+        orientation
     };
 }
 
@@ -126,15 +133,22 @@ function generateChunkPath(
     chunk: MapChunk,
     entranceY: number,
     targetLength: number,
-    rng: () => number
+    rng: () => number,
+    orientation: MapOrientation
 ) {
     const pathTiles: PathTile[] = [];
 
-    const startX = chunk.startX;
-    const endX = chunk.startX + chunk.width - 1;
+    const vertical = orientation === "vertical";
 
-    const minY = chunk.startY + 2;
-    const maxY = chunk.startY + chunk.height - 3;
+    const startX = vertical ? chunk.startY : chunk.startX;
+
+    const endX = startX +
+        (vertical ? chunk.height : chunk.width) - 1;
+
+    const minY = (vertical ? chunk.startX : chunk.startY) + 2;
+
+    const maxY = minY +
+        (vertical ? chunk.width : chunk.height) - 5;
 
     let x = startX;
     let y = entranceY;
@@ -142,16 +156,28 @@ function generateChunkPath(
     let segments = 0;
     const MAX_SEGMENTS = 30;
 
+    function toWorld(x: number, y: number) {
+        return vertical
+            ? { x: y, y: x }
+            : { x, y };
+    }
+
+    function getTile(x: number, y: number) {
+        const world = toWorld(x, y);
+        return tileGrid[world.y][world.x];
+    }
+
     function addPathTile(x: number, y: number) {
-        const tile = tileGrid[y][x];
+        const world = toWorld(x, y);
+        const tile = getTile(x, y);
 
         tile.isPath = true;
         tile.blocked = true;
 
         pathTiles.push({
-            x,
-            y,
-            tile,
+            x: world.x,
+            y: world.y,
+            tile
         });
     }
 
@@ -173,8 +199,8 @@ function generateChunkPath(
             if (
                 neighbour.x < startX ||
                 neighbour.x > endX ||
-                neighbour.y < chunk.startY ||
-                neighbour.y >= chunk.startY + chunk.height
+                neighbour.y < minY - 2 ||
+                neighbour.y > maxY + 2
             ) {
                 continue;
             }
@@ -187,7 +213,7 @@ function generateChunkPath(
                 continue;
             }
 
-            if (tileGrid[neighbour.y][neighbour.x].isPath) {
+            if (getTile(neighbour.x, neighbour.y).isPath) {
                 return true;
             }
         }
@@ -213,7 +239,7 @@ function generateChunkPath(
             }
 
             // Don't cross an existing path.
-            if (tileGrid[y][nextX].isPath) {
+            if (getTile(nextX, y).isPath) {
                 return false;
             }
 
@@ -253,7 +279,7 @@ function generateChunkPath(
             }
 
             // Don't cross an existing path.
-            if (tileGrid[nextY][x].isPath) {
+            if (getTile(x, nextY).isPath) {
                 return false;
             }
 
@@ -509,48 +535,103 @@ function generateChunkPath(
     };
 }
 
-async function generateMapSprite(k: KAPLAYCtx, tileGrid: Tile[][], pathTiles: PathTile[]) {
-    const mapWidth = tileGrid[0].length;
-    const mapHeight = tileGrid.length;
-    const canvas = k.makeCanvas(k.width(), k.height());
+async function generateMapSprite(
+    k: KAPLAYCtx,
+    tileGrid: Tile[][],
+    pathTiles: PathTile[],
+    orientation: MapOrientation
+) {
+    const mapWidth = tileGrid[0].length * TILE_SIZE;
+    const mapHeight = tileGrid.length * TILE_SIZE;
 
-    assignPathFrames(pathTiles);
+    assignPathFrames(pathTiles, orientation);
 
-    canvas.draw(() => {
-        for (let y = 0; y < mapHeight; y++) {
-            for (let x = 0; x < mapWidth; x++) {
-                const tile = tileGrid[y][x];
+    // Native browser canvas — completely independent of KAPLAY viewport.
+    const canvas = document.createElement("canvas");
+    canvas.width = mapWidth;
+    canvas.height = mapHeight;
 
-                if (!tile.isPath) k.drawSprite({
-                    sprite: "grass",
-                    pos: k.vec2(x * TILE_SIZE, y * TILE_SIZE)
-                });
+    const ctx = canvas.getContext("2d");
 
-                if (tile.isPath && tile.pathFrame !== undefined) {
-                    k.drawSprite({
-                        sprite: "pathTiles",
-                        frame: tile.pathFrame,
-                        pos: k.vec2(x * TILE_SIZE, y * TILE_SIZE)
-                    });
-                }
+    if (!ctx) {
+        throw new Error("Failed to create map canvas context");
+    }
+
+    ctx.imageSmoothingEnabled = false;
+
+    // Load the same image used by the KAPLAY atlas.
+    const tileset = new Image();
+
+    await new Promise<void>((resolve, reject) => {
+        tileset.onload = () => resolve();
+        tileset.onerror = () => reject(
+            new Error("Failed to load endless tileset")
+        );
+
+        tileset.src = "sprites/grass-tileset-endless.png";
+    });
+
+    for (let y = 0; y < tileGrid.length; y++) {
+        for (let x = 0; x < tileGrid[y].length; x++) {
+            const tile = tileGrid[y][x];
+
+            const destX = x * TILE_SIZE;
+            const destY = y * TILE_SIZE;
+
+            if (!tile.isPath) {
+                // "grass" = top-left 32×32 of the atlas
+                ctx.drawImage(
+                    tileset,
+                    0,
+                    0,
+                    32,
+                    32,
+                    destX,
+                    destY,
+                    TILE_SIZE,
+                    TILE_SIZE
+                );
+            }
+
+            if (
+                tile.isPath &&
+                tile.pathFrame !== undefined
+            ) {
+                const frame = tile.pathFrame;
+
+                // pathTiles is a 3×3 spritesheet.
+                const sourceX = (frame % 3) * 32;
+                const sourceY = Math.floor(frame / 3) * 32;
+
+                ctx.drawImage(
+                    tileset,
+
+                    // Source frame
+                    sourceX,
+                    sourceY,
+                    32,
+                    32,
+
+                    // Destination tile
+                    destX,
+                    destY,
+                    TILE_SIZE,
+                    TILE_SIZE
+                );
             }
         }
-
-    });
+    }
 
     const dataURL = canvas.toDataURL();
 
     await k.loadSprite("endlessMap", dataURL);
 
-    canvas.free();
-
     k.add([
         k.sprite("endlessMap"),
-        k.pos(k.vec2(0, 0)),
+        k.pos(0, 0),
         k.z(-100),
         "endlessMap"
     ]);
-
 }
 
 function getDirection(
@@ -574,7 +655,7 @@ const PATH_FRAMES = {
     UP_TO_RIGHT: 1,
 };
 
-function assignPathFrames(pathTiles: PathTile[]) {
+function assignPathFrames(pathTiles: PathTile[], orientation: MapOrientation) {
     for (let i = 0; i < pathTiles.length; i++) {
         const current = pathTiles[i];
         const previous = pathTiles[i - 1];
@@ -582,7 +663,10 @@ function assignPathFrames(pathTiles: PathTile[]) {
 
         // Start / end
         if (!previous || !next) {
-            current.tile.pathFrame = PATH_FRAMES.HORIZONTAL;
+            current.tile.pathFrame =
+                orientation === "horizontal"
+                    ? PATH_FRAMES.HORIZONTAL
+                    : PATH_FRAMES.VERTICAL;
             continue;
         }
 
@@ -647,7 +731,8 @@ function assignPathFrames(pathTiles: PathTile[]) {
 
 export function generateWaypoints(
     k: KAPLAYCtx,
-    chunks: MapChunk[]
+    chunks: MapChunk[],
+    orientation: MapOrientation
 ) {
     const revealedChunks = chunks.filter(
         chunk => chunk.revealed
@@ -680,13 +765,15 @@ export function generateWaypoints(
     // Spawn just outside the right edge of the
     // currently revealed path.
     waypoints.push(
-        k.vec2(
-            first.x * TILE_SIZE +
-            TILE_SIZE +
-            TILE_SIZE / 2,
-            first.y * TILE_SIZE +
-            TILE_SIZE / 2
-        )
+        orientation === "horizontal"
+            ? k.vec2(
+                first.x * TILE_SIZE + TILE_SIZE * 1.5,
+                first.y * TILE_SIZE + TILE_SIZE / 2
+            )
+            : k.vec2(
+                first.x * TILE_SIZE + TILE_SIZE / 2,
+                first.y * TILE_SIZE + TILE_SIZE * 1.5
+            )
     );
 
     // Add corners.
@@ -725,18 +812,21 @@ export function generateWaypoints(
     const last = pathTiles[pathTiles.length - 1];
 
     waypoints.push(
-        k.vec2(
-            -TILE_SIZE / 2,
-            last.y * TILE_SIZE +
-            TILE_SIZE / 2
-        )
+        orientation === "horizontal"
+            ? k.vec2(
+                -TILE_SIZE / 2,
+                last.y * TILE_SIZE +
+                TILE_SIZE / 2
+            )
+            : k.vec2(
+                last.x * TILE_SIZE +
+                TILE_SIZE / 2,
+                -TILE_SIZE / 2
+            )
     );
 
     return waypoints;
 }
-
-const CHUNK_WIDTH = 10;
-const CHUNK_HEIGHT = 25;
 
 function getRevealedChunkCount(waveNumber: number) {
     return 1 + Math.ceil(waveNumber / 5);
@@ -744,27 +834,32 @@ function getRevealedChunkCount(waveNumber: number) {
 
 function createChunks(
     mapWidth: number,
-    mapHeight: number
+    mapHeight: number,
+    orientation: MapOrientation
 ): MapChunk[] {
     const chunks: MapChunk[] = [];
 
     const revealedChunkCount =
         getRevealedChunkCount(store.get(gameStateAtom).waveNumber);
 
+    const horizontal = orientation === "horizontal";
+    const chunkSize = 10;
+    const totalLength = horizontal ? mapWidth : mapHeight;
+
     let index = 0;
 
-    for (let x = 0; x < mapWidth; x += CHUNK_WIDTH) {
+    for (let start = 0; start < totalLength; start += chunkSize) {
         chunks.push({
             index,
-
-            startX: x,
-            startY: 0,
-
-            width: Math.min(CHUNK_WIDTH, mapWidth - x),
-            height: mapHeight,
-
+            startX: horizontal ? start : 0,
+            startY: horizontal ? 0 : start,
+            width: horizontal
+                ? Math.min(chunkSize, mapWidth - start)
+                : mapWidth,
+            height: horizontal
+                ? mapHeight
+                : Math.min(chunkSize, mapHeight - start),
             revealed: index < revealedChunkCount,
-
             pathTiles: []
         });
 
@@ -794,7 +889,8 @@ function generateValidChunkPath(
     tileGrid: Tile[][],
     chunk: MapChunk,
     entranceY: number,
-    rng: () => number
+    rng: () => number,
+    orientation: MapOrientation
 ) {
     const targetLength =
         MIN_TARGET_PATH_LENGTH +
@@ -817,7 +913,8 @@ function generateValidChunkPath(
             chunk,
             entranceY,
             targetLength,
-            rng
+            rng,
+            orientation
         );
 
         const validLength =
@@ -894,4 +991,43 @@ export function unblockRevealedChunkTiles(
             tile.notRevealed = false;
         }
     }
+}
+
+export function startEndlessMusic(k: KAPLAYCtx) {
+    let previousIndex = 0;
+
+    async function playTrack(index: number) {
+        previousIndex = index;
+
+        const result = await playMusic(
+            k,
+            ENDLESS_MUSIC[index],
+            0.7,
+            false
+        );
+
+        if (!result) return;
+
+        const music = result.music;
+
+        music.onEnd(async () => {
+            clearMusic(music);
+            console.log("TRACK FINISHED", index);
+
+            await sleep(k.rand(8, 15) * 1000);
+
+            let nextIndex: number;
+
+            do {
+                nextIndex = k.randi(ENDLESS_MUSIC.length);
+            } while (
+                ENDLESS_MUSIC.length > 1 &&
+                nextIndex === previousIndex
+            );
+
+            playTrack(nextIndex);
+        });
+    }
+
+    void playTrack(0);
 }

@@ -15,10 +15,10 @@
     "electron": "electron dist-electron/main.js",
     "dist:win": "vite build --mode full && npm run build:electron && electron-builder --win",
     "dist:mac": "vite build --mode full && npm run build:electron && electron-builder --mac",
-    "dist:linux": "vite build --mode full && npm run build:electron && electron-builder --linux",
+    "dist:linux": "vite build --mode full && npm run build:electron && electron-builder --linux dir",
     "dist:win:demo": "vite build --mode demo && npm run build:electron && electron-builder --win",
     "dist:mac:demo": "vite build --mode demo && npm run build:electron && electron-builder --mac",
-    "dist:linux:demo": "vite build --mode demo && npm run build:electron && electron-builder --linux"
+    "dist:linux:demo": "vite build --mode demo && npm run build:electron && electron-builder --linux dir"
   },
   "dependencies": {
     "jotai": "^2.13.1",

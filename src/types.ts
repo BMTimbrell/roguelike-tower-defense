@@ -1196,6 +1196,8 @@ type SavedTower = {
         current: number;
         required: number;
     };
+
+    priority: TargetPriority;
 };
 
 export type EndlessRunSave = BaseRunSave & {
@@ -1211,6 +1213,7 @@ export type EndlessRunSave = BaseRunSave & {
         id: HeroId;
         level: number;
         skills: SkillId[];
+        priority: TargetPriority;
 
         tileX: number;
         tileY: number;

@@ -2069,13 +2069,13 @@ export default function loadAssets(k: KAPLAYCtx) {
     k.loadSound("totem bind", "sounds/soundEffects/totem-bind.mp3");
 
     //music
-    k.loadSound("main title", "sounds/music/The-Crown-of-Aethelgard.mp3");
-    k.loadSound("forest biome", "sounds/music/forest-biome.mp3");
-    k.loadSound("forest boss", "sounds/music/Iron-and-Ash.mp3");
-    k.loadSound("snow biome", "sounds/music/jakob_welik-level-two-8-bit-pixel-warriors-chapter-one-415691.mp3");
-    k.loadSound("snow boss", "sounds/music/jakob_welik-level-one-8-bit-pixel-warriors-chapter-one-415685.mp3");
-    k.loadSound("desert biome", "sounds/music/Shadows of the Dune King.mp3");
-    k.loadSound("desert boss", "sounds/music/The Rotting Rite.mp3");
-    k.loadSound("hell biome", "sounds/music/poorartistt-evil-cinematic-music-no-copyright-415161.mp3");
-    k.loadSound("hell boss", "sounds/music/The Cursed Pyramid.mp3");
+    k.loadMusic("main title", "sounds/music/The-Crown-of-Aethelgard.mp3");
+    k.loadMusic("forest biome", "sounds/music/forest-biome.mp3");
+    k.loadMusic("forest boss", "sounds/music/Iron-and-Ash.mp3");
+    k.loadMusic("snow biome", "sounds/music/jakob_welik-level-two-8-bit-pixel-warriors-chapter-one-415691.mp3");
+    k.loadMusic("snow boss", "sounds/music/jakob_welik-level-one-8-bit-pixel-warriors-chapter-one-415685.mp3");
+    k.loadMusic("desert biome", "sounds/music/Shadows of the Dune King.mp3");
+    k.loadMusic("desert boss", "sounds/music/The Rotting Rite.mp3");
+    k.loadMusic("hell biome", "sounds/music/poorartistt-evil-cinematic-music-no-copyright-415161.mp3");
+    k.loadMusic("hell boss", "sounds/music/The Cursed Pyramid.mp3");
 }

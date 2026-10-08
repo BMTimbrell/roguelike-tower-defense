@@ -15,7 +15,7 @@ export default function EndlessModeSelection({ onClick, onBackClick }: { onClick
 
     return (
         <>
-            <MenuHeader heading={"Campaign Selection"} onMouseEnter={onMouseEnter} onBackClick={onBackClick} />
+            <MenuHeader heading={"Endless Map Selection"} onMouseEnter={onMouseEnter} onBackClick={onBackClick} />
             <div className={styles.container}>
                 <GameModeOption
                     onClick={(e) => {
@@ -26,15 +26,11 @@ export default function EndlessModeSelection({ onClick, onBackClick }: { onClick
                     onMouseEnter={onMouseEnter}
                     heading="Misty Forest"
                     description="Journey through lush forests and frozen tundras."
-                    locked={false}
+                    locked={IS_DEMO}
                 />
                 <GameModeOption
                     onClick={(e) => {
                         onClick(e);
-                        // setGameState(prev => ({
-                        //     ...prev,
-                        //     world: 2
-                        // }));
                     }}
                     onMouseEnter={onMouseEnter}
                     heading="Hell"

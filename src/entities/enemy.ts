@@ -1427,8 +1427,9 @@ function getHPAndArmour(baseHp: number, wave: number) {
         else if (i === 5) growthRate = 0.07;
         else if (i === 6) growthRate = 0.1;
         else if (i === 7) growthRate = 0.15;
-        else if (i < 18) growthRate = 0.2;
-        else growthRate = 0.1;
+        else if (i < 15) growthRate = 0.2;
+        else if (i < 20) growthRate = 0.1;
+        else growthRate = 0.05;
 
         hp *= 1 + growthRate;
     }
@@ -1442,8 +1443,10 @@ function getEnemySpeed(baseSpeed: number, wave: number) {
     for (let i = 2; i <= wave; i++) {
         let growthRate = 0;
 
-        if (i > 1 && i < 18) growthRate = 0.01;
-        else growthRate = 0.005;
+        if (i > 1 && i < 15) growthRate = 0.01;
+        else if (i < 20) growthRate = 0.005;
+        else if (i < 25) growthRate = 0.0025;
+        else growthRate = 0.001;
 
         speed *= 1 + growthRate;
     }

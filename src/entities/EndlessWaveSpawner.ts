@@ -30,7 +30,7 @@ import { store, gameStateAtom, mapAtom, rewardsAtom, rewardChoiceAtom, endlessMa
 import makeTower from "./Tower";
 import drawCards from "../utils/drawCards";
 import { playUISound } from "../utils/soundHelpers";
-import { createSeededRandom } from "../utils/seededRandom";
+import { createSeededRandom, type MapOrientation } from "../utils/seededRandom";
 import makeHero from "./Hero";
 import updateSkills from "../utils/updateSkills";
 import addTowers from "../utils/addTowers";
@@ -43,6 +43,7 @@ type EndlessWaveSpawnerOptions = {
     waypoints: Vec2[];
     pathTiles: PathTile[];
     seed: number;
+    orientation: MapOrientation;
 };
 
 export default function makeEndlessWaveSpawner(
@@ -53,7 +54,8 @@ export default function makeEndlessWaveSpawner(
         chunks,
         tileGrid,
         seed,
-        pathTiles
+        pathTiles,
+        orientation
     } = opts;
 
     let waypoints = opts.waypoints;
@@ -125,7 +127,10 @@ export default function makeEndlessWaveSpawner(
 
                 if (waveNumber < 6) luckBonus = 0.25;
                 else if (waveNumber < 12) luckBonus = 0.5;
-                else luckBonus = 1;
+                else if (waveNumber < 15) luckBonus = 1;
+                else if (waveNumber < 20) luckBonus = 2;
+                else if (waveNumber < 26) luckBonus = 4;
+                else luckBonus = 6;
 
                 if (waveNumber > 1) {
                     store.set(gameStateAtom, prev => ({
@@ -361,7 +366,8 @@ export default function makeEndlessWaveSpawner(
                         // the route.
                         waypoints = generateWaypoints(
                             k,
-                            chunks
+                            chunks,
+                            orientation
                         );
 
                     }
@@ -879,10 +885,9 @@ function getWaveBudget(wave: number) {
     for (let i = 0; i < wave; i++) {
         if (i < 6) result += 5;
         else if (i < 11) result += 10;
-        else if (i < 16) result += 20;
-        else if (i < 21) result += 25;
-        else if (i < 30) result += 30;
-        else result += 35;
+        else if (i < 17) result += 20;
+        else if (i < 21) result += 15;
+        else result += 10;
     }
 
     return result;
@@ -931,7 +936,7 @@ function getEndlessReward(wave: number) {
         if (i < 6) result += 50;
         else if (i < 9) result += 60;
         else if (i < 12) result += 80;
-        else if (i < 16) result += 100
+        else if (i < 16) result += 100;
         else if (i < 20) result += 150;
         else result += 200;
     }
@@ -942,14 +947,14 @@ function getEndlessReward(wave: number) {
 function getGiantBudgetRatio(waveNumber: number) {
     if (waveNumber < 5) return 0;
     if (waveNumber < 11) return 0.2;
-    if (waveNumber < 16) return 0.25;
-    if (waveNumber < 25) return 0.3;
-    if (waveNumber < 31) return 0.35;
+    if (waveNumber < 21) return 0.25;
+    if (waveNumber < 30) return 0.3;
+    if (waveNumber < 36) return 0.35;
 
     return 0.4;
 }
 
-async function saveEndlessCheckpoint(k: KAPLAYCtx, seed: number) {
+export async function saveEndlessCheckpoint(k: KAPLAYCtx, seed: number) {
     // construct EndlessRunSave from current
     // game state + map entities
 
@@ -960,6 +965,7 @@ async function saveEndlessCheckpoint(k: KAPLAYCtx, seed: number) {
         tileY: tower.pos.y / TILE_SIZE,
         upgrades: tower.upgrades,
         stats: tower.stats,
+        priority: tower.priority,
         unlockedUpgradeSlots: tower.unlockedUpgradeSlots,
         battery: tower.battery ? tower.battery : undefined,
         killStacks: tower.killStacks ? tower.killStacks : undefined,
@@ -987,6 +993,7 @@ async function saveEndlessCheckpoint(k: KAPLAYCtx, seed: number) {
             id: store.get(gameStateAtom).hero?.heroId ?? "archer",
             level: store.get(gameStateAtom).hero?.level ?? 1,
             skills: store.get(gameStateAtom).hero?.skillIds ?? [],
+            priority: store.get(gameStateAtom).hero?.priority ?? null,
             tileX,
             tileY
         },

@@ -138,37 +138,57 @@ export function playSfx(
 }
 
 let currentMusic: null | AudioPlay = null;
+let musicTransition: Promise<void> = Promise.resolve();
 let musicVolume = 1;
 
-export async function playMusic(
+export function playMusic(
     k: KAPLAYCtx,
     sound: string,
-    volume = 0.7
-): Promise<AudioPlay | null> {
-    const audioState = store.get(audioAtom);
+    volume = 0.7,
+    loop = true
+): Promise<{ music: AudioPlay } | null> {
 
-    if (audioState.muted) return null;
+    let result: { music: AudioPlay } | null = null;
 
-    if (currentMusic) {
-        const oldMusic = currentMusic;
-        currentMusic = null;
+    musicTransition = musicTransition.then(async () => {
 
-        await fadeOutMusic(oldMusic);
-    }
+        if (store.get(audioAtom).muted) {
+            result = null;
+            return;
+        }
 
-    const soundVolume = SOUND_VOLUMES[sound] ?? 1;
+        if (currentMusic) {
+            const oldMusic = currentMusic;
 
-    musicVolume = volume * soundVolume;
+            await fadeOutMusic(oldMusic);
 
-    currentMusic = k.play(sound, {
-        volume:
+            if (currentMusic === oldMusic) {
+                currentMusic = null;
+            }
+        }
+
+        const audioState = store.get(audioAtom);
+
+        const soundVolume = SOUND_VOLUMES[sound] ?? 1;
+
+        musicVolume = volume * soundVolume;
+
+        const finalVolume =
             musicVolume *
             audioState.masterVolume *
-            audioState.musicVolume,
-        loop: true
+            audioState.musicVolume;
+
+        const music = k.play(sound, {
+            loop
+        });
+
+        music.volume = finalVolume;
+
+        currentMusic = music;
+        result = { music };
     });
 
-    return currentMusic;
+    return musicTransition.then(() => result);
 }
 
 export async function fadeOutMusic(music: AudioPlay) {
@@ -190,7 +210,7 @@ export function getMusic() {
     return currentMusic;
 }
 
-function sleep(ms: number) {
+export function sleep(ms: number) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
 
@@ -203,4 +223,10 @@ export function updateMusicVolume() {
         musicVolume *
         audioState.masterVolume *
         audioState.musicVolume;
+}
+
+export function clearMusic(music: AudioPlay) {
+    if (currentMusic === music) {
+        currentMusic = null;
+    }
 }

@@ -5,8 +5,8 @@ import { useState } from 'react';
 import Modal from '../Modal/Modal';
 import Card from '../Card/Card';
 import UpgradeCard from '../UpgradeCard/UpgradeCard';
-import LoadoutPreviewPanel from '../LoadoutPreviewPanel/LoadoutPreviewPanel';
 import { playUISound } from '../../utils/soundHelpers';
+import { saveEndlessCheckpoint } from '../../entities/EndlessWaveSpawner';
 
 export default function EndlessRewardUI() {
     const [rewardChoice, setRewardChoice] = useAtom(rewardChoiceAtom);
@@ -25,7 +25,7 @@ export default function EndlessRewardUI() {
                 ...prev,
                 visible: true,
                 rewardIndex: 1,
-                endlessCards: upgrade => {
+                endlessCards: async upgrade => {
 
                     setRewards(prev => ({
                         ...prev,
@@ -41,6 +41,10 @@ export default function EndlessRewardUI() {
                             cards: [...prev.deck.cards, upgrade]
                         }
                     }));
+
+                    if (!gameState.context) return;
+
+                    await saveEndlessCheckpoint(gameState.context, gameState.seed);
 
                 }
             }))
@@ -115,7 +119,7 @@ export default function EndlessRewardUI() {
                             <Card
                                 key={index}
                                 scale={map.fontScale}
-                                handleClick={() => {
+                                handleClick={async () => {
                                     setGameState(prev => ({
                                         ...prev,
                                         deck: {
@@ -124,6 +128,9 @@ export default function EndlessRewardUI() {
                                         }
                                     }));
                                     setRewardChoice(prev => ({ ...prev, visible: false }));
+                                    if (!gameState.context) return;
+
+                                    await saveEndlessCheckpoint(gameState.context, gameState.seed);
                                     setShowRCModal(false);
                                 }}
                             >

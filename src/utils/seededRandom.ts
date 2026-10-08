@@ -32,3 +32,13 @@ export function getChestSeed(
         0x2468ACE0
     ) >>> 0;
 }
+
+export type MapOrientation = "horizontal" | "vertical";
+
+export function getMapOrientation(seed: number): MapOrientation {
+    const rng = createSeededRandom(
+        (seed + 0xA341316C) >>> 0
+    );
+
+    return rng() < 0.5 ? "horizontal" : "vertical";
+}
