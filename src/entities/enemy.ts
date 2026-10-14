@@ -27,19 +27,12 @@ export default function makeEnemy(
     const difficulty = store.get(gameStateAtom).difficulty;
     const waveNumber = store.get(gameStateAtom).waveNumber;
 
-    // const expertWaveMultiplier =
-    //     difficulty === "expert" && waveNumber >= 5
-    //         ? waveNumber - 4
-    //         : 0;
-
-    // const speedMultiplier = 1 + expertWaveMultiplier * 0.015;
-    // const healthMultiplier = 1 + expertWaveMultiplier * 0.025;
     const expertBossHealthMult = "isBoss" in ENEMIES[enemyId] && ENEMIES[enemyId].isBoss && difficulty === "expert" ? 1.2 : 1;
-    const expertEnemyMult = difficulty === "expert" ? (1 + waveNumber * (waveNumber < 8 ? 0.01 : 0.015)) : 1;
+    const expertEnemyMult = difficulty === "expert" ? (1 + waveNumber * (waveNumber < 8 ? 0.01 : 0.015) - 0.01) : 1;
     const expertEnemySpeedMult = difficulty === "expert" ? (1 + (waveNumber === 9 ? 0.05 : 0)) : 1;
-    const health = Math.round(getHPAndArmour(ENEMIES[enemyId].hp, waveNumber) * (difficulty !== "normal" ? HARD_HEALTH_MULT : 1) * expertBossHealthMult);
+    const health = Math.round(getHPAndArmour(ENEMIES[enemyId].hp, waveNumber) * (difficulty !== "normal" ? HARD_HEALTH_MULT : 1) * expertBossHealthMult * expertEnemyMult);
 
-    const baseSpeed = getEnemySpeed(ENEMIES[enemyId].speed, waveNumber);
+    const baseSpeed = getEnemySpeed(ENEMIES[enemyId].speed, waveNumber) * expertEnemySpeedMult;
 
     const armour = (ENEMIES[enemyId] as Record<"armour", number>).armour
         ? Math.round(getHPAndArmour((ENEMIES[enemyId] as Record<"armour", number>).armour, waveNumber) * (difficulty === "hard" ? 1.2 : 1))
@@ -1445,8 +1438,7 @@ function getEnemySpeed(baseSpeed: number, wave: number) {
 
         if (i > 1 && i < 15) growthRate = 0.01;
         else if (i < 20) growthRate = 0.005;
-        else if (i < 25) growthRate = 0.0025;
-        else growthRate = 0.001;
+        else growthRate = 0.0025;
 
         speed *= 1 + growthRate;
     }

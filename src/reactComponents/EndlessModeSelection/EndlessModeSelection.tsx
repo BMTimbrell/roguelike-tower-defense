@@ -25,16 +25,18 @@ export default function EndlessModeSelection({ onClick, onBackClick }: { onClick
                     }}
                     onMouseEnter={onMouseEnter}
                     heading="Misty Forest"
-                    description="Journey through lush forests and frozen tundras."
+                    description="Survive for endless waves on a map with trees."
                     locked={IS_DEMO}
                 />
                 <GameModeOption
                     onClick={(e) => {
                         onClick(e);
+                        setGameState(prev => ({ ...prev, difficulty: "normal" }));
+                        setEndlessMapType("endlessHell");
                     }}
                     onMouseEnter={onMouseEnter}
                     heading="Hell"
-                    description="Brave scorching deserts and the fiery depths of Hell."
+                    description="Survive for endless waves on a map with totems and obelisks."
                     locked={IS_DEMO}
                     unlockText="Locked in demo."
                 />

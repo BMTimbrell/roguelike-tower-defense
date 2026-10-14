@@ -336,6 +336,8 @@ export type HeroInstance = UnitInstance & {
     pathTiles: PathTile[];
     levelUpOffset: { x: number; y: number; };
     songs?: Song[];
+    permanentRangeBonus: number;
+    permanentCritBonus: number;
 };
 
 export type HeroGameObj = GameObj & HeroInstance;
@@ -609,7 +611,8 @@ export type Scene = "level1" |
     "hell2" |
     "hell2-2" |
     "hell3" |
-    "endlessForest";
+    "endlessForest" |
+    "endlessHell";
 
 export type Scenes = Scene[][];
 
@@ -1197,7 +1200,22 @@ type SavedTower = {
         required: number;
     };
 
+    towerBuffs: TowerBuff[];
+
     priority: TargetPriority;
+};
+
+type SavedTotem = {
+    id: string;
+    isCaptured: boolean;
+    captureProgress: number;
+    captureTowerId: string | null;
+};
+
+type SavedObelisk = {
+    id: string;
+    isDestroyed: boolean;
+    hp: number;
 };
 
 export type EndlessRunSave = BaseRunSave & {
@@ -1214,6 +1232,9 @@ export type EndlessRunSave = BaseRunSave & {
         level: number;
         skills: SkillId[];
         priority: TargetPriority;
+        towerBuffs: TowerBuff[];
+        permanentRangeBonus: number;
+        permanentCritBonus: number;
 
         tileX: number;
         tileY: number;
@@ -1236,8 +1257,8 @@ export type EndlessRunSave = BaseRunSave & {
 
     mapChanges: {
         destroyedTrees: { x: number; y: number; }[];
-        destroyedObelisks: { x: number; y: number; }[];
-        capturedTotems: { x: number; y: number; }[];
+        obelisks: SavedObelisk[];
+        totems: SavedTotem[];
     };
 
     wave: number;
@@ -1411,7 +1432,7 @@ export type TotemGameObj = GameObj & {
     totemId: TotemId;
     isCaptured: boolean;
     captureProgress: number;
-    captureTower: TowerGameObj | null;
+    captureTower: TowerGameObj | HeroGameObj | null;
     range: number;
     requiredDamage: number;
     affectedEnemies: Set<EnemyGameObj>;
@@ -1441,6 +1462,7 @@ export type ObeliskGameObj = GameObj<
     SpriteComp
 > & {
     obeliskId: ObeliskId;
+    instanceId: string;
     range: number;
     statusImmunity: boolean;
     darkHarvestDamage: number;
@@ -1478,6 +1500,6 @@ export type EndlessMapType = "endlessForest" | "endlessHell";
 
 export type EndlessMapState = {
     destroyedTrees: { x: number; y: number }[];
-    destroyedObelisks: { x: number; y: number }[];
-    capturedTotems: { x: number; y: number }[]
+    obelisks: SavedObelisk[];
+    totems: SavedTotem[]
 };

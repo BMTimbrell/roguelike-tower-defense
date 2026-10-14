@@ -9,7 +9,12 @@ import { playSfx } from "../utils/soundHelpers";
 import { tryShowTutorial } from "../utils/tutorialHelpers";
 
 export default function makeObelisk(k: KAPLAYCtx, id: ObeliskId, pos: Vec2, tileGrid: Tile[][]) {
-    const obeliskHealth = 600 * (store.get(gameStateAtom).difficulty === "hard" ? 1.2 : store.get(gameStateAtom).difficulty === "expert" ? 1.4 : 1);
+    let obeliskHealth = 600 * (store.get(gameStateAtom).difficulty === "hard" ? 1.2 : store.get(gameStateAtom).difficulty === "expert" ? 1.4 : 1);
+    const waveNumber = store.get(gameStateAtom).waveNumber;
+
+    const endlessHealthMult = waveNumber > 15 ? 12 : waveNumber > 11 ? 8 : 4;
+
+    if (store.get(gameStateAtom).gameMode === "endless" && store.get(gameStateAtom).waveNumber > 5) obeliskHealth *= endlessHealthMult;
 
     const obelisk: ObeliskGameObj = k.add([
         k.sprite(`${id} obelisk`, { anim: "idle" }),
@@ -21,6 +26,7 @@ export default function makeObelisk(k: KAPLAYCtx, id: ObeliskId, pos: Vec2, tile
         k.health(obeliskHealth, obeliskHealth),
         k.pos(pos.add(TILE_SIZE / 2)),
         {
+            instanceId: `obelisk-${pos.x / TILE_SIZE}-${pos.y / TILE_SIZE}`,
             obeliskId: id,
             towerBuff: {
                 type: "bonusDamage",

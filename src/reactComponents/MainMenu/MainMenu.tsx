@@ -162,6 +162,7 @@ export default function MainMenu() {
                                         ...prev,
                                         timeScale: 1,
                                         seed: saveData.endlessSeed,
+                                        scene: saveData.scene,
                                         gameMode: "endless",
                                         health: saveData.health,
                                         maxHealth: saveData.maxHealth,
@@ -195,11 +196,11 @@ export default function MainMenu() {
 
                                     setEndlessMapState({
                                         destroyedTrees: saveData.mapChanges.destroyedTrees,
-                                        destroyedObelisks: saveData.mapChanges.destroyedObelisks,
-                                        capturedTotems: saveData.mapChanges.capturedTotems
+                                        obelisks: saveData.mapChanges.obelisks,
+                                        totems: saveData.mapChanges.totems
                                     });
 
-                                    k.go("endlessForest");
+                                    k.go(saveData.scene);
 
                             }
                         }}

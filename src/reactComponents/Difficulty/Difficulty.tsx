@@ -77,7 +77,7 @@ export default function Difficulty({ onClick, onBackClick }: { onClick: React.Mo
                     <div>For players who enjoy losing.</div>
                     {!expertUnlocked && (
                         <div className={styles.unlockText}>
-                            Locked in demo.
+                            Beat the game on Hard to unlock this difficulty.
                         </div>
                     )}
                 </div>

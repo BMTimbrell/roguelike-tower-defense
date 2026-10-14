@@ -82,8 +82,8 @@ export default function mainMenu(k: KAPLAYCtx) {
 
         store.set(endlessMapStateAtom, {
             destroyedTrees: [],
-            destroyedObelisks: [],
-            capturedTotems: []
+            obelisks: [],
+            totems: []
         });
 
         store.set(hoveredHellMapEntityAtom, null);
@@ -238,7 +238,6 @@ export default function mainMenu(k: KAPLAYCtx) {
                         k.go(sceneName satisfies Scene, { mapData, tileGrid, pathTiles, wave: waveId });
                     } else if (gameMode === "endless") {
                         await saveRun(undefined);
-
                         k.go(store.get(endlessMapTypeAtom));
                     }
                 }

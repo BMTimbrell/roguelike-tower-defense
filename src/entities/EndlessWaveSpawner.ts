@@ -8,6 +8,7 @@ import type {
     MapChunk,
     PathTile,
     Tile,
+    TotemGameObj,
     TowerGameObj,
     Wave
 } from "../types";
@@ -44,6 +45,8 @@ type EndlessWaveSpawnerOptions = {
     pathTiles: PathTile[];
     seed: number;
     orientation: MapOrientation;
+    onChunkRevealed?: (chunk: MapChunk) => void;
+    onWaveSave?: () => void;
 };
 
 export default function makeEndlessWaveSpawner(
@@ -370,6 +373,8 @@ export default function makeEndlessWaveSpawner(
                             orientation
                         );
 
+                        opts.onChunkRevealed?.(nextChunk);
+
                     }
                 }
 
@@ -422,11 +427,30 @@ export default function makeEndlessWaveSpawner(
                                     if (oldHero && !oldHero.placed) k.destroy(oldHero);
 
                                     if (oldHero?.placed) {
+
                                         updatedHero.pos = oldHero.pos;
                                         updatedHero.placed = true;
                                         updatedHero.selected = false;
                                         updatedHero.hovered = false;
                                         updatedHero.opacity = 1;
+
+                                        // preserve buffs and identity
+                                        updatedHero.towerBuffs = [...hero.towerBuffs];
+                                        updatedHero.instanceId = hero.instanceId;
+
+                                        updatedHero.permanentRangeBonus = hero.permanentRangeBonus;
+                                        updatedHero.permanentCritChanceBonus = hero.permanentCritChanceBonus;
+
+                                        updatedHero.stats.range += hero.permanentRangeBonus;
+                                        updatedHero.stats.critChance += hero.permanentCritChanceBonus;
+
+                                        // transfer totem bindings
+                                        for (const totem of k.get("totem") as TotemGameObj[]) {
+                                            if (totem.captureTower === oldHero) {
+                                                totem.captureTower = updatedHero;
+                                            }
+                                        }
+
                                         k.destroy(oldHero);
                                         k.add(updatedHero);
                                         const gridX = Math.floor(hero.pos.x / TILE_SIZE);
@@ -494,7 +518,7 @@ export default function makeEndlessWaveSpawner(
                                         visible: false
                                     }));
 
-                                    await saveEndlessCheckpoint(k, seed);
+                                    await saveEndlessCheckpoint(k, seed, opts.onWaveSave);
                                 }
                             }));
 
@@ -521,7 +545,7 @@ export default function makeEndlessWaveSpawner(
                                     ]
                                 }));
 
-                                await saveEndlessCheckpoint(k, seed);
+                                await saveEndlessCheckpoint(k, seed, opts.onWaveSave);
                             }
 
                         }));
@@ -555,14 +579,14 @@ export default function makeEndlessWaveSpawner(
                                         }
                                     }));
 
-                                    await saveEndlessCheckpoint(k, seed);
+                                    await saveEndlessCheckpoint(k, seed, opts.onWaveSave);
 
                                 }
                             }));
                         }
                         break;
                     case null:
-                        saveEndlessCheckpoint(k, seed);
+                        saveEndlessCheckpoint(k, seed, opts.onWaveSave);
                         break;
                 }
             }
@@ -947,14 +971,14 @@ function getEndlessReward(wave: number) {
 function getGiantBudgetRatio(waveNumber: number) {
     if (waveNumber < 5) return 0;
     if (waveNumber < 11) return 0.2;
-    if (waveNumber < 21) return 0.25;
-    if (waveNumber < 30) return 0.3;
-    if (waveNumber < 36) return 0.35;
+    if (waveNumber < 25) return 0.25;
+    if (waveNumber < 31) return 0.3;
+    if (waveNumber < 41) return 0.35;
 
     return 0.4;
 }
 
-export async function saveEndlessCheckpoint(k: KAPLAYCtx, seed: number) {
+export async function saveEndlessCheckpoint(k: KAPLAYCtx, seed: number, onWaveSave?: () => void) {
     // construct EndlessRunSave from current
     // game state + map entities
 
@@ -970,7 +994,8 @@ export async function saveEndlessCheckpoint(k: KAPLAYCtx, seed: number) {
         battery: tower.battery ? tower.battery : undefined,
         killStacks: tower.killStacks ? tower.killStacks : undefined,
         farmData: tower.farmData ? tower.farmData : undefined,
-        deathCharge: tower.deathCharge ? tower.deathCharge : undefined
+        deathCharge: tower.deathCharge ? tower.deathCharge : undefined,
+        towerBuffs: tower.towerBuffs.filter(buff => buff.timeLeft === undefined)
     }));
 
     let tileX = -1;
@@ -981,9 +1006,11 @@ export async function saveEndlessCheckpoint(k: KAPLAYCtx, seed: number) {
         tileY = Math.floor(k.get("hero")[0].pos.y / TILE_SIZE);
     }
 
+    onWaveSave?.();
+
     await saveRun({
         mode: "endless",
-        scene: "endlessForest",
+        scene: store.get(gameStateAtom).scene,
         gold: store.get(gameStateAtom).gold,
         deck: store.get(gameStateAtom).deck.cards,
         hand: store.get(gameStateAtom).upgrades,
@@ -994,6 +1021,9 @@ export async function saveEndlessCheckpoint(k: KAPLAYCtx, seed: number) {
             level: store.get(gameStateAtom).hero?.level ?? 1,
             skills: store.get(gameStateAtom).hero?.skillIds ?? [],
             priority: store.get(gameStateAtom).hero?.priority ?? null,
+            towerBuffs: store.get(gameStateAtom).hero?.towerBuffs ?? [],
+            permanentCritBonus: store.get(gameStateAtom).hero?.permanentCritBonus ?? 0,
+            permanentRangeBonus: store.get(gameStateAtom).hero?.permanentRangeBonus ?? 0,
             tileX,
             tileY
         },
@@ -1004,8 +1034,8 @@ export async function saveEndlessCheckpoint(k: KAPLAYCtx, seed: number) {
         endlessSeed: seed,
         mapChanges: {
             destroyedTrees: [...store.get(endlessMapStateAtom).destroyedTrees],
-            destroyedObelisks: [...store.get(endlessMapStateAtom).destroyedObelisks],
-            capturedTotems: [...store.get(endlessMapStateAtom).capturedTotems]
+            obelisks: [...store.get(endlessMapStateAtom).obelisks],
+            totems: [...store.get(endlessMapStateAtom).totems]
         },
         luck: store.get(gameStateAtom).luck,
         chests: [...k.get("chest").map(chest => ({ x: chest.pos.x, y: chest.pos.y }))],

@@ -213,8 +213,8 @@ export const endlessMapTypeAtom = atom<EndlessMapType>("endlessForest");
 
 export const endlessMapStateAtom = atom<EndlessMapState>({
     destroyedTrees: [],
-    destroyedObelisks: [],
-    capturedTotems: []
+    obelisks: [],
+    totems: []
 });
 
 export const store = createStore();

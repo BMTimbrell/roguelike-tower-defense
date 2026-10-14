@@ -27,6 +27,7 @@ import hell2_2 from './scenes/hell2-2';
 import hell3 from './scenes/hell3';
 import endlessForest from './scenes/endlessForest';
 import type { Scene } from './types';
+import endlessHell from './scenes/EndlessHell';
 
 export default async function initGame() {
     // focus back on canvas when clicking on html elements
@@ -85,10 +86,7 @@ export default async function initGame() {
     k.setBackground(k.Color.fromHex("#131313"));
 
     endlessForest(k);
-
-    // k.onLoad(() => {
-    //     k.go("endlessForest");
-    // });
+    endlessHell(k);
 
     k.go("mainMenu" satisfies Scene);
 

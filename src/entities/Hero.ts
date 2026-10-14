@@ -48,6 +48,7 @@ export default function makeHero(k: KAPLAYCtx,
         k.opacity(0.5),
         k.state("active", ["active", "disabled"]),
         {
+            instanceId: heroId,
             heroId,
             name,
             priority,
@@ -103,7 +104,9 @@ export default function makeHero(k: KAPLAYCtx,
             sprite: null as null | GameObj,
             ...("melee" in HEROES[heroId] ? { melee: HEROES[heroId]?.melee } : {}),
             ...("effects" in HEROES[heroId] ? { effects: HEROES[heroId].effects as UnitEffects } : {}),
-            ...("songs" in HEROES[heroId] ? { songs: HEROES[heroId].songs as Song[] } : {})
+            ...("songs" in HEROES[heroId] ? { songs: HEROES[heroId].songs as Song[] } : {}),
+            permanentRangeBonus: 0,
+            permanentCritBonus: 0
         },
         "tower",
         "hero",
@@ -135,7 +138,6 @@ export default function makeHero(k: KAPLAYCtx,
 
         const combat = makeUnitCombat(k, {
             owner: hero,
-            stats: hero.stats,
             projectile,
             gunSprite,
             gunOffset: k.vec2(gunOffset.x, gunOffset.y),
@@ -390,7 +392,6 @@ export default function makeHero(k: KAPLAYCtx,
                         }
 
                     }
-
                 }
 
                 if (hero.disabledTimeLeft > 0) {

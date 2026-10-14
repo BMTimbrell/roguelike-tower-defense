@@ -1,5 +1,5 @@
 import type { Color, GameObj, KAPLAYCtx, Vec2 } from "kaplay";
-import type { EnemyGameObj, ObeliskGameObj, TotemGameObj, TotemId, TowerGameObj } from "../types";
+import type { EnemyGameObj, HeroGameObj, ObeliskGameObj, TotemGameObj, TotemId, TowerGameObj } from "../types";
 import { ENEMIES, OBELISKS, TILE_SIZE, TOTEMS, type EnemyId } from "../constants";
 import { updateSpeed } from "./Enemy";
 import { cachedSaveAtom, gameStateAtom, hoveredHellMapEntityAtom, store } from "../store";
@@ -14,6 +14,7 @@ export default function makeTotem(k: KAPLAYCtx, id: TotemId, pos: Vec2) {
         k.z(pos.y),
         k.pos(pos.add(TILE_SIZE / 2)),
         {
+            instanceId: `totem-${pos.x / TILE_SIZE}-${pos.y / TILE_SIZE}`,
             totemId: id,
             isCaptured: false,
             captureProgress: 0,
@@ -259,17 +260,30 @@ export function recalculateTotemStats(enemy: EnemyGameObj) {
 
 function applyPlayerBlessing(totem: TotemGameObj) {
     totem.playerBuff.buffs.forEach(buff => {
-        if (totem.captureTower) {
-            if (buff.type === "range") {
-                totem.captureTower.stats.range += buff.amount;
-                return;
-            } else if (buff.type === "critChance") {
-                totem.captureTower.stats.critChance += buff.amount;
-                return;
+        const tower = totem.captureTower;
+        if (!tower) return;
+
+        if (buff.type === "range") {
+            tower.stats.range += buff.amount;
+
+            if (tower.is("hero")) {
+                tower.permanentRangeBonus += buff.amount;
             }
 
-            totem.captureTower.towerBuffs.push(buff);
+            return;
         }
+
+        if (buff.type === "critChance") {
+            tower.stats.critChance += buff.amount;
+
+            if (tower.is("hero")) {
+                tower.permanentCritChanceBonus += buff.amount;
+            }
+
+            return;
+        }
+
+        tower.towerBuffs.push(buff);
     });
 }
 
@@ -282,7 +296,7 @@ type TotemPowerEffectOptions = {
 export function captureTotemEffect(
     k: KAPLAYCtx,
     totem: TotemGameObj | ObeliskGameObj,
-    tower: TowerGameObj,
+    tower: TowerGameObj | HeroGameObj,
     options: TotemPowerEffectOptions = {},
 ) {
     const {

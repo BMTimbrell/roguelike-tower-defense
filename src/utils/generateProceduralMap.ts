@@ -1,9 +1,11 @@
 import type { KAPLAYCtx, Vec2 } from "kaplay";
 import { createSeededRandom, getMapOrientation, type MapOrientation } from "./seededRandom";
-import type { MapChunk, PathTile, Tile } from "../types";
-import { ENDLESS_MUSIC, TILE_SIZE } from "../constants";
+import type { MapChunk, ObeliskId, PathTile, Tile, TotemId, TowerGameObj } from "../types";
+import { ENDLESS_MUSIC, TILE_SIZE, TOTEMS } from "../constants";
 import { endlessMapStateAtom, gameStateAtom, store } from "../store";
 import { clearMusic, playMusic, sleep } from "./soundHelpers";
+import makeObelisk from "../entities/Obelisk";
+import makeTotem from "../entities/Totem";
 
 export async function generateForestMap(
     k: KAPLAYCtx,
@@ -14,9 +16,6 @@ export async function generateForestMap(
 
     const width = orientation === "horizontal" ? 50 : 25;
     const height = orientation === "horizontal" ? 25 : 50;
-
-    // const width = 50;
-    // const height = 25;
 
     const tileGrid: Tile[][] = [];
 
@@ -59,7 +58,7 @@ export async function generateForestMap(
     }
 
     // 3. Generate trees
-    generateTrees(tileGrid, rng);
+    if (k.getSceneName() === "endlessForest") generateTrees(tileGrid, rng);
 
     // 4. Create pathTiles
     const pathTiles = chunks
@@ -79,6 +78,14 @@ export async function generateForestMap(
         pathTile.tile.pathIndex = index;
     });
 
+    let obelisks: GeneratedHellEntity[] | undefined;
+    let totems: GeneratedHellEntity[] | undefined;
+
+    if (k.getSceneName() === "endlessHell") {
+        const hellEntities = generateHellEntities(tileGrid, chunks, pathTiles, rng);
+        obelisks = hellEntities.obelisks;
+        totems = hellEntities.totems;
+    }
 
     for (const chunk of chunks) {
         blockHiddenChunkTiles(
@@ -97,7 +104,9 @@ export async function generateForestMap(
         seed,
         waypoints,
         chunks,
-        orientation
+        orientation,
+        obelisks,
+        totems
     };
 }
 
@@ -568,7 +577,7 @@ async function generateMapSprite(
             new Error("Failed to load endless tileset")
         );
 
-        tileset.src = "sprites/grass-tileset-endless.png";
+        tileset.src = `sprites/${k.getSceneName() === "endlessHell" ? "hell-tileset-endless.png" : "grass-tileset-endless.png"}`;
     });
 
     for (let y = 0; y < tileGrid.length; y++) {
@@ -923,13 +932,13 @@ function generateValidChunkPath(
                 targetLength
             ) <= PATH_LENGTH_TOLERANCE;
 
-        console.log(
-            `Chunk ${chunk.index}, attempt ${attempt + 1}:`,
-            `target=${targetLength}`,
-            `length=${result.pathTiles.length}`,
-            `reachedExit=${result.reachedExit}`,
-            `validLength=${validLength}`
-        );
+        // console.log(
+        //     `Chunk ${chunk.index}, attempt ${attempt + 1}:`,
+        //     `target=${targetLength}`,
+        //     `length=${result.pathTiles.length}`,
+        //     `reachedExit=${result.reachedExit}`,
+        //     `validLength=${validLength}`
+        // );
 
         if (
             result.reachedExit &&
@@ -994,7 +1003,7 @@ export function unblockRevealedChunkTiles(
 }
 
 export function startEndlessMusic(k: KAPLAYCtx) {
-    let previousIndex = 0;
+    let previousIndex = k.getSceneName() === "endlessHell" ? 6 : 0;
 
     async function playTrack(index: number) {
         previousIndex = index;
@@ -1012,7 +1021,6 @@ export function startEndlessMusic(k: KAPLAYCtx) {
 
         music.onEnd(async () => {
             clearMusic(music);
-            console.log("TRACK FINISHED", index);
 
             await sleep(k.rand(8, 15) * 1000);
 
@@ -1029,5 +1037,260 @@ export function startEndlessMusic(k: KAPLAYCtx) {
         });
     }
 
-    void playTrack(0);
+    void playTrack(k.getSceneName() === "endlessHell" ? 6 : 0);
+}
+
+function getDistanceToPath(
+    x: number,
+    y: number,
+    pathTiles: { x: number; y: number }[]
+): number {
+    let closest = Infinity;
+
+    for (const path of pathTiles) {
+        const distance = Math.hypot(
+            x - path.x,
+            y - path.y
+        );
+
+        if (distance < closest) {
+            closest = distance;
+        }
+    }
+
+    return closest;
+}
+
+function findEntityPosition(
+    tileGrid: Tile[][],
+    chunk: MapChunk,
+    pathTiles: { x: number; y: number }[],
+    placedEntities: { x: number; y: number }[],
+    rng: () => number,
+    minPathDistance: number,
+    maxPathDistance: number,
+    minEntityDistance: number
+) {
+    const candidates: { x: number; y: number }[] = [];
+    const margin = 1;
+
+    for (let y = chunk.startY + margin; y < chunk.startY + chunk.height - margin; y++) {
+        for (let x = chunk.startX + margin; x < chunk.startX + chunk.width - margin; x++) {
+            const tile = tileGrid[y][x];
+
+            if (tile.blocked || tile.hasTree) continue;
+
+            // Distance to nearest path tile
+            const pathDistance = getDistanceToPath(x, y, pathTiles);
+
+            if (
+                pathDistance < minPathDistance ||
+                pathDistance > maxPathDistance
+            ) {
+                continue;
+            }
+
+            // Distance to other totems / obelisks
+            const tooClose = placedEntities.some(pos =>
+                Math.hypot(pos.x - x, pos.y - y) < minEntityDistance
+            );
+
+            if (tooClose) continue;
+
+            candidates.push({ x, y });
+        }
+    }
+
+    if (!candidates.length) return null;
+
+    return candidates[Math.floor(rng() * candidates.length)];
+}
+
+export type GeneratedHellEntity = {
+    id: string;
+    x: number;
+    y: number;
+    chunkIndex: number;
+    element: TotemId | ObeliskId;
+};
+
+function generateHellEntities(
+    tileGrid: Tile[][],
+    chunks: MapChunk[],
+    pathTiles: { x: number; y: number }[],
+    rng: () => number
+) {
+    const totems: GeneratedHellEntity[] = [];
+    const obelisks: GeneratedHellEntity[] = [];
+
+    const placedEntities: { x: number; y: number }[] = [];
+    const elements = Object.keys(TOTEMS) as (TotemId | ObeliskId)[];
+
+    for (const chunk of chunks) {
+
+        for (let i = 0; i < 2; i++) {
+
+            let pos = findEntityPosition(
+                tileGrid,
+                chunk,
+                pathTiles,
+                placedEntities,
+                rng,
+                2,
+                3,
+                2
+            );
+
+            if (pos) {
+                totems.push({
+                    id: `totem-${pos.x}-${pos.y}`,
+                    x: pos.x,
+                    y: pos.y,
+                    chunkIndex: chunk.index,
+                    element: elements[Math.floor(rng() * elements.length)]
+                });
+
+                placedEntities.push(pos);
+            }
+
+            pos = findEntityPosition(
+                tileGrid,
+                chunk,
+                pathTiles,
+                placedEntities,
+                rng,
+                1,
+                4,
+                2
+            );
+
+            if (pos) {
+                obelisks.push({
+                    id: `obelisk-${pos.x}-${pos.y}`,
+                    x: pos.x,
+                    y: pos.y,
+                    chunkIndex: chunk.index,
+                    element: elements[Math.floor(rng() * elements.length)]
+                });
+                placedEntities.push(pos);
+            }
+        }
+
+        // extra obelisk for chunks after the first one
+        if (chunk.index > 0) {
+            const pos = findEntityPosition(
+                tileGrid,
+                chunk,
+                pathTiles,
+                placedEntities,
+                rng,
+                1,
+                4,
+                2
+            );
+
+            if (pos) {
+                obelisks.push({
+                    id: `obelisk-${pos.x}-${pos.y}`,
+                    x: pos.x,
+                    y: pos.y,
+                    chunkIndex: chunk.index,
+                    element: elements[Math.floor(rng() * elements.length)]
+                });
+                placedEntities.push(pos);
+            }
+        }
+
+    }
+
+    return { totems, obelisks };
+}
+
+export function spawnHellChunkEntities(
+    k: KAPLAYCtx,
+    chunkIndex: number,
+    totems: GeneratedHellEntity[],
+    obelisks: GeneratedHellEntity[],
+    tileGrid: Tile[][]
+) {
+    const chunkTotems = totems.filter(t => t.chunkIndex === chunkIndex);
+    const chunkObelisks = obelisks.filter(o => o.chunkIndex === chunkIndex);
+
+    const state = store.get(endlessMapStateAtom);
+
+    for (const obelisk of chunkObelisks) {
+        const saved = state.obelisks.find(o => o.id === obelisk.id);
+
+        if (saved?.isDestroyed) continue;
+
+        const obj = makeObelisk(
+            k,
+            obelisk.element,
+            k.vec2(obelisk.x * TILE_SIZE, obelisk.y * TILE_SIZE),
+            tileGrid
+        );
+
+        tileGrid[obelisk.y][obelisk.x].blocked = true;
+
+        // Important for saving HP later
+        obj.instanceId = obelisk.id;
+
+        if (saved) {
+            // Existing obelisk: restore saved HP
+            obj.setHP(saved.hp);
+            console.log(obj.hp())
+        } else {
+            // Newly revealed obelisk: save its starting HP
+            store.set(endlessMapStateAtom, prev => ({
+                ...prev,
+                obelisks: [
+                    ...prev.obelisks,
+                    {
+                        id: obelisk.id,
+                        isDestroyed: false,
+                        hp: obj.hp()
+                    }
+                ]
+            }));
+        }
+    }
+
+    for (const totem of chunkTotems) {
+        const saved = state.totems.find(t => t.id === totem.id);
+
+        const obj = makeTotem(
+            k,
+            totem.element,
+            k.vec2(totem.x * TILE_SIZE, totem.y * TILE_SIZE)
+        );
+
+        tileGrid[totem.y][totem.x].blocked = true;
+
+        if (saved) {
+            obj.isCaptured = saved.isCaptured;
+            obj.captureProgress = saved.captureProgress;
+
+            if (saved.captureTowerId !== null) {
+                obj.captureTower = (k.get("tower") as TowerGameObj[])
+                    .find(t => t.instanceId === saved.captureTowerId) ?? null;
+            }
+
+            if (obj.isCaptured) obj.play("tower");
+        } else {
+            store.set(endlessMapStateAtom, prev => ({
+                ...prev,
+                totems: [
+                    ...prev.totems,
+                    {
+                        id: totem.id,
+                        isCaptured: false,
+                        captureProgress: 0,
+                        captureTowerId: null
+                    }
+                ]
+            }));
+        }
+
+        obj.instanceId = totem.id;
+    }
 }
