@@ -47,6 +47,7 @@ type EndlessWaveSpawnerOptions = {
     orientation: MapOrientation;
     onChunkRevealed?: (chunk: MapChunk) => void;
     onWaveSave?: () => void;
+    onWaveEnd?: (waveNumber: number) => void;
 };
 
 export default function makeEndlessWaveSpawner(
@@ -352,6 +353,8 @@ export default function makeEndlessWaveSpawner(
 
                 const waveNumber = store.get(gameStateAtom).waveNumber;
                 const endlessReward = getEndlessRewardType(waveNumber);
+
+                opts.onWaveEnd?.(waveNumber);
 
                 if (endlessReward.expand) {
                     const nextChunk = chunks.find(

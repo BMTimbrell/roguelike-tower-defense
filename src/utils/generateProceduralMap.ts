@@ -1238,7 +1238,26 @@ export function spawnHellChunkEntities(
         if (saved) {
             // Existing obelisk: restore saved HP
             obj.setHP(saved.hp);
-            console.log(obj.hp())
+            console.log(obj.hp());
+
+            for (const { x, y } of saved.corruptedTiles ?? []) {
+                const tile = tileGrid[y]?.[x];
+                if (!tile) continue;
+
+                tile.blocked = true;
+
+                obj.corruptedTiles.push({
+                    tile,
+                    x,
+                    y
+                });
+
+                k.add([
+                    k.sprite("corrupted tile"),
+                    k.pos(x * TILE_SIZE, y * TILE_SIZE),
+                    "corrupted tile"
+                ]);
+            }
         } else {
             // Newly revealed obelisk: save its starting HP
             store.set(endlessMapStateAtom, prev => ({
@@ -1248,7 +1267,8 @@ export function spawnHellChunkEntities(
                     {
                         id: obelisk.id,
                         isDestroyed: false,
-                        hp: obj.hp()
+                        hp: obj.hp(),
+                        corruptedTiles: []
                     }
                 ]
             }));

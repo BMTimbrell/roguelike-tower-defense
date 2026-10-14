@@ -124,6 +124,8 @@ export default function makeObelisk(k: KAPLAYCtx, id: ObeliskId, pos: Vec2, tile
             });
         });
 
+        obelisk.corruptedTiles.length = 0;
+
         playSfx(k, "rock smash", 1, obelisk.pos);
 
         obelisk.play("destroy");
@@ -223,7 +225,8 @@ export default function makeObelisk(k: KAPLAYCtx, id: ObeliskId, pos: Vec2, tile
 export function corruptRandomTiles(
     k: KAPLAYCtx,
     obelisk: ObeliskGameObj,
-    tileGrid: Tile[][]
+    tileGrid: Tile[][],
+    random: () => number = Math.random
 ) {
     const available: CorruptedTile[] = [];
 
@@ -249,7 +252,7 @@ export function corruptRandomTiles(
     const amount = Math.min(3, available.length);
 
     for (let i = 0; i < amount; i++) {
-        const index = Math.floor(Math.random() * available.length);
+        const index = Math.floor(random() * available.length);
         const corrupted = available.splice(index, 1)[0];
 
         corrupted.tile.blocked = true;

@@ -10,7 +10,7 @@ import drawCards from "../utils/drawCards";
 import makeFloatingText from "../entities/FloatingText";
 import addTowers from "../utils/addTowers";
 import { castSpell } from "../utils/spellHelpers";
-import type { Card, MapChunk, Scene, TotemGameObj, TowerGameObj } from "../types";
+import type { Card, MapChunk, ObeliskGameObj, Scene, TotemGameObj, TowerGameObj } from "../types";
 import makeTower, { addSelectTowerListener, confirmTowerPlacement } from "../entities/Tower";
 import { makeLavaManager } from "../utils/lavaHelpers";
 import showLevelStats from "../utils/showLevelStats";
@@ -22,6 +22,8 @@ import makeChest from "../entities/makeChest";
 import updateSkills from "../utils/updateSkills";
 import { calcUpgradeCost } from "../utils/calcUpgradeCost";
 import { setBlockedTiles } from "../utils/makePlacementOnGrid";
+import { createSeededRandom, hashString } from "./seededRandom";
+import { corruptRandomTiles } from "../entities/Obelisk";
 
 export default function makeEndlessScene(k: KAPLAYCtx, scene: "endlessForest" | "endlessHell") {
     k.scene(scene, async () => {
@@ -236,6 +238,7 @@ export default function makeEndlessScene(k: KAPLAYCtx, scene: "endlessForest" | 
 
                 hero.stats.range += hero.permanentRangeBonus;
                 hero.stats.critChance += hero.permanentCritChanceBonus;
+
                 hero.pos = k.vec2(save.run.hero.tileX * TILE_SIZE, save.run.hero.tileY * TILE_SIZE);
                 hero.placed = true;
                 hero.opacity = 1;
@@ -551,7 +554,22 @@ export default function makeEndlessScene(k: KAPLAYCtx, scene: "endlessForest" | 
                     saveObeliskStates(k, chunks, obelisks);
                     saveTotemStates(k);
                 }
+            },
+            onWaveEnd: (waveNumber) => {
+
+                if (scene === "endlessHell") {
+                    for (const obelisk of k.get("obelisk") as ObeliskGameObj[]) {
+                        if (obelisk.isDying) continue;
+
+                        const random = createSeededRandom(
+                            hashString(`${seed}-${obelisk.instanceId}-${waveNumber}`)
+                        );
+
+                        corruptRandomTiles(k, obelisk, tileGrid, random);
+                    }
+                }
             }
+
         });
 
     });
@@ -615,7 +633,11 @@ function saveObeliskStates(
             return {
                 ...saved,
                 hp: obj.hp(),
-                isDestroyed: false
+                isDestroyed: false,
+                corruptedTiles: (obj as ObeliskGameObj).corruptedTiles.map(t => ({
+                    x: t.x,
+                    y: t.y
+                }))
             };
         })
     }));

@@ -1216,6 +1216,7 @@ type SavedObelisk = {
     id: string;
     isDestroyed: boolean;
     hp: number;
+    corruptedTiles: { x: number; y: number; }[];
 };
 
 export type EndlessRunSave = BaseRunSave & {
