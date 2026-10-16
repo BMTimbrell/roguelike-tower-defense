@@ -12,7 +12,7 @@ export default function makeObelisk(k: KAPLAYCtx, id: ObeliskId, pos: Vec2, tile
     let obeliskHealth = 600 * (store.get(gameStateAtom).difficulty === "hard" ? 1.2 : store.get(gameStateAtom).difficulty === "expert" ? 1.4 : 1);
     const waveNumber = store.get(gameStateAtom).waveNumber;
 
-    const endlessHealthMult = waveNumber > 15 ? 12 : waveNumber > 11 ? 8 : 4;
+    const endlessHealthMult = waveNumber > 15 ? 25 : waveNumber > 11 ? 10 : 4;
 
     if (store.get(gameStateAtom).gameMode === "endless" && store.get(gameStateAtom).waveNumber > 5) obeliskHealth *= endlessHealthMult;
 

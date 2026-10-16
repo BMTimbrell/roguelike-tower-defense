@@ -1210,12 +1210,14 @@ type SavedTotem = {
     isCaptured: boolean;
     captureProgress: number;
     captureTowerId: string | null;
+    requiredDamage: number;
 };
 
 type SavedObelisk = {
     id: string;
     isDestroyed: boolean;
     hp: number;
+    maxHP: number;
     corruptedTiles: { x: number; y: number; }[];
 };
 

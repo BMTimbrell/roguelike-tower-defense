@@ -164,6 +164,7 @@ export default function MainMenu() {
                                         seed: saveData.endlessSeed,
                                         scene: saveData.scene,
                                         gameMode: "endless",
+                                        difficulty: "normal",
                                         health: saveData.health,
                                         maxHealth: saveData.maxHealth,
                                         waveNumber: saveData.wave,

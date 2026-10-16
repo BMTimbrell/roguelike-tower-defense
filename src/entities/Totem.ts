@@ -7,6 +7,12 @@ import { playSfx } from "../utils/soundHelpers";
 import { tryShowTutorial } from "../utils/tutorialHelpers";
 
 export default function makeTotem(k: KAPLAYCtx, id: TotemId, pos: Vec2) {
+    let requiredDamage = TOTEMS[id].requiredDamage * (store.get(gameStateAtom).difficulty === "hard" ? 1.25 : store.get(gameStateAtom).difficulty === "expert" ? 1.4 : 1);
+    const waveNumber = store.get(gameStateAtom).waveNumber;
+    const endlessReqDamageMult = waveNumber > 15 ? 20 : waveNumber > 11 ? 10 : 4;
+
+    if (store.get(gameStateAtom).gameMode === "endless" && store.get(gameStateAtom).waveNumber > 5) requiredDamage *= endlessReqDamageMult;
+
     const totem: TotemGameObj = k.add([
         k.sprite(`${id} totem`, { anim: "enemy" }),
         k.area({ shape: new k.Rect(k.vec2(0), 20, 20) }),
@@ -20,7 +26,7 @@ export default function makeTotem(k: KAPLAYCtx, id: TotemId, pos: Vec2) {
             captureProgress: 0,
             captureTower: null,
             range: TOTEMS[id].radius,
-            requiredDamage: TOTEMS[id].requiredDamage * (store.get(gameStateAtom).difficulty === "hard" ? 1.25 : store.get(gameStateAtom).difficulty === "expert" ? 1.4 : 1),
+            requiredDamage,
             affectedEnemies: new Set<EnemyGameObj>(),
             enemyEffect: TOTEMS[id].enemyEffect,
             playerBuff: TOTEMS[id].playerBuff

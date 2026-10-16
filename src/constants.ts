@@ -31,7 +31,7 @@ export const CURRENT_SAVE_VERSION = 4;
 export const TILE_SIZE = 32;
 export const TOWER_RANGE_TOLERANCE = 5;
 export const MAX_TOWER_UPGRADES = 5;
-export const FOG_Z = 900;
+export const FOG_Z = 99999999;
 export const MAX_HAND_SIZE = 10;
 export const ROUND_DRAW_NUM = 3;
 export const DAMAGE_NUMBER_SIZE = 14;
@@ -4546,11 +4546,10 @@ export const ENEMIES = {
     },
     fakeSlimeKing: {
         hp: 4000,
-        damage: 99,
+        damage: 20,
         chestValue: 5,
         goldDropped: 50,
         shootSound: "squish",
-        shieldHp: 540,
         deathSound: "monster death3",
         hasGiantSoul: true,
         speed: 20,
@@ -4568,8 +4567,8 @@ export const ENEMIES = {
         }
     },
     fakeBeeQueen: {
-        hp: 3200,
-        damage: 99,
+        hp: 3600,
+        damage: 20,
         chestValue: 5,
         deathSound: "monster death3",
         shootSound: "bees",
@@ -4589,8 +4588,8 @@ export const ENEMIES = {
         }
     },
     fakePlagueMummy: {
-        hp: 4000,
-        damage: 99,
+        hp: 5000,
+        damage: 20,
         goldDropped: 50,
         chestValue: 5,
         hasGiantSoul: true,
@@ -4633,8 +4632,8 @@ export const ENEMIES = {
         }
     },
     fakeRockTitan: {
-        hp: 4000,
-        damage: 99,
+        hp: 5000,
+        damage: 20,
         goldDropped: 50,
         chestValue: 5,
         shootSound: "arrow",
@@ -4661,8 +4660,8 @@ export const ENEMIES = {
         }
     },
     fakeEvilSanta: {
-        hp: 5200,
-        damage: 99,
+        hp: 6500,
+        damage: 20,
         goldDropped: 50,
         chestValue: 5,
         speed: 20,
@@ -4678,8 +4677,8 @@ export const ENEMIES = {
         }
     },
     fakeSatan: {
-        hp: 5200,
-        damage: 99,
+        hp: 6500,
+        damage: 20,
         goldDropped: 50,
         chestValue: 5,
         speed: 20,
@@ -8381,7 +8380,7 @@ export const TOTEMS: Record<TotemId, TotemDef> = {
         enemyEffect: {
             type: "health",
             amount: 0.05,
-            description: "Enemies regen 5% HP per second"
+            description: "Enemies regen 5% of max HP per second (caps at 100)"
         },
 
         playerBuff: {
@@ -8423,7 +8422,7 @@ export const TOTEMS: Record<TotemId, TotemDef> = {
             }],
             description: "+50% fire rate and 10% bonus electric damage",
         },
-        radius: 3.5,
+        radius: 4,
         requiredDamage: 1000,
         particleColor: "#FFFF00"
     },
@@ -8457,8 +8456,8 @@ export const TOTEMS: Record<TotemId, TotemDef> = {
 
         enemyEffect: {
             type: "armour",
-            amount: 2.5,
-            description: "Enemies gain 2.5 armour per second",
+            amount: 0.01,
+            description: "Enemies gain 1% of max HP as armour per second (caps at 10)",
         },
 
         playerBuff: {
@@ -8475,7 +8474,7 @@ export const TOTEMS: Record<TotemId, TotemDef> = {
         },
         particleColor: "#800080",
 
-        radius: 3.5,
+        radius: 4,
         requiredDamage: 1000
     },
     ice: {

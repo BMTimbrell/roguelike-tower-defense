@@ -31,6 +31,11 @@ export default function makeEndlessScene(k: KAPLAYCtx, scene: "endlessForest" | 
 
         store.set(cachedSaveAtom, save);
 
+        store.set(gameStateAtom, prev => ({
+            ...prev,
+            difficulty: "normal"
+        }));
+
         const seed = save?.run?.mode === "endless" ? save.run.endlessSeed : Math.floor(Math.random() * 2 ** 32);
         const { tileGrid, pathTiles, waypoints, chunks, orientation, obelisks, totems } = await generateForestMap(k, seed);
 

@@ -1238,7 +1238,8 @@ export function spawnHellChunkEntities(
         if (saved) {
             // Existing obelisk: restore saved HP
             obj.setHP(saved.hp);
-            console.log(obj.hp());
+            obj.setMaxHP(saved.maxHP);
+            console.log(obj.hp(), obj.maxHP());
 
             for (const { x, y } of saved.corruptedTiles ?? []) {
                 const tile = tileGrid[y]?.[x];
@@ -1268,6 +1269,7 @@ export function spawnHellChunkEntities(
                         id: obelisk.id,
                         isDestroyed: false,
                         hp: obj.hp(),
+                        maxHP: obj.maxHP() ?? obj.hp(),
                         corruptedTiles: []
                     }
                 ]
@@ -1289,6 +1291,9 @@ export function spawnHellChunkEntities(
         if (saved) {
             obj.isCaptured = saved.isCaptured;
             obj.captureProgress = saved.captureProgress;
+            obj.requiredDamage = saved.requiredDamage;
+
+            console.log(obj.requiredDamage)
 
             if (saved.captureTowerId !== null) {
                 obj.captureTower = (k.get("tower") as TowerGameObj[])
@@ -1305,7 +1310,8 @@ export function spawnHellChunkEntities(
                         id: totem.id,
                         isCaptured: false,
                         captureProgress: 0,
-                        captureTowerId: null
+                        captureTowerId: null,
+                        requiredDamage: obj.requiredDamage
                     }
                 ]
             }));

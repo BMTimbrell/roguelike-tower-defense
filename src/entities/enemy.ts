@@ -381,7 +381,7 @@ export default function makeEnemy(
             if (healthRegenTimer <= 0) {
                 healthRegenTimer += healthRegenTick;
                 if (!enemy.has("curse")) {
-                    enemy.heal((enemy.maxHP() ?? 10) * enemy.healthRegen);
+                    enemy.heal(Math.min((enemy.maxHP() ?? 10) * enemy.healthRegen, 100));
                     const healEffect = k.add([
                         k.sprite("heal effect", { anim: "heal" }),
                         k.pos(enemy.pos),
@@ -405,15 +405,17 @@ export default function makeEnemy(
             if (armourRegenTimer <= 0) {
                 armourRegenTimer += armourRegenTick;
 
-                enemy.armour += enemy.armourRegen;
-                enemy.maxArmour += enemy.armourRegen;
+                const armourAmount = Math.min(Math.max(1, (enemy.maxHP() ?? 10) * enemy.armourRegen), 10);
+
+                enemy.armour += armourAmount;
+                enemy.maxArmour += armourAmount;
 
                 const armourEffect = k.add([
                     k.sprite("shield"),
                     k.pos(enemy.pos),
                     k.anchor("center"),
                     lifespan(k, 1),
-                    k.z(999),
+                    k.z(9999999),
                     k.opacity(1),
                     {
                         update() {
@@ -726,6 +728,7 @@ export default function makeEnemy(
         occultistShield = k.add([
             k.sprite("occultist shield", { anim: "shield" }),
             k.anchor("center"),
+            k.z(9999999),
             k.pos(enemy.pos)
         ]);
 
@@ -1421,8 +1424,9 @@ function getHPAndArmour(baseHp: number, wave: number) {
         else if (i === 6) growthRate = 0.1;
         else if (i === 7) growthRate = 0.15;
         else if (i < 15) growthRate = 0.2;
-        else if (i < 20) growthRate = 0.1;
-        else growthRate = 0.05;
+        else if (i < 21) growthRate = 0.15;
+        else if (i < 25) growthRate = 0.12;
+        else growthRate = 0.1;
 
         hp *= 1 + growthRate;
     }
@@ -1437,8 +1441,7 @@ function getEnemySpeed(baseSpeed: number, wave: number) {
         let growthRate = 0;
 
         if (i > 1 && i < 15) growthRate = 0.01;
-        else if (i < 20) growthRate = 0.005;
-        else growthRate = 0.0025;
+        else growthRate = 0.005;
 
         speed *= 1 + growthRate;
     }

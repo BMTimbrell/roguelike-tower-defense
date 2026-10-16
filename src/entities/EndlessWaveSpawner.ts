@@ -17,6 +17,7 @@ import {
     BASE_DRAW_COST,
     ELEMENTS,
     ENDLESS_ENEMIES,
+    FOG_Z,
     MAX_HAND_SIZE,
     ROUND_DRAW_NUM,
     SEEDS,
@@ -654,7 +655,7 @@ export default function makeEndlessWaveSpawner(
             k.color("#000000"),
             k.opacity(store.get(gameStateAtom).hideUI ? 0 : 1),
             k.fixed(),
-            k.z(999),
+            k.z(FOG_Z + 1),
             {
                 update() {
                     let textStr = "";
@@ -690,7 +691,7 @@ export default function makeEndlessWaveSpawner(
         }),
         k.opacity(opacity),
         k.fixed(),
-        k.z(999),
+        k.z(FOG_Z + 1),
         {
             update() {
                 let textStr = "";
@@ -723,7 +724,7 @@ export default function makeEndlessWaveSpawner(
         k.area(),
         k.fixed(),
         k.color(85, 85, 85),
-        k.z(1000),
+        k.z(FOG_Z + 1),
         {
             update() {
                 nextWaveButton.hidden = (!waitingForNextWave || store.get(gameStateAtom).gameOver);
@@ -740,7 +741,7 @@ export default function makeEndlessWaveSpawner(
         k.anchor("center"),
         k.fixed(),
         k.opacity(0.5),
-        k.z(1001),
+        k.z(FOG_Z + 2),
         k.outline(1, k.rgb(255, 255, 255)),
         {
             update() {
@@ -757,7 +758,7 @@ export default function makeEndlessWaveSpawner(
         k.pos(buttonPos.x, buttonPos.y),
         k.fixed(),
         k.anchor("center"),
-        k.z(1001),
+        k.z(FOG_Z + 2),
         {
             update() {
                 buttonText.hidden = (!waitingForNextWave || store.get(gameStateAtom).gameOver);
@@ -802,7 +803,9 @@ function generateEndlessWave(
         getWaveSeed(runSeed, waveNumber)
     );
 
-    const waveBudget = getWaveBudget(waveNumber);
+    const waveBudgetFunc = (store.get(gameStateAtom).context?.getSceneName() ?? "endlessForest") === "endlessForest" ? getForestWaveBudget : getHellWaveBudget;
+
+    const waveBudget = waveBudgetFunc(waveNumber);
 
     let remainingBudget = waveBudget;
 
@@ -906,15 +909,31 @@ function getWaveSeed(
     ) >>> 0;
 }
 
-function getWaveBudget(wave: number) {
+function getForestWaveBudget(wave: number) {
     let result = 0;
 
     for (let i = 0; i < wave; i++) {
         if (i < 6) result += 5;
         else if (i < 11) result += 10;
-        else if (i < 17) result += 20;
+        else if (i < 14) result += 15;
+        else if (i < 18) result += 20;
         else if (i < 21) result += 15;
         else result += 10;
+    }
+
+    return result;
+}
+
+function getHellWaveBudget(wave: number) {
+    let result = 0;
+
+    for (let i = 0; i < wave; i++) {
+        if (i < 6) result += 5;
+        else if (i < 11) result += 15;
+        else if (i < 14) result += 20;
+        else if (i < 18) result += 25;
+        else if (i < 21) result += 20;
+        else result += 15;
     }
 
     return result;
@@ -959,13 +978,12 @@ function getEndlessRewardType(
 function getEndlessReward(wave: number) {
     let result = 0;
 
-    for (let i = 0; i < wave; i++) {
+    for (let i = 0; i < Math.min(wave, 25); i++) {
         if (i < 6) result += 50;
         else if (i < 9) result += 60;
         else if (i < 12) result += 80;
         else if (i < 16) result += 100;
-        else if (i < 20) result += 150;
-        else result += 200;
+        else result += 150;
     }
 
     return result;
@@ -974,11 +992,12 @@ function getEndlessReward(wave: number) {
 function getGiantBudgetRatio(waveNumber: number) {
     if (waveNumber < 5) return 0;
     if (waveNumber < 11) return 0.2;
-    if (waveNumber < 25) return 0.25;
-    if (waveNumber < 31) return 0.3;
-    if (waveNumber < 41) return 0.35;
+    if (waveNumber < 21) return 0.25;
+    if (waveNumber < 26) return 0.3;
+    if (waveNumber < 31) return 0.35;
+    if (waveNumber < 40) return 0.4;
 
-    return 0.4;
+    return 0.5;
 }
 
 export async function saveEndlessCheckpoint(k: KAPLAYCtx, seed: number, onWaveSave?: () => void) {

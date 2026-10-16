@@ -1,5 +1,5 @@
 import type { KAPLAYCtx, Vec2 } from 'kaplay';
-import { CURSE_CRIT, ELEMENTS, LEVEL_WAVES, TILE_SIZE, type TowerId } from '../constants';
+import { CURSE_CRIT, ELEMENTS, FOG_Z, LEVEL_WAVES, TILE_SIZE, type TowerId } from '../constants';
 import type { TowerGameObj, UnitEffects, TowerDef, SeedId, Tile, PathTile, RandomProjectiles, TimeData, ContinuousEffect, Charge, BuffType, Battery, EnemyGameObj, ElementName, Overheat } from '../types';
 import { store, gameStateAtom, controlsAtom, cachedSaveAtom } from '../store';
 import { calcUpgradeCost } from '../utils/calcUpgradeCost';
@@ -530,7 +530,7 @@ export default function makeTower(
         }
 
         if (combat.gun.hasAnim("pouring")) combat.gun.play("pouring");
-        else if(!tower.farmData) combat.gun.play("idle");
+        else if (!tower.farmData) combat.gun.play("idle");
 
         if (!tower.lavaTiles) return;
 
@@ -576,6 +576,7 @@ export function confirmTowerPlacement(k: KAPLAYCtx, tower: TowerGameObj) {
         const orbiter = k.add([
             k.pos(tower.pos.x, tower.pos.y),
             k.sprite("planet"),
+            k.z(FOG_Z - 1),
             k.anchor("center"),
             {
                 angle: 0,
@@ -660,7 +661,7 @@ export function confirmTowerPlacement(k: KAPLAYCtx, tower: TowerGameObj) {
             k.sprite("phoenix", { anim: "fly" }),
             k.pos(tower.pos),
             k.opacity(1),
-            k.z(999),
+            k.z(99999),
             k.anchor("center"),
             k.rotate(0),
             {

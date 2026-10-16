@@ -1,5 +1,6 @@
 import type { KAPLAYCtx } from "kaplay";
 import { store, gameStateAtom, mapAtom } from "../store";
+import { FOG_Z } from "../constants";
 
 export default function showLevelStats(k: KAPLAYCtx) {
     let scale = store.get(mapAtom).iconScale;
@@ -15,7 +16,7 @@ export default function showLevelStats(k: KAPLAYCtx) {
         k.pos(heartPos),
         k.fixed(),
         k.opacity(opacity),
-        k.z(999),
+        k.z(FOG_Z + 1),
         {
             update() {
                 heart.scale = k.vec2(2 * scale);
@@ -42,7 +43,7 @@ export default function showLevelStats(k: KAPLAYCtx) {
             }),
             k.opacity(opacity),
             k.fixed(),
-            k.z(999),
+            k.z(FOG_Z + 1),
             {
                 update() {
                     outline.text = '' + store.get(gameStateAtom).health + '/' + store.get(gameStateAtom).maxHealth;
@@ -62,7 +63,7 @@ export default function showLevelStats(k: KAPLAYCtx) {
             size: fontSize,
             font: "free pixel"
         }),
-        k.z(999),
+        k.z(FOG_Z + 1),
         k.opacity(opacity),
         k.fixed(),
         {
@@ -81,7 +82,7 @@ export default function showLevelStats(k: KAPLAYCtx) {
         k.sprite("gold"),
         k.scale(2 * scale),
         k.pos(goldPos),
-        k.z(999),
+        k.z(FOG_Z + 1),
         k.fixed(),
         k.opacity(opacity),
         {
@@ -105,7 +106,7 @@ export default function showLevelStats(k: KAPLAYCtx) {
                 font: "free pixel"
             }),
             k.opacity(opacity),
-            k.z(999),
+            k.z(FOG_Z + 1),
             k.fixed(),
             {
                 update() {
@@ -126,7 +127,7 @@ export default function showLevelStats(k: KAPLAYCtx) {
             size: fontSize,
             font: "free pixel"
         }),
-        k.z(999),
+        k.z(FOG_Z + 1),
         k.opacity(opacity),
         k.fixed(),
         {
