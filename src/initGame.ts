@@ -88,8 +88,6 @@ export default async function initGame() {
     endlessForest(k);
     endlessHell(k);
 
-    k.go("mainMenu" satisfies Scene);
-
     const saveData = await getSave();
 
     if (saveData) {
@@ -142,4 +140,6 @@ export default async function initGame() {
         ...prev,
         context: k
     }));
+
+    k.go("mainMenu" satisfies Scene);
 }

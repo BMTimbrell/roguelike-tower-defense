@@ -209,8 +209,8 @@ export default function Settings() {
                             }));
 
                             updateMusicVolume();
-                            updateSavedVolume();
                         }}
+                        onPointerUp={() => updateSavedVolume()}
                     />
                 </div>
 
@@ -233,8 +233,8 @@ export default function Settings() {
                             }));
 
                             updateMusicVolume();
-                            updateSavedVolume();
                         }}
+                        onPointerUp={() => updateSavedVolume()}
                     />
                 </div>
 
@@ -256,8 +256,8 @@ export default function Settings() {
                                 sfxVolume: Number(e.target.value),
                                 uiVolume: Number(e.target.value)
                             }));
-                            updateSavedVolume();
                         }}
+                        onPointerUp={() => updateSavedVolume()}
                     />
                 </div>
             </div>

@@ -64,6 +64,12 @@ export default function makeEnemyProjectile(k: KAPLAYCtx, opts: {
                     size: 12,
                     pos: targetPos
                 });
+
+                const knight = k.get("hero").find(h => h.is("knight"));
+                if (knight) {
+                    knight.fireIntervalBoostTimer = 2;
+                    knight.fireIntervalBoost = 0.5;
+                }
             } else if (Math.random() < hitChance) {
                 const duration = opts?.damage ?? 2;
 
@@ -165,6 +171,12 @@ function makeProjectileAoe(k: KAPLAYCtx, id: ProjectileId, num: number, target?:
                             size: 12,
                             pos: fireball.pos
                         });
+                        const knight = k.get("hero").find(h => h.is("knight"));
+                        if (knight) {
+                            knight.fireIntervalBoostTimer = 2;
+                            knight.fireIntervalBoost = 0.25;
+                        }
+
                     } else {
                         const duration = id === "giantFireball" ? 2 : 1;
                         tower.disabledTimeLeft = Math.max(

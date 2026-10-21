@@ -76,7 +76,9 @@ export default function makeHero(k: KAPLAYCtx,
             level,
             footprint: { w: 1, h: 1 },
             element,
-            effects: [],
+            effects: "effects" in HEROES[heroId]
+                ? [...(HEROES[heroId].effects as UnitEffects)]
+                : [],
             hasThirst: ((runSave?.mode === "campaign" && LEVEL_WAVES[runSave.wave ?? "level1-1"]) as { thirst?: boolean; })?.thirst ?? false,
             canRotate,
             ...("shootSound" in HEROES[heroId] ? { shootSound: HEROES[heroId].shootSound as string } : {}),
@@ -85,6 +87,8 @@ export default function makeHero(k: KAPLAYCtx,
             changeNormalElement: false,
             hasRangeBoost: false,
             hasBlock: false,
+            unbrokenResolve: false,
+            unbrokenResolveDamage: 0,
             goldRush: false,
             festeringToxins: false,
             volatileConcoction: false,
@@ -103,7 +107,6 @@ export default function makeHero(k: KAPLAYCtx,
             hasGhostBuff: false,
             sprite: null as null | GameObj,
             ...("melee" in HEROES[heroId] ? { melee: HEROES[heroId]?.melee } : {}),
-            ...("effects" in HEROES[heroId] ? { effects: HEROES[heroId].effects as UnitEffects } : {}),
             ...("songs" in HEROES[heroId] ? { songs: HEROES[heroId].songs as Song[] } : {}),
             permanentRangeBonus: 0,
             permanentCritBonus: 0
@@ -180,7 +183,7 @@ export default function makeHero(k: KAPLAYCtx,
 
         runSave = store.get(cachedSaveAtom)?.run;
 
-        if(runSave?.mode === "campaign") hero.hasThirst = (LEVEL_WAVES[runSave?.wave ?? "level1-1"] as { thirst?: boolean; })?.thirst ?? false;
+        if (runSave?.mode === "campaign") hero.hasThirst = (LEVEL_WAVES[runSave?.wave ?? "level1-1"] as { thirst?: boolean; })?.thirst ?? false;
 
         if (hero.hasThirst) {
             const barWidth = hero.width * 0.8;
@@ -329,7 +332,7 @@ export default function makeHero(k: KAPLAYCtx,
                     .filter(b => b.type === "flatDamage")
                     .reduce((acc, b) => acc + b.amount, 0);
 
-                const damage = Math.round((hero.stats.damage + bonusDamage) * (1 + damageTowerBuff));
+                const damage = Math.round((hero.stats.damage + bonusDamage + (hero.unbrokenResolveDamage ?? 0)) * (1 + damageTowerBuff));
 
                 const fireRateMultiplier = hero.towerBuffs
                     .filter(b => b.type === "fireRate")

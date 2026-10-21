@@ -550,7 +550,7 @@ export default function makeUnitCombat(
                 damage: opts.owner.stats.damage + (
                     opts.owner.timeData?.timeScaling?.damage ?
                         opts.owner.timeData.timeMultiplier ** opts.owner.timeData.timeScaling.damagePow - 1 : 0
-                ) + killBonus,
+                ) + killBonus + (opts.owner.unbrokenResolveDamage ?? 0),
                 element,
                 visualEffect: null,
                 ...(meleeHead && meleeHandle ? {
@@ -673,7 +673,7 @@ export default function makeUnitCombat(
                     damageMultiplier: damageMult
                 });
 
-                if (isCrit && (opts.owner.fireIntervalBoost ?? 1) < 1) {
+                if (isCrit && opts.owner.is("assassin") && (opts.owner.fireIntervalBoost ?? 1) < 1) {
                     opts.owner.fireIntervalBoostTimer = 1;
                 }
 

@@ -191,10 +191,10 @@ export default function makeEndlessWaveSpawner(
                     })
                 );
 
-                const incomeMod = k.get("hero")[0]?.incomeMod ?? 1;
+                const incomeMod = k.get("hero")[0]?.incomeMod ?? 0;
                 const freeCardDraw = k.get("hero")[0]?.freeCardDraw ?? false;
 
-                const reward = Math.round(getEndlessReward(store.get(gameStateAtom).waveNumber) * incomeMod);
+                const reward = Math.round(getEndlessReward(store.get(gameStateAtom).waveNumber) + incomeMod);
                 const duration = 1;
 
                 const offsets = [
@@ -260,13 +260,41 @@ export default function makeEndlessWaveSpawner(
                     }
                 ]);
 
+                const lostLifeThisWave = store.get(gameStateAtom).lostLifeThisWave;
+                if (!lostLifeThisWave) {
+                    const knight = (k.get("hero") as TowerGameObj[])
+                        .find(tower => tower.is("knight"));
+
+                    if (knight?.unbrokenResolve) {
+                        knight.unbrokenResolveStacks ??= 0;
+                        knight.unbrokenResolveStacks++;
+                        if (knight.unbrokenResolveStacks <= 5) {
+                            knight.unbrokenResolveDamage = Math.round(knight.stats.damage * knight.unbrokenResolveStacks * 0.15);
+
+                            const icon = k.add([
+                                    k.sprite("buff damage"),
+                                    k.pos(knight.pos),
+                                    k.opacity(1),
+                                    {
+                                        update() {
+                                            icon.opacity -= k.dt() * 0.5;
+                                            if (icon.opacity <= 0) k.destroy(icon);
+                                        }
+                                    }
+                                ]);
+                        }
+
+                    }
+                }
+
                 store.set(gameStateAtom, prev => ({
                     ...prev,
                     gold: prev.gold + reward,
                     deck: {
                         ...prev.deck,
                         drawCost: freeCardDraw ? 0 : BASE_DRAW_COST
-                    }
+                    },
+                    lostLifeThisWave: false
 
                 }));
                 const deck = store.get(gameStateAtom).deck.cards;
@@ -437,6 +465,8 @@ export default function makeEndlessWaveSpawner(
                                         updatedHero.selected = false;
                                         updatedHero.hovered = false;
                                         updatedHero.opacity = 1;
+                                        updatedHero.unbrokenResolveStacks = oldHero.unbrokenResolveStacks;
+                                        updatedHero.unbrokenResolveDamage = oldHero.unbrokenResolveDamage;
 
                                         // preserve buffs and identity
                                         updatedHero.towerBuffs = [...hero.towerBuffs];
@@ -1046,6 +1076,8 @@ export async function saveEndlessCheckpoint(k: KAPLAYCtx, seed: number, onWaveSa
             towerBuffs: store.get(gameStateAtom).hero?.towerBuffs ?? [],
             permanentCritBonus: store.get(gameStateAtom).hero?.permanentCritBonus ?? 0,
             permanentRangeBonus: store.get(gameStateAtom).hero?.permanentRangeBonus ?? 0,
+            unbrokenResolveDamage: store.get(gameStateAtom).hero?.unbrokenResolveDamage ?? 0,
+            unbrokenResolveStacks: store.get(gameStateAtom).hero?.unbrokenResolveStacks ?? 0,
             tileX,
             tileY
         },

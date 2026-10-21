@@ -233,6 +233,7 @@ export default function makeLevelScene(k: KAPLAYCtx, sceneName: Scene) {
             waveNumber: 1,
             selectedUI: null,
             bottomBarVisible: true,
+            lostLifeThisWave: false,
             upgrades,
             luck: 1,
             deck: {
@@ -569,6 +570,12 @@ export default function makeLevelScene(k: KAPLAYCtx, sceneName: Scene) {
                                                 size: 12,
                                                 pos: towerPos
                                             });
+
+                                            const knight = k.get("hero").find(h => h.is("knight"));
+                                            if (knight) {
+                                                knight.fireIntervalBoostTimer = 2;
+                                                knight.fireIntervalBoost = 0.5;
+                                            }
                                         } else if (Math.random() < hitChance) {
                                             const duration = 1;
 

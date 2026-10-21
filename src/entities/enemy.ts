@@ -280,10 +280,12 @@ export default function makeEnemy(
                 luck: prev.luck + luckGain
             }));
 
+            const treasureIncrease = k.get("hero")[0]?.treasureIncrease;
+
             // chance to spawn chest
-            if (Math.random() * 100 < store.get(gameStateAtom).luck * enemy.chestValue) {
+            if (Math.random() * 100 < store.get(gameStateAtom).luck * enemy.chestValue + (treasureIncrease ? 5 : 0)) {
                 makeChest(k, enemy.pos);
-                store.get(gameStateAtom).luck--;
+                store.get(gameStateAtom).luck -= (treasureIncrease ? 0.7 : 1);
             }
             if (!(ENEMIES[enemyId] as { noDestroyOnDieAnimation?: boolean; }).noDestroyOnDieAnimation) k.destroy(enemy);
         } else if (anim === "escape") {
@@ -959,7 +961,8 @@ export default function makeEnemy(
                 store.set(gameStateAtom, prev => ({
                     ...prev,
                     health: prev.health - enemy.damage,
-                    luck: prev.luck + (enemy.damage * 0.1)
+                    luck: prev.luck + (enemy.damage * 0.1),
+                    lostLifeThisWave: true
                 }));
 
                 if (store.get(gameStateAtom).health <= 0) {
@@ -1001,7 +1004,8 @@ export default function makeEnemy(
                 store.set(gameStateAtom, prev => ({
                     ...prev,
                     health: prev.health - enemy.damage,
-                    luck: prev.luck + enemy.damage * 0.1
+                    luck: prev.luck + enemy.damage * 0.1,
+                    lostLifeThisWave: true
                 }));
 
                 if (store.get(gameStateAtom).health <= 0) {

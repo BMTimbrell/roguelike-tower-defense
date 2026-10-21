@@ -16,7 +16,7 @@ export default function SelectHeroUI() {
     const [unlockDescription, setUnlockDescription] = useState<string | null>(null);
     const fontScale = map.fontScale;
     const iconScale = map.iconScale;
-    const unlockedHeroes = /*["archer", "wizard", "knight", "assassin", "merchant", "songstress", "witch", "necromancer"];*/unlockProgression.unlockedHeroes;
+    const unlockedHeroes = ["archer", "wizard", "knight", "assassin", "merchant", "songstress", "witch", "necromancer"];//unlockProgression.unlockedHeroes;
 
     return (
         <div className={styles.container} style={{ fontSize: `${16 * fontScale}px` }}>

@@ -237,6 +237,8 @@ export default function makeEndlessScene(k: KAPLAYCtx, scene: "endlessForest" | 
 
             if (save.run.hero.tileX >= 0 && save.run.hero.tileY >= 0) {
                 hero.towerBuffs = save.run.hero.towerBuffs;
+                hero.unbrokenResolveStacks = save.run.hero.unbrokenResolveStacks;
+                hero.unbrokenResolveDamage = save.run.hero.unbrokenResolveDamage;
                 k.add(hero);
                 hero.permanentRangeBonus = save.run.hero.permanentRangeBonus ?? 0;
                 hero.permanentCritChanceBonus = save.run.hero.permanentCritBonus ?? 0;
@@ -449,6 +451,8 @@ export default function makeEndlessScene(k: KAPLAYCtx, scene: "endlessForest" | 
                     priority: store.get(gameStateAtom).hero?.priority ?? null,
                     permanentCritBonus: 0,
                     permanentRangeBonus: 0,
+                    unbrokenResolveDamage: 0,
+                    unbrokenResolveStacks: 0,
                     tileX: -1,
                     tileY: -1,
                     towerBuffs: []

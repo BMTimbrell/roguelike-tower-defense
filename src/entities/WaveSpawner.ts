@@ -1,7 +1,7 @@
 import type { KAPLAYCtx, Vec2 } from "kaplay";
 import type { EnemyId, LevelId } from "../constants";
 import type { TowerGameObj, Wave } from "../types";
-import { BASE_DRAW_COST, LEVEL_WAVES, MAX_HAND_SIZE, ROUND_DRAW_NUM, SEEDS, TILE_SIZE } from "../constants";
+import { BASE_DRAW_COST, FOG_Z, LEVEL_WAVES, MAX_HAND_SIZE, ROUND_DRAW_NUM, SEEDS, TILE_SIZE } from "../constants";
 import makeEnemy from "./Enemy";
 import { store, gameStateAtom, challengesAtom, gameSpeedUIAtom, mapAtom, unlockProgressionAtom } from "../store";
 import drawCards from "../utils/drawCards";
@@ -89,7 +89,7 @@ export default function makeWaveSpawner(k: KAPLAYCtx, levelId: LevelId, waypoint
                 const waveNumber = spawner.waveIndex + 1;
                 let luckBonus = 0;
                 if (waveNumber < 6) {
-                     luckBonus = 1;
+                    luckBonus = 1;
                 }
 
                 if (waveNumber > 1) {
@@ -183,7 +183,7 @@ export default function makeWaveSpawner(k: KAPLAYCtx, levelId: LevelId, waypoint
                                 mainMenuButton.pos = gameOverText.pos.add(0, 110);
                             }
                         },
-                        k.z(1000)
+                        k.z(1000000000)
                     ]);
 
                     const outline = k.add([
@@ -193,7 +193,7 @@ export default function makeWaveSpawner(k: KAPLAYCtx, levelId: LevelId, waypoint
                         k.fixed(),
                         k.scale(store.get(mapAtom).fontScale),
                         k.opacity(0.5),
-                        k.z(1001),
+                        k.z(1000000001),
                         {
                             update() {
                                 outline.pos = gameOverText.pos.add(0, 110);
@@ -213,7 +213,7 @@ export default function makeWaveSpawner(k: KAPLAYCtx, levelId: LevelId, waypoint
                             }
                         },
                         k.anchor("center"),
-                        k.z(1001)
+                        k.z(1000000001)
                     ]);
 
                     mainMenuButton.onHover(() => {
@@ -329,12 +329,12 @@ export default function makeWaveSpawner(k: KAPLAYCtx, levelId: LevelId, waypoint
                 }
 
                 enemyDeadCheck = false;
-                const incomeMod = k.get("hero")[0]?.incomeMod ?? 1;
+                const incomeMod = k.get("hero")[0]?.incomeMod ?? 0;
                 const freeCardDraw = k.get("hero")[0]?.freeCardDraw ?? false;
 
                 if (spawner.waveIndex >= 0) {
                     opts?.onWaveEnd?.();
-                    const reward = Math.round(level.waves[spawner.waveIndex].reward * incomeMod);
+                    const reward = Math.round(level.waves[spawner.waveIndex].reward + incomeMod);
                     const duration = 1;
 
                     const offsets = [
@@ -400,13 +400,40 @@ export default function makeWaveSpawner(k: KAPLAYCtx, levelId: LevelId, waypoint
                         }
                     ]);
 
+                    const lostLifeThisWave = store.get(gameStateAtom).lostLifeThisWave;
+                    if (!lostLifeThisWave) {
+                        const knight = (k.get("hero") as TowerGameObj[])
+                            .find(tower => tower.is("knight"));
+
+                        if (knight?.unbrokenResolve) {
+                            knight.unbrokenResolveStacks ??= 0;
+                            knight.unbrokenResolveStacks++;
+                            if (knight.unbrokenResolveStacks <= 5) {
+                                knight.unbrokenResolveDamage = Math.round(knight.stats.damage * knight.unbrokenResolveStacks * 0.15);
+                                const icon = k.add([
+                                    k.sprite("buff damage"),
+                                    k.pos(knight.pos),
+                                    k.opacity(1),
+                                    {
+                                        update() {
+                                            icon.opacity -= k.dt() * 0.5;
+                                            if (icon.opacity <= 0) k.destroy(icon);
+                                        }
+                                    }
+                                ]);
+                            }
+
+                        }
+                    }
+
                     store.set(gameStateAtom, prev => ({
                         ...prev,
-                        gold: prev.gold + (Math.round(level.waves[spawner.waveIndex].reward * incomeMod)),
+                        gold: prev.gold + (Math.round(level.waves[spawner.waveIndex].reward + incomeMod)),
                         deck: {
                             ...prev.deck,
                             drawCost: freeCardDraw ? 0 : BASE_DRAW_COST
-                        }
+                        },
+                        lostLifeThisWave: false
 
                     }));
                     const deck = store.get(gameStateAtom).deck.cards;
@@ -541,7 +568,7 @@ export default function makeWaveSpawner(k: KAPLAYCtx, levelId: LevelId, waypoint
             k.color("#000000"),
             k.opacity(store.get(gameStateAtom).hideUI ? 0 : 1),
             k.fixed(),
-            k.z(999),
+            k.z(FOG_Z + 1),
             {
                 update() {
                     let textStr = "";
@@ -577,7 +604,7 @@ export default function makeWaveSpawner(k: KAPLAYCtx, levelId: LevelId, waypoint
         }),
         k.opacity(opacity),
         k.fixed(),
-        k.z(999),
+        k.z(FOG_Z + 1),
         {
             update() {
                 let textStr = "";
@@ -610,7 +637,7 @@ export default function makeWaveSpawner(k: KAPLAYCtx, levelId: LevelId, waypoint
         k.area(),
         k.fixed(),
         k.color(85, 85, 85),
-        k.z(1000),
+        k.z(FOG_Z + 1),
         {
             update() {
                 nextWaveButton.hidden = (!waitingForNextWave || levelComplete || store.get(gameStateAtom).gameOver) ||
@@ -631,7 +658,7 @@ export default function makeWaveSpawner(k: KAPLAYCtx, levelId: LevelId, waypoint
         k.anchor("center"),
         k.fixed(),
         k.opacity(0.5),
-        k.z(1001),
+        k.z(FOG_Z + 2),
         k.outline(1, k.rgb(255, 255, 255)),
         {
             update() {
@@ -652,7 +679,7 @@ export default function makeWaveSpawner(k: KAPLAYCtx, levelId: LevelId, waypoint
         k.pos(buttonPos.x, buttonPos.y),
         k.fixed(),
         k.anchor("center"),
-        k.z(1001),
+        k.z(FOG_Z + 2),
         {
             update() {
                 buttonText.hidden = (!waitingForNextWave || levelComplete || store.get(gameStateAtom).gameOver) ||

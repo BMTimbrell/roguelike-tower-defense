@@ -264,7 +264,7 @@ export type Buffs = Partial<Record<BuffType, {
     value: number;
     timeLeft: number;
 }>>;
-export type Song = { type: BuffType; value: number; duration: number; };
+export type Song = { type: BuffType; value: number; duration: number; extendSongs?: number; };
 export type Summon = {
     name: string;
     sprite: string;
@@ -660,6 +660,7 @@ export type GameState = {
     timeScale: number;
     gameOver: boolean;
     tileGrid: Tile[][];
+    lostLifeThisWave: boolean;
 };
 
 export type ShopChoiceButtons = {
@@ -1238,6 +1239,8 @@ export type EndlessRunSave = BaseRunSave & {
         towerBuffs: TowerBuff[];
         permanentRangeBonus: number;
         permanentCritBonus: number;
+        unbrokenResolveStacks: number;
+        unbrokenResolveDamage: number;
 
         tileX: number;
         tileY: number;

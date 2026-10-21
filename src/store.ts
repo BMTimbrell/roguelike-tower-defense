@@ -47,7 +47,8 @@ export const gameStateAtom = atom<GameState>({
     camMoveAtEdge: true,
     showDamageNumbers: true,
     timeScale: 1,
-    tileGrid: []
+    tileGrid: [],
+    lostLifeThisWave: false
 });
 
 export const chestAtom = atom({
