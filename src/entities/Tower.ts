@@ -805,6 +805,7 @@ export function confirmTowerPlacement(k: KAPLAYCtx, tower: TowerGameObj) {
 
         if (towerCenter.dist(heroCenter) <= TILE_SIZE * tower.footprint.w) {
             tower.element = "Poison";
+            tower.hasToxicAura = true;
         }
     }
 

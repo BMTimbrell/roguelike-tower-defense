@@ -21,6 +21,7 @@ import { rotateVector } from "./utils/targetingHelpers";
 import makeFloatingText from "./entities/FloatingText";
 import getBuffValue from "./utils/getBuffValue";
 import calcDamage from "./utils/calcDamage";
+import { setTowerDiscount } from "./utils/addTowers";
 
 export const NORMAL_PLAYER_HEATLH = 20;
 export const HARD_PLAYER_HEATLH = 15;
@@ -5032,7 +5033,7 @@ export const TOWERS = {
         baseSprite: "farm tower base",
         sprite: "farm-tower-sprite.png",
         description: "You reap what you sow!",
-        cost: 90,
+        cost: 80,
         stats: {
             damage: 999,
             range: 0,
@@ -5065,9 +5066,9 @@ export const TOWERS = {
         baseSprite: "nightshade tower base",
         sprite: "basic-tower-sprite.png",
         description: "Shoots shadowy blobs that absorb life, dealing bonus damage based on the enemy's missing health",
-        cost: 90,
+        cost: 80,
         stats: {
-            damage: 6,
+            damage: 5,
             range: 4,
             fireInterval: 0.75,
             critChance: 5,
@@ -5107,7 +5108,7 @@ export const TOWERS = {
         baseSprite: "plant tower base",
         sprite: "basic-tower-sprite.png",
         description: "Deals fire damage to all enemies in range. This tower receives half the amount from range upgrades",
-        cost: 90,
+        cost: 80,
         stats: {
             damage: 5,
             range: 2.5,
@@ -5142,7 +5143,7 @@ export const TOWERS = {
         baseSprite: "plant tower base",
         sprite: "basic-tower-sprite.png",
         description: "Shoots a volley of 3 stars",
-        cost: 90,
+        cost: 80,
         stats: {
             damage: 5,
             range: 5,
@@ -5623,7 +5624,7 @@ export const TOWERS = {
         description: "Releases an electrical discharge that damages all enemies in range. This tower receives half the amount from range upgrades",
         cost: 300,
         stats: {
-            damage: 13,
+            damage: 14,
             range: 3,
             fireInterval: 2,
             critChance: 5,
@@ -7858,29 +7859,12 @@ export const SKILLS = [
         id: "merchant-capital-punishment",
         heroIds: ["merchant"],
         name: "Capital Punishment",
-        description: "Deal 3% of current gold as bonus damage",
+        description: "Deal 2% of current gold as bonus damage (caps at +10)",
         apply(hero) {
             hero.effects?.push({
                 firstEffect(ctx) {
                     ctx.projectiles.forEach(projectile => {
-                        projectile.bonusDamage = Math.round(store.get(gameStateAtom).gold * 0.03);
-                    });
-                }
-            });
-        },
-        icon: "sprites/capital-punishment-skill-icon.png"
-    },
-    {
-        id: "merchant-capital-punishment-plus",
-        heroIds: ["merchant"],
-        requires: ["merchant-capital-punishment"],
-        name: "Capital Punishment+",
-        description: "Deal 5% of current gold as bonus damage",
-        apply(hero) {
-            hero.effects?.push({
-                secondEffect(ctx) {
-                    ctx.projectiles.forEach(projectile => {
-                        projectile.bonusDamage = Math.round(store.get(gameStateAtom).gold * 0.05);
+                        projectile.bonusDamage = Math.min(Math.round(store.get(gameStateAtom).gold * 0.02), 10);
                     });
                 }
             });
@@ -7898,14 +7882,14 @@ export const SKILLS = [
         icon: "sprites/extra-income-skill-icon.png"
     },
     {
-        id: "merchant-extra-income-plus",
+        id: "merchant-treasure-hunter",
         heroIds: ["merchant"],
         name: "Treasure Hunter",
-        description: "Increase the chance of enemies dropping treasure chests.",
+        description: "Increase the chance of enemies dropping treasure chests",
         apply(hero) {
             hero.treasureIncrease = true;
         },
-        icon: "sprites/extra-income-skill-icon.png"
+        icon: "sprites/treasure-hunter-skill-icon.png"
     },
     {
         id: "merchant-gold-rush",
@@ -7932,16 +7916,23 @@ export const SKILLS = [
         id: "merchant-haggle",
         heroIds: ["merchant"],
         name: "Haggle",
+        description: "Towers get a 10% discount while the merchant is on the field",
+        apply(hero) {
+            if (hero.skillIds.some(id => id === "merchant-haggle-plus")) return;
+
+            hero.discount = 0.9;
+            setTowerDiscount(0.9);
+        },
+        icon: "sprites/haggle-skill-icon.png"
+    },
+    {
+        id: "merchant-haggle-plus",
+        heroIds: ["merchant"],
+        name: "Haggle+",
         description: "Towers get a 20% discount while the merchant is on the field",
         apply(hero) {
             hero.discount = 0.8;
-            store.set(gameStateAtom, prev => ({
-                ...prev,
-                towerButtons: prev.towerButtons.map(t => ({
-                    ...t,
-                    cost: t.cost * hero.discount
-                }))
-            }));
+            setTowerDiscount(0.8);
         },
         icon: "sprites/haggle-skill-icon.png"
     },

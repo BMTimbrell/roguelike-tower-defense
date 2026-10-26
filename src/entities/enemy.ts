@@ -283,7 +283,7 @@ export default function makeEnemy(
             const treasureIncrease = k.get("hero")[0]?.treasureIncrease;
 
             // chance to spawn chest
-            if (Math.random() * 100 < store.get(gameStateAtom).luck * enemy.chestValue + (treasureIncrease ? 5 : 0)) {
+            if (Math.random() * 100 < store.get(gameStateAtom).luck * enemy.chestValue) {
                 makeChest(k, enemy.pos);
                 store.get(gameStateAtom).luck -= (treasureIncrease ? 0.7 : 1);
             }

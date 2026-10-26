@@ -9,6 +9,7 @@ export default function addTowers(k: KAPLAYCtx, towers: TowerId[], tileGrid: Til
     return towers.map(t => ({
         ...TOWERS[t],
         id: t,
+        baseCost: TOWERS[t].cost,
         onClick: () => {
             if (k.get("hero")[0] && !k.get("hero")[0].placed) return;
             const selectedCard = store.get(gameStateAtom).selectedUpgrade;
@@ -42,6 +43,17 @@ export default function addTowers(k: KAPLAYCtx, towers: TowerId[], tileGrid: Til
                 k.destroy(unplacedTower);
             }
 
-        },
+        }
+    }));
+}
+
+export function setTowerDiscount(discount: number) {
+    store.set(gameStateAtom, prev => ({
+        ...prev,
+        towerDiscount: discount,
+        towerButtons: prev.towerButtons.map(t => ({
+            ...t,
+            cost: t.baseCost * discount
+        }))
     }));
 }

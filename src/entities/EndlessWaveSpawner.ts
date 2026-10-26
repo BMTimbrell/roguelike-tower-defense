@@ -35,7 +35,7 @@ import { playUISound } from "../utils/soundHelpers";
 import { createSeededRandom, type MapOrientation } from "../utils/seededRandom";
 import makeHero from "./Hero";
 import updateSkills from "../utils/updateSkills";
-import addTowers from "../utils/addTowers";
+import addTowers, { setTowerDiscount } from "../utils/addTowers";
 import { setBlockedTiles } from "../utils/makePlacementOnGrid";
 import { saveRun } from "../platform/save";
 
@@ -272,16 +272,16 @@ export default function makeEndlessWaveSpawner(
                             knight.unbrokenResolveDamage = Math.round(knight.stats.damage * knight.unbrokenResolveStacks * 0.15);
 
                             const icon = k.add([
-                                    k.sprite("buff damage"),
-                                    k.pos(knight.pos),
-                                    k.opacity(1),
-                                    {
-                                        update() {
-                                            icon.opacity -= k.dt() * 0.5;
-                                            if (icon.opacity <= 0) k.destroy(icon);
-                                        }
+                                k.sprite("buff damage"),
+                                k.pos(knight.pos),
+                                k.opacity(1),
+                                {
+                                    update() {
+                                        icon.opacity -= k.dt() * 0.5;
+                                        if (icon.opacity <= 0) k.destroy(icon);
                                     }
-                                ]);
+                                }
+                            ]);
                         }
 
                     }
@@ -362,6 +362,7 @@ export default function makeEndlessWaveSpawner(
 
                                 if (towerCenter.dist(heroCenter) <= TILE_SIZE * plant.footprint.w) {
                                     plant.element = "Poison";
+                                    plant.hasToxicAura = true;
                                 }
                             }
 
@@ -513,7 +514,7 @@ export default function makeEndlessWaveSpawner(
                                         if (updatedHero.hasRangeBoost && !oldHero.hasRangeBoost) {
                                             k.get("tower").forEach(tower => {
                                                 if (tower.name === "Farm Tower") return;
-                                                if (tower.heroId === "archer") return;
+                                                if (tower === updatedHero) return;
 
                                                 const towerCenter = tower.pos.add(k.vec2((tower.footprint.w * TILE_SIZE) / 2));
                                                 const heroCenter = updatedHero.pos.add(k.vec2(TILE_SIZE / 2));
@@ -526,11 +527,14 @@ export default function makeEndlessWaveSpawner(
 
                                         if (updatedHero.hasToxicAura) {
                                             k.get("tower").forEach(tower => {
+                                                if (tower === updatedHero) return;
+
                                                 const towerCenter = tower.pos.add(k.vec2((tower.footprint.w * TILE_SIZE) / 2));
                                                 const heroCenter = updatedHero.pos.add(k.vec2(TILE_SIZE / 2));
 
                                                 if (towerCenter.dist(heroCenter) <= TILE_SIZE * tower.footprint.w) {
                                                     tower.element = "Poison";
+                                                    tower.hasToxicAura = true;
                                                 }
                                             });
                                         }
@@ -578,6 +582,9 @@ export default function makeEndlessWaveSpawner(
                                         ...addTowers(k, [...prev.towerButtons.map(tb => tb.id), id], tileGrid, pathTiles)
                                     ]
                                 }));
+
+                                const towerDiscount = k.get("hero")[0]?.discount ?? 1;
+                                setTowerDiscount(towerDiscount);
 
                                 await saveEndlessCheckpoint(k, seed, opts.onWaveSave);
                             }

@@ -303,6 +303,7 @@ export type TowerInstance = UnitInstance & {
     };
     overheat?: Overheat;
     isThirsty: boolean;
+    hasToxicAura?: boolean;
 };
 
 export type TowerGameObj = GameObj & TowerInstance;
@@ -524,6 +525,7 @@ export type USlot = {
 
 export type TowerButton = Pick<TowerDef, 'name' | 'cost' | 'stats' | 'element' | 'sprite' | 'description'> & {
     id: TowerId;
+    baseCost: number;
     onClick: MouseEventHandler<HTMLButtonElement>;
 };
 
@@ -661,6 +663,7 @@ export type GameState = {
     gameOver: boolean;
     tileGrid: Tile[][];
     lostLifeThisWave: boolean;
+    discountApplied: boolean;
 };
 
 export type ShopChoiceButtons = {

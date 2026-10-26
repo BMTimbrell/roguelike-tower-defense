@@ -292,11 +292,14 @@ export default function makeHero(k: KAPLAYCtx,
 
                 if (hero.hasToxicAura) {
                     k.get("tower").forEach(tower => {
+                        if (tower === hero) return;
+
                         const towerCenter = tower.pos.add(k.vec2((tower.footprint.w * TILE_SIZE) / 2));
                         const heroCenter = hero.pos.add(k.vec2(TILE_SIZE / 2));
 
                         if (towerCenter.dist(heroCenter) <= TILE_SIZE * tower.footprint.w) {
                             tower.element = "Poison";
+                            tower.hasToxicAura = true;
                         }
                     });
                 }

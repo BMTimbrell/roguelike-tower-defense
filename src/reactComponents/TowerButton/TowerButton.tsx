@@ -1,39 +1,26 @@
 import styles from './TowerButton.module.css';
-import { type MouseEventHandler } from 'react';
 import { challengesAtom, gameStateAtom, mapAtom } from '../../store';
 import { useAtom } from 'jotai';
-import type { TowerStats, ElementName } from '../../types';
+import type { TowerButton } from '../../types';
 import CostText from '../CostText/CostText';
-import { ELEMENTS, TOWERS, type TowerId } from '../../constants';
+import { ELEMENTS, TOWERS } from '../../constants';
 import DescriptionPopup from '../DescriptionPopup/DescriptionPopup';
 import { useTowerPopup } from '../../reactHooks/useTowerPopup';
 import TowerPopup from '../TowerPopup/TowerPopup';
 
 export default function TowerButton(
     {
-        id,
-        name,
-        scale,
-        stats,
-        onClick,
-        cost,
-        description,
-        sprite,
-        element
+        tower,
+        scale
     }: {
-        id: TowerId;
-        name: string;
+        
         scale: number;
-        onClick: MouseEventHandler<HTMLButtonElement>;
-        cost: number;
-        stats: TowerStats;
-        element: ElementName;
-        sprite: string;
-        description: string;
+        tower: TowerButton;
     }
 ) {
     const [gameState] = useAtom(gameStateAtom);
     const [map] = useAtom(mapAtom);
+    const { id, name, stats, description, onClick, cost, sprite, element } = tower;
     const iconScale = map.iconScale;
     const [challenges] = useAtom(challengesAtom);
     const popup = useTowerPopup(scale, !!ELEMENTS[element].description);

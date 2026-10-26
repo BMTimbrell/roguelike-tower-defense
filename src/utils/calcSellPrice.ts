@@ -10,6 +10,6 @@ export default function(cost: number, upgradeCount: number): number {
         upgradeCost += calcUpgradeCost(cost, i - 1);
     }
 
-    result += upgradeCost * 0.75;
+    result += upgradeCost * 0.9;
     return Math.round(result);
 }

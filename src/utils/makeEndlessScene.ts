@@ -8,7 +8,7 @@ import generateFog from "../utils/generateFog";
 import isButtonDown from "../utils/isButtonDown";
 import drawCards from "../utils/drawCards";
 import makeFloatingText from "../entities/FloatingText";
-import addTowers from "../utils/addTowers";
+import addTowers, { setTowerDiscount } from "../utils/addTowers";
 import { castSpell } from "../utils/spellHelpers";
 import type { Card, MapChunk, ObeliskGameObj, Scene, TotemGameObj, TowerGameObj } from "../types";
 import makeTower, { addSelectTowerListener, confirmTowerPlacement } from "../entities/Tower";
@@ -329,6 +329,9 @@ export default function makeEndlessScene(k: KAPLAYCtx, scene: "endlessForest" | 
                 }
             }
         }));
+
+        const towerDiscount = k.get("hero")[0]?.discount ?? 1;
+        setTowerDiscount(towerDiscount);
 
         addSelectTowerListener(k);
         makeLavaManager(k);

@@ -5,6 +5,7 @@ import type { AttackContext, ElementName, EnemyGameObj, TowerGameObj } from "../
 import spawnSummon from "../entities/Summon";
 import { gameStateAtom, store } from "../store";
 import { spawnPoisonCloud } from "./spellHelpers";
+import applyToxicAuraEffect from "./applyToxicAura";
 
 export default function hurtEnemy(k: KAPLAYCtx, opts: {
     target: EnemyGameObj;
@@ -120,6 +121,9 @@ export default function hurtEnemy(k: KAPLAYCtx, opts: {
     if (!statusDamage) {
         if (applyStatusEffects) {
             ELEMENTS[element].applyEffect?.(k, { target, damage: effectiveDamage });
+            if (attacker?.hasToxicAura) {
+                applyToxicAuraEffect(k, target);
+            }
         }
 
         if (!damageFromBuff && attacker) {

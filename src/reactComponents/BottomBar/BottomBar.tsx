@@ -31,15 +31,8 @@ export function BottomBar() {
                     {towerButtons.map((t, index) => (
                         <TowerButton
                             key={index}
-                            id={t.id}
-                            name={t.name}
-                            stats={t.stats}
-                            description={t.description}
                             scale={map.fontScale}
-                            onClick={t.onClick}
-                            cost={t.cost}
-                            sprite={t.sprite}
-                            element={t.element}
+                            tower={t}
                         />
                     ))}
                 </div>
