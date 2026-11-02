@@ -122,7 +122,12 @@ export default function hurtEnemy(k: KAPLAYCtx, opts: {
         if (applyStatusEffects) {
             ELEMENTS[element].applyEffect?.(k, { target, damage: effectiveDamage });
             if (attacker?.hasToxicAura) {
-                applyToxicAuraEffect(k, target);
+
+                const chance = 50;
+
+                if (Math.random() * 100 < chance) {
+                    applyToxicAuraEffect(k, target);
+                }
             }
         }
 

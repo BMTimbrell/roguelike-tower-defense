@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import Modal from "../Modal/Modal";
-import { endlessMapStateAtom, gameStateAtom, mainMenuAtom, mapAtom, selectHeroUIAtom } from "../../store";
+import { endlessMapStateAtom, gameStateAtom, mainMenuAtom, mapAtom, selectHeroUIAtom, unlockProgressionAtom } from "../../store";
 import { useAtom } from "jotai";
 import Settings from "../Settings/Settings";
 import Button from "../Button/Button";
@@ -28,6 +28,7 @@ export default function MainMenu() {
     const [gameMode, setGameMode] =
         useState<"campaign" | "endless" | null>(null);
     const [screen, setScreen] = useState<MainMenuScreen>("main");
+    const [unlockProgression] = useAtom(unlockProgressionAtom);
     const [, setSelectHeroUI] = useAtom(selectHeroUIAtom);
     const [, setMenu] = useAtom(mainMenuAtom)
     const [map] = useAtom(mapAtom);
@@ -306,11 +307,15 @@ export default function MainMenu() {
                                 setGameState(prev => ({ ...prev, gameMode: "endless" }));
                                 handleClick();
                             }}
-                            locked={IS_DEMO}
-                            unlockText={IS_DEMO ? "Locked in demo." : undefined}
-                            onMouseEnter={onHover}
-                            heading="Endless"
-                            description="Challenge yourself with endless waves of enemies."
+                            locked={IS_DEMO || [1, 2].every(world =>
+                                !unlockProgression.completedCampaigns.some(
+                                    campaign => campaign.world === world
+                                )
+                            )}
+                        unlockText={IS_DEMO ? "Locked in demo." : "Complete both campaigns to unlock."}
+                        onMouseEnter={onHover}
+                        heading="Endless"
+                        description="Challenge yourself with endless waves of enemies."
                         />
                     </GameModes>
                 )}

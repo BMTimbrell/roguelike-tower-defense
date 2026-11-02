@@ -1,6 +1,7 @@
 import type { KAPLAYCtx, Vec2 } from "kaplay";
 import { chestAtom, gameStateAtom, store } from "../store";
 import { playUISound } from "../utils/soundHelpers";
+import { chestProgress } from "../utils/checkUnlocks";
 
 export default function makeChest(k: KAPLAYCtx, pos: Vec2) {
     const chest = k.add([
@@ -66,6 +67,8 @@ export default function makeChest(k: KAPLAYCtx, pos: Vec2) {
         store.get(gameStateAtom).challengeManager.handleEvent({
             type: "OPEN_CHEST"
         });
+
+        chestProgress();
         
         playUISound(k, "open chest");
         store.set(chestAtom, prev => ({ ...prev, visible: true, chestPos: { x: pos.x, y: pos.y } }));

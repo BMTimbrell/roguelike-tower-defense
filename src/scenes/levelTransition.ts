@@ -1,5 +1,5 @@
 import type { KAPLAYCtx } from "kaplay";
-import { altarAtom, challengesAtom, chestAtom, gameStateAtom, hoveredHellMapEntityAtom, rewardsAtom, shopAtom, shopChoiceUIAtom, store } from "../store";
+import { altarAtom, challengesAtom, chestAtom, gameStateAtom, hoveredHellMapEntityAtom, rewardsAtom, shopAtom, shopChoiceUIAtom, store, unlockProgressionAtom } from "../store";
 import initCam from "../utils/initCam";
 import type { HeroGameObj, LevelWaves, Scene, Upgrade } from "../types";
 import { BASE_DRAW_COST, LEVEL_REWARDS, LEVEL_WAVES, TOWERS, UPGRADES, WORLDS, type LevelId, type TowerId } from "../constants";
@@ -10,7 +10,7 @@ import updateSkills from "../utils/updateSkills";
 import goToNextScene from "../utils/goToNextScene";
 import { playUISound } from "../utils/soundHelpers";
 import { saveRun } from "../platform/save";
-import { completeCampaign, saveMetaProgress } from "../utils/checkUnlocks";
+import { checkUnlocks, completeCampaign, saveMetaProgress } from "../utils/checkUnlocks";
 
 export default function levelTransition(k: KAPLAYCtx) {
     k.scene("levelTransition" satisfies Scene, async (hero: HeroGameObj) => {
@@ -78,6 +78,8 @@ export default function levelTransition(k: KAPLAYCtx) {
                     k.color("#FFFFFF"),
                     k.z(999999),
                 ]);
+
+                checkUnlocks(store.get(unlockProgressionAtom));
 
                 await saveRun(undefined);
 

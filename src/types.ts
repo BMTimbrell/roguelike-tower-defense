@@ -465,6 +465,7 @@ export type EnemyGameObj = GameObj<
     castDuration?: number;
     blockSources: Set<EnemyGameObj>;
     statusImmunity: boolean;
+    hasBeenPoisoned: boolean;
 };
 
 export type SwarmVisual = {
@@ -663,6 +664,7 @@ export type GameState = {
     gameOver: boolean;
     tileGrid: Tile[][];
     lostLifeThisWave: boolean;
+    lostLifeThisLevel: boolean;
     discountApplied: boolean;
 };
 
@@ -1365,7 +1367,7 @@ export type MetaProgress = {
 };
 
 export type Requirement = {
-    type: "spells_cast" | "complete_level_no_loss" | "boss_kills" | "chests_opened" | "poison_enemies" | "complete_level";
+    type: "spells_cast" | "complete_level_no_loss" | "boss_kills" | "chests_opened" | "poison_enemies" | "endless_level" | "complete_hard";
     amount: number;
 };
 

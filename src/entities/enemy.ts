@@ -14,6 +14,7 @@ import { tryShowTutorial } from '../utils/tutorialHelpers';
 import makeChest from './makeChest';
 import { rotateVector } from '../utils/targetingHelpers';
 import { addTotemEffect, removeTotemEffect } from './Totem';
+import { bossKillProgress } from '../utils/checkUnlocks';
 
 export default function makeEnemy(
     k: KAPLAYCtx,
@@ -28,14 +29,14 @@ export default function makeEnemy(
     const waveNumber = store.get(gameStateAtom).waveNumber;
 
     const expertBossHealthMult = "isBoss" in ENEMIES[enemyId] && ENEMIES[enemyId].isBoss && difficulty === "expert" ? 1.2 : 1;
-    const expertEnemyMult = difficulty === "expert" ? (1 + waveNumber * (waveNumber < 8 ? 0.01 : 0.015) - 0.01) : 1;
+    const expertEnemyMult = difficulty === "expert" ? (1 + waveNumber * 0.01 - 0.01) : 1;
     const expertEnemySpeedMult = difficulty === "expert" ? (1 + (waveNumber === 9 ? 0.05 : 0)) : 1;
     const health = Math.round(getHPAndArmour(ENEMIES[enemyId].hp, waveNumber) * (difficulty !== "normal" ? HARD_HEALTH_MULT : 1) * expertBossHealthMult * expertEnemyMult);
 
     const baseSpeed = getEnemySpeed(ENEMIES[enemyId].speed, waveNumber) * expertEnemySpeedMult;
 
     const armour = (ENEMIES[enemyId] as Record<"armour", number>).armour
-        ? Math.round(getHPAndArmour((ENEMIES[enemyId] as Record<"armour", number>).armour, waveNumber) * (difficulty === "hard" ? 1.2 : 1))
+        ? Math.round(getHPAndArmour((ENEMIES[enemyId] as Record<"armour", number>).armour, waveNumber) * (difficulty === "hard" ? 1.2 : 1) * expertEnemyMult)
         : 0;
 
     const enemy: EnemyGameObj = k.add([
@@ -84,6 +85,7 @@ export default function makeEnemy(
                     ...("bossMechanic" in ENEMIES[enemyId] ? { bossMechanic: ENEMIES[enemyId].bossMechanic as "shield" | "escape" } : {})
                 }
             } : {}),
+            hasBeenPoisoned: false,
             debuffDurationMultiplier: 1,
             invincibleCooldown: "invincibleCooldown" in ENEMIES[enemyId] ? ENEMIES[enemyId].invincibleCooldown as number : 0,
             invincibleTimer: "invincibleCooldown" in ENEMIES[enemyId] ? ENEMIES[enemyId].invincibleCooldown as number : 0,
@@ -962,7 +964,8 @@ export default function makeEnemy(
                     ...prev,
                     health: prev.health - enemy.damage,
                     luck: prev.luck + (enemy.damage * 0.1),
-                    lostLifeThisWave: true
+                    lostLifeThisWave: true,
+                    lostLifeThisLevel: true
                 }));
 
                 if (store.get(gameStateAtom).health <= 0) {
@@ -1005,7 +1008,8 @@ export default function makeEnemy(
                     ...prev,
                     health: prev.health - enemy.damage,
                     luck: prev.luck + enemy.damage * 0.1,
-                    lostLifeThisWave: true
+                    lostLifeThisWave: true,
+                    lostLifeThisLevel: true
                 }));
 
                 if (store.get(gameStateAtom).health <= 0) {
@@ -1232,6 +1236,8 @@ export default function makeEnemy(
     enemy.onDeath(() => {
 
         if (enemy.isDying) return;
+
+        if (enemy.boss) bossKillProgress();
 
         if (enemy.spawnPoisonMist) {
             poisonDeathEffect(k, enemy.pos);

@@ -9,7 +9,7 @@ import makeTower from "./Tower";
 import setGameSpeed from "../utils/setGameSpeed";
 import { fadeOutMusic, getMusic, playUISound } from "../utils/soundHelpers";
 import { saveRun } from "../platform/save";
-import { saveMetaProgress } from "../utils/checkUnlocks";
+import { levelNoLivesLostProgress, saveMetaProgress } from "../utils/checkUnlocks";
 
 export default function makeWaveSpawner(k: KAPLAYCtx, levelId: LevelId, waypoints: Vec2[], opts?: { onWaveEnd?: () => void; onWaveStart?: () => void; }) {
     const level = LEVEL_WAVES[levelId];
@@ -90,7 +90,7 @@ export default function makeWaveSpawner(k: KAPLAYCtx, levelId: LevelId, waypoint
                 let luckBonus = 0;
                 if (waveNumber < 6) {
                     luckBonus = 1;
-                }
+                } else if (waveNumber < 9) luckBonus = 0.25;
 
                 if (waveNumber > 1) {
                     store.set(gameStateAtom, prev => ({
@@ -268,6 +268,10 @@ export default function makeWaveSpawner(k: KAPLAYCtx, levelId: LevelId, waypoint
                         ...prev,
                         campaignLevelsCompleted: prev.campaignLevelsCompleted + 1
                     }));
+
+                    if (!store.get(gameStateAtom).lostLifeThisLevel) {
+                        levelNoLivesLostProgress();
+                    }
 
                     const complete = k.add([
                         k.pos(k.toScreen(k.getCamPos())),

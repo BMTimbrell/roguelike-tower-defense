@@ -2,12 +2,13 @@ import { useAtom } from "jotai";
 import { playUISound } from "../../utils/soundHelpers";
 import MenuHeader from "../MainMenu/MenuHeader/MenuHeader";
 import styles from "./CampaignSelection.module.css";
-import { gameStateAtom } from "../../store";
+import { gameStateAtom, unlockProgressionAtom } from "../../store";
 import GameModeOption from "../GameModeOption/GameModeOption";
 import { IS_DEMO } from "../../constants";
 
 export default function CampaignSelection({ onClick, onBackClick }: { onClick: React.MouseEventHandler<HTMLDivElement>; onBackClick: React.MouseEventHandler<HTMLButtonElement> }) {
     const [gameState, setGameState] = useAtom(gameStateAtom);
+    const [unlockProgression] = useAtom(unlockProgressionAtom);
     const onMouseEnter = () => {
         playUISound(gameState.context, "ui hover");
     };
@@ -40,8 +41,8 @@ export default function CampaignSelection({ onClick, onBackClick }: { onClick: R
                     onMouseEnter={onMouseEnter}
                     heading="World 2"
                     description="Brave scorching deserts and the fiery depths of Hell."
-                    locked={IS_DEMO}
-                    unlockText="Locked in demo."
+                    locked={IS_DEMO || !unlockProgression.completedCampaigns.some(c => c.world === 1)}
+                    unlockText={`${IS_DEMO ? "Locked in demo." : "Complete World 1 to unlock."}`}
                 />
             </div>
         </>

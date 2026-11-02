@@ -49,6 +49,7 @@ export const gameStateAtom = atom<GameState>({
     timeScale: 1,
     tileGrid: [],
     lostLifeThisWave: false,
+    lostLifeThisLevel: false,
     discountApplied: false
 });
 

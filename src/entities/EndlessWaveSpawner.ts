@@ -28,7 +28,7 @@ import {
 import makeEnemy from "./Enemy";
 import { revealChunk } from "../utils/generateFog";
 import { generateWaypoints } from "../utils/generateProceduralMap";
-import { store, gameStateAtom, mapAtom, rewardsAtom, rewardChoiceAtom, endlessMapStateAtom } from "../store";
+import { store, gameStateAtom, mapAtom, rewardsAtom, rewardChoiceAtom, endlessMapStateAtom, unlockProgressionAtom } from "../store";
 import makeTower from "./Tower";
 import drawCards from "../utils/drawCards";
 import { playUISound } from "../utils/soundHelpers";
@@ -38,6 +38,7 @@ import updateSkills from "../utils/updateSkills";
 import addTowers, { setTowerDiscount } from "../utils/addTowers";
 import { setBlockedTiles } from "../utils/makePlacementOnGrid";
 import { saveRun } from "../platform/save";
+import { checkUnlocks } from "../utils/checkUnlocks";
 
 type EndlessWaveSpawnerOptions = {
     chunks: MapChunk[];
@@ -152,6 +153,8 @@ export default function makeEndlessWaveSpawner(
                         waveNumber
                     })
                 );
+
+                checkUnlocks(store.get(unlockProgressionAtom));
 
                 (k.get("tower") as TowerGameObj[]).forEach(t => {
                     if (t.timeData) t.timeData.timeMultiplier = 1;

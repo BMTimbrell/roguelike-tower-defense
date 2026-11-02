@@ -16,7 +16,7 @@ export default function SelectHeroUI() {
     const [unlockDescription, setUnlockDescription] = useState<string | null>(null);
     const fontScale = map.fontScale;
     const iconScale = map.iconScale;
-    const unlockedHeroes = ["archer", "wizard", "knight", "assassin", "merchant", "songstress", "witch", "necromancer"];//unlockProgression.unlockedHeroes;
+    const unlockedHeroes = unlockProgression.unlockedHeroes;
 
     return (
         <div className={styles.container} style={{ fontSize: `${16 * fontScale}px` }}>
@@ -40,7 +40,7 @@ export default function SelectHeroUI() {
                                 onMouseEnter={() => {
                                     setShowDetails(id);
                                     if (!unlocked) {
-                                        const description = IS_DEMO && id !== "wizard"  ? "Locked in demo" : getUnlockDescription(id as Exclude<HeroId, "archer" | "songstress" | "necromancer">, unlockProgression);
+                                        const description = IS_DEMO && id !== "wizard"  ? "Locked in demo" : getUnlockDescription(id as Exclude<HeroId, "archer" | "necromancer">, unlockProgression);
                                         setUnlockDescription(description);
                                     }
                                     playUISound(gameState.context, "ui pop");

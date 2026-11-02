@@ -1,6 +1,6 @@
 import { HERO_UNLOCKS, HEROES, IS_DEMO, type HeroId } from "../constants";
 import { getSave, saveMeta } from "../platform/save";
-import { store, unlockProgressionAtom, unlockToastAtom } from "../store";
+import { gameStateAtom, store, unlockProgressionAtom, unlockToastAtom } from "../store";
 import type { MetaProgress, Requirement } from "../types";
 
 export async function checkUnlocks(progress: MetaProgress) {
@@ -31,6 +31,18 @@ function meetsRequirement(progress: MetaProgress, requirement: Requirement) {
         case "poison_enemies":
             return progress.enemiesPoisoned >= requirement.amount;
 
+        case "complete_hard":
+            const completedCampaigns = store.get(unlockProgressionAtom).completedCampaigns;
+
+            return [1, 2].every(world =>
+                completedCampaigns.some(
+                    campaign => campaign.world === world && campaign.difficulty === "hard"
+                )
+            );
+
+        case "endless_level":
+            return store.get(gameStateAtom).gameMode === "endless" && store.get(gameStateAtom).waveNumber >= requirement.amount;
+
         default:
             return false;
     }
@@ -59,7 +71,7 @@ async function unlockHero(hero: HeroId) {
     ]);
 }
 
-export function getUnlockDescription(heroId: Exclude<HeroId, "archer" | "songstress" | "necromancer">, progress: MetaProgress) {
+export function getUnlockDescription(heroId: Exclude<HeroId, "archer" | "necromancer">, progress: MetaProgress) {
     const unlock = HERO_UNLOCKS[heroId];
 
     switch (unlock.type) {
@@ -78,6 +90,12 @@ export function getUnlockDescription(heroId: Exclude<HeroId, "archer" | "songstr
         case "poison_enemies":
             return `Poison ${Math.min(progress.enemiesPoisoned, unlock.amount)}/${unlock.amount} enemies`;
 
+        case "complete_hard":
+            return "Beat both campaigns on hard difficulty";
+
+        case "endless_level":
+            return `Reach wave ${unlock.amount} on endless mode`;
+
         default: return null;
     }
 }
@@ -86,6 +104,42 @@ export function spellProgress() {
     store.set(unlockProgressionAtom, prev => ({
         ...prev,
         spellsCast: prev.spellsCast + 1
+    }));
+
+    checkUnlocks(store.get(unlockProgressionAtom));
+}
+
+export function chestProgress() {
+    store.set(unlockProgressionAtom, prev => ({
+        ...prev,
+        chestsOpened: prev.chestsOpened + 1
+    }));
+
+    checkUnlocks(store.get(unlockProgressionAtom));
+}
+
+export function bossKillProgress() {
+    store.set(unlockProgressionAtom, prev => ({
+        ...prev,
+        bossesKilled: prev.bossesKilled + 1
+    }));
+
+    checkUnlocks(store.get(unlockProgressionAtom));
+}
+
+export function poisonProgress() {
+    store.set(unlockProgressionAtom, prev => ({
+        ...prev,
+        enemiesPoisoned: prev.enemiesPoisoned + 1
+    }));
+
+    checkUnlocks(store.get(unlockProgressionAtom));
+}
+
+export function levelNoLivesLostProgress() {
+    store.set(unlockProgressionAtom, prev => ({
+        ...prev,
+        levelsWithoutLivesLost: prev.levelsWithoutLivesLost + 1
     }));
 
     checkUnlocks(store.get(unlockProgressionAtom));

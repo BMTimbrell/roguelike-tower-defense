@@ -38,6 +38,7 @@
     border: 1px solid rgba(255, 255, 255, 0.6);
     background-color: var(--card-color);
     gap: 0.25em;
+    position: relative;
 }
 
 .option:hover {
@@ -63,6 +64,12 @@
     border: 1px solid rgba(255, 255, 255, 0.6);
     border-radius: 0.25em;
     padding: 0.25em;
+}
+
+.reroll {
+    position: absolute;
+    top: 0.25em;
+    right: 0.25em;
 }
 
 @media (max-height: 800px) {

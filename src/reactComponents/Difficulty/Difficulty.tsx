@@ -3,12 +3,13 @@ import styles from './Difficulty.module.css';
 import { gameStateAtom, mapAtom, unlockProgressionAtom } from '../../store';
 import { playUISound } from '../../utils/soundHelpers';
 import MenuHeader from '../MainMenu/MenuHeader/MenuHeader';
+import { IS_DEMO } from '../../constants';
 
 export default function Difficulty({ onClick, onBackClick }: { onClick: React.MouseEventHandler<HTMLDivElement>; onBackClick: React.MouseEventHandler<HTMLButtonElement> }) {
     const [gameState, setGameState] = useAtom(gameStateAtom);
     const [unlockProgression] = useAtom(unlockProgressionAtom);
-    const hardUnlocked = unlockProgression.completedCampaigns.some(c => c.difficulty === "normal" && c.world === 1);
-    const expertUnlocked = false;
+    const hardUnlocked = unlockProgression.completedCampaigns.some(c => c.difficulty === "normal" && (gameState.world === 1 ? c.world === 1 : c.world === 2));
+    const expertUnlocked = !IS_DEMO && unlockProgression.completedCampaigns.some(c => c.difficulty === "hard" && (gameState.world === 1 ? c.world === 1 : c.world === 2));
     const [map] = useAtom(mapAtom);
     const scale = map.fontScale;
     const iconScale = map.iconScale;

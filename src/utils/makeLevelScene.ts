@@ -234,6 +234,7 @@ export default function makeLevelScene(k: KAPLAYCtx, sceneName: Scene) {
             selectedUI: null,
             bottomBarVisible: true,
             lostLifeThisWave: false,
+            lifeLostThisLevel: false,
             upgrades,
             luck: 1,
             deck: {

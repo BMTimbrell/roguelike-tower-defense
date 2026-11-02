@@ -50,7 +50,8 @@ export default function mainMenu(k: KAPLAYCtx) {
                 ...prev.heroButton,
                 visible: true
             },
-            lostLifeThisWave: false
+            lostLifeThisWave: false,
+            lostLifeThisLevel: false,
         }));
 
         store.set(gameSpeedUIAtom, prev => ({
