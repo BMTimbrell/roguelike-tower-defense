@@ -666,6 +666,7 @@ export type GameState = {
     lostLifeThisWave: boolean;
     lostLifeThisLevel: boolean;
     discountApplied: boolean;
+    rerolls?: number;
 };
 
 export type ShopChoiceButtons = {
@@ -1083,7 +1084,8 @@ export type TutorialId =
     | "heroCharge"
     | "thirst"
     | "totem"
-    | "obelisk";
+    | "obelisk"
+    | "rerolls";
 
 export type SeenTutorials =
     Partial<Record<TutorialId, number>>;
@@ -1109,6 +1111,7 @@ type RunMode = "campaign" | "endless" | "heroesEndless" | "reverse";
 type BaseRunSave = {
     mode: RunMode;
     scene: Scene;
+    rerolls?: number;
 };
 
 export type CampaignRunSave = BaseRunSave & {
@@ -1140,35 +1143,6 @@ export type CampaignRunSave = BaseRunSave & {
     pathTiles: PathTile[];
     world?: 1 | 2;
 };
-
-// export type RunSave = {
-//     deck: Upgrade[];
-//     scene: Scene;
-//     towerCoins: number;
-//     hero: {
-//         id: HeroId;
-//         level: number;
-//         skills: SkillId[];
-//     };
-//     sceneIndex: number;
-//     level: number;
-//     health: number;
-//     maxHealth: number;
-//     shops: ("shop" | "altar")[];
-//     heroCharge: {
-//         damageDealt: number;
-//         charge: number;
-//         damageRequired: number;
-//     };
-//     difficulty: "normal" | "hard" | "expert";
-//     nextTowerId: number;
-//     towerButtons: TowerId[];
-//     mapData: MapData;
-//     tileGrid: Tile[][];
-//     wave: LevelId;
-//     pathTiles: PathTile[];
-//     world?: 1 | 2;
-// };
 
 export type RunSave =
     | CampaignRunSave

@@ -1,5 +1,5 @@
 import { useAtom } from 'jotai';
-import { gameStateAtom, mapAtom, rewardsAtom } from '../../store';
+import { gameStateAtom, mapAtom, rewardsAtom, unlockProgressionAtom } from '../../store';
 import styles from './Rewards.module.css';
 import { GENERIC_SKILLS, SKILLS, TOWERS, UPGRADES, type TowerId } from '../../constants';
 import Card from '../Card/Card';
@@ -16,6 +16,15 @@ export default function Rewards() {
     const [gameState, setGameState] = useAtom(gameStateAtom);
     const [rewards, setRewards] = useAtom(rewardsAtom);
     const [popupPos, setPopupPos] = useState<{ x: number; y: number; } | null>(null);
+    const [unlockProgression] = useAtom(unlockProgressionAtom);
+    const completedCampaigns = unlockProgression.completedCampaigns;
+    const [rerollVersion, setRerollVersion] = useState(0);
+    const hasUnlockedRerolls = [1, 2].every(world =>
+        completedCampaigns.some(
+            campaign => campaign.world === world && campaign.difficulty === "hard"
+        )
+    );
+
     const heading = rewards.show[rewards.rewardIndex] === "skills" ?
         <div className={styles.heading}>Choose a Skill</div> : rewards.show[rewards.rewardIndex] === "upgrades" ?
             <div className={styles.heading}>Choose an Upgrade</div> :
@@ -29,7 +38,7 @@ export default function Rewards() {
         () => [...new Set(SKILLS.filter(s => rewards.skills.includes(s.id)))],
         [rewards.skills]
     );
-
+    console.log(hasUnlockedRerolls, gameState.rerolls);
     const rewardSkills = useMemo(() => {
         const normalSkills =
             generateRandomRewards(
@@ -54,7 +63,7 @@ export default function Rewards() {
             ...normalSkills,
             ...genericSkills
         ];
-    }, [skills]);
+    }, [skills, rerollVersion]);
 
     const upgrades = useMemo(() => {
         if (gameState.gameMode !== "endless") {
@@ -102,7 +111,12 @@ export default function Rewards() {
         }
 
         return result;
-    }, []);
+    }, [
+        gameState.gameMode,
+        gameState.waveNumber,
+        cardValue,
+        rerollVersion
+    ]);
 
     const towers = useMemo(
         () => generateRandomRewards(3, [
@@ -118,7 +132,7 @@ export default function Rewards() {
                     ).map(([key, value]) => ({ [key]: value }))
             )
         ]),
-        [gameState.towerButtons]
+        [gameState.towerButtons, rerollVersion]
     );
 
     function generateRandomRewards<T extends HeroSkillDef | Upgrade | Record<string, TowerDef>>(amount: number, rArr: T[]): T[] {
@@ -131,6 +145,22 @@ export default function Rewards() {
         }
 
         return [...result];
+    }
+
+    function rerollOption() {
+        if (
+            !hasUnlockedRerolls ||
+            (gameState.rerolls ?? 0) <= 0
+        ) {
+            return;
+        }
+
+        setGameState(prev => ({
+            ...prev,
+            rerolls: Math.max(0, (prev.rerolls ?? 0) - 1)
+        }));
+
+        setRerollVersion(prev => prev + 1);
     }
 
     return (
@@ -201,6 +231,20 @@ export default function Rewards() {
                     </Card>
                 ))}
             </div>
+
+            {hasUnlockedRerolls && (gameState.rerolls ?? 0) > 0 && (
+                <div className={styles.reroll}>
+                    <img
+                        className={styles.rerollButton}
+                        onClick={() => {
+                            rerollOption();
+                        }}
+                        width={`${30 * fontScale}`}
+                        src="sprites/dice.png"
+                    />
+                    <div>x{gameState.rerolls}</div>
+                </div>
+            )}
 
             {gameState.gameMode === "campaign" && <LoadoutPreviewPanel />}
 

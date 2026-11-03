@@ -170,6 +170,20 @@ export const TUTORIALS = {
                 images: ["obelisk-tutorial-3.png", "obelisk-tutorial-4.png", "obelisk-tutorial-5.png"]
             }
         ]
+    },
+    rerolls: {
+        steps: [
+            {
+                title: "Rerolls",
+                text: "Congratulations for completing both campaigns on hard difficulty! You have now unlocked rerolls.",
+                images: []
+            },
+            {
+                title: "Rerolls",
+                text: "You may now reroll your starting options. You also get a limited amount of rerolls each run for towers, cards and hero skills.",
+                images: ["reroll-starting.png", "reroll-towers.png"]
+            }
+        ]
     }
 };
 

@@ -1102,6 +1102,7 @@ export async function saveEndlessCheckpoint(k: KAPLAYCtx, seed: number, onWaveSa
             totems: [...store.get(endlessMapStateAtom).totems]
         },
         luck: store.get(gameStateAtom).luck,
+        rerolls: store.get(gameStateAtom).rerolls ?? 0,
         chests: [...k.get("chest").map(chest => ({ x: chest.pos.x, y: chest.pos.y }))],
         towers
     });

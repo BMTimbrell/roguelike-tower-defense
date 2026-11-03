@@ -309,7 +309,8 @@ export default function makeLevelScene(k: KAPLAYCtx, sceneName: Scene) {
             mapData,
             tileGrid,
             wave,
-            pathTiles
+            pathTiles,
+            rerolls: store.get(gameStateAtom).rerolls
         });
 
         await saveMetaProgress();

@@ -38,3 +38,33 @@
     column-gap: 0.25em;
     align-items: center;
 }
+
+.reroll {
+    display: flex;
+    column-gap: 0.25em;
+    align-items: center;
+}
+
+.rerollButton {
+    cursor: pointer;
+}
+
+.rerollButton:hover {
+    animation: jiggle 0.5s ease-in-out;
+    transform-origin: center;
+}
+
+@keyframes jiggle {
+    0%, 100% {
+        transform: rotate(0deg);
+    }
+    25% {
+        transform: rotate(-10deg);
+    }
+    50% {
+        transform: rotate(10deg);
+    }
+    75% {
+        transform: rotate(-10deg);
+    }
+}

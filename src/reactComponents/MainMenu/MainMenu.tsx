@@ -101,6 +101,7 @@ export default function MainMenu() {
                                         level: saveData.level,
                                         health: saveData.health,
                                         maxHealth: saveData.maxHealth,
+                                        rerolls: saveData.rerolls ?? 0,
                                         waveNumber: 0,
                                         luck: 1,
                                         shops: saveData.shops,
@@ -169,6 +170,7 @@ export default function MainMenu() {
                                         health: saveData.health,
                                         maxHealth: saveData.maxHealth,
                                         waveNumber: saveData.wave,
+                                        rerolls: saveData.rerolls ?? 0,
                                         luck: saveData.luck,
                                         waveActive: false,
                                         heroCharge: saveData.heroCharge,
@@ -312,10 +314,10 @@ export default function MainMenu() {
                                     campaign => campaign.world === world
                                 )
                             )}
-                        unlockText={IS_DEMO ? "Locked in demo." : "Complete both campaigns to unlock."}
-                        onMouseEnter={onHover}
-                        heading="Endless"
-                        description="Challenge yourself with endless waves of enemies."
+                            unlockText={IS_DEMO ? "Locked in demo." : "Complete both campaigns to unlock."}
+                            onMouseEnter={onHover}
+                            heading="Endless"
+                            description="Challenge yourself with endless waves of enemies."
                         />
                     </GameModes>
                 )}

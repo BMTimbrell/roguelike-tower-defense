@@ -1,21 +1,21 @@
 import type { KAPLAYCtx } from "kaplay";
-import { 
-    gameStateAtom, 
-    store, 
-    startingOptionsAtom, 
-    selectHeroUIAtom, 
-    shopChoiceUIAtom, 
-    shopAtom, 
-    altarAtom, 
-    mainMenuAtom, 
-    gameSpeedUIAtom, 
-    challengesAtom, 
-    chestAtom, 
-    unlockProgressionAtom, 
-    hoveredHellMapEntityAtom, 
-    rewardsAtom, 
-    endlessMapTypeAtom, 
-    endlessMapStateAtom 
+import {
+    gameStateAtom,
+    store,
+    startingOptionsAtom,
+    selectHeroUIAtom,
+    shopChoiceUIAtom,
+    shopAtom,
+    altarAtom,
+    mainMenuAtom,
+    gameSpeedUIAtom,
+    challengesAtom,
+    chestAtom,
+    unlockProgressionAtom,
+    hoveredHellMapEntityAtom,
+    rewardsAtom,
+    endlessMapTypeAtom,
+    endlessMapStateAtom
 } from "../store";
 import initCam from "../utils/initCam";
 import type { MapData, PathTile, Scene, Tile, Upgrade } from "../types";
@@ -28,6 +28,7 @@ import makeHero from "../entities/Hero";
 import { playMusic } from "../utils/soundHelpers";
 import { ChallengeManager } from "../utils/challengeHelpers";
 import { getSave, saveRun } from "../platform/save";
+import { tryShowTutorial } from "../utils/tutorialHelpers";
 
 export default function mainMenu(k: KAPLAYCtx) {
 
@@ -116,6 +117,14 @@ export default function mainMenu(k: KAPLAYCtx) {
                 enemiesPoisoned: meta.enemiesPoisoned,
                 completedCampaigns: meta.completedCampaigns
             }));
+
+            if ([1, 2].every(world =>
+                meta.completedCampaigns.some(
+                    campaign => campaign.world === world && campaign.difficulty === "hard"
+                )
+            )) {
+                tryShowTutorial("rerolls", saveData);
+            }
         }
 
         store.set(altarAtom, prev => ({
@@ -222,6 +231,7 @@ export default function mainMenu(k: KAPLAYCtx) {
                         scene: "mainMenu",
                         level: 1,
                         luck: 1,
+                        rerolls: 5,
                         health: playerHealth,
                         maxHealth: playerHealth,
                         waveNumber: 0,

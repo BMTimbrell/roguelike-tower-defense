@@ -94,7 +94,7 @@ export function getUnlockDescription(heroId: Exclude<HeroId, "archer" | "necroma
             return "Beat both campaigns on hard difficulty";
 
         case "endless_level":
-            return `Reach wave ${unlock.amount} on endless mode`;
+            return `Reach wave ${unlock.amount} on endless mode`;    
 
         default: return null;
     }
